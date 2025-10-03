@@ -15,6 +15,12 @@ public class HelloApplication extends Application {
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
+<<<<<<< Updated upstream
+=======
+        System.out.println("Ciao Mondo!");
+        System.out.println("Ciao!");
+        System.out.println("Prova!");
+>>>>>>> Stashed changes
     }
 }
 Hello world
