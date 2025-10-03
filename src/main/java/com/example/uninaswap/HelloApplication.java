@@ -16,7 +16,6 @@ public class HelloApplication extends Application {
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
-        System.out.println("Ciao Mondo!");
+        System.out.println("Ciao Mondo bello!");
     }
 }
-Hello world
