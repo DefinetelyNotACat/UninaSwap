@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class HelloApplication extends Application {
     @Override
@@ -15,12 +16,7 @@ public class HelloApplication extends Application {
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
-<<<<<<< Updated upstream
-=======
         System.out.println("Ciao Mondo!");
-        System.out.println("Ciao!");
-        System.out.println("Prova!");
->>>>>>> Stashed changes
     }
 }
 Hello world
