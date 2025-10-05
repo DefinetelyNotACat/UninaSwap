@@ -1,4 +1,4 @@
-package BOUNDARY;
+package boundary;
 
 public class HelloBoundary {
 }
