@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.StackPane?>
 
 <BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.NavBarController">
-
     <top>
         <HBox alignment="CENTER_LEFT" spacing="10">
             <padding>
@@ -31,8 +30,4 @@
             <Region HBox.hgrow="ALWAYS" />
         </HBox>
     </top>
-    <center>
-        <StackPane />
-    </center>
-
 </BorderPane>
