@@ -12,5 +12,6 @@ module com.example.uninaswap {
     requires java.sql;
 
     opens com.example.uninaswap to javafx.fxml;
+    opens boundary to javafx.fxml;
     exports com.example.uninaswap;
 }

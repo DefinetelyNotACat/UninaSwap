@@ -1,0 +1,7 @@
+#barraDiRicerca{
+    --body-background-color: red;
+    -fx-padding: 8px;
+}
+#bottonePubblicaAnnuncio{
+    -fx-padding: 8px;
+}
