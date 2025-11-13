@@ -9,20 +9,21 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class SignInBoundary {
-
+public class SignUpBoundary {
     public void onConfermaClick(ActionEvent actionEvent) {
-        System.out.println("Login premuto!");
     }
-    public void onRegistraClick(ActionEvent actionEvent) {
-        System.out.println(actionEvent + "\n" + actionEvent.getSource().toString());
+
+
+    public void onAccediClick(ActionEvent actionEvent) {
+        System.out.println(actionEvent);
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/uninaswap/signUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/uninaswap/signIn.fxml"));
             Parent newRoot = loader.load();
             Scene currentScene = ((Node) actionEvent.getSource()).getScene();
             currentScene.setRoot(newRoot);
             Stage stage = (Stage) currentScene.getWindow();
-            stage.setTitle("Registrati - Unina Swap");
+            stage.setTitle("Accedi - Unina Swap");
+
 
         } catch (IOException e) {
             e.printStackTrace();
