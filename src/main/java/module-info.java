@@ -10,8 +10,9 @@ module com.example.uninaswap {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires java.sql;
-    requires com.example.uninaswap;
+    requires javafx.graphics;
 
     opens com.example.uninaswap to javafx.fxml;
+    opens boundary to javafx.fxml;
     exports com.example.uninaswap;
 }
