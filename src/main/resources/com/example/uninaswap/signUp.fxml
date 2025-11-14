@@ -29,6 +29,18 @@
                 <children>
                     <VBox alignment="CENTER" spacing="5">
                         <children>
+                            <Text text="Matricola" styleClass="label"/>
+                            <TextField fx:id="matricolaField" promptText="123456789" styleClass="form-field"/>
+                        </children>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="5">
+                        <children>
+                            <Text text="Username" styleClass="label"/>
+                            <TextField fx:id="usernameField" promptText="Username1234" styleClass="form-field"/>
+                        </children>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="5">
+                        <children>
                             <Text text="Email" styleClass="label"/>
                             <TextField fx:id="emailField" promptText="Email@dominio.com" styleClass="form-field"/>
                         </children>
@@ -43,15 +55,15 @@
                     <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Conferma Password" styleClass="label"/>
-                            <TextField fx:id="Conferma_Password" promptText="Conferma Password" styleClass="form-field"/>
+                            <TextField fx:id="confermaPassword" promptText="Conferma Password" styleClass="form-field"/>
                         </children>
                     </VBox>
                 </children>
             </VBox>
             <HBox alignment="CENTER" spacing="25.0">
                 <children>
-                    <Button onAction="#onConfermaClick" style="-fx-cursor: hand;" text="Conferma" styleClass="button"/>
-                    <Button onAction="#onAccediClick" style="-fx-cursor: hand;" text="Accedi" styleClass="button"/>
+                    <Button onAction="#onConfermaClick" text="Conferma" styleClass="button"/>
+                    <Button onAction="#onAccediClick"  text="Accedi" styleClass="button"/>
                 </children>
             </HBox>
         </children>
