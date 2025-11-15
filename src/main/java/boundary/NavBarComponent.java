@@ -1,4 +1,4 @@
-package com.example.uninaswap;
+package boundary;
 
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -11,7 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import javafx.geometry.Point2D;
 
-public class NavBarController {
+public class NavBarComponent {
 
     @FXML private ChoiceBox<String> filtroBarraDiRicerca;
     @FXML private TextField barraDiRicerca;
@@ -28,7 +28,7 @@ public class NavBarController {
         filtroBarraDiRicerca.setValue("Articoli");
 
         try {
-            Image logoImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/logo.png"));
+            Image logoImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/logo.jpg"));
             logo.setImage(logoImage);
 
             Image profilePictureImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/profile_picture.jpg"));

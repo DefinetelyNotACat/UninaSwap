@@ -15,4 +15,5 @@ module com.example.uninaswap {
     opens com.example.uninaswap to javafx.fxml;
     opens boundary to javafx.fxml;
     exports com.example.uninaswap;
+    exports boundary;
 }

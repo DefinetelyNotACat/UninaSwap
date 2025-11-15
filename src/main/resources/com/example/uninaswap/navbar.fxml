@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.NavBarController" stylesheets="@navbar.css">
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="boundary.NavBarComponent" stylesheets="@navbar.css">
     <top>
         <HBox alignment="CENTER_LEFT" spacing="10">
             <padding>
