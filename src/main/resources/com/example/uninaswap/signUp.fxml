@@ -10,12 +10,21 @@
 <?import javafx.scene.text.Text?>
 
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.image.Image?>
 <VBox stylesheets="@sign.css"
       xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="boundary.SignUpBoundary" alignment="TOP_CENTER" styleClass="myPadding">
     <VBox alignment="CENTER" spacing="10">
         <children>
-
+            <ImageView fitHeight="150" fitWidth="150" pickOnBounds="true" preserveRatio="true">
+                <image>
+                    <Image url="@images/uninaLogo.png"/>
+                </image>
+                <clip>
+                    <Circle centerX="75.0" centerY="75.0" radius="75.0" />
+                </clip>
+            </ImageView>
             <Text text="Unina Swap" textAlignment="CENTER" styleClass="bold,title"/>
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="L'app per acquisti, scambi e regali tra studenti Unina"
                   styleClass="description"/>

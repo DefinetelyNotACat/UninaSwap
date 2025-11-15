@@ -11,7 +11,7 @@
     -fx-font-family: "Calibri";
 }
 .myPadding {
-    -fx-padding: 120px;
+    -fx-padding: 30px;
 }
 .bold {
     -fx-font-weight: bold;
@@ -39,6 +39,7 @@
     -fx-border-radius: 8px;
     -fx-cursor: hand;
     -fx-font-weight: bold;
+    -fx-font-size: 16px;
 }
 
 .button:hover {

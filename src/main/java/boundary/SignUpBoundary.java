@@ -1,5 +1,6 @@
 package boundary;
 
+import com.example.uninaswap.Costanti;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -22,7 +23,7 @@ public class SignUpBoundary {
             Scene currentScene = ((Node) actionEvent.getSource()).getScene();
             currentScene.setRoot(newRoot);
             Stage stage = (Stage) currentScene.getWindow();
-            stage.setTitle("Accedi - Unina Swap");
+            stage.setTitle(Costanti.accedi);
 
 
         } catch (IOException e) {
