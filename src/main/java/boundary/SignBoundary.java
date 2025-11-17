@@ -1,4 +1,5 @@
 package boundary;
+
 import com.example.uninaswap.Costanti;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -13,8 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.w3c.dom.NodeList;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,11 +32,13 @@ public class SignBoundary implements Initializable {
     @FXML
     private Button confermaButton;
     private static final String EMAIL_REGEX = "^[\\w-_.+]+@[\\w-]+\\.[a-zA-Z]{2,}$";
+
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
         System.out.println("Password: " + passwordField.getText());
     }
+
     public void onRegistraClick(ActionEvent actionEvent) {
         System.out.println(actionEvent + "\n" + actionEvent.getSource().toString());
         try {
@@ -52,6 +53,7 @@ public class SignBoundary implements Initializable {
             System.err.println("Errore nel caricamento di signUp.fxml: " + e.getMessage());
         }
     }
+
     public void onAccediClick(ActionEvent actionEvent) {
         System.out.println(actionEvent);
         try {
@@ -73,7 +75,6 @@ public class SignBoundary implements Initializable {
             String email = emailField.getText();
             return email == null || email.trim().isEmpty() || !email.matches(EMAIL_REGEX);
         }, emailField.textProperty());
-
         BooleanBinding isPasswordInvalid = Bindings.createBooleanBinding(() -> {
             String pass = passwordField.getText();
             return pass == null || pass.trim().isEmpty() || pass.length() < 8;
@@ -91,62 +92,104 @@ public class SignBoundary implements Initializable {
             }
         });
 
-        passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
-            boolean isEmpty = newValue == null || newValue.trim().isEmpty();
-            boolean isValid = newValue != null && newValue.length() >= 8;
-
-            if (!isEmpty && !isValid) {
-                if (!passwordField.getStyleClass().contains("error")) {
-                    passwordField.getStyleClass().add("error");
-                }
-            } else {
-                passwordField.getStyleClass().remove("error");
-            }
-        });
-        // Questa linea di codice serve per capire se si sta controllando il signIn o il signUp
-        if(usernameField == null){
+        // Comprendiamo se siamo in signIn o signUp
+        if (confermaPasswordField == null) {
             System.out.println("Caricato signIn.fxml");
-            confermaButton.disableProperty().bind(
-                    isEmailInvalid.or(isPasswordInvalid)
-            );
-        }
-        else
-        {
+
+            passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
+                boolean isEmpty = newValue == null || newValue.trim().isEmpty();
+                boolean isValid = newValue != null && newValue.length() >= 8;
+
+                if (!isEmpty && !isValid) {
+                    if (!passwordField.getStyleClass().contains("error")) {
+                        passwordField.getStyleClass().add("error");
+                    }
+                } else {
+                    passwordField.getStyleClass().remove("error");
+                }
+            });
+            confermaButton.disableProperty().bind(isEmailInvalid.or(isPasswordInvalid));
+        } else {
             System.out.println("Caricato signUp.fxml");
             BooleanBinding usernameInvalid = Bindings.createBooleanBinding(() -> {
                 String username = usernameField.getText();
                 return username == null || username.trim().isEmpty();
             }, usernameField.textProperty());
 
-            BooleanBinding matricolaInvalid = Bindings.createBooleanBinding( () -> {
-               String matricola = matricolaField.getText();
-               return matricola == null || matricola.trim().isEmpty();
+            BooleanBinding matricolaInvalid = Bindings.createBooleanBinding(() -> {
+                String matricola = matricolaField.getText();
+                return matricola == null || matricola.trim().isEmpty();
             }, matricolaField.textProperty());
             matricolaField.textProperty().addListener((observable, oldValue, newValue) -> {
                 boolean isEmpty = newValue == null || newValue.trim().isEmpty();
-                boolean isValid = newValue.trim().length() >= 3;
-                if(!isEmpty && !isValid) {
-                    matricolaField.getStyleClass().add("error");
-                }
-                else {
+                boolean isValid = newValue.trim().length() >= 3; // Modificato per coerenza
+                if (!isEmpty && !isValid) {
+                    if (!matricolaField.getStyleClass().contains("error")) {
+                        matricolaField.getStyleClass().add("error");
+                    }
+                } else {
                     matricolaField.getStyleClass().remove("error");
                 }
             });
             usernameField.textProperty().addListener((observable, oldValue, newValue) -> {
                 boolean isEmpty = newValue == null || newValue.trim().isEmpty();
                 boolean isValid = newValue != null && newValue.length() >= 3;
-                if(!isEmpty && !isValid) {
-                    usernameField.getStyleClass().add("error");
-                }
-                else {
+                if (!isEmpty && !isValid) {
+                    if (!usernameField.getStyleClass().contains("error")) {
+                        usernameField.getStyleClass().add("error");
+                    }
+                } else {
                     usernameField.getStyleClass().remove("error");
                 }
             });
-                    confermaButton.disableProperty().bind(
-                    isEmailInvalid.or(isPasswordInvalid).or(matricolaInvalid).or(usernameInvalid)
+            BooleanBinding passwordNonMatchano = Bindings.createBooleanBinding(() -> {
+                        String password = passwordField.getText();
+                        String confermaPassword = confermaPasswordField.getText();
+                        return password == null || confermaPassword == null || password.trim().isEmpty() || !password.equals(confermaPassword);
+                    },
+                    passwordField.textProperty(),
+                    confermaPasswordField.textProperty()
+            );
+            passwordField.textProperty().addListener((obs, oldVal, newVal) -> {
+                validatePasswords();
+            });
+
+            confermaPasswordField.textProperty().addListener((obs, oldVal, newVal) -> {
+                validatePasswords();
+            });
+            confermaButton.disableProperty().bind(isEmailInvalid.or(isPasswordInvalid).or(matricolaInvalid).
+                    or(usernameInvalid).or(passwordNonMatchano)
             );
         }
-        //TODO! CONTROLLARE CHE LE 2 PASSWORD INSERITE SIANO UGUALI
+    }
+    private void validatePasswords() {
+        String password = passwordField.getText();
+        String confermaPassword = confermaPasswordField.getText();
+        boolean isPassLengthValid = password != null && password.length() >= 8;
+        boolean isPassEmpty = password == null || password.trim().isEmpty();
+        boolean doPasswordsMatch = password != null && password.equals(confermaPassword);
+        boolean isConfirmEmpty = confermaPassword == null || confermaPassword.trim().isEmpty();
 
+        if (!isPassEmpty && !isPassLengthValid) {
+            if (!passwordField.getStyleClass().contains("error")) {
+                passwordField.getStyleClass().add("error");
+            }
+        }
+        else if (!isConfirmEmpty && !doPasswordsMatch) {
+            if (!passwordField.getStyleClass().contains("error")) {
+                passwordField.getStyleClass().add("error");
+            }
+        }
+        else {
+            passwordField.getStyleClass().remove("error");
+        }
+        if (!isConfirmEmpty && !doPasswordsMatch) {
+            if (!confermaPasswordField.getStyleClass().contains("error")) {
+                confermaPasswordField.getStyleClass().add("error");
+            }
+        }
+        else {
+            confermaPasswordField.getStyleClass().remove("error");
+        }
     }
 }
