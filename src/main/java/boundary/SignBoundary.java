@@ -192,4 +192,5 @@ public class SignBoundary implements Initializable {
             confermaPasswordField.getStyleClass().remove("error");
         }
     }
+    //TODO! CAMBIARE LA NOMENCLATURA DA AMERICANO AD ITALIANO
 }
