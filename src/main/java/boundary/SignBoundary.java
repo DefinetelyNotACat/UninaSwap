@@ -13,17 +13,26 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.w3c.dom.NodeList;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-public class SignInBoundary implements Initializable {
+
+public class SignBoundary implements Initializable {
     @FXML
     private TextField emailField;
     @FXML
     private PasswordField passwordField;
     @FXML
+    private PasswordField confermaPasswordField;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private TextField matricolaField;
+    @FXML
     private Button confermaButton;
-    private static final String EMAIL_REGEX = "^[\\w-_.+]*[\\w-_.]@([\\w]+\\.)+[\\w]+[\\w]$";
+    private static final String EMAIL_REGEX = "^[\\w-_.+]+@[\\w-]+\\.[a-zA-Z]{2,}$";
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
@@ -43,6 +52,21 @@ public class SignInBoundary implements Initializable {
             System.err.println("Errore nel caricamento di signUp.fxml: " + e.getMessage());
         }
     }
+    public void onAccediClick(ActionEvent actionEvent) {
+        System.out.println(actionEvent);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/uninaswap/signIn.fxml"));
+            Parent newRoot = loader.load();
+            Scene currentScene = ((Node) actionEvent.getSource()).getScene();
+            currentScene.setRoot(newRoot);
+            Stage stage = (Stage) currentScene.getWindow();
+            stage.setTitle(Costanti.accedi);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Errore nel caricamento di signUp.fxml: " + e.getMessage());
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         BooleanBinding isEmailInvalid = Bindings.createBooleanBinding(() -> {
@@ -79,8 +103,50 @@ public class SignInBoundary implements Initializable {
                 passwordField.getStyleClass().remove("error");
             }
         });
-        confermaButton.disableProperty().bind(
-                isEmailInvalid.or(isPasswordInvalid)
-        );
+        // Questa linea di codice serve per capire se si sta controllando il signIn o il signUp
+        if(usernameField == null){
+            System.out.println("Caricato signIn.fxml");
+            confermaButton.disableProperty().bind(
+                    isEmailInvalid.or(isPasswordInvalid)
+            );
+        }
+        else
+        {
+            System.out.println("Caricato signUp.fxml");
+            BooleanBinding usernameInvalid = Bindings.createBooleanBinding(() -> {
+                String username = usernameField.getText();
+                return username == null || username.trim().isEmpty();
+            }, usernameField.textProperty());
+
+            BooleanBinding matricolaInvalid = Bindings.createBooleanBinding( () -> {
+               String matricola = matricolaField.getText();
+               return matricola == null || matricola.trim().isEmpty();
+            }, matricolaField.textProperty());
+            matricolaField.textProperty().addListener((observable, oldValue, newValue) -> {
+                boolean isEmpty = newValue == null || newValue.trim().isEmpty();
+                boolean isValid = newValue.trim().length() >= 3;
+                if(!isEmpty && !isValid) {
+                    matricolaField.getStyleClass().add("error");
+                }
+                else {
+                    matricolaField.getStyleClass().remove("error");
+                }
+            });
+            usernameField.textProperty().addListener((observable, oldValue, newValue) -> {
+                boolean isEmpty = newValue == null || newValue.trim().isEmpty();
+                boolean isValid = newValue != null && newValue.length() >= 3;
+                if(!isEmpty && !isValid) {
+                    usernameField.getStyleClass().add("error");
+                }
+                else {
+                    usernameField.getStyleClass().remove("error");
+                }
+            });
+                    confermaButton.disableProperty().bind(
+                    isEmailInvalid.or(isPasswordInvalid).or(matricolaInvalid).or(usernameInvalid)
+            );
+        }
+        //TODO! CONTROLLARE CHE LE 2 PASSWORD INSERITE SIANO UGUALI
+
     }
 }
