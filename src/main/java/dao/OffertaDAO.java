@@ -1,11 +1,10 @@
 package dao;
 
-import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
+
 import entity.*;
 
-public class OffertaVenditaDAO {
+public class OffertaDAO {
     public boolean salvaOffertaVendita(OffertaVendita offertaVendita ) {return true;}
     public boolean modficaOfferta(OffertaVendita offertaVendita) {return true;}
     public boolean eliminaOfferta(OffertaVendita offertaVendita) {return true;}
