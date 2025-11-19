@@ -19,7 +19,6 @@ import java.util.ResourceBundle;
 
 
 public class HomePageBoundary {
-
     @FXML private AnchorPane navbarComponent;
     @FXML private NavBarComponent navBarComponentController;
 

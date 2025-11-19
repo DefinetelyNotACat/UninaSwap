@@ -35,8 +35,6 @@ public class SignBoundary implements Initializable {
     @FXML
     private Button accediButton;
     private static final String EMAIL_REGEX_UNINA = "^[\\w-_.+]+@studenti\\.unina\\.it$";
-
-    private static final String EMAIL_REGEX = "^[\\w-_.+]+@studenti\\.unina\\.it$";
     private ControllerUninaSwap controllerUninaSwap;
     private ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
 
@@ -53,12 +51,12 @@ public class SignBoundary implements Initializable {
 
     public void onRegistraClick(ActionEvent actionEvent) {
         System.out.println(actionEvent + "\n" + actionEvent.getSource().toString());
-        controllerCambioBoundary.CambiaScena("/com/example/uninaswap/signUp.fxml", Costanti.registrati, actionEvent);
+        controllerCambioBoundary.CambiaScena(Costanti.pathSignUp, Costanti.registrati, actionEvent);
     }
 
     public void onAccediClick(ActionEvent actionEvent) {
         System.out.println(actionEvent);
-        controllerCambioBoundary.CambiaScena("/com/example/uninaswap/signIn.fxml", Costanti.accedi, actionEvent);
+        controllerCambioBoundary.CambiaScena(Costanti.pathSignIn, Costanti.accedi, actionEvent);
     }
 
     @Override

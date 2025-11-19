@@ -26,12 +26,11 @@ public class NavBarComponent {
     public void initialize() {
         filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
         filtroBarraDiRicerca.setValue("Articoli");
-
         try {
             Image logoImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png"));
             logo.setImage(logoImage);
 
-            Image fotoProfiloImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/profile_picture.jpg"));
+            Image fotoProfiloImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
             fotoProfilo.setImage(fotoProfiloImage);
         } catch (Exception e) {
             System.err.println("Nessun immagine trovata: " + e.getMessage());
