@@ -1,5 +1,4 @@
 package boundary;
-
 import Controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
 import javafx.beans.binding.Bindings;
@@ -39,46 +38,27 @@ public class SignBoundary implements Initializable {
 
     private static final String EMAIL_REGEX = "^[\\w-_.+]+@studenti\\.unina\\.it$";
     private ControllerUninaSwap controllerUninaSwap;
+    private ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
 
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
         System.out.println("Password: " + passwordField.getText());
         if (confermaPasswordField == null) {
-            //TODO! LOGICA SIGN IN
         } else {
             registraUtente();
         }
+        controllerCambioBoundary.CambiaScena("/com/example/uninaswap/HomePage.fxml", Costanti.homepage, actionEvent);
     }
 
     public void onRegistraClick(ActionEvent actionEvent) {
         System.out.println(actionEvent + "\n" + actionEvent.getSource().toString());
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/uninaswap/signUp.fxml"));
-            Parent newRoot = loader.load();
-            Scene currentScene = ((Node) actionEvent.getSource()).getScene();
-            currentScene.setRoot(newRoot);
-            Stage stage = (Stage) currentScene.getWindow();
-            stage.setTitle(Costanti.registrati);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Errore nel caricamento di signUp.fxml: " + e.getMessage());
-        }
+        controllerCambioBoundary.CambiaScena("/com/example/uninaswap/signUp.fxml", Costanti.registrati, actionEvent);
     }
 
     public void onAccediClick(ActionEvent actionEvent) {
         System.out.println(actionEvent);
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/uninaswap/signIn.fxml"));
-            Parent newRoot = loader.load();
-            Scene currentScene = ((Node) actionEvent.getSource()).getScene();
-            currentScene.setRoot(newRoot);
-            Stage stage = (Stage) currentScene.getWindow();
-            stage.setTitle(Costanti.accedi);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Errore nel caricamento di signUp.fxml: " + e.getMessage());
-        }
+        controllerCambioBoundary.CambiaScena("/com/example/uninaswap/signIn.fxml", Costanti.accedi, actionEvent);
     }
 
     @Override

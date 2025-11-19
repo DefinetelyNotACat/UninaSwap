@@ -14,8 +14,6 @@ public class Utente {
 
     @Override
     public String toString() {
-        String datiUtente = "Username : " + this.username + " Email : " + this.email + " Matricola : " + this.matricola + " Password : " + this.password;
-        System.out.println(datiUtente);
-        return datiUtente;
+        return "Username : " + this.username + " Email : " + this.email + " Matricola : " + this.matricola + " Password : " + this.password;
     }
 }

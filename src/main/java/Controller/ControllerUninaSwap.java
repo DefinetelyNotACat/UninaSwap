@@ -4,10 +4,11 @@ import entity.Annuncio;
 import entity.Offerta;
 import entity.Oggetto;
 import entity.Utente;
-import java.io.IOException;
 import java.util.ArrayList;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class ControllerUninaSwap {
+    private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     public boolean EffettuaSignIn(String Username, String Email , String Matricola,String Password) {
         return true;
     }
@@ -60,16 +61,27 @@ public class ControllerUninaSwap {
     }
     public ArrayList<Offerta> LeMieOfferte(Utente utente){return null;}
     public ArrayList<Offerta> OfferteRicevuteAnnuncio(){return null;}
-    public void creaUtente(String username, String password, String matricola,
-                             String email){
+    public void creaUtente(
+            String username, String password, String matricola, String email
+    ){
         try{
+            password = passwordEncoder.encode(password);
             Utente utente = new Utente(username, password, matricola, email);
             System.out.println("Utente Salvato");
             String dati = utente.toString();
+            System.out.println(dati);
         }
         catch(Exception e){
             System.out.println("Errore! Utente non salvato " + e.getMessage());
         }
 
+    }
+    //metodo da usare per il sign-up
+    public String hashPassword(String password){
+        return passwordEncoder.encode(password);
+    }
+    //metodo da usare per verificare il log-in
+    public boolean checkPassword(String password, String passwordHashata) {
+        return passwordEncoder.matches(password, passwordHashata);
     }
 }

@@ -24,6 +24,7 @@ public class HomePageBoundary {
     @FXML private NavBarComponent navBarComponentController;
 
     @FXML private void initialize() {
+
         try {
             if (navBarComponentController != null) {
                 navBarComponentController.initialize();
