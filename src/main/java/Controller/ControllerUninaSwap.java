@@ -64,11 +64,11 @@ public class ControllerUninaSwap {
                              String email){
         try{
             Utente utente = new Utente(username, password, matricola, email);
-            System.out.println("HO FATTO L'UTENTE, HO FATTO L'UTENTE");
+            System.out.println("Utente Salvato");
             String dati = utente.toString();
         }
         catch(Exception e){
-            System.out.println("ERRORE ERRORE, IO SONO ERRORE");
+            System.out.println("Errore! Utente non salvato " + e.getMessage());
         }
 
     }
