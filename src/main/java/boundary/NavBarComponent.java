@@ -28,7 +28,7 @@ public class NavBarComponent {
         filtroBarraDiRicerca.setValue("Articoli");
 
         try {
-            Image logoImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/logo.jpg"));
+            Image logoImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png"));
             logo.setImage(logoImage);
 
             Image fotoProfiloImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/profile_picture.jpg"));

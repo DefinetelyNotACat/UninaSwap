@@ -25,7 +25,7 @@
 
             <Button fx:id="bottonePubblicaAnnuncio" text="Cerca" />
 
-            <ImageView fx:id="profilePicture" fitHeight="36.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;" />
+            <ImageView fx:id="fotoProfilo" fitHeight="36.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;" />
 
             <Region HBox.hgrow="ALWAYS" />
         </HBox>

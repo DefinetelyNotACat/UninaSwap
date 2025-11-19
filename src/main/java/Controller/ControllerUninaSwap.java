@@ -26,12 +26,7 @@ public class ControllerUninaSwap {
     public ArrayList<Annuncio> OttieniAnnunci(){
         return null;
     }
-    public ArrayList<Annuncio> OttieniOfferte(){
-        return null;
-    }
-    public ArrayList<Offerta> OttieniOfferte(){
-        return null;
-    }
+    public ArrayList<Offerta> OttieniOfferte() {return null;}
     public ArrayList<Offerta> OttieniLeMieOfferte(){return null;}
     public boolean SalvaOggetto(Oggetto Oggetto){
         return true;

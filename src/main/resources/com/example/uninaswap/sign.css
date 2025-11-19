@@ -11,7 +11,7 @@
     -fx-font-family: "Calibri";
 }
 .myPadding {
-    -fx-padding: 20px;
+    -fx-padding: 10px;
 }
 .bold {
     -fx-font-weight: bold;
@@ -27,7 +27,7 @@
 
 }
 .form-field {
-    -fx-max-width: 300px;
+    -fx-max-width: 400px;
     -fx-pref-height: 55px;
     -fx-font-size: 24px;
 }
