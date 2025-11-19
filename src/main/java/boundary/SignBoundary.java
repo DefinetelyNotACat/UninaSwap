@@ -37,15 +37,16 @@ public class SignBoundary implements Initializable {
     private Button accediButton;
     private static final String EMAIL_REGEX_UNINA = "^[\\w-_.+]+@studenti\\.unina\\.it$";
 
-    private static final String EMAIL_REGEX = "^[\\w-_.+]+@studenti\\.unina\\.it$";    private ControllerUninaSwap controllerUninaSwap;
+    private static final String EMAIL_REGEX = "^[\\w-_.+]+@studenti\\.unina\\.it$";
+    private ControllerUninaSwap controllerUninaSwap;
+
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
         System.out.println("Password: " + passwordField.getText());
-        if(confermaPasswordField == null){
+        if (confermaPasswordField == null) {
             //TODO! LOGICA SIGN IN
-        }
-        else{
+        } else {
             registraUtente();
         }
     }
@@ -82,7 +83,8 @@ public class SignBoundary implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        BooleanBinding emailNonValida= Bindings.createBooleanBinding(() -> {
+        this.controllerUninaSwap = new ControllerUninaSwap();
+        BooleanBinding emailNonValida = Bindings.createBooleanBinding(() -> {
             String email = emailField.getText();
             return email == null || email.trim().isEmpty() || !email.matches(EMAIL_REGEX_UNINA);
         }, emailField.textProperty());
@@ -91,8 +93,8 @@ public class SignBoundary implements Initializable {
             return password == null || password.trim().isEmpty() || password.length() < 8;
         }, passwordField.textProperty());
         emailField.textProperty().addListener((observable, oldValue, newValue) -> {
-            boolean vuoto= newValue == null || newValue.trim().isEmpty();
-            boolean valido= newValue != null && newValue.matches(EMAIL_REGEX_UNINA);
+            boolean vuoto = newValue == null || newValue.trim().isEmpty();
+            boolean valido = newValue != null && newValue.matches(EMAIL_REGEX_UNINA);
             if (!vuoto && !valido) {
                 if (!emailField.getStyleClass().contains("error")) {
                     emailField.getStyleClass().add("error");
@@ -175,15 +177,16 @@ public class SignBoundary implements Initializable {
             );
         }
     }
-    private void validaPasswords() {
-    private void registraUtente(){
+
+    private void registraUtente() {
         String username = usernameField.getText();
         String password = passwordField.getText();
         String matricola = matricolaField.getText();
         String email = emailField.getText();
         controllerUninaSwap.creaUtente(username, password, matricola, email);
     }
-    private void validatePasswords() {
+
+    private void validaPasswords() {
         String password = passwordField.getText();
         String confermaPassword = confermaPasswordField.getText();
         boolean lughezzaPasswordValida = password != null && password.length() >= 8;
@@ -195,21 +198,18 @@ public class SignBoundary implements Initializable {
             if (!passwordField.getStyleClass().contains("error")) {
                 passwordField.getStyleClass().add("error");
             }
-        }
-        else if (!confermaPasswordEVuota && !passwordSonoUguali) {
+        } else if (!confermaPasswordEVuota && !passwordSonoUguali) {
             if (!passwordField.getStyleClass().contains("error")) {
                 passwordField.getStyleClass().add("error");
             }
-        }
-        else {
+        } else {
             passwordField.getStyleClass().remove("error");
         }
         if (!confermaPasswordEVuota && !passwordSonoUguali) {
             if (!confermaPasswordField.getStyleClass().contains("error")) {
                 confermaPasswordField.getStyleClass().add("error");
             }
-        }
-        else {
+        } else {
             confermaPasswordField.getStyleClass().remove("error");
         }
 
