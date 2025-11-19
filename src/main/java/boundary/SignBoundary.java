@@ -1,4 +1,6 @@
 package boundary;
+
+import Controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -35,10 +37,17 @@ public class SignBoundary implements Initializable {
     private Button accediButton;
     private static final String EMAIL_REGEX_UNINA = "^[\\w-_.+]+@studenti\\.unina\\.it$";
 
+    private static final String EMAIL_REGEX = "^[\\w-_.+]+@studenti\\.unina\\.it$";    private ControllerUninaSwap controllerUninaSwap;
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
         System.out.println("Password: " + passwordField.getText());
+        if(confermaPasswordField == null){
+            //TODO! LOGICA SIGN IN
+        }
+        else{
+            registraUtente();
+        }
     }
 
     public void onRegistraClick(ActionEvent actionEvent) {
@@ -167,6 +176,14 @@ public class SignBoundary implements Initializable {
         }
     }
     private void validaPasswords() {
+    private void registraUtente(){
+        String username = usernameField.getText();
+        String password = passwordField.getText();
+        String matricola = matricolaField.getText();
+        String email = emailField.getText();
+        controllerUninaSwap.creaUtente(username, password, matricola, email);
+    }
+    private void validatePasswords() {
         String password = passwordField.getText();
         String confermaPassword = confermaPasswordField.getText();
         boolean lughezzaPasswordValida = password != null && password.length() >= 8;
@@ -195,6 +212,6 @@ public class SignBoundary implements Initializable {
         else {
             confermaPasswordField.getStyleClass().remove("error");
         }
+
     }
-    //TODO! CAMBIARE LA NOMENCLATURA DA AMERICANO AD ITALIANO
 }

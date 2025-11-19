@@ -10,7 +10,7 @@
     -fx-font-family: "Calibri";
 }
 .myPadding {
-    -fx-padding: 20px;
+    -fx-padding: 10px;
 }
 .bold {
     -fx-font-weight: bold;
