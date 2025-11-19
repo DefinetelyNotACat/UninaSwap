@@ -60,4 +60,16 @@ public class ControllerUninaSwap {
     }
     public ArrayList<Offerta> LeMieOfferte(Utente utente){return null;}
     public ArrayList<Offerta> OfferteRicevuteAnnuncio(){return null;}
+    public void creaUtente(String username, String password, String matricola,
+                             String email){
+        try{
+            Utente utente = new Utente(username, password, matricola, email);
+            System.out.println("HO FATTO L'UTENTE, HO FATTO L'UTENTE");
+            String dati = utente.toString();
+        }
+        catch(Exception e){
+            System.out.println("ERRORE ERRORE, IO SONO ERRORE");
+        }
+
+    }
 }
