@@ -1,7 +1,5 @@
 package com.example.uninaswap;
-import boundary.ControllerCambioBoundary;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -19,8 +17,6 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.show();
-
-
     }
 
     public static void main(String[] args) {

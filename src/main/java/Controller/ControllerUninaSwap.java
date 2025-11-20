@@ -6,6 +6,7 @@ import entity.Oggetto;
 import entity.Utente;
 import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class ControllerUninaSwap {
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -75,6 +76,13 @@ public class ControllerUninaSwap {
             System.out.println("Errore! Utente non salvato " + e.getMessage());
         }
 
+    }
+    public void accediUtente(String email, String password) throws Exception {
+        if (email.equals(email) && checkPassword(password, passwordEncoder.encode(password))) {
+            System.out.println("Utente accesso");
+        } else {
+            throw new Exception("Credenziali Errate!");
+        }
     }
     //metodo da usare per il sign-up
     public String hashPassword(String password){

@@ -41,7 +41,7 @@
                             <VBox alignment="CENTER" spacing="5">
                                 <children>
                                     <Text text="Email" styleClass="label"/>
-                                    <TextField fx:id="emailField" promptText="Email@dominio.com" styleClass="form-field"/>
+                                    <TextField fx:id="emailField" promptText="Email@studenti.unina.it" styleClass="form-field"/>
                                 </children>
                             </VBox>
 

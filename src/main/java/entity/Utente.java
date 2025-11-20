@@ -1,10 +1,10 @@
 package entity;
-// TODO! AGGIUNGERE ID
 public class Utente {
     String username;
     String password;
     String matricola;
     String email;
+    int id;
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
         this.password = password;

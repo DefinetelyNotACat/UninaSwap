@@ -5,16 +5,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 public class SignBoundary implements Initializable {
@@ -42,11 +36,22 @@ public class SignBoundary implements Initializable {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
         System.out.println("Password: " + passwordField.getText());
-        if (confermaPasswordField == null) {
-        } else {
-            registraUtente();
+        try {
+            if (confermaPasswordField == null) {
+                accediUtente();
+            } else {
+                registraUtente();
+            }
+            controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+        } catch (Exception e) {
+            System.out.println("Errore! " + e.getMessage());
         }
-        controllerCambioBoundary.CambiaScena("/com/example/uninaswap/HomePage.fxml", Costanti.homepage, actionEvent);
+    }
+
+    private void accediUtente() throws Exception{
+        String email = emailField.getText();
+        String password = passwordField.getText();
+        controllerUninaSwap.accediUtente(email, password);
     }
 
     public void onRegistraClick(ActionEvent actionEvent) {
@@ -155,8 +160,7 @@ public class SignBoundary implements Initializable {
             );
         }
     }
-
-    private void registraUtente() {
+    private void registraUtente(){
         String username = usernameField.getText();
         String password = passwordField.getText();
         String matricola = matricolaField.getText();
@@ -190,6 +194,5 @@ public class SignBoundary implements Initializable {
         } else {
             confermaPasswordField.getStyleClass().remove("error");
         }
-
     }
 }
