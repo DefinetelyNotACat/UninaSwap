@@ -28,14 +28,19 @@ public class SignBoundary implements Initializable {
     private Button registraButton;
     @FXML
     private Button accediButton;
+
     private static final String EMAIL_REGEX_UNINA = "^[\\w-_.+]+@studenti\\.unina\\.it$";
+    // Regex: Almeno 1 numero, 1 minuscola, 1 maiuscola, e lunghezza minima 8
+    private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+
     private ControllerUninaSwap controllerUninaSwap;
     private ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
 
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
-        System.out.println("Password: " + passwordField.getText());
+        // Non stampare la password in chiaro in un'app reale per sicurezza
+
         try {
             if (confermaPasswordField == null) {
                 accediUtente();
@@ -67,14 +72,18 @@ public class SignBoundary implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = new ControllerUninaSwap();
+
         BooleanBinding emailNonValida = Bindings.createBooleanBinding(() -> {
             String email = emailField.getText();
             return email == null || email.trim().isEmpty() || !email.matches(EMAIL_REGEX_UNINA);
         }, emailField.textProperty());
+
+        // MODIFICATO: Ora controlla il Regex completo (Maiuscola, Minuscola, Numero, 8 chars)
         BooleanBinding passwordNonValida = Bindings.createBooleanBinding(() -> {
             String password = passwordField.getText();
-            return password == null || password.trim().isEmpty() || password.length() < 8;
+            return password == null || !password.matches(PASSWORD_REGEX);
         }, passwordField.textProperty());
+
         emailField.textProperty().addListener((observable, oldValue, newValue) -> {
             boolean vuoto = newValue == null || newValue.trim().isEmpty();
             boolean valido = newValue != null && newValue.matches(EMAIL_REGEX_UNINA);
@@ -86,17 +95,17 @@ public class SignBoundary implements Initializable {
                 emailField.getStyleClass().remove("error");
             }
         });
+
         /*===========================================================
-               Comprendiamo se siamo in signIn o signUp infatti
-               confermaPassword è presente solo in signUp durante
-               l'avvio
+               Comprendiamo se siamo in signIn o signUp
         -------------------------------------------------------------*/
         if (confermaPasswordField == null) {
             System.out.println("Caricato signIn.fxml");
 
             passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
                 boolean eVuoto = newValue == null || newValue.trim().isEmpty();
-                boolean eValido = newValue != null && newValue.length() >= 8;
+                // MODIFICATO: Usa il Regex anche qui per il bordo rosso
+                boolean eValido = newValue != null && newValue.matches(PASSWORD_REGEX);
 
                 if (!eVuoto && !eValido) {
                     if (!passwordField.getStyleClass().contains("error")) {
@@ -118,6 +127,7 @@ public class SignBoundary implements Initializable {
                 String matricola = matricolaField.getText();
                 return matricola == null || matricola.trim().isEmpty();
             }, matricolaField.textProperty());
+
             matricolaField.textProperty().addListener((observable, oldValue, newValue) -> {
                 boolean eVuoto = newValue == null || newValue.trim().isEmpty();
                 boolean eValido = newValue.trim().length() >= 3;
@@ -148,6 +158,7 @@ public class SignBoundary implements Initializable {
                     passwordField.textProperty(),
                     confermaPasswordField.textProperty()
             );
+
             passwordField.textProperty().addListener((obs, oldVal, newVal) -> {
                 validaPasswords();
             });
@@ -155,11 +166,13 @@ public class SignBoundary implements Initializable {
             confermaPasswordField.textProperty().addListener((obs, oldVal, newVal) -> {
                 validaPasswords();
             });
+
             confermaButton.disableProperty().bind(emailNonValida.or(passwordNonValida).or(matricolaNonValida).
                     or(usernameNonValido).or(passwordNonCombaciano)
             );
         }
     }
+
     private void registraUtente(){
         String username = usernameField.getText();
         String password = passwordField.getText();
@@ -171,16 +184,17 @@ public class SignBoundary implements Initializable {
     private void validaPasswords() {
         String password = passwordField.getText();
         String confermaPassword = confermaPasswordField.getText();
-        boolean lughezzaPasswordValida = password != null && password.length() >= 8;
+        boolean passwordComplessa = password != null && password.matches(PASSWORD_REGEX);
         boolean passwordVuota = password == null || password.trim().isEmpty();
         boolean passwordSonoUguali = password != null && password.equals(confermaPassword);
         boolean confermaPasswordEVuota = confermaPassword == null || confermaPassword.trim().isEmpty();
 
-        if (!passwordVuota && !lughezzaPasswordValida) {
+        if (!passwordVuota && !passwordComplessa) {
             if (!passwordField.getStyleClass().contains("error")) {
                 passwordField.getStyleClass().add("error");
             }
-        } else if (!confermaPasswordEVuota && !passwordSonoUguali) {
+        }
+        else if (!confermaPasswordEVuota && !passwordSonoUguali) {
             if (!passwordField.getStyleClass().contains("error")) {
                 passwordField.getStyleClass().add("error");
             }

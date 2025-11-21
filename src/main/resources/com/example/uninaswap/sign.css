@@ -48,3 +48,8 @@
 .error{
     -fx-border-color: red;
 }
+.error-text {
+    -fx-fill: #ff4444; 
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}

@@ -6,7 +6,6 @@ import entity.Oggetto;
 import entity.Utente;
 import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class ControllerUninaSwap {
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
