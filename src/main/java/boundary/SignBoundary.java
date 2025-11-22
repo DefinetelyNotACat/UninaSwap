@@ -9,9 +9,21 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 public class SignBoundary implements Initializable {
+    @FXML
+    private Text erroreUsername;
+    @FXML
+    private Text erroreMatricola;
+    @FXML
+    private Text errorePassword;
+    @FXML
+    private Text erroreConfermaPassword;
+    @FXML
+    private Text erroreEmail;
     @FXML
     private TextField usernameField;
     @FXML
@@ -30,7 +42,7 @@ public class SignBoundary implements Initializable {
     private Button accediButton;
 
     private static final String EMAIL_REGEX_UNINA = "^[\\w-_.+]+@studenti\\.unina\\.it$";
-    // Regex: Almeno 1 numero, 1 minuscola, 1 maiuscola, e lunghezza minima 8
+
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
 
     private ControllerUninaSwap controllerUninaSwap;
@@ -39,8 +51,6 @@ public class SignBoundary implements Initializable {
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
-        // Non stampare la password in chiaro in un'app reale per sicurezza
-
         try {
             if (confermaPasswordField == null) {
                 accediUtente();
@@ -78,7 +88,6 @@ public class SignBoundary implements Initializable {
             return email == null || email.trim().isEmpty() || !email.matches(EMAIL_REGEX_UNINA);
         }, emailField.textProperty());
 
-        // MODIFICATO: Ora controlla il Regex completo (Maiuscola, Minuscola, Numero, 8 chars)
         BooleanBinding passwordNonValida = Bindings.createBooleanBinding(() -> {
             String password = passwordField.getText();
             return password == null || !password.matches(PASSWORD_REGEX);
@@ -90,9 +99,14 @@ public class SignBoundary implements Initializable {
             if (!vuoto && !valido) {
                 if (!emailField.getStyleClass().contains("error")) {
                     emailField.getStyleClass().add("error");
+                    erroreEmail.setVisible(true);
+                    erroreEmail.setManaged(true);
                 }
             } else {
                 emailField.getStyleClass().remove("error");
+                emailField.getStyleClass().add("right");
+                erroreEmail.setVisible(false);
+                erroreEmail.setManaged(false);
             }
         });
 
@@ -104,15 +118,19 @@ public class SignBoundary implements Initializable {
 
             passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
                 boolean eVuoto = newValue == null || newValue.trim().isEmpty();
-                // MODIFICATO: Usa il Regex anche qui per il bordo rosso
                 boolean eValido = newValue != null && newValue.matches(PASSWORD_REGEX);
 
                 if (!eVuoto && !eValido) {
                     if (!passwordField.getStyleClass().contains("error")) {
                         passwordField.getStyleClass().add("error");
+                        errorePassword.setVisible(true);
+                        errorePassword.setManaged(true);
                     }
                 } else {
                     passwordField.getStyleClass().remove("error");
+                    passwordField.getStyleClass().add("right");
+                    errorePassword.setVisible(false);
+                    errorePassword.setManaged(false);
                 }
             });
             confermaButton.disableProperty().bind(emailNonValida.or(passwordNonValida));
@@ -134,9 +152,14 @@ public class SignBoundary implements Initializable {
                 if (!eVuoto && !eValido) {
                     if (!matricolaField.getStyleClass().contains("error")) {
                         matricolaField.getStyleClass().add("error");
+                        erroreMatricola.setVisible(true);
+                        erroreMatricola.setManaged(true);
                     }
                 } else {
                     matricolaField.getStyleClass().remove("error");
+                    matricolaField.getStyleClass().add("right");
+                    erroreMatricola.setVisible(false);
+                    erroreMatricola.setManaged(false);
                 }
             });
             usernameField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -145,9 +168,14 @@ public class SignBoundary implements Initializable {
                 if (!eVuoto && !eValido) {
                     if (!usernameField.getStyleClass().contains("error")) {
                         usernameField.getStyleClass().add("error");
+                        erroreUsername.setVisible(true);
+                        erroreUsername.setManaged(true);
                     }
                 } else {
                     usernameField.getStyleClass().remove("error");
+                    usernameField.getStyleClass().add("right");
+                    erroreUsername.setVisible(false);
+                    erroreUsername.setManaged(false);
                 }
             });
             BooleanBinding passwordNonCombaciano = Bindings.createBooleanBinding(() -> {
@@ -192,21 +220,32 @@ public class SignBoundary implements Initializable {
         if (!passwordVuota && !passwordComplessa) {
             if (!passwordField.getStyleClass().contains("error")) {
                 passwordField.getStyleClass().add("error");
+                errorePassword.setVisible(true);
+                errorePassword.setManaged(true);
             }
         }
         else if (!confermaPasswordEVuota && !passwordSonoUguali) {
             if (!passwordField.getStyleClass().contains("error")) {
                 passwordField.getStyleClass().add("error");
+                erroreConfermaPassword.setVisible(true);
+                erroreConfermaPassword.setManaged(true);
             }
         } else {
             passwordField.getStyleClass().remove("error");
+            passwordField.getStyleClass().add("right");
+
         }
         if (!confermaPasswordEVuota && !passwordSonoUguali) {
             if (!confermaPasswordField.getStyleClass().contains("error")) {
                 confermaPasswordField.getStyleClass().add("error");
+                erroreConfermaPassword.setVisible(true);
+                erroreConfermaPassword.setManaged(true);
             }
         } else {
             confermaPasswordField.getStyleClass().remove("error");
+            confermaPasswordField.getStyleClass().add("right");
+            erroreConfermaPassword.setVisible(false);
+            erroreConfermaPassword.setManaged(false);
         }
     }
 }

@@ -42,6 +42,7 @@
                                 <children>
                                     <Text text="Email" styleClass="label"/>
                                     <TextField fx:id="emailField" promptText="Email@studenti.unina.it" styleClass="form-field"/>
+                                    <Text text="Inserire un'Email corretta (@Studenti.unina.it)" fx:id="erroreEmail" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>
 
@@ -49,6 +50,8 @@
                                 <children>
                                     <Text text="Password" styleClass="label"/>
                                     <PasswordField fx:id="passwordField" promptText="Password" styleClass="form-field"/>
+                                    <Text text="Inserire una password corretta (almeno 8 caratteri, almeno 1 maiuscola, almeno 1 minuscola, almeno 1 numero)"
+                                        fx:id="errorePassword" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>
                             <VBox alignment="CENTER" spacing="5">

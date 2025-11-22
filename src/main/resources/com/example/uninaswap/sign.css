@@ -45,6 +45,9 @@
 .button:pressed {
      -fx-background-color: #004085;
 }
+.right{
+    -fx-border-color: blue;
+}
 .error{
     -fx-border-color: red;
 }
