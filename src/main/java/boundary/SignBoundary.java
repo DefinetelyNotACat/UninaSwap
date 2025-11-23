@@ -164,8 +164,6 @@ public class SignBoundary implements Initializable {
         boolean passwordSonoUguali = password != null && password.equals(confermaPassword);
         boolean confermaPasswordEVuota = confermaPassword == null || confermaPassword.trim().isEmpty();
 
-
-
         if (!confermaPasswordEVuota && !passwordSonoUguali) {
             if (!passwordField.getStyleClass().contains("error")) {
                 passwordField.getStyleClass().add("error");
@@ -200,6 +198,9 @@ public class SignBoundary implements Initializable {
         else if(passwordVuota){
             passwordField.getStyleClass().remove("error");
             passwordField.getStyleClass().remove("right");
+            errorePassword.setVisible(false);
+            errorePassword.setManaged(false);
+            confermaPasswordField.getStyleClass().remove("right");
         }
         else {
             passwordField.getStyleClass().remove("error");
