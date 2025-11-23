@@ -95,6 +95,16 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.2</version>
+            </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>6.2.0</version>
+        </dependency>
     </dependencies>
 
     <build>
