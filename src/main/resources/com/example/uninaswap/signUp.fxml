@@ -54,7 +54,6 @@
                                     <Text text="Username" styleClass="label"/>
                                     <TextField fx:id="usernameField" promptText="Username1234" styleClass="form-field"/>
                                     <Text text="Inserire un username valido (minimo 4 caratteri, massimo 20 e niente caratteri speciali)" fx:id="erroreUsername" styleClass="error-text" visible="false" managed="false"/>
-
                                 </children>
                             </VBox>
                             <VBox alignment="CENTER" spacing="5">
