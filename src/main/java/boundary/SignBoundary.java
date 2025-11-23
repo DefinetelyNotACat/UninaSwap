@@ -94,20 +94,7 @@ public class SignBoundary implements Initializable {
         }, passwordField.textProperty());
 
         emailField.textProperty().addListener((observable, oldValue, newValue) -> {
-            boolean vuoto = newValue == null || newValue.trim().isEmpty();
-            boolean valido = newValue != null && newValue.matches(EMAIL_REGEX_UNINA);
-            if (!vuoto && !valido) {
-                if (!emailField.getStyleClass().contains("error")) {
-                    emailField.getStyleClass().add("error");
-                    erroreEmail.setVisible(true);
-                    erroreEmail.setManaged(true);
-                }
-            } else {
-                emailField.getStyleClass().remove("error");
-                emailField.getStyleClass().add("right");
-                erroreEmail.setVisible(false);
-                erroreEmail.setManaged(false);
-            }
+            gestisciErrore(newValue, emailField, erroreEmail);
         });
 
         /*===========================================================
@@ -117,21 +104,7 @@ public class SignBoundary implements Initializable {
             System.out.println("Caricato signIn.fxml");
 
             passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
-                boolean eVuoto = newValue == null || newValue.trim().isEmpty();
-                boolean eValido = newValue != null && newValue.matches(PASSWORD_REGEX);
-
-                if (!eVuoto && !eValido) {
-                    if (!passwordField.getStyleClass().contains("error")) {
-                        passwordField.getStyleClass().add("error");
-                        errorePassword.setVisible(true);
-                        errorePassword.setManaged(true);
-                    }
-                } else {
-                    passwordField.getStyleClass().remove("error");
-                    passwordField.getStyleClass().add("right");
-                    errorePassword.setVisible(false);
-                    errorePassword.setManaged(false);
-                }
+                gestisciErrore(newValue, passwordField, errorePassword);
             });
             confermaButton.disableProperty().bind(emailNonValida.or(passwordNonValida));
         } else {
@@ -147,36 +120,10 @@ public class SignBoundary implements Initializable {
             }, matricolaField.textProperty());
 
             matricolaField.textProperty().addListener((observable, oldValue, newValue) -> {
-                boolean eVuoto = newValue == null || newValue.trim().isEmpty();
-                boolean eValido = newValue.trim().length() >= 3;
-                if (!eVuoto && !eValido) {
-                    if (!matricolaField.getStyleClass().contains("error")) {
-                        matricolaField.getStyleClass().add("error");
-                        erroreMatricola.setVisible(true);
-                        erroreMatricola.setManaged(true);
-                    }
-                } else {
-                    matricolaField.getStyleClass().remove("error");
-                    matricolaField.getStyleClass().add("right");
-                    erroreMatricola.setVisible(false);
-                    erroreMatricola.setManaged(false);
-                }
+                gestisciErrore(newValue, matricolaField, erroreMatricola);
             });
             usernameField.textProperty().addListener((observable, oldValue, newValue) -> {
-                boolean eVuoto = newValue == null || newValue.trim().isEmpty();
-                boolean eValido = newValue != null && newValue.length() >= 3;
-                if (!eVuoto && !eValido) {
-                    if (!usernameField.getStyleClass().contains("error")) {
-                        usernameField.getStyleClass().add("error");
-                        erroreUsername.setVisible(true);
-                        erroreUsername.setManaged(true);
-                    }
-                } else {
-                    usernameField.getStyleClass().remove("error");
-                    usernameField.getStyleClass().add("right");
-                    erroreUsername.setVisible(false);
-                    erroreUsername.setManaged(false);
-                }
+                gestisciErrore(newValue, usernameField, erroreUsername);
             });
             BooleanBinding passwordNonCombaciano = Bindings.createBooleanBinding(() -> {
                         String password = passwordField.getText();
@@ -217,23 +164,48 @@ public class SignBoundary implements Initializable {
         boolean passwordSonoUguali = password != null && password.equals(confermaPassword);
         boolean confermaPasswordEVuota = confermaPassword == null || confermaPassword.trim().isEmpty();
 
-        if (!passwordVuota && !passwordComplessa) {
-            if (!passwordField.getStyleClass().contains("error")) {
-                passwordField.getStyleClass().add("error");
-                errorePassword.setVisible(true);
-                errorePassword.setManaged(true);
-            }
-        }
-        else if (!confermaPasswordEVuota && !passwordSonoUguali) {
+
+
+        if (!confermaPasswordEVuota && !passwordSonoUguali) {
             if (!passwordField.getStyleClass().contains("error")) {
                 passwordField.getStyleClass().add("error");
                 erroreConfermaPassword.setVisible(true);
                 erroreConfermaPassword.setManaged(true);
             }
-        } else {
+        }
+        else if(!passwordSonoUguali && !passwordComplessa) {
+            if(!passwordField.getStyleClass().contains("error")) {
+                passwordField.getStyleClass().add("error");
+            }
+            if(!confermaPasswordField.getStyleClass().contains("error")) {
+                confermaPasswordField.getStyleClass().add("error");
+            }
+            errorePassword.setVisible(true);
+            errorePassword.setManaged(true);
+            erroreConfermaPassword.setVisible(true);
+            erroreConfermaPassword.setManaged(true);
+        }
+        else if(passwordSonoUguali && !passwordComplessa && !passwordVuota) {
+            if(!passwordField.getStyleClass().contains("error")) {
+                passwordField.getStyleClass().add("error");
+            }
+            if(!confermaPasswordField.getStyleClass().contains("error")) {
+                confermaPasswordField.getStyleClass().add("error");
+            }
+            errorePassword.setVisible(true);
+            errorePassword.setManaged(true);
+            erroreConfermaPassword.setVisible(true);
+            erroreConfermaPassword.setManaged(true);
+        }
+        else if(passwordVuota){
+            passwordField.getStyleClass().remove("error");
+            passwordField.getStyleClass().remove("right");
+        }
+        else {
             passwordField.getStyleClass().remove("error");
             passwordField.getStyleClass().add("right");
-
+            errorePassword.setVisible(false);
+            errorePassword.setManaged(false);
         }
         if (!confermaPasswordEVuota && !passwordSonoUguali) {
             if (!confermaPasswordField.getStyleClass().contains("error")) {
@@ -246,6 +218,57 @@ public class SignBoundary implements Initializable {
             confermaPasswordField.getStyleClass().add("right");
             erroreConfermaPassword.setVisible(false);
             erroreConfermaPassword.setManaged(false);
+        }
+    }
+    private void gestisciErrore(String newValue, TextField field, Text errore) {
+        if(field == usernameField || field == matricolaField) {
+            boolean eVuoto = newValue == null || newValue.trim().isEmpty();
+            boolean eValido = newValue != null && newValue.length() >= 3;
+            if (!eVuoto && !eValido) {
+                if (!field.getStyleClass().contains("error")) {
+                    field.getStyleClass().add("error");
+                    errore.setVisible(true);
+                    errore.setManaged(true);
+                }
+            } else {
+                field.getStyleClass().remove("error");
+                field.getStyleClass().add("right");
+                errore.setVisible(false);
+                errore.setManaged(false);
+            }
+        }
+        else if(field == emailField){
+            boolean vuoto = newValue == null || newValue.trim().isEmpty();
+            boolean valido = newValue != null && newValue.matches(EMAIL_REGEX_UNINA);
+            if (!vuoto && !valido) {
+                if (!emailField.getStyleClass().contains("error")) {
+                    emailField.getStyleClass().add("error");
+                    erroreEmail.setVisible(true);
+                    erroreEmail.setManaged(true);
+                }
+            } else {
+                emailField.getStyleClass().remove("error");
+                emailField.getStyleClass().add("right");
+                erroreEmail.setVisible(false);
+                erroreEmail.setManaged(false);
+            }
+        }
+        else if(field == passwordField){
+            boolean eVuoto = newValue == null || newValue.trim().isEmpty();
+            boolean eValido = newValue != null && newValue.matches(PASSWORD_REGEX);
+
+            if (!eVuoto && !eValido) {
+                if (!passwordField.getStyleClass().contains("error")) {
+                    passwordField.getStyleClass().add("error");
+                    errorePassword.setVisible(true);
+                    errorePassword.setManaged(true);
+                }
+            } else {
+                passwordField.getStyleClass().remove("error");
+                passwordField.getStyleClass().add("right");
+                errorePassword.setVisible(false);
+                errorePassword.setManaged(false);
+            }
         }
     }
 }
