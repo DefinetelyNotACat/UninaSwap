@@ -7,10 +7,10 @@ import entity.*;
 import interfaces.GestoreUtente;
 
 public class UtenteDAO implements GestoreUtente {
-    public boolean salvaUtente(Utente utente){
+    public boolean salvaUtente(Utente utente) {
         String sql = "INSERT INTO utenti (username, password, matricola, email) VALUES ( ?, ?, ?, ?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql)){
+             PreparedStatement query = connessione.prepareStatement(sql)) {
             query.setString(1, utente.getUsername());
             query.setString(2, utente.getPassword());
             query.setString(3, utente.getMatricola());
@@ -19,16 +19,16 @@ public class UtenteDAO implements GestoreUtente {
             int numModifiche = query.executeUpdate();
             return numModifiche > 0;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public boolean modificaUtente(Utente utente){
+    public boolean modificaUtente(Utente utente) {
         String sql = "UPDATE utenti SET username = ?, password = ?, matricola = ?, email = ? WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql)){
+             PreparedStatement query = connessione.prepareStatement(sql)) {
             query.setString(1, utente.getUsername());
             query.setString(2, utente.getPassword());
             query.setString(3, utente.getMatricola());
@@ -38,90 +38,94 @@ public class UtenteDAO implements GestoreUtente {
             int numModifiche = query.executeUpdate();
             return numModifiche > 0;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public boolean eliminaUtente(int id){
+    public boolean eliminaUtente(int id) {
         String sql = "DELETE FROM utenti WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql)){
+             PreparedStatement query = connessione.prepareStatement(sql)) {
 
             query.setInt(1, id);
 
             int numModifiche = query.executeUpdate();
             return numModifiche > 0;
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public Utente ottieniUtente(int id){
+    public Utente ottieniUtente(int id) {
         Utente utente = null;
         String sql = "SELECT * FROM utenti WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql);){
+             PreparedStatement query = connessione.prepareStatement(sql);) {
             query.setInt(1, id);
-            try (ResultSet rs = query.executeQuery()){
-                if (rs.next()){
+            try (ResultSet rs = query.executeQuery()) {
+                if (rs.next()) {
                     utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matircola"), rs.getString("email"));
                     utente.setId(id);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return utente;
     }
 
-    public Utente ottieniUtente(String campoRicerca){
+    public Utente ottieniUtente(String campoRicerca) {
         Utente utente = null;
         String sql = "SELECT * FROM utenti WHERE matricola = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql);){
+             PreparedStatement query = connessione.prepareStatement(sql);) {
             query.setString(1, sql);
             int sceltaRicerca = 0;
-            if (campoRicerca.contains("@") == true){sceltaRicerca = 1;}
-            switch (sceltaRicerca){
+            if (campoRicerca.contains("@") == true) {
+                sceltaRicerca = 1;
+            }
+            switch (sceltaRicerca) {
                 case 0: //ricerca tramite matricola
-                    try (ResultSet rs = query.executeQuery()){
-                        if (rs.next()){
+                    try (ResultSet rs = query.executeQuery()) {
+                        if (rs.next()) {
                             utente = new Utente(rs.getString("username"), rs.getString("password"), campoRicerca, rs.getString("email"));
                             utente.setId(rs.getInt("id"));
                         }
                     }
                     break;
                 case 1: //ricerca tramite mail
-                    try (ResultSet rs = query.executeQuery()){
-                        if (rs.next()){
+                    try (ResultSet rs = query.executeQuery()) {
+                        if (rs.next()) {
                             utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matricola"), campoRicerca);
                             utente.setId(rs.getInt("id"));
                         }
                     }
                     break;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return utente;
     }
 
-    public ArrayList<Utente> ottieniTuttiUtenti(){
+    public ArrayList<Utente> ottieniTuttiUtenti() {
         ArrayList<Utente> tuttiUtenti = new ArrayList<>();
         String sql = "SELECT * FROM utenti";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql);
-             ResultSet rs = query.executeQuery()){
-            while (rs.next()){
+             ResultSet rs = query.executeQuery()) {
+            while (rs.next()) {
                 Utente utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matricola"), rs.getString("email"));
                 utente.setId(rs.getInt("id"));
                 tuttiUtenti.add(utente);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        return tuttiUtenti;
     }
+}
