@@ -12,6 +12,7 @@ module com.example.uninaswap {
     requires javafx.graphics;
     requires spring.security.crypto;
     requires commons.logging;
+    requires java.dotenv;
     opens com.example.uninaswap to javafx.fxml;
     opens boundary to javafx.fxml;
     exports com.example.uninaswap;
