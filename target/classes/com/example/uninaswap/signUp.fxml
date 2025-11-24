@@ -45,7 +45,7 @@
                                 <children>
                                     <Text text="Matricola" styleClass="label"/>
                                     <TextField fx:id="matricolaField" promptText="123456789" styleClass="form-field"/>
-                                    <Text text="Inserire una Matricola valida" fx:id="erroreMatricola" styleClass="error-text" visible="false" managed="false"/>
+                                    <Text text="Inserire una Matricola valida (almeno un numero)" fx:id="erroreMatricola" styleClass="error-text" visible="false" managed="false"/>
 
                                 </children>
                             </VBox>
