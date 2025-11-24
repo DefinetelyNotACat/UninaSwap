@@ -1,0 +1,58 @@
+.root {
+    -fx-background-color: rgb(230, 230, 230); /* Corretto RGB */
+    /* Se volessi un'immagine di sfondo: */
+    /* -fx-background-image: url('percorso/alla/tua/immagine.png'); */
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+* {
+    -fx-font-family: "Calibri";
+}
+.myPadding {
+    -fx-padding: 10px;
+}
+.bold {
+    -fx-font-weight: bold;
+}
+.title {
+    -fx-font-size: 50px;
+}
+.description {
+    -fx-font-size: 18px;
+}
+.label{
+    -fx-font-size: 24px;
+}
+.form-field {
+    -fx-max-width: 400px;
+    -fx-pref-height: 55px;
+    -fx-font-size: 24px;
+}
+.button {
+    -fx-padding: 15px 20px;
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+.button:hover {
+    -fx-background-color: #0056b3;
+}
+.button:pressed {
+     -fx-background-color: #004085;
+}
+.right{
+    -fx-border-color: blue;
+}
+.error{
+    -fx-border-color: red;
+}
+.error-text {
+    -fx-fill: #ff4444; 
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}

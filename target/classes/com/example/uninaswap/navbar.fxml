@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="boundary.NavBarComponent" stylesheets="@navbar.css">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <padding>
+                <Insets bottom="8" left="12" right="12" top="8" />
+            </padding>
+
+            <ImageView fx:id="logo" fitHeight="35.0" fitWidth="38.0" preserveRatio="true" />
+
+            <ChoiceBox fx:id="filtroBarraDiRicerca" prefWidth="120" />
+
+            <TextField fx:id="barraDiRicerca" promptText="Cerca..." HBox.hgrow="ALWAYS" />
+
+            <Button fx:id="bottonePubblicaAnnuncio" text="Cerca" />
+
+            <ImageView fx:id="fotoProfilo" fitHeight="36.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;" />
+
+            <Region HBox.hgrow="ALWAYS" />
+        </HBox>
+    </top>
+</BorderPane>
