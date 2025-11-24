@@ -1,0 +1,24 @@
+.card-articolo {
+    -fx-border-color: #E0E0E0;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.1, 0, 2);
+}
+
+.card-articolo:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0.2, 0, 4);
+    -fx-cursor: hand;
+}
+
+#lblTitolo {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+#lblPrezzo {
+    -fx-font-size: 16px;
+    -fx-text-fill: #007BFF;
+}

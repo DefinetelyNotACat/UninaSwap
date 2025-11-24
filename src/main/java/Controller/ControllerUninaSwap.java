@@ -6,8 +6,12 @@ import entity.Oggetto;
 import entity.Utente;
 import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
+import dao.*;
 public class ControllerUninaSwap {
+    UtenteDAO utenteDAO = new UtenteDAO();
+    OffertaDAO offertaDAO = new OffertaDAO();
+    AnnuncioDAO annuncioDAO = new AnnuncioDAO();
+
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     public boolean EffettuaSignIn(String Username, String Email , String Matricola,String Password) {
         return true;
@@ -67,6 +71,7 @@ public class ControllerUninaSwap {
         try{
             password = passwordEncoder.encode(password);
             Utente utente = new Utente(username, password, matricola, email);
+            utenteDAO.salvaUtente(utente);
             System.out.println("Utente Salvato");
             String dati = utente.toString();
             System.out.println(dati);
