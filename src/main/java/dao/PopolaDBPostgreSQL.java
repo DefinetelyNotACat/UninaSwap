@@ -9,9 +9,10 @@ public class PopolaDBPostgreSQL {
             Statement stmt = conn.createStatement();){
             String queryUtente = "CREATE TABLE IF NOT EXISTS UTENTE (" +
                     "email VARCHAR(100) PRIMARY KEY, " +
-                    "username VARCHAR(50) NOT NULL, " +
+                    "username VARCHAR(50) UNIQUE NOT NULL, " +
                     "password VARCHAR(255) NOT NULL, " +
-                    "matricola VARCHAR(20) UNIQUE NOT NULL" +
+                    "matricola VARCHAR" +
+                    "(20) UNIQUE NOT NULL" +
                     ");";
         }
         catch (Exception e){
