@@ -11,54 +11,31 @@ public class PopolaDBPostgreSQL {
 
         try (Connection conn = PostgreSQLConnection.getConnection();
              Statement stmt = conn.createStatement()) {
+//            stmt.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
+//            stmt.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
+//            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");
+//            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO CASCADE;");
+//            stmt.executeUpdate("DROP TABLE IF EXISTS ANNUNCIO CASCADE;");
+//            stmt.executeUpdate("DROP TABLE IF EXISTS CATEGORIA CASCADE;");
+//            stmt.executeUpdate("DROP TABLE IF EXISTS SEDE CASCADE;");
+//            stmt.executeUpdate("DROP TABLE IF EXISTS UTENTE CASCADE;");
+//
+//            stmt.executeUpdate("DROP TYPE IF EXISTS categoria CASCADE;");
+//            stmt.executeUpdate("DROP TYPE IF EXISTS stato_annuncio CASCADE;");
+//            stmt.executeUpdate("DROP TYPE IF EXISTS condizione_oggetto CASCADE;");
+//            stmt.executeUpdate("DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;");
+//            stmt.executeUpdate("DROP TYPE IF EXISTS stato_offerta CASCADE;");
 
-            // =================================================================================
-            // 1. PULIZIA TOTALE (Ordine inverso: Prima tabelle figlie, poi padri, poi i Tipi)
-            // =================================================================================
-
-            // Drop Tabelle
-            stmt.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO CASCADE;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS ANNUNCIO CASCADE;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS CATEGORIA CASCADE;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS SEDE CASCADE;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS UTENTE CASCADE;");
-
-            // Drop Tipi (Questo risolve l'errore "type already exists")
-            // Rimuoviamo anche il tipo 'categoria' se esiste orfano
-            stmt.executeUpdate("DROP TYPE IF EXISTS categoria CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS stato_annuncio CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS condizione_oggetto CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS stato_offerta CASCADE;");
 
             System.out.println("PULIZIA COMPLETATA.");
 
-            // =================================================================================
-            // 2. CREAZIONE ENUM (Dai tuoi diagrammi UML)
-            // =================================================================================
-
-            // Enum STATO_ANNUNCIO
             stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NONDISPONIBILE');");
-
-            // Enum CONDIZIONE (Uso nomi senza spazi per sicurezza SQL, o underscore)
             stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME_NUOVO', 'OTTIME_CONDIZIONI', 'BUONE_CONDIZIONI', 'DISCRETE_CONDIZIONI', 'CATTIVE_CONDIZIONI');");
-
-            // Enum DISPONIBILITA'
             stmt.executeUpdate("CREATE TYPE disponibilita_oggetto AS ENUM ('DISPONIBILE', 'OCCUPATO', 'VENDUTO', 'REGALATO', 'SCAMBIATO');");
-
-            // Enum STATO_OFFERTA
             stmt.executeUpdate("CREATE TYPE stato_offerta AS ENUM ('IN_ATTESA', 'ACCETTATA', 'RIFIUTATA');");
 
             System.out.println("TIPI ENUM CREATI.");
 
-            // =================================================================================
-            // 3. CREAZIONE TABELLE
-            // =================================================================================
-
-            // --- UTENTE ---
             String queryUtente = "CREATE TABLE UTENTE (" +
                     "matricola VARCHAR(20) PRIMARY KEY, " +
                     "email VARCHAR(100) UNIQUE NOT NULL, " +
@@ -69,7 +46,6 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryUtente);
             System.out.println("Tabella UTENTE CREATA");
 
-            // --- SEDE ---
             String querySede = "CREATE TABLE SEDE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "nome_sede VARCHAR(100), " +
@@ -78,21 +54,18 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(querySede);
             System.out.println("Tabella SEDE CREATA");
 
-            // --- CATEGORIA ---
             String queryCategoria = "CREATE TABLE CATEGORIA (" +
                     "nome VARCHAR(50) PRIMARY KEY" +
                     ");";
             stmt.executeUpdate(queryCategoria);
             System.out.println("Tabella CATEGORIA CREATA");
 
-            // --- ANNUNCIO ---
-            // Nota: Qui usiamo il tipo 'stato_annuncio' creato sopra invece di VARCHAR
             String queryAnnuncio = "CREATE TABLE ANNUNCIO (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "utente_matricola VARCHAR(20) NOT NULL, " +
                     "sede_id INTEGER NOT NULL, " +
-                    "tipo_annuncio VARCHAR(20) NOT NULL, " + // VENDITA/SCAMBIO/REGALO (Gestito lato Java o altro Enum se vuoi)
-                    "stato stato_annuncio, " +               // <--- USO ENUM
+                    "tipo_annuncio VARCHAR(20) NOT NULL, " +
+                    "stato stato_annuncio, " +
                     "descrizione TEXT, " +
                     "orario_inizio TIME, " +
                     "orario_fine TIME, " +
@@ -105,22 +78,19 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryAnnuncio);
             System.out.println("Tabella ANNUNCIO CREATA");
 
-            // --- OGGETTO ---
-            // Nota: Usiamo i tipi 'condizione_oggetto' e 'disponibilita_oggetto'
             String queryOggetto = "CREATE TABLE OGGETTO (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "annuncio_id INTEGER NOT NULL, " +
                     "nome VARCHAR(100) NOT NULL, " +
                     "descrizione TEXT, " +
-                    "condizione condizione_oggetto, " +       // <--- USO ENUM
-                    "disponibilita disponibilita_oggetto, " + // <--- USO ENUM
+                    "condizione condizione_oggetto, " +
+                    "disponibilita disponibilita_oggetto, " +
                     "immagine_path TEXT, " +
                     "CONSTRAINT fk_annuncio_oggetto FOREIGN KEY (annuncio_id) REFERENCES ANNUNCIO(id) ON DELETE CASCADE" +
                     ");";
             stmt.executeUpdate(queryOggetto);
             System.out.println("Tabella OGGETTO CREATA");
 
-            // --- OGGETTO_CATEGORIA ---
             String queryOggettoCategoria = "CREATE TABLE OGGETTO_CATEGORIA (" +
                     "oggetto_id INTEGER NOT NULL, " +
                     "categoria_nome VARCHAR(50) NOT NULL, " +
@@ -131,15 +101,13 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryOggettoCategoria);
             System.out.println("Tabella OGGETTO_CATEGORIA CREATA");
 
-            // --- OFFERTA ---
-            // Nota: Usiamo il tipo 'stato_offerta'
             String queryOfferta = "CREATE TABLE OFFERTA (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "utente_matricola VARCHAR(20) NOT NULL, " +
                     "annuncio_id INTEGER NOT NULL, " +
                     "tipo_offerta VARCHAR(20), " +
                     "messaggio TEXT, " +
-                    "stato stato_offerta, " +                 // <--- USO ENUM
+                    "stato stato_offerta, " +
                     "orario_inizio TIME, " +
                     "orario_fine TIME, " +
                     "prezzo_offerta DOUBLE PRECISION, " +
@@ -149,7 +117,6 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryOfferta);
             System.out.println("Tabella OFFERTA CREATA");
 
-            // --- RECENSIONE ---
             String queryRecensione = "CREATE TABLE RECENSIONE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "recensore_matricola VARCHAR(20) NOT NULL, " +
