@@ -11,23 +11,7 @@ public class PopolaDBPostgreSQL {
 
         try (Connection conn = PostgreSQLConnection.getConnection();
              Statement stmt = conn.createStatement()) {
-//            stmt.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
-//            stmt.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
-//            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");
-//            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO CASCADE;");
-//            stmt.executeUpdate("DROP TABLE IF EXISTS ANNUNCIO CASCADE;");
-//            stmt.executeUpdate("DROP TABLE IF EXISTS CATEGORIA CASCADE;");
-//            stmt.executeUpdate("DROP TABLE IF EXISTS SEDE CASCADE;");
-//            stmt.executeUpdate("DROP TABLE IF EXISTS UTENTE CASCADE;");
-//
-//            stmt.executeUpdate("DROP TYPE IF EXISTS categoria CASCADE;");
-//            stmt.executeUpdate("DROP TYPE IF EXISTS stato_annuncio CASCADE;");
-//            stmt.executeUpdate("DROP TYPE IF EXISTS condizione_oggetto CASCADE;");
-//            stmt.executeUpdate("DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;");
-//            stmt.executeUpdate("DROP TYPE IF EXISTS stato_offerta CASCADE;");
 
-
-            System.out.println("PULIZIA COMPLETATA.");
 
             stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NONDISPONIBILE');");
             stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME_NUOVO', 'OTTIME_CONDIZIONI', 'BUONE_CONDIZIONI', 'DISCRETE_CONDIZIONI', 'CATTIVE_CONDIZIONI');");
@@ -135,5 +119,32 @@ public class PopolaDBPostgreSQL {
             System.err.println("Errore SQL: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+    public static void cancellaDB(){
+        try(Connection conn = PostgreSQLConnection.getConnection();
+            Statement stmt = conn.createStatement();){
+            stmt.executeUpdate("DROP TYPE IF EXISTS stato_annuncio CASCADE;");
+            stmt.executeUpdate("DROP TYPE IF EXISTS condizione_oggetto CASCADE;");
+            stmt.executeUpdate("DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;");
+            stmt.executeUpdate("DROP TYPE IF EXISTS stato_offerta CASCADE;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO CASCADE;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS ANNUNCIO CASCADE;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS CATEGORIA CASCADE;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS SEDE CASCADE;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS UTENTE CASCADE;");
+            stmt.executeUpdate("DROP TYPE IF EXISTS categoria CASCADE;");
+            stmt.executeUpdate("DROP TYPE IF EXISTS stato_annuncio CASCADE;");
+            stmt.executeUpdate("DROP TYPE IF EXISTS condizione_oggetto CASCADE;");
+            stmt.executeUpdate("DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;");
+            stmt.executeUpdate("DROP TYPE IF EXISTS stato_offerta CASCADE;");
+            System.out.println("PULIZIA COMPLETATA.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 }

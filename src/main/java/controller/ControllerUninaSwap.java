@@ -111,4 +111,7 @@ public class ControllerUninaSwap {
     public void popolaDB(){
         PopolaDBPostgreSQL.creaDB();
     }
+    public void cancellaDB(){
+        PopolaDBPostgreSQL.cancellaDB();
+    }
 }

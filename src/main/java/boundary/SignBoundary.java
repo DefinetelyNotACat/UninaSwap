@@ -80,7 +80,8 @@ public class SignBoundary implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = new ControllerUninaSwap();
-
+        controllerUninaSwap.cancellaDB();
+        controllerUninaSwap.popolaDB();
         BooleanBinding emailNonValida = Bindings.createBooleanBinding(() -> {
             String email = emailField.getText();
             return email == null || email.trim().isEmpty() || !email.matches(EMAIL_REGEX_UNINA);
