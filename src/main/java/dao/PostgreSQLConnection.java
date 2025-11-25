@@ -9,12 +9,12 @@ public class PostgreSQLConnection {
     private static final String UTENTE = dotenv.get("DB_USER");;
     private static final String PASSWORD = dotenv.get("DB_PASSWORD");
     private static final String DRIVER = "org.postgresql.Driver";
-    private static Connection connessione;
+    // private static Connection connessione;
 
     static{
         try{
             Class.forName(DRIVER);
-            System.out.println(URL + UTENTE +  PASSWORD + DRIVER);
+            // System.out.println(URL + UTENTE +  PASSWORD + DRIVER);
         }catch (ClassNotFoundException e){
             System.err.println("Driver non trovato: " + e.getMessage());
             e.printStackTrace();

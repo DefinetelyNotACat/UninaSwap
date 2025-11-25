@@ -48,7 +48,7 @@ public class ControllerUninaSwap {
     public ArrayList<Oggetto> VediIMieiOggetti(Utente utente){
         return null;
     }
-    public boolean PubblicaAnnuncio(Annuncio annuncio/*int*/){
+    public boolean PubblicaAnnuncio(Annuncio annuncio){
         return true;
     }
     public boolean EliminaAnnuncio(Annuncio annuncio){
@@ -82,18 +82,32 @@ public class ControllerUninaSwap {
 
     }
     public void accediUtente(String email, String password) throws Exception {
-        if (email.equals(email) && checkPassword(password, passwordEncoder.encode(password))) {
-            System.out.println("Utente accesso");
+        Utente utenteTrovato = utenteDAO.ottieniUtente(email);
+        if (utenteTrovato == null) {
+            throw new Exception("Credenziali Errate!");
+        }String passwordHashataNelDB = utenteTrovato.getPassword();
+        if (checkPassword(password, passwordHashataNelDB)) {
+            System.out.println("Utente accesso con successo");
         } else {
             throw new Exception("Credenziali Errate!");
         }
     }
-    //metodo da usare per il sign-up
+    public void registraUtente(Utente utente){
+        try{
+            utenteDAO.salvaUtente(utente);
+            System.out.println("Utente registrato");
+        }
+        catch(Exception e){
+            System.out.println("Errore! Utente non salvato " + e.getMessage());
+        }
+    }
     public String hashPassword(String password){
         return passwordEncoder.encode(password);
     }
-    //metodo da usare per verificare il log-in
     public boolean checkPassword(String password, String passwordHashata) {
         return passwordEncoder.matches(password, passwordHashata);
+    }
+    public void popolaDB(){
+
     }
 }

@@ -4,9 +4,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 public abstract class Annuncio {
-
-
-
     protected enum STATO_ANNUNCIO {
         DISPONIBILE,
         NONDISPONIBILE

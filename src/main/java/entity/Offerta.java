@@ -16,7 +16,7 @@ public abstract class Offerta {
     protected LocalTime orarioFine;
     protected Oggetto oggetto;
     protected Annuncio annuncio;
-
+    protected int id;
     public Offerta(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio,
                    LocalTime orarioFine, Oggetto oggetto) {
         this.messaggio = messaggio;
@@ -65,7 +65,6 @@ public abstract class Offerta {
     public void setOggetto(Oggetto oggetto) {
         this.oggetto = oggetto;
     }
-
     public void setOrari(LocalTime orarioInizio, LocalTime orarioFine) throws Exception {
         if (orarioInizio == null || orarioFine == null) {
             throw new Exception("Entrambi gli orari devono essere specificati");
@@ -80,5 +79,11 @@ public abstract class Offerta {
     public void immettiOfferta(Annuncio annuncio) {
         this.annuncio = annuncio;
         annuncio.ottieniOfferta(this);
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public int getId() {
+        return id;
     }
 }
