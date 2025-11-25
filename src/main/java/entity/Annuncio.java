@@ -109,5 +109,6 @@ public abstract class Annuncio {
         if (offerta != null) {
             this.offerte.add(offerta);
         }
-    }
+    }//nn si dovrebbe chiamare aggiungiOfferta???? nn si dovrebbe fsre setOfferta?
+
 }
