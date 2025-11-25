@@ -108,6 +108,6 @@ public class ControllerUninaSwap {
         return passwordEncoder.matches(password, passwordHashata);
     }
     public void popolaDB(){
-
+        PopolaDBPostgreSQL.creaDB();
     }
 }

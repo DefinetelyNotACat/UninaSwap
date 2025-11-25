@@ -4,11 +4,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
+import controller.ControllerUninaSwap;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
+        ControllerUninaSwap controllerUninaSwap = new ControllerUninaSwap();
+        controllerUninaSwap.popolaDB();
         System.out.println("Hello World!");
-       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("signIn.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("signIn.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         String iconPath = Costanti.pathLogo;
         Image icon = new Image(getClass().getResourceAsStream(iconPath));
