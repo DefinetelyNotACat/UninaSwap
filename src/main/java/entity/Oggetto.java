@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Oggetto {
 
-    protected enum DISPONIBILITA {
+    private enum DISPONIBILITA {
         DISPONIBILE,
         OCCUPATO,
         VENDUTO,
@@ -13,7 +13,7 @@ public class Oggetto {
         SCAMBIATO
     }
 
-    protected enum CONDIZIONE {
+    private enum CONDIZIONE {
         NUOVO,
         COME_NUOVO,
         OTTIME_CONDIZIONI,
@@ -34,6 +34,8 @@ public class Oggetto {
     private ArrayList<Categoria> categorie;
     private ArrayList<String> immagini;
     private Utente proprietario;
+    private Annuncio annuncio;
+    private OffertaScambio offertascambio;
 
     Oggetto(String nome, ArrayList<Categoria> categorie, ArrayList<String> immagini, Utente proprietario) {
         this.nome = nome;
@@ -101,8 +103,20 @@ public class Oggetto {
         }
     }
 
+    public void setAnnuncio(Annuncio annuncio) {
+        this.annuncio = annuncio;
+    }
 
+    public Annuncio getAnnuncio() {
+        return annuncio;
+    }
 
+    public void setOffertascambio(OffertaScambio offertascambio) {
+        this.offertascambio = offertascambio;
+    }
 
+    public OffertaScambio getOffertascambio() {
+        return offertascambio;
+    }
 
 }
