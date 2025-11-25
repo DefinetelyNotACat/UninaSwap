@@ -2,7 +2,6 @@ package dao;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 import entity.*;
 import interfaces.GestoreUtente;
 
@@ -15,7 +14,6 @@ public class UtenteDAO implements GestoreUtente {
             query.setString(2, utente.getPassword());
             query.setString(3, utente.getMatricola());
             query.setString(4, utente.getEmail());
-
             int numModifiche = query.executeUpdate();
             return numModifiche > 0;
 
@@ -59,7 +57,6 @@ public class UtenteDAO implements GestoreUtente {
             return false;
         }
     }
-
     public Utente ottieniUtente(int id) {
         Utente utente = null;
         String sql = "SELECT * FROM utenti WHERE id = ?";

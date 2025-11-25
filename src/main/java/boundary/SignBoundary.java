@@ -40,7 +40,7 @@ public class SignBoundary implements Initializable {
     @FXML
     private Button accediButton;
 
-    private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9]{6,32}@studenti\\.unina\\.it$";
+    private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9]{6,64}@studenti\\.unina\\.it$";
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
     private static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
     private static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
@@ -152,6 +152,7 @@ public class SignBoundary implements Initializable {
         String matricola = matricolaField.getText();
         String email = emailField.getText();
         controllerUninaSwap.creaUtente(username, password, matricola, email);
+
     }
 
     private void validaPasswords() {
