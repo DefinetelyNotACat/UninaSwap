@@ -9,7 +9,6 @@ public class PostgreSQLConnection {
     private static final String UTENTE = dotenv.get("DB_USER");;
     private static final String PASSWORD = dotenv.get("DB_PASSWORD");
     private static final String DRIVER = "org.postgresql.Driver";
-    // private static Connection connessione;
 
     static{
         try{

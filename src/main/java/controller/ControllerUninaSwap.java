@@ -84,12 +84,13 @@ public class ControllerUninaSwap {
     public void accediUtente(String email, String password) throws Exception {
         Utente utenteTrovato = utenteDAO.ottieniUtente(email);
         if (utenteTrovato == null) {
-            throw new Exception("Credenziali Errate!");
-        }String passwordHashataNelDB = utenteTrovato.getPassword();
+            throw new Exception("Credenziali Errate! Utente non trovato");
+        }
+        String passwordHashataNelDB = utenteTrovato.getPassword();
         if (checkPassword(password, passwordHashataNelDB)) {
             System.out.println("Utente accesso con successo");
         } else {
-            throw new Exception("Credenziali Errate!");
+            throw new Exception("Credenziali Errate! Password non combaciano");
         }
     }
     public void registraUtente(Utente utente){
@@ -108,6 +109,9 @@ public class ControllerUninaSwap {
         return passwordEncoder.matches(password, passwordHashata);
     }
     public void popolaDB(){
-
+        PopolaDBPostgreSQL.creaDB();
+    }
+    public void cancellaDB(){
+        PopolaDBPostgreSQL.cancellaDB();
     }
 }

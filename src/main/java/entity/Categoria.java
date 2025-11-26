@@ -1,12 +1,11 @@
 package entity;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class Categoria {
     private String nome;
 
-    Categoria(String nome) {
+    public Categoria(String nome) {
         this.nome = nome;
     }
 
