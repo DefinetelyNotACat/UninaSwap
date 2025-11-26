@@ -69,6 +69,7 @@
                     <Insets bottom="20.0" />
                 </padding>
             </VBox>
+            <Text text="Credenziali Errate! Riprovare" fx:id="erroreCredenziali" styleClass="log-error" visible="false" managed="false"/>
         </VBox>
     </content>
 </ScrollPane>

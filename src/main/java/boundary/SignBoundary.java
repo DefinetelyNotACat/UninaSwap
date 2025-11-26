@@ -14,6 +14,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 public class SignBoundary implements Initializable {
     @FXML
+    private Text erroreCredenziali;
+    @FXML
     private Text erroreUsername;
     @FXML
     private Text erroreMatricola;
@@ -58,6 +60,8 @@ public class SignBoundary implements Initializable {
             controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
         } catch (Exception e) {
             System.out.println("Errore! " + e.getMessage());
+            erroreCredenziali.setVisible(true);
+            erroreCredenziali.setManaged(true);
         }
     }
 
@@ -227,6 +231,8 @@ public class SignBoundary implements Initializable {
             }
         }
     }    private void gestisciErrore(String newValue, TextField field, Text errore) {
+        erroreCredenziali.setVisible(false);
+        erroreCredenziali.setManaged(false);
         if(field == usernameField || field == matricolaField) {
             boolean eVuoto = newValue == null || newValue.trim().isEmpty();
             boolean eValido = newValue != null && newValue.length() >= 3 && newValue.length() <= 20 && newValue.matches(FIELDS_REGEX)
