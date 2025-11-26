@@ -1,5 +1,5 @@
 package boundary;
-import Controller.ControllerUninaSwap;
+import controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -40,13 +40,12 @@ public class SignBoundary implements Initializable {
     @FXML
     private Button accediButton;
 
-    private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9]{6,32}@studenti\\.unina\\.it$";
+    private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9]{6,64}@studenti\\.unina\\.it$";
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
     private static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
-
-    private ControllerUninaSwap controllerUninaSwap;
+    private static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
     private ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
-
+    private ControllerUninaSwap controllerUninaSwap = new ControllerUninaSwap();
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
@@ -81,7 +80,8 @@ public class SignBoundary implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = new ControllerUninaSwap();
-
+        controllerUninaSwap.cancellaDB();
+        controllerUninaSwap.popolaDB();
         BooleanBinding emailNonValida = Bindings.createBooleanBinding(() -> {
             String email = emailField.getText();
             return email == null || email.trim().isEmpty() || !email.matches(EMAIL_REGEX_UNINA);
@@ -153,6 +153,7 @@ public class SignBoundary implements Initializable {
         String matricola = matricolaField.getText();
         String email = emailField.getText();
         controllerUninaSwap.creaUtente(username, password, matricola, email);
+
     }
 
     private void validaPasswords() {
@@ -228,7 +229,8 @@ public class SignBoundary implements Initializable {
     }    private void gestisciErrore(String newValue, TextField field, Text errore) {
         if(field == usernameField || field == matricolaField) {
             boolean eVuoto = newValue == null || newValue.trim().isEmpty();
-            boolean eValido = newValue != null && newValue.length() >= 3 && newValue.length() <= 20 && newValue.matches(FIELDS_REGEX);
+            boolean eValido = newValue != null && newValue.length() >= 3 && newValue.length() <= 20 && newValue.matches(FIELDS_REGEX)
+                    && (field != matricolaField || newValue.matches(ALMENO_UN_NUMERO_REGEX));
             if (!eVuoto && !eValido) {
                 if (!field.getStyleClass().contains("error")) {
                     field.getStyleClass().add("error");

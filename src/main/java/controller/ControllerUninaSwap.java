@@ -1,4 +1,4 @@
-package Controller;
+package controller;
 
 import entity.Annuncio;
 import entity.Offerta;
@@ -6,8 +6,12 @@ import entity.Oggetto;
 import entity.Utente;
 import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
+import dao.*;
 public class ControllerUninaSwap {
+    UtenteDAO utenteDAO = new UtenteDAO();
+    OffertaDAO offertaDAO = new OffertaDAO();
+    AnnuncioDAO annuncioDAO = new AnnuncioDAO();
+
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     public boolean EffettuaSignIn(String Username, String Email , String Matricola,String Password) {
         return true;
@@ -44,7 +48,7 @@ public class ControllerUninaSwap {
     public ArrayList<Oggetto> VediIMieiOggetti(Utente utente){
         return null;
     }
-    public boolean PubblicaAnnuncio(Annuncio annuncio/*int*/){
+    public boolean PubblicaAnnuncio(Annuncio annuncio){
         return true;
     }
     public boolean EliminaAnnuncio(Annuncio annuncio){
@@ -67,6 +71,7 @@ public class ControllerUninaSwap {
         try{
             password = passwordEncoder.encode(password);
             Utente utente = new Utente(username, password, matricola, email);
+            utenteDAO.salvaUtente(utente);
             System.out.println("Utente Salvato");
             String dati = utente.toString();
             System.out.println(dati);
@@ -77,18 +82,36 @@ public class ControllerUninaSwap {
 
     }
     public void accediUtente(String email, String password) throws Exception {
-        if (email.equals(email) && checkPassword(password, passwordEncoder.encode(password))) {
-            System.out.println("Utente accesso");
+        Utente utenteTrovato = utenteDAO.ottieniUtente(email);
+        if (utenteTrovato == null) {
+            throw new Exception("Credenziali Errate! Utente non trovato");
+        }
+        String passwordHashataNelDB = utenteTrovato.getPassword();
+        if (checkPassword(password, passwordHashataNelDB)) {
+            System.out.println("Utente accesso con successo");
         } else {
-            throw new Exception("Credenziali Errate!");
+            throw new Exception("Credenziali Errate! Password non combaciano");
         }
     }
-    //metodo da usare per il sign-up
+    public void registraUtente(Utente utente){
+        try{
+            utenteDAO.salvaUtente(utente);
+            System.out.println("Utente registrato");
+        }
+        catch(Exception e){
+            System.out.println("Errore! Utente non salvato " + e.getMessage());
+        }
+    }
     public String hashPassword(String password){
         return passwordEncoder.encode(password);
     }
-    //metodo da usare per verificare il log-in
     public boolean checkPassword(String password, String passwordHashata) {
         return passwordEncoder.matches(password, passwordHashata);
+    }
+    public void popolaDB(){
+        PopolaDBPostgreSQL.creaDB();
+    }
+    public void cancellaDB(){
+        PopolaDBPostgreSQL.cancellaDB();
     }
 }
