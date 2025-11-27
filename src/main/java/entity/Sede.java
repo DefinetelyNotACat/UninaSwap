@@ -1,7 +1,7 @@
 package entity;
 
 public class Sede {
-    private String id;
+    private int id;
     private String nomeSede;
     private String indirizo;
 
