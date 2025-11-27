@@ -17,13 +17,15 @@ public abstract class Offerta {
     protected Oggetto oggetto;
     protected Annuncio annuncio;
     protected int id;
+    protected Utente utente;
     public Offerta(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio,
-                   LocalTime orarioFine, Oggetto oggetto) {
+                   LocalTime orarioFine, Oggetto oggetto, Utente utente) {
         this.messaggio = messaggio;
         this.stato = stato;
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
         this.oggetto = oggetto;
+        this.utente = utente;
     }
 
     public String getMessaggio() {
