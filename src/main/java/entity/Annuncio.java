@@ -23,7 +23,6 @@ public abstract class Annuncio {
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
         this.stato = STATO_ANNUNCIO.DISPONIBILE;
-
         if (oggetto != null) {
             this.oggetti.add(oggetto);
         } else {
@@ -85,7 +84,6 @@ public abstract class Annuncio {
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
     }
-
     public void setOggetti(ArrayList<Oggetto> nuoviOggetti) {
         this.oggetti.clear();
         if (nuoviOggetti != null) {
@@ -96,7 +94,6 @@ public abstract class Annuncio {
             }
         }
     }
-
     public void aggiungiOggetto(Oggetto oggetto) {
         if (oggetto != null) {
             this.oggetti.add(oggetto);
@@ -106,6 +103,5 @@ public abstract class Annuncio {
         if (offerta != null) {
             this.offerte.add(offerta);
         }
-    }//nn si dovrebbe chiamare aggiungiOfferta???? nn si dovrebbe fsre setOfferta?
-
+    }
 }
