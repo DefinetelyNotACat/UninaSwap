@@ -1,9 +1,25 @@
 package entity;
 
 import java.time.LocalTime;
-
+import java.math.BigDecimal;
 public class AnnuncioVendita extends Annuncio{
-    public AnnuncioVendita(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
+    private BigDecimal prezzoMedio;
+    private BigDecimal prezzoMinimo;
+    public AnnuncioVendita(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, BigDecimal prezzoMedio) {
         super(sede, descrizione, orarioInizio, orarioFine, oggetto);
+        this.prezzoMedio = prezzoMedio;
     }
+    public BigDecimal getPrezzoMedio() {
+        return prezzoMedio;
+    }
+    public void setPrezzoMedio(BigDecimal prezzoMedio) {
+        this.prezzoMedio = prezzoMedio;
+    }
+    public BigDecimal getPrezzoMinimo() {
+        return prezzoMinimo;
+    }
+    public void setPrezzoMinimo(BigDecimal prezzoMinimo) {
+        this.prezzoMinimo = prezzoMinimo;
+    }
+    
 }
