@@ -1,11 +1,29 @@
 package dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
 import entity.*;
 
 public class AnnuncioDAO {
-    public boolean salvaAnnuncio(Annuncio annuncio){return true;}
+    public boolean inserisciAnnuncio(Annuncio annuncio,int idSede, ArrayList<Oggetto> nuoviOggetti) {
+        String sql = "INSERT INTO ANNUNCI (idSede, descrizione, orarioInizio, orarioFine, stato, ) VALUES ( ?, ?, ?, ?)";
+        try (Connection connessione = PostgreSQLConnection.getConnection();
+             PreparedStatement query = connessione.prepareStatement(sql)) {
+            query.setInt(1, idSede);
+            query.setString(2, annuncio.getDescrizione());
+            query.setObject(3, annuncio.getOrarioInizio());
+            query.setObject(4, annuncio.getOrarioFine());
+
+            int numModifiche = query.executeUpdate();
+            return numModifiche > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     public boolean modificaAnnuncio(Annuncio annuncio){return true;}
     public boolean salvaAnnuncio(int id){return true;}
     public boolean OttieniAnnuncio(int id){return true;}
