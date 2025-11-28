@@ -34,12 +34,13 @@ public class Oggetto {
     private ArrayList<Categoria> categorie;
     private ArrayList<String> immagini;
     private Utente proprietario;
+    private ArrayList<Categoria> Categorie = new ArrayList<Categoria>();
 
-    Oggetto(String nome, ArrayList<Categoria> categorie, ArrayList<String> immagini, Utente proprietario) {
+    Oggetto(String nome, Categoria categoria, ArrayList<String> immagini, Utente proprietario) {
         this.nome = nome;
-        this.categorie = categorie;
         this.immagini = immagini;
         this.proprietario = proprietario;
+        Categorie.add(categoria);
         if (immagini.isEmpty()) {
             System.err.println("Attenzione: non e' stata aggiunta alcuna immagine");
         }
@@ -67,7 +68,7 @@ public class Oggetto {
         this.proprietario = proprietario;
     }
 
-    public void setCategorie(ArrayList<Categoria> modificaCategoria) {
+    public void modificaCategorie(ArrayList<Categoria> modificaCategoria) {
         this.categorie.clear();
         if (modificaCategoria != null) {
             for (Categoria categorie : modificaCategoria) {
@@ -76,6 +77,11 @@ public class Oggetto {
                 }
             }
         }
+    }
+
+
+    public ArrayList<Categoria> getCategorie() {
+        return categorie;
     }
 
     public void aggiungiCategoria(Categoria categorie) {
