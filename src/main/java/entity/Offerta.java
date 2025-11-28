@@ -4,7 +4,7 @@ import java.time.LocalTime;
 
 public abstract class Offerta {
 
-    public enum STATO_OFFERTA {
+    protected enum STATO_OFFERTA {
         RIFIUTATA,
         IN_ATTESA,
         ACCETTATA
@@ -77,7 +77,10 @@ public abstract class Offerta {
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
     }
-
+    protected void immettiOfferta(Annuncio annuncio) {
+        this.annuncio = annuncio;
+        annuncio.ottieniOfferta(this);
+    }
     public void setId(int id) {
         this.id = id;
     }

@@ -15,6 +15,7 @@ public abstract class Annuncio {
     protected LocalTime orarioFine;
     protected STATO_ANNUNCIO stato;
     protected ArrayList<Oggetto> oggetti = new ArrayList<>();
+    protected ArrayList<Offerta> offerte = new ArrayList<>();
 
     public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
         this.sede = sede;
@@ -96,6 +97,11 @@ public abstract class Annuncio {
     public void aggiungiOggetto(Oggetto oggetto) {
         if (oggetto != null) {
             this.oggetti.add(oggetto);
+        }
+    }
+    protected void ottieniOfferta(Offerta offerta) {
+        if (offerta != null) {
+            this.offerte.add(offerta);
         }
     }
 }
