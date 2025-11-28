@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class OffertaScambio extends Offerta{
     private ArrayList<Oggetto> Oggetti = new ArrayList<Oggetto>();
 
-    public OffertaScambio(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
-        super(messaggio, stato, orarioInizio, orarioFine, oggetto);
+    public OffertaScambio(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente) {
+        super(messaggio, stato, orarioInizio, orarioFine, oggetto, utente);
     }
     public ArrayList<Oggetto> getOggetti() {
         return Oggetti;

@@ -5,8 +5,8 @@ import java.time.LocalTime;
 
 public class OffertaVendita extends Offerta{
     private BigDecimal prezzoOffertaVendita;
-    public OffertaVendita(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, BigDecimal prezzoOffertaVendita) {
-        super(messaggio, stato, orarioInizio, orarioFine, oggetto);
+    public OffertaVendita(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, BigDecimal prezzoOffertaVendita, Utente utente) {
+        super(messaggio, stato, orarioInizio, orarioFine, oggetto, utente);
         this.prezzoOffertaVendita = prezzoOffertaVendita;
     }
     public BigDecimal getPrezzoOffertaVendita() {
