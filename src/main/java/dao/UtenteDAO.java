@@ -7,7 +7,7 @@ import interfaces.GestoreUtente;
 
 public class UtenteDAO implements GestoreUtente {
     public boolean salvaUtente(Utente utente) {
-        String sql = "INSERT INTO utenti (username, password, matricola, email) VALUES ( ?, ?, ?, ?)";
+        String sql = "INSERT INTO utente (username, password, matricola, email) VALUES ( ?, ?, ?, ?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
             query.setString(1, utente.getUsername());
@@ -24,7 +24,7 @@ public class UtenteDAO implements GestoreUtente {
     }
 
     public boolean modificaUtente(Utente utente) {
-        String sql = "UPDATE utenti SET username = ?, password = ?, matricola = ?, email = ? WHERE id = ?";
+        String sql = "UPDATE utente SET username = ?, password = ?, matricola = ?, email = ? WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
             query.setString(1, utente.getUsername());
@@ -43,7 +43,7 @@ public class UtenteDAO implements GestoreUtente {
     }
 
     public boolean eliminaUtente(int id) {
-        String sql = "DELETE FROM utenti WHERE id = ?";
+        String sql = "DELETE FROM utente WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
 
@@ -59,7 +59,7 @@ public class UtenteDAO implements GestoreUtente {
     }
     public Utente ottieniUtente(int id) {
         Utente utente = null;
-        String sql = "SELECT * FROM utenti WHERE id = ?";
+        String sql = "SELECT * FROM utente WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql);) {
             query.setInt(1, id);
@@ -77,7 +77,7 @@ public class UtenteDAO implements GestoreUtente {
 
     public Utente ottieniUtente(String campoRicerca) {
         Utente utente = null;
-        String sql = "SELECT * FROM utenti WHERE matricola = ?";
+        String sql = "SELECT * FROM utente WHERE matricola = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql);) {
             query.setString(1, sql);
@@ -111,7 +111,7 @@ public class UtenteDAO implements GestoreUtente {
 
     public ArrayList<Utente> ottieniTuttiUtenti() {
         ArrayList<Utente> tuttiUtenti = new ArrayList<>();
-        String sql = "SELECT * FROM utenti";
+        String sql = "SELECT * FROM utente";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql);
              ResultSet rs = query.executeQuery()) {
