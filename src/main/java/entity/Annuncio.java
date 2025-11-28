@@ -99,7 +99,7 @@ public abstract class Annuncio {
             this.oggetti.add(oggetto);
         }
     }
-    protected void ottieniOfferta(Offerta offerta) {
+    protected void ottieniOfferta(Offerta offerta) throws Exception{
         if (offerta != null) {
             this.offerte.add(offerta);
         }

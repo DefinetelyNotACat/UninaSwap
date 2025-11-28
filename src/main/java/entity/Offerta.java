@@ -1,5 +1,6 @@
 package entity;
 
+import java.security.spec.ECField;
 import java.time.LocalTime;
 
 public abstract class Offerta {
@@ -77,7 +78,7 @@ public abstract class Offerta {
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
     }
-    protected void immettiOfferta(Annuncio annuncio) {
+    protected void immettiOfferta(Annuncio annuncio) throws Exception {
         this.annuncio = annuncio;
         annuncio.ottieniOfferta(this);
     }

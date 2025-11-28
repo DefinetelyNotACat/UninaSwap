@@ -22,9 +22,19 @@ public class OffertaScambio extends Offerta{
     }
     public void rimuoviOggetto(Oggetto oggetto) {
         this.Oggetti.remove(oggetto);
-
     }
     public void svuotaOggetti() {
         this.Oggetti.clear();
+    }
+    @Override
+    public void immettiOfferta(Annuncio annuncio) throws Exception{
+        if(annuncio instanceof AnnuncioScambio) {
+            super.immettiOfferta(annuncio);
+            this.annuncioScambio = (AnnuncioScambio) annuncio;
+            annuncio.ottieniOfferta(this);
+        }
+        else{
+            throw new Exception("Non puoi fare un'offerta di scambio su quest'annuncio");
+        }
     }
 }

@@ -16,4 +16,15 @@ public class AnnuncioScambio extends Annuncio{
     public void setListaOggetti(String listaOggetti) {
         this.listaOggetti = listaOggetti;
     }
+
+    @Override
+    public void ottieniOfferta(Offerta offerta) throws Exception {
+        if(offerta instanceof OffertaVendita) {
+            super.offerte.add((OffertaScambio) offerta);
+        }
+        else{
+            throw new Exception("Offerta di tipo sbagliato");
+        }
+    }
+
 }
