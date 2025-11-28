@@ -137,12 +137,14 @@ public class SignBoundary implements Initializable {
                     confermaPasswordField.textProperty()
             );
 
-            passwordField.textProperty().addListener((obs, oldVal, newVal) -> {
+            passwordField.textProperty().addListener((obs, oldVal, newValue) -> {
                 validaPasswords();
+
             });
 
             confermaPasswordField.textProperty().addListener((obs, oldVal, newVal) -> {
                 validaPasswords();
+
             });
 
             confermaButton.disableProperty().bind(emailNonValida.or(passwordNonValida).or(matricolaNonValida).
@@ -231,8 +233,10 @@ public class SignBoundary implements Initializable {
             }
         }
     }    private void gestisciErrore(String newValue, TextField field, Text errore) {
-        erroreCredenziali.setVisible(false);
-        erroreCredenziali.setManaged(false);
+        if(erroreCredenziali != null) {
+            erroreCredenziali.setVisible(false);
+            erroreCredenziali.setManaged(false);
+        }
         if(field == usernameField || field == matricolaField) {
             boolean eVuoto = newValue == null || newValue.trim().isEmpty();
             boolean eValido = newValue != null && newValue.length() >= 3 && newValue.length() <= 20 && newValue.matches(FIELDS_REGEX)
@@ -279,6 +283,7 @@ public class SignBoundary implements Initializable {
                 errore.setVisible(false);
                 errore.setManaged(false);
             }
+
         }
         else if(field == passwordField){
             boolean eVuoto = newValue == null || newValue.trim().isEmpty();
