@@ -19,8 +19,7 @@ public abstract class Offerta {
     protected Annuncio annuncio;
     protected int id;
     protected Utente utente;
-    public Offerta(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio,
-                   LocalTime orarioFine, Oggetto oggetto, Utente utente) {
+    public Offerta(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente) {
         this.messaggio = messaggio;
         this.stato = stato;
         this.orarioInizio = orarioInizio;
