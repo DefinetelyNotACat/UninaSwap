@@ -8,6 +8,8 @@ public class Utente {
     private String email;
     private int id;
     private ArrayList<Offerta> Offerte = new ArrayList<Offerta>();
+    private ArrayList<Oggetto> Oggetti = new ArrayList<Oggetto>();
+
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
         this.password = password;

@@ -78,10 +78,6 @@ public abstract class Offerta {
         this.orarioFine = orarioFine;
     }
 
-    public void immettiOfferta(Annuncio annuncio) {
-        this.annuncio = annuncio;
-        annuncio.ottieniOfferta(this);
-    }
     public void setId(int id) {
         this.id = id;
     }
