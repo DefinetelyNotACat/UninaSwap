@@ -44,15 +44,15 @@
                             <VBox alignment="CENTER" spacing="15.0">
                                 <children>
                                     <ImageView fx:id="profileImageView"
-                                               fitHeight="150.0"
-                                               fitWidth="150.0"
+                                               fitHeight="200.0"
+                                               fitWidth="200.0"
                                                pickOnBounds="true"
                                                preserveRatio="true">
                                         <image>
                                             <Image url="@images/immagineProfiloDefault.jpg"/>
                                         </image>
                                         <clip>
-                                            <Circle centerX="75.0" centerY="75.0" radius="75.0" />
+                                            <Circle centerX="100.0" centerY="100.0" radius="100.0" />
                                         </clip>
                                     </ImageView>
 
