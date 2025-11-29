@@ -39,16 +39,6 @@
 
             <VBox alignment="CENTER" spacing="30.0">
                 <children>
-                    <VBox alignment="CENTER">
-                        <children>
-                            <ImageView fx:id="profileImageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                <image>
-                                    <Image url="@images/immagineProfiloDefault.jpg" />
-                                </image>
-                            </ImageView>
-                            <Button text="Cambia Immagine Profilo" onAction="#cambiaImmagineProfilo"/>
-                        </children>
-                    </VBox>
                     <VBox alignment="CENTER" spacing="13">
                         <children>
                             <VBox alignment="CENTER" spacing="15.0">

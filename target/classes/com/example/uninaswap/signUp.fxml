@@ -101,13 +101,13 @@
                                           fx:id="erroreConfermaPassword" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>
+
                         </children>
                     </VBox>
                     <HBox alignment="CENTER" spacing="25.0">
                         <children>
                             <Button fx:id="accediButton" onAction="#onAccediClick"  text="Accedi" styleClass="button"/>
                             <Button fx:id="confermaButton" onAction="#onConfermaClick" text="Conferma" styleClass="button"/>
-
                         </children>
                     </HBox>
                 </children>
