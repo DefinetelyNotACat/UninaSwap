@@ -60,8 +60,8 @@
                     </VBox>
                     <HBox alignment="CENTER" spacing="25.0">
                         <children>
-                            <Button  fx:id="confermaButton" onAction="#onConfermaClick" text="Conferma" styleClass="button"/>
                             <Button  fx:id="registraButton" onAction="#onRegistraClick" text="Registrati" styleClass="button"/>
+                            <Button  fx:id="confermaButton" onAction="#onConfermaClick" text="Conferma" styleClass="button"/>
                         </children>
                     </HBox>
                 </children>
