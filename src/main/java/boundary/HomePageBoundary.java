@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.AnchorPane;
@@ -21,12 +22,13 @@ import java.util.ResourceBundle;
 public class HomePageBoundary {
     @FXML private AnchorPane navbarComponent;
     @FXML private NavBarComponent navBarComponentController;
-
+    @FXML private ImageView fotoProfilo;
     @FXML private void initialize() {
 
         try {
             if (navBarComponentController != null) {
                 navBarComponentController.initialize();
+                // prendere dal DB la fotoprofilo del relativo utente
             }
         }catch (Exception e){
             System.err.println("Caricamento NavBar non avvento con successo: " + e.getMessage());

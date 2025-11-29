@@ -61,9 +61,7 @@ public class SignBoundary implements Initializable {
 
     private ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
     private ControllerUninaSwap controllerUninaSwap = new ControllerUninaSwap();
-
-    // Variabile per salvare il file immagine selezionato
-    private File selectedImageFile;
+    private File immagineSelezionata;
 
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
@@ -186,8 +184,7 @@ public class SignBoundary implements Initializable {
         String password = passwordField.getText();
         String matricola = matricolaField.getText();
         String email = emailField.getText();
-        // Qui potresti voler passare anche selectedImageFile al controller se il DB lo supporta
-        controllerUninaSwap.creaUtente(username, password, matricola, email);
+        controllerUninaSwap.creaUtente(username, password, matricola, email, immagineSelezionata.getAbsolutePath());
     }
 
     private void validaPasswords() {
@@ -335,14 +332,14 @@ public class SignBoundary implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleziona Immagine Profilo");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
 
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
-            this.selectedImageFile = selectedFile;
+            this.immagineSelezionata = selectedFile;
 
             Image originalImage = new Image(selectedFile.toURI().toString());
 
@@ -367,4 +364,5 @@ public class SignBoundary implements Initializable {
             }
         }
     }
+
 }

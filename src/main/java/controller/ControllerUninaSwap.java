@@ -66,11 +66,14 @@ public class ControllerUninaSwap {
     public ArrayList<Offerta> LeMieOfferte(Utente utente){return null;}
     public ArrayList<Offerta> OfferteRicevuteAnnuncio(){return null;}
     public void creaUtente(
-            String username, String password, String matricola, String email
-    ){
+            String username, String password, String matricola, String email, String pathImmagineSelezionata
+            ){
         try{
             password = passwordEncoder.encode(password);
             Utente utente = new Utente(username, password, matricola, email);
+            if(pathImmagineSelezionata != null){
+                utente.setPathImmagineProfilo(pathImmagineSelezionata);
+            }
             utenteDAO.salvaUtente(utente);
             System.out.println("Utente Salvato");
             String dati = utente.toString();

@@ -9,7 +9,7 @@ public class Utente {
     private int id;
     private ArrayList<Offerta> Offerte = new ArrayList<Offerta>();
     private ArrayList<Oggetto> Oggetti = new ArrayList<Oggetto>();
-
+    private String pathImmagineProfilo;
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
         this.password = password;
@@ -67,6 +67,12 @@ public class Utente {
     }
     public void rimuoviOfferte(){
         this.Offerte.clear();
+    }
+    public void setPathImmagineProfilo(String pathImmagineProfilo) {
+        this.pathImmagineProfilo = pathImmagineProfilo;
+    }
+    public String getPathImmagineProfilo() {
+        return pathImmagineProfilo;
     }
     @Override
     public String toString() {
