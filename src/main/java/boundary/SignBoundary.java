@@ -1,4 +1,5 @@
 package boundary;
+
 import controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
 import javafx.beans.binding.Bindings;
@@ -6,13 +7,22 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
 public class SignBoundary implements Initializable {
+
     @FXML
     private Text erroreCredenziali;
     @FXML
@@ -41,14 +51,20 @@ public class SignBoundary implements Initializable {
     private Button registraButton;
     @FXML
     private Button accediButton;
-
+    @FXML
+    private ImageView profileImageView;
 
     private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9.]{6,64}@studenti\\.unina\\.it$";
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
     private static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
     private static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
+
     private ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
     private ControllerUninaSwap controllerUninaSwap = new ControllerUninaSwap();
+
+    // Variabile per salvare il file immagine selezionato
+    private File selectedImageFile;
+
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
@@ -61,12 +77,14 @@ public class SignBoundary implements Initializable {
             controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
         } catch (Exception e) {
             System.out.println("Errore! " + e.getMessage());
-            erroreCredenziali.setVisible(true);
-            erroreCredenziali.setManaged(true);
+            if (erroreCredenziali != null) {
+                erroreCredenziali.setVisible(true);
+                erroreCredenziali.setManaged(true);
+            }
         }
     }
 
-    private void accediUtente() throws Exception{
+    private void accediUtente() throws Exception {
         String email = emailField.getText();
         String password = passwordField.getText();
         controllerUninaSwap.accediUtente(email, password);
@@ -87,6 +105,17 @@ public class SignBoundary implements Initializable {
         this.controllerUninaSwap = new ControllerUninaSwap();
         controllerUninaSwap.cancellaDB();
         controllerUninaSwap.popolaDB();
+
+        // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
+        if (profileImageView != null) {
+            javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(
+                    profileImageView.getFitWidth() / 2,
+                    profileImageView.getFitHeight() / 2,
+                    profileImageView.getFitWidth() / 2
+            );
+            profileImageView.setClip(clip);
+        }
+
         BooleanBinding emailNonValida = Bindings.createBooleanBinding(() -> {
             String email = emailField.getText();
             return email == null || email.trim().isEmpty() || !email.matches(EMAIL_REGEX_UNINA);
@@ -138,14 +167,12 @@ public class SignBoundary implements Initializable {
                     confermaPasswordField.textProperty()
             );
 
-            passwordField.textProperty().addListener((obs, oldVal, newValue) -> {
+            passwordField.textProperty().addListener((obs, oldVal, newVal) -> {
                 validaPasswords();
-
             });
 
             confermaPasswordField.textProperty().addListener((obs, oldVal, newVal) -> {
                 validaPasswords();
-
             });
 
             confermaButton.disableProperty().bind(emailNonValida.or(passwordNonValida).or(matricolaNonValida).
@@ -154,13 +181,13 @@ public class SignBoundary implements Initializable {
         }
     }
 
-    private void registraUtente(){
+    private void registraUtente() {
         String username = usernameField.getText();
         String password = passwordField.getText();
         String matricola = matricolaField.getText();
         String email = emailField.getText();
+        // Qui potresti voler passare anche selectedImageFile al controller se il DB lo supporta
         controllerUninaSwap.creaUtente(username, password, matricola, email);
-
     }
 
     private void validaPasswords() {
@@ -170,6 +197,7 @@ public class SignBoundary implements Initializable {
         boolean passwordVuota = password == null || password.trim().isEmpty();
         boolean passwordSonoUguali = password != null && password.equals(confermaPassword);
         boolean confermaPasswordEVuota = confermaPassword == null || confermaPassword.trim().isEmpty();
+
         //===================LOGICA PASSWORD===================================//
 
         if (!confermaPasswordEVuota && !passwordSonoUguali) {
@@ -178,36 +206,33 @@ public class SignBoundary implements Initializable {
                 erroreConfermaPassword.setVisible(true);
                 erroreConfermaPassword.setManaged(true);
             }
-        }
-        else if(!passwordSonoUguali && !passwordComplessa) {
-            if(!passwordField.getStyleClass().contains("error")) passwordField.getStyleClass().add("error");
-            if(!confermaPasswordField.getStyleClass().contains("error")) confermaPasswordField.getStyleClass().add("error");
+        } else if (!passwordSonoUguali && !passwordComplessa) {
+            if (!passwordField.getStyleClass().contains("error")) passwordField.getStyleClass().add("error");
+            if (!confermaPasswordField.getStyleClass().contains("error"))
+                confermaPasswordField.getStyleClass().add("error");
 
             errorePassword.setVisible(true);
             errorePassword.setManaged(true);
             erroreConfermaPassword.setVisible(true);
             erroreConfermaPassword.setManaged(true);
-        }
-        else if(passwordSonoUguali && !passwordComplessa && !passwordVuota) {
-            if(!passwordField.getStyleClass().contains("error")) {
+        } else if (passwordSonoUguali && !passwordComplessa && !passwordVuota) {
+            if (!passwordField.getStyleClass().contains("error")) {
                 passwordField.getStyleClass().add("error");
             }
-            if(!confermaPasswordField.getStyleClass().contains("error")) {
+            if (!confermaPasswordField.getStyleClass().contains("error")) {
                 confermaPasswordField.getStyleClass().add("error");
             }
             errorePassword.setVisible(true);
             errorePassword.setManaged(true);
             erroreConfermaPassword.setVisible(true);
             erroreConfermaPassword.setManaged(true);
-        }
-        else if(passwordVuota){
+        } else if (passwordVuota) {
             passwordField.getStyleClass().remove("error");
             passwordField.getStyleClass().remove("right");
             errorePassword.setVisible(false);
             errorePassword.setManaged(false);
             confermaPasswordField.getStyleClass().remove("right");
-        }
-        else {
+        } else {
             passwordField.getStyleClass().remove("error");
             passwordField.getStyleClass().add("right");
             errorePassword.setVisible(false);
@@ -233,12 +258,14 @@ public class SignBoundary implements Initializable {
                 confermaPasswordField.getStyleClass().remove("right");
             }
         }
-    }    private void gestisciErrore(String newValue, TextField field, Text errore) {
-        if(erroreCredenziali != null) {
+    }
+
+    private void gestisciErrore(String newValue, TextField field, Text errore) {
+        if (erroreCredenziali != null) {
             erroreCredenziali.setVisible(false);
             erroreCredenziali.setManaged(false);
         }
-        if(field == usernameField || field == matricolaField) {
+        if (field == usernameField || field == matricolaField) {
             boolean eVuoto = newValue == null || newValue.trim().isEmpty();
             boolean eValido = newValue != null && newValue.length() >= 3 && newValue.length() <= 20 && newValue.matches(FIELDS_REGEX)
                     && (field != matricolaField || newValue.matches(ALMENO_UN_NUMERO_REGEX));
@@ -248,21 +275,18 @@ public class SignBoundary implements Initializable {
                     errore.setVisible(true);
                     errore.setManaged(true);
                 }
-            }
-            else if(eVuoto){
+            } else if (eVuoto) {
                 field.getStyleClass().remove("error");
                 field.getStyleClass().remove("right");
                 errore.setVisible(false);
                 errore.setManaged(false);
-            }
-            else {
+            } else {
                 field.getStyleClass().remove("error");
                 field.getStyleClass().add("right");
                 errore.setVisible(false);
                 errore.setManaged(false);
             }
-        }
-        else if(field == emailField){
+        } else if (field == emailField) {
             boolean vuoto = newValue == null || newValue.trim().isEmpty();
             boolean valido = newValue != null && newValue.matches(EMAIL_REGEX_UNINA);
             if (!vuoto && !valido) {
@@ -271,22 +295,19 @@ public class SignBoundary implements Initializable {
                     errore.setVisible(true);
                     errore.setManaged(true);
                 }
-            }
-            else if(vuoto){
+            } else if (vuoto) {
                 field.getStyleClass().remove("error");
                 field.getStyleClass().remove("right");
                 errore.setVisible(false);
                 errore.setManaged(false);
-            }
-            else {
+            } else {
                 field.getStyleClass().remove("error");
                 field.getStyleClass().add("right");
                 errore.setVisible(false);
                 errore.setManaged(false);
             }
 
-        }
-        else if(field == passwordField){
+        } else if (field == passwordField) {
             boolean eVuoto = newValue == null || newValue.trim().isEmpty();
             boolean eValido = newValue != null && newValue.matches(PASSWORD_REGEX);
 
@@ -296,18 +317,53 @@ public class SignBoundary implements Initializable {
                     errorePassword.setVisible(true);
                     errorePassword.setManaged(true);
                 }
-            }
-            else if(eVuoto) {
+            } else if (eVuoto) {
                 passwordField.getStyleClass().remove("error");
                 passwordField.getStyleClass().remove("right");
                 errorePassword.setVisible(false);
                 errorePassword.setManaged(false);
-            }
-            else {
+            } else {
                 passwordField.getStyleClass().remove("error");
                 passwordField.getStyleClass().add("right");
                 errorePassword.setVisible(false);
                 errorePassword.setManaged(false);
+            }
+        }
+    }
+
+    public void cambiaImmagineProfilo(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleziona Immagine Profilo");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
+
+        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            this.selectedImageFile = selectedFile;
+
+            Image originalImage = new Image(selectedFile.toURI().toString());
+
+            if (profileImageView != null) {
+                double width = originalImage.getWidth();
+                double height = originalImage.getHeight();
+                double minDimension = Math.min(width, height);
+                double x, y;
+                if (width > height) {
+                    x = (width - height) / 2;
+                    y = 0;
+                } else {
+                    x = 0;
+                    y = 0;
+                }
+                Rectangle2D cropArea = new Rectangle2D(x, y, minDimension, minDimension);
+                profileImageView.setViewport(cropArea);
+                profileImageView.setImage(originalImage);
+                profileImageView.setSmooth(true);
+                profileImageView.setCache(true);
+                profileImageView.setPreserveRatio(true);
             }
         }
     }
