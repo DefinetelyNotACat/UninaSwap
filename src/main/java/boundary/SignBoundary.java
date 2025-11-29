@@ -1,4 +1,5 @@
 package boundary;
+
 import controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
 import javafx.beans.binding.Bindings;
@@ -6,13 +7,23 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.geometry.Rectangle2D;
+
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
 public class SignBoundary implements Initializable {
+
     @FXML
     private Text erroreCredenziali;
     @FXML
@@ -42,12 +53,25 @@ public class SignBoundary implements Initializable {
     @FXML
     private Button accediButton;
 
+<<<<<<< Updated upstream
     private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9]{6,64}@studenti\\.unina\\.it$";
+=======
+    // AGGIUNTO: Devi dichiarare l'ImageView qui affinché il controller lo veda
+    @FXML
+    private ImageView profileImageView;
+
+    private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9.]{6,64}@studenti\\.unina\\.it$";
+>>>>>>> Stashed changes
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
     private static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
     private static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
+
     private ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
     private ControllerUninaSwap controllerUninaSwap = new ControllerUninaSwap();
+
+    // Variabile per salvare il percorso dell'immagine scelta (opzionale, se vuoi salvarlo nel DB)
+    private File selectedImageFile;
+
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
@@ -86,6 +110,18 @@ public class SignBoundary implements Initializable {
         this.controllerUninaSwap = new ControllerUninaSwap();
         controllerUninaSwap.cancellaDB();
         controllerUninaSwap.popolaDB();
+
+        // Check null pointer per evitare errori se profileImageView non c'è nel FXML (es. in SignIn)
+        if (profileImageView != null) {
+            // Opzionale: Rendi l'immagine rotonda all'avvio
+            javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(
+                    profileImageView.getFitWidth() / 2,
+                    profileImageView.getFitHeight() / 2,
+                    profileImageView.getFitWidth() / 2
+            );
+            profileImageView.setClip(clip);
+        }
+
         BooleanBinding emailNonValida = Bindings.createBooleanBinding(() -> {
             String email = emailField.getText();
             return email == null || email.trim().isEmpty() || !email.matches(EMAIL_REGEX_UNINA);
@@ -156,8 +192,10 @@ public class SignBoundary implements Initializable {
         String password = passwordField.getText();
         String matricola = matricolaField.getText();
         String email = emailField.getText();
-        controllerUninaSwap.creaUtente(username, password, matricola, email);
 
+        // NOTA: Se vuoi passare l'immagine al database, dovrai modificare creaUtente
+        // per accettare anche 'selectedImageFile' o il path dell'immagine.
+        controllerUninaSwap.creaUtente(username, password, matricola, email);
     }
 
     private void validaPasswords() {
@@ -167,7 +205,6 @@ public class SignBoundary implements Initializable {
         boolean passwordVuota = password == null || password.trim().isEmpty();
         boolean passwordSonoUguali = password != null && password.equals(confermaPassword);
         boolean confermaPasswordEVuota = confermaPassword == null || confermaPassword.trim().isEmpty();
-        //===================LOGICA PASSWORD===================================//
 
         if (!confermaPasswordEVuota && !passwordSonoUguali) {
             if (!passwordField.getStyleClass().contains("error")) {
@@ -230,9 +267,19 @@ public class SignBoundary implements Initializable {
                 confermaPasswordField.getStyleClass().remove("right");
             }
         }
+<<<<<<< Updated upstream
     }    private void gestisciErrore(String newValue, TextField field, Text errore) {
         erroreCredenziali.setVisible(false);
         erroreCredenziali.setManaged(false);
+=======
+    }
+
+    private void gestisciErrore(String newValue, TextField field, Text errore) {
+        if(erroreCredenziali != null) {
+            erroreCredenziali.setVisible(false);
+            erroreCredenziali.setManaged(false);
+        }
+>>>>>>> Stashed changes
         if(field == usernameField || field == matricolaField) {
             boolean eVuoto = newValue == null || newValue.trim().isEmpty();
             boolean eValido = newValue != null && newValue.length() >= 3 && newValue.length() <= 20 && newValue.matches(FIELDS_REGEX)
@@ -305,4 +352,39 @@ public class SignBoundary implements Initializable {
             }
         }
     }
+
+    public void cambiaImmagineProfilo(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleziona Immagine Profilo");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
+
+        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            this.selectedImageFile = selectedFile;
+            Image originalImage = new Image(selectedFile.toURI().toString());
+
+            if (profileImageView != null) {
+                double width = originalImage.getWidth();
+                double height = originalImage.getHeight();
+                double minDimension = Math.min(width, height);
+                double x, y;
+
+                if (width > height) {
+                    x = (width - height) / 2;
+                    y = 0;
+                } else {
+                    x = 0;
+                    y = 0;
+                }
+                Rectangle2D cropArea = new Rectangle2D(x, y, minDimension, minDimension);
+                profileImageView.setViewport(cropArea);
+                profileImageView.setImage(originalImage);
+                profileImageView.setSmooth(true);
+                profileImageView.setCache(true);
+            }
+        }    }
 }

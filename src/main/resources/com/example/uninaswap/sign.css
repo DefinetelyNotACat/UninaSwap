@@ -61,3 +61,7 @@
     -fx-font-size: 30px;
     -fx-font-weight: bold;
 }
+.profile-picture{
+    -fx-fit-to-width: 150px;
+    -fx-fit-to-height: 150px;
+}

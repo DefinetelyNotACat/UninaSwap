@@ -39,6 +39,16 @@
 
             <VBox alignment="CENTER" spacing="30.0">
                 <children>
+                    <VBox alignment="CENTER">
+                        <children>
+                            <ImageView fx:id="profileImageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@images/immagineProfiloDefault.jpg" />
+                                </image>
+                            </ImageView>
+                            <Button text="Cambia Immagine Profilo" onAction="#cambiaImmagineProfilo"/>
+                        </children>
+                    </VBox>
                     <VBox alignment="CENTER" spacing="13">
                         <children>
                             <VBox alignment="CENTER" spacing="5">
@@ -80,12 +90,13 @@
                                           fx:id="erroreConfermaPassword" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>
+
                         </children>
                     </VBox>
                     <HBox alignment="CENTER" spacing="25.0">
                         <children>
-                            <Button fx:id="confermaButton" onAction="#onConfermaClick" text="Conferma" styleClass="button"/>
                             <Button fx:id="accediButton" onAction="#onAccediClick"  text="Accedi" styleClass="button"/>
+                            <Button fx:id="confermaButton" onAction="#onConfermaClick" text="Conferma" styleClass="button"/>
                         </children>
                     </HBox>
                 </children>
