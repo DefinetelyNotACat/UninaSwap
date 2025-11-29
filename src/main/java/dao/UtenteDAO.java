@@ -77,10 +77,10 @@ public class UtenteDAO implements GestoreUtente {
 
     public Utente ottieniUtente(String campoRicerca) {
         Utente utente = null;
-        String sql = "SELECT * FROM utente WHERE email = ?";
+        String sql = "SELECT * FROM utente WHERE matricola = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql);) {
-            query.setString(1, campoRicerca);
+            query.setString(1, sql);
             int sceltaRicerca = 0;
             if (campoRicerca.contains("@") == true) {
                 sceltaRicerca = 1;

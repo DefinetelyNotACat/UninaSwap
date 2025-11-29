@@ -39,18 +39,29 @@
 
             <VBox alignment="CENTER" spacing="30.0">
                 <children>
-                    <VBox alignment="CENTER">
-                        <children>
-                            <ImageView fx:id="profileImageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                <image>
-                                    <Image url="@images/immagineProfiloDefault.jpg" />
-                                </image>
-                            </ImageView>
-                            <Button text="Cambia Immagine Profilo" onAction="#cambiaImmagineProfilo"/>
-                        </children>
-                    </VBox>
                     <VBox alignment="CENTER" spacing="13">
                         <children>
+                            <VBox alignment="CENTER" spacing="15.0">
+                                <children>
+                                    <ImageView fx:id="profileImageView"
+                                               fitHeight="150.0"
+                                               fitWidth="150.0"
+                                               pickOnBounds="true"
+                                               preserveRatio="true">
+                                        <image>
+                                            <Image url="@images/immagineProfiloDefault.jpg"/>
+                                        </image>
+                                        <clip>
+                                            <Circle centerX="75.0" centerY="75.0" radius="75.0" />
+                                        </clip>
+                                    </ImageView>
+
+                                    <Button text="CAMBIA IMMAGINE"
+                                            onAction="#cambiaImmagineProfilo"
+                                            styleClass="button"
+                                            style="-fx-background-color: #007bff; -fx-text-fill: white;"/>
+                                </children>
+                            </VBox>
                             <VBox alignment="CENTER" spacing="5">
                                 <children>
                                     <Text text="Matricola" styleClass="label"/>
@@ -63,7 +74,7 @@
                                 <children>
                                     <Text text="Username" styleClass="label"/>
                                     <TextField fx:id="usernameField" promptText="Username1234" styleClass="form-field"/>
-                                    <Text text="Inserire un username valido (minimo 4 caratteri, massimo 20 e niente caratteri speciali)" fx:id="erroreUsername" styleClass="error-text" visible="false" managed="false"/>
+                                    <Text text="Inserire un username valido (minimo 3 caratteri, massimo 20 e niente caratteri speciali)" fx:id="erroreUsername" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>
                             <VBox alignment="CENTER" spacing="5">
@@ -90,13 +101,13 @@
                                           fx:id="erroreConfermaPassword" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>
-
                         </children>
                     </VBox>
                     <HBox alignment="CENTER" spacing="25.0">
                         <children>
                             <Button fx:id="accediButton" onAction="#onAccediClick"  text="Accedi" styleClass="button"/>
                             <Button fx:id="confermaButton" onAction="#onConfermaClick" text="Conferma" styleClass="button"/>
+
                         </children>
                     </HBox>
                 </children>

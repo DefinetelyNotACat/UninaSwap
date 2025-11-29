@@ -1,4 +1,5 @@
 package entity;
+import java.util.ArrayList;
 
 public class Utente {
     private String username;
@@ -6,6 +7,8 @@ public class Utente {
     private String matricola;
     private String email;
     private int id;
+    private ArrayList<Offerta> Offerte = new ArrayList<Offerta>();
+    private ArrayList<Oggetto> Oggetti = new ArrayList<Oggetto>();
 
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
@@ -56,6 +59,15 @@ public class Utente {
         this.email = email;
     }
 
+    public void setOfferta(Offerta offerta) {
+        this.Offerte.add(offerta);
+    }
+    public ArrayList<Offerta> getOfferte() {
+        return Offerte;
+    }
+    public void rimuoviOfferte(){
+        this.Offerte.clear();
+    }
     @Override
     public String toString() {
         return "Username : " + this.username + " Email : " + this.email + " Matricola : " + this.matricola + " Password : " + this.password;

@@ -1,10 +1,11 @@
 package entity;
 
+import java.security.spec.ECField;
 import java.time.LocalTime;
 
 public abstract class Offerta {
 
-    public enum STATO_OFFERTA {
+    protected enum STATO_OFFERTA {
         RIFIUTATA,
         IN_ATTESA,
         ACCETTATA
@@ -17,13 +18,14 @@ public abstract class Offerta {
     protected Oggetto oggetto;
     protected Annuncio annuncio;
     protected int id;
-    public Offerta(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio,
-                   LocalTime orarioFine, Oggetto oggetto) {
+    protected Utente utente;
+    public Offerta(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente) {
         this.messaggio = messaggio;
         this.stato = stato;
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
         this.oggetto = oggetto;
+        this.utente = utente;
     }
 
     public String getMessaggio() {
@@ -75,8 +77,7 @@ public abstract class Offerta {
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
     }
-
-    public void immettiOfferta(Annuncio annuncio) {
+    protected void immettiOfferta(Annuncio annuncio) throws Exception {
         this.annuncio = annuncio;
         annuncio.ottieniOfferta(this);
     }
