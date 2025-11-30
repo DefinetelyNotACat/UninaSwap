@@ -62,7 +62,6 @@ public class NavBarComponent {
             if (!caricato) {
                 Image defaultImg = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
                 fotoProfilo.setImage(defaultImg);
-                // Anche per quella di default, centriamola per sicurezza
                 centraImmagine(fotoProfilo, defaultImg);
             }
             applicaCerchio();
@@ -96,47 +95,35 @@ public class NavBarComponent {
 
     private void setupMenuProfilo() {
         menuProfilo = new ContextMenu();
-        MenuItem leMieOfferte = new MenuItem("Mostra le mie offerte");
-        MenuItem iMieiAnnunci = new MenuItem("Mostra i miei annunci");
-        MenuItem ilMioInventario = new MenuItem("Mostra il mio inventario");
-        MenuItem logout = new MenuItem("Logout");
+        menuProfilo.getStyleClass().add("profilo-context-menu");
 
-        // Esempio Logout
+        // Usa il metodo helper (passa null se non serve una classe speciale)
+        MenuItem leMieOfferte = creaVoceMenu("Mostra le mie offerte", null);
+        MenuItem iMieiAnnunci = creaVoceMenu("Mostra i miei annunci", null);
+        MenuItem ilMioInventario = creaVoceMenu("Mostra il mio inventario", null);
+
+        // Per il logout passiamo la classe specifica
+        MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
+
         logout.setOnAction(e -> {
-            // TODO! logica logout
+            System.out.println("Logout");
+            // Logica logout...
         });
 
         menuProfilo.getItems().addAll(leMieOfferte, iMieiAnnunci, ilMioInventario, new SeparatorMenuItem(), logout);
 
-        hideDelay = new PauseTransition(Duration.millis(200));
-        hideDelay.setOnFinished(e -> {
-            if (menuProfilo.isShowing()) menuProfilo.hide();
-        });
-
-        fotoProfilo.setOnMouseEntered(event -> {
-            if (hideDelay.getStatus() == javafx.animation.Animation.Status.RUNNING) {
-                hideDelay.stop();
-            }
-            showmenuProfilo(event);
-        });
-
-        fotoProfilo.setOnMouseExited(event -> hideDelay.playFromStart());
-
-        menuProfilo.setOnShown(e -> {
-            Scene menuScene = menuProfilo.getScene();
-            if (menuScene != null) {
-                Node root = menuScene.getRoot();
-                root.setOnMouseEntered(ev -> {
-                    if (hideDelay.getStatus() == javafx.animation.Animation.Status.RUNNING) {
-                        hideDelay.stop();
-                    }
-                });
-                root.setOnMouseExited(ev -> hideDelay.playFromStart());
+        // Logica Click sulla foto
+        fotoProfilo.setOnMouseClicked(event -> {
+            if (menuProfilo.isShowing()) {
+                menuProfilo.hide();
+            } else {
+                showmenuProfilo(event);
             }
         });
-    }
 
-    private void showmenuProfilo(MouseEvent event) {
+        // Cursore sulla foto
+        fotoProfilo.setCursor(javafx.scene.Cursor.HAND);
+    }    private void showmenuProfilo(MouseEvent event) {
         if (menuProfilo.isShowing()) return;
 
         Point2D point = fotoProfilo.localToScreen(0, fotoProfilo.getBoundsInLocal().getHeight());
@@ -145,5 +132,27 @@ public class NavBarComponent {
         } else {
             menuProfilo.show(fotoProfilo, event.getScreenX(), event.getScreenY());
         }
+    }
+    // Metodo helper per creare voci di menu con il cursore HAND
+    private MenuItem creaVoceMenu(String testo, String customClass) {
+        MenuItem item = new MenuItem();
+
+        // Creiamo un'etichetta grafica invece del testo semplice
+        Label label = new Label(testo);
+
+        // FORZIAMO IL CURSORE QUI (Questo vince su tutto)
+        label.setCursor(javafx.scene.Cursor.HAND);
+
+        // Impostiamo la label come grafica del menu item
+        item.setGraphic(label);
+
+        // Aggiungiamo eventuali classi CSS specifiche (es. per il logout)
+        if (customClass != null) {
+            item.getStyleClass().add(customClass);
+            // Aggiungiamo la classe anche alla label per essere sicuri che prenda i colori
+            label.getStyleClass().add(customClass);
+        }
+
+        return item;
     }
 }
