@@ -15,7 +15,6 @@ public class ControllerUninaSwap {
     private Utente utente;
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     private ControllerUninaSwap(){
-
     }
     public static ControllerUninaSwap getInstance() {
         if (istanziato == null) {

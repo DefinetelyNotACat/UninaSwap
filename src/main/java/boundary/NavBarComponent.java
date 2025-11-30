@@ -4,7 +4,7 @@ import controller.ControllerUninaSwap;
 import entity.Utente;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
-import javafx.geometry.Rectangle2D; // Importante per il ritaglio
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -23,18 +23,14 @@ public class NavBarComponent {
     @FXML private ImageView fotoProfilo;
     @FXML private Button bottonePubblicaAnnuncio;
     @FXML private ImageView logo;
-
     private ContextMenu menuProfilo;
     private PauseTransition hideDelay;
-
     private final ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
 
     @FXML
     public void initialize() {
         filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
         filtroBarraDiRicerca.setValue("Articoli");
-
-        // Caricamento Logo
         try {
             Image logoImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png"));
             logo.setImage(logoImage);
@@ -42,7 +38,6 @@ public class NavBarComponent {
             System.err.println("Logo non trovato: " + e.getMessage());
         }
 
-        // Caricamento Foto Profilo
         aggiornaFotoProfilo();
 
         setupMenuProfilo();
@@ -57,11 +52,7 @@ public class NavBarComponent {
                 File fileImmagine = new File(utente.getPathImmagineProfilo());
                 if (fileImmagine.exists()) {
                     Image image = new Image(fileImmagine.toURI().toString());
-
-                    // 1. Imposta l'immagine
                     fotoProfilo.setImage(image);
-
-                    // 2. MAGIA: Ritaglia il quadrato centrale (come nella SignBoundary)
                     centraImmagine(fotoProfilo, image);
 
                     caricato = true;
@@ -74,41 +65,26 @@ public class NavBarComponent {
                 // Anche per quella di default, centriamola per sicurezza
                 centraImmagine(fotoProfilo, defaultImg);
             }
-
-            // 3. Applica il cerchio finale
             applicaCerchio();
 
         } catch (Exception e) {
             System.err.println("Errore caricamento foto profilo navbar: " + e.getMessage());
         }
     }
-
-    // === METODO CHIAVE PER NON DEFORMARE L'IMMAGINE ===
     private void centraImmagine(ImageView imageView, Image img) {
         if (img == null) return;
-
         double width = img.getWidth();
         double height = img.getHeight();
-
-        // Trova il lato più piccolo
         double minDimension = Math.min(width, height);
-
-        // Calcola le coordinate per prendere esattamente il centro dell'immagine
         double x = (width - minDimension) / 2;
         double y = (height - minDimension) / 2;
-
-        // Imposta il Viewport: stiamo dicendo "Mostra solo questo quadrato centrale"
         Rectangle2D cropArea = new Rectangle2D(x, y, minDimension, minDimension);
         imageView.setViewport(cropArea);
-
-        // Disabilitiamo preserveRatio perché il viewport è già quadrato perfetto
-        // e vogliamo che riempia tutto lo spazio dell'ImageView
         imageView.setPreserveRatio(false);
         imageView.setSmooth(true);
     }
 
     private void applicaCerchio() {
-        // Crea una maschera circolare basata sulla grandezza della ImageView nella Navbar
         double raggio = Math.min(fotoProfilo.getFitWidth(), fotoProfilo.getFitHeight()) / 2;
         Circle clip = new Circle(
                 fotoProfilo.getFitWidth() / 2,
@@ -127,7 +103,7 @@ public class NavBarComponent {
 
         // Esempio Logout
         logout.setOnAction(e -> {
-            // logica logout
+            // TODO! logica logout
         });
 
         menuProfilo.getItems().addAll(leMieOfferte, iMieiAnnunci, ilMioInventario, new SeparatorMenuItem(), logout);
