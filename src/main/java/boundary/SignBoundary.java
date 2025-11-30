@@ -60,7 +60,7 @@ public class SignBoundary implements Initializable {
     private static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
 
     private ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
-    private ControllerUninaSwap controllerUninaSwap = new ControllerUninaSwap();
+    private ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
     private File immagineSelezionata;
 
     public void onConfermaClick(ActionEvent actionEvent) {
@@ -100,7 +100,7 @@ public class SignBoundary implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        this.controllerUninaSwap = new ControllerUninaSwap();
+        this.controllerUninaSwap = ControllerUninaSwap.getInstance();
         controllerUninaSwap.cancellaDB();
         controllerUninaSwap.popolaDB();
 
@@ -180,11 +180,19 @@ public class SignBoundary implements Initializable {
     }
 
     private void registraUtente() {
+        String pathImmagine = null;
         String username = usernameField.getText();
         String password = passwordField.getText();
         String matricola = matricolaField.getText();
         String email = emailField.getText();
-        controllerUninaSwap.creaUtente(username, password, matricola, email, immagineSelezionata.getAbsolutePath());
+        if (this.immagineSelezionata != null) {
+            pathImmagine = this.immagineSelezionata.getAbsolutePath();
+        }
+        else{
+            pathImmagine = Costanti.pathFotoDefault;
+        }
+        System.out.println("immagine profilo a path: " + pathImmagine);
+        controllerUninaSwap.creaUtente(username, password, matricola, email, pathImmagine);
     }
 
     private void validaPasswords() {
@@ -340,7 +348,6 @@ public class SignBoundary implements Initializable {
 
         if (selectedFile != null) {
             this.immagineSelezionata = selectedFile;
-
             Image originalImage = new Image(selectedFile.toURI().toString());
 
             if (profileImageView != null) {

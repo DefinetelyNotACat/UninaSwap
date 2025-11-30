@@ -1,39 +1,30 @@
 package boundary;
 
-import javafx.event.ActionEvent;
+import controller.ControllerUninaSwap;
+import entity.Utente;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-
+import javafx.scene.shape.Circle; // Importante per il ritaglio rotondo
+import java.io.File;
 
 public class HomePageBoundary {
+
+    // Recuperiamo l'istanza Singleton
+    ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
+
     @FXML private AnchorPane navbarComponent;
     @FXML private NavBarComponent navBarComponentController;
     @FXML private ImageView fotoProfilo;
-    @FXML private void initialize() {
 
-        try {
+    @FXML
+    private void initialize() {
+
+            // Inizializza la navbar se necessario
             if (navBarComponentController != null) {
                 navBarComponentController.initialize();
-                // prendere dal DB la fotoprofilo del relativo utente
             }
-        }catch (Exception e){
-            System.err.println("Caricamento NavBar non avvento con successo: " + e.getMessage());
+
         }
-
     }
-
-}

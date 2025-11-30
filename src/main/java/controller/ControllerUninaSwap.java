@@ -8,16 +8,32 @@ import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import dao.*;
 public class ControllerUninaSwap {
-    UtenteDAO utenteDAO = new UtenteDAO();
-    OffertaDAO offertaDAO = new OffertaDAO();
-    AnnuncioDAO annuncioDAO = new AnnuncioDAO();
-
+    private static ControllerUninaSwap istanziato = null;
+    private UtenteDAO utenteDAO = new UtenteDAO();
+    private OffertaDAO offertaDAO = new OffertaDAO();
+    private AnnuncioDAO annuncioDAO = new AnnuncioDAO();
+    private Utente utente;
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+    private ControllerUninaSwap(){
+
+    }
+    public static ControllerUninaSwap getInstance() {
+        if (istanziato == null) {
+            istanziato = new ControllerUninaSwap();
+        }
+        return istanziato;
+    }
     public boolean EffettuaSignIn(String Username, String Email , String Matricola,String Password) {
         return true;
     }
     public boolean VerificaLogIn(String Username, String Email , String Matricola,String Password) {
         return true;
+    }
+    public Utente getUtente() throws Exception{
+        if(this.utente != null) {
+            return this.utente;
+        }
+        throw new Exception("Utente non registrato!");
     }
     public boolean ModificaUtente(Utente Utente) {
         return true;
@@ -63,6 +79,9 @@ public class ControllerUninaSwap {
     public boolean EliminaOfferta(Offerta offerta){
         return true;
     }
+    public void setUtente(Utente utente) {
+        this.utente = utente;
+    }
     public ArrayList<Offerta> LeMieOfferte(Utente utente){return null;}
     public ArrayList<Offerta> OfferteRicevuteAnnuncio(){return null;}
     public void creaUtente(
@@ -70,7 +89,7 @@ public class ControllerUninaSwap {
             ){
         try{
             password = passwordEncoder.encode(password);
-            Utente utente = new Utente(username, password, matricola, email);
+            this.utente = new Utente(username, password, matricola, email);
             if(pathImmagineSelezionata != null){
                 utente.setPathImmagineProfilo(pathImmagineSelezionata);
             }
@@ -78,6 +97,7 @@ public class ControllerUninaSwap {
             System.out.println("Utente Salvato");
             String dati = utente.toString();
             System.out.println(dati);
+            setUtente(utente);
         }
         catch(Exception e){
             System.out.println("Errore! Utente non salvato " + e.getMessage());
@@ -92,6 +112,8 @@ public class ControllerUninaSwap {
         String passwordHashataNelDB = utenteTrovato.getPassword();
         if (checkPassword(password, passwordHashataNelDB)) {
             System.out.println("Utente accesso con successo");
+            utente = utenteDAO.ottieniUtente(email);
+            setUtente(utente);
         } else {
             throw new Exception("Credenziali Errate! Password non combaciano");
         }
@@ -104,6 +126,7 @@ public class ControllerUninaSwap {
         catch(Exception e){
             System.out.println("Errore! Utente non salvato " + e.getMessage());
         }
+
     }
     public String hashPassword(String password){
         return passwordEncoder.encode(password);
