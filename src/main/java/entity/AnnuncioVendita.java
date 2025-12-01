@@ -31,8 +31,5 @@ public class AnnuncioVendita extends Annuncio{
         else{
             throw new Exception("Offerta di tipo sbagliato");
         }
-
     }
-
-
 }

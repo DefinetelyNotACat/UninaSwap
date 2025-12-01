@@ -5,14 +5,11 @@ import entity.Utente;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
-import javafx.util.Duration;
 import javafx.geometry.Point2D;
 import java.io.File;
 
@@ -105,12 +102,11 @@ public class NavBarComponent {
 
         logout.setOnAction(e -> {
             System.out.println("Logout");
-            // Logica logout...
+            // TODO! Logica logout...
         });
 
         menuProfilo.getItems().addAll(leMieOfferte, iMieiAnnunci, ilMioInventario, new SeparatorMenuItem(), logout);
 
-        // Logica Click sulla foto
         fotoProfilo.setOnMouseClicked(event -> {
             if (menuProfilo.isShowing()) {
                 menuProfilo.hide();
@@ -119,8 +115,7 @@ public class NavBarComponent {
             }
         });
 
-        // Cursore sulla foto
-        fotoProfilo.setCursor(javafx.scene.Cursor.HAND);
+        // fotoProfilo.setCursor(javafx.scene.Cursor.HAND);
     }    private void showmenuProfilo(MouseEvent event) {
         if (menuProfilo.isShowing()) return;
 

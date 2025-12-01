@@ -26,6 +26,7 @@ public abstract class Offerta {
         this.orarioFine = orarioFine;
         this.oggetto = oggetto;
         this.utente = utente;
+        this.utente.setOfferta(this);
     }
 
     public String getMessaggio() {

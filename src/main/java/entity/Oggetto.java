@@ -1,6 +1,4 @@
 package entity;
-
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class Oggetto {
@@ -41,6 +39,7 @@ public class Oggetto {
         this.immagini = immagini;
         this.proprietario = proprietario;
         Categorie.add(categoria);
+        proprietario.aggiungiOggetto(this);
         if (immagini.isEmpty()) {
             System.err.println("Attenzione: non e' stata aggiunta alcuna immagine");
         }

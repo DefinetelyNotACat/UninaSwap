@@ -16,9 +16,6 @@ public class Utente {
         this.matricola = matricola;
         this.email = email;
     }
-
-    // --- Getters e Setters ---
-
     public int getId() {
         return id;
     }
@@ -77,5 +74,14 @@ public class Utente {
     @Override
     public String toString() {
         return "Username : " + this.username + " Email : " + this.email + " Matricola : " + this.matricola + " Password : " + this.password;
+    }
+    public  ArrayList<Oggetto> getOggetti() {
+        return Oggetti;
+    }
+    public void setOggetti(ArrayList<Oggetto> oggetti) {
+        Oggetti = oggetti;
+    }
+    public void aggiungiOggetto(Oggetto oggetto){
+        Oggetti.add(oggetto);
     }
 }
