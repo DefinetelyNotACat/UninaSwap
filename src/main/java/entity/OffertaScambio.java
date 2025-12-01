@@ -6,10 +6,11 @@ import java.util.ArrayList;
 public class OffertaScambio extends Offerta{
     private ArrayList<Oggetto> Oggetti = new ArrayList<Oggetto>();
     private AnnuncioScambio annuncioScambio;
-    public OffertaScambio(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente, AnnuncioScambio annuncioScambio) {
+    public OffertaScambio(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente, AnnuncioScambio annuncioScambio) throws Exception {
         super(messaggio, stato, orarioInizio, orarioFine, oggetto, utente);
         this.Oggetti.add(oggetto);
         this.annuncioScambio = annuncioScambio;
+        this.annuncioScambio.ottieniOfferta(this);
     }
     public ArrayList<Oggetto> getOggetti() {
         return Oggetti;

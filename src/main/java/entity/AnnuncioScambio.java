@@ -19,7 +19,7 @@ public class AnnuncioScambio extends Annuncio{
 
     @Override
     public void ottieniOfferta(Offerta offerta) throws Exception {
-        if(offerta instanceof OffertaVendita) {
+        if(offerta instanceof OffertaScambio) {
             super.offerte.add((OffertaScambio) offerta);
         }
         else{
