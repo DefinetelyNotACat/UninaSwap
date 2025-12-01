@@ -26,9 +26,7 @@ public class Oggetto {
     }
 
     private int id;
-
     private String nome;
-
     private ArrayList<Categoria> categorie;
     private ArrayList<String> immagini;
     private Utente proprietario;
