@@ -19,6 +19,7 @@ public abstract class Annuncio {
 
     public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
         this.sede = sede;
+        this.sede.aggiungiAnnuncio(this);
         this.descrizione = descrizione;
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;

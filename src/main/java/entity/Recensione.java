@@ -8,9 +8,19 @@ public class Recensione {
 
     private String commento;
 
+    private Utente autore;
+
+    private Utente destinatario;
+
+    public Utente getAutore() {
+        return autore; }
+
+    public Utente getDestinatario() {
+        return destinatario; }
+
     public Recensione(int Voto) {
         this.Voto = Voto;
-    }//nn so se il commento è facoltativo
+    }
 
     public int getId() {
         return id;
@@ -34,6 +44,12 @@ public class Recensione {
 
     public String getCommento() {
         return commento;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Voto: %d | Commento: %s (da %s)",
+                Voto, commento, autore.getUsername());
     }
 
 }

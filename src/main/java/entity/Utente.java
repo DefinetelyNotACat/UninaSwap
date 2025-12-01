@@ -10,6 +10,9 @@ public class Utente {
     private ArrayList<Offerta> Offerte = new ArrayList<Offerta>();
     private ArrayList<Oggetto> Oggetti = new ArrayList<Oggetto>();
     private String pathImmagineProfilo;
+    private ArrayList<Recensione> recensioniScritte;
+    private ArrayList<Recensione> recensioniProfilo;
+
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
         this.password = password;
@@ -18,6 +21,16 @@ public class Utente {
     }
     public int getId() {
         return id;
+    }
+
+    //fai metodo aggiungi recensione
+
+    public ArrayList<Recensione> getRecensioniScritte() {
+        return recensioniScritte;
+    }
+
+    public ArrayList<Recensione> getRecensioniProfilo() {
+        return recensioniProfilo;
     }
 
     public void setId(int id) {
