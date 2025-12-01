@@ -2,10 +2,13 @@ package entity;
 
 import java.time.LocalTime;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class AnnuncioVendita extends Annuncio{
     private BigDecimal prezzoMedio;
     private BigDecimal prezzoMinimo;
+    private ArrayList<OffertaVendita> OfferteVendita = new ArrayList<OffertaVendita>();
+
 
     public AnnuncioVendita(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, BigDecimal prezzoMedio) {
         super(sede, descrizione, orarioInizio, orarioFine, oggetto);

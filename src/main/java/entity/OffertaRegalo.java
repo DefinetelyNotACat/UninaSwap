@@ -4,17 +4,20 @@ import java.time.LocalTime;
 
 public class OffertaRegalo extends Offerta{
 
-    private OffertaRegalo offertaRegalo;
+    private AnnuncioRegalo annuncioRegalo;
 
-    public OffertaRegalo(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente, OffertaVendita offertaVendita) {
+    public OffertaRegalo(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente, AnnuncioRegalo annuncioRegalo) {
         super(messaggio, stato, orarioInizio, orarioFine, oggetto, utente);
-        this.offertaRegalo = offertaRegalo;
+        this.annuncioRegalo = annuncioRegalo;
+        this.annuncioRegalo.setOffertaRegali(this);
     }
-    public OffertaRegalo getOffertaRegalo() {
-        return offertaRegalo;
+
+    public AnnuncioRegalo getAnnuncioRegalo() {
+        return annuncioRegalo;
     }
-    public void setOffertaRegalo(OffertaRegalo offertaRegalo) {
-        this.offertaRegalo = offertaRegalo;
+
+    public void setAnnuncioRegalo(AnnuncioRegalo annuncioRegalo) {
+        this.annuncioRegalo = annuncioRegalo;
     }
 
 }

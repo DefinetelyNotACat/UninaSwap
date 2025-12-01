@@ -33,16 +33,33 @@ public class Oggetto {
     private ArrayList<String> immagini;
     private Utente proprietario;
     private ArrayList<Categoria> Categorie = new ArrayList<Categoria>();
+    private Annuncio annuncio;
+    private OffertaScambio offertaScambio;
 
     Oggetto(String nome, Categoria categoria, ArrayList<String> immagini, Utente proprietario) {
         this.nome = nome;
         this.immagini = immagini;
         this.proprietario = proprietario;
         Categorie.add(categoria);
-        proprietario.aggiungiOggetto(this);
+        this.proprietario.aggiungiOggetto(this);
         if (immagini.isEmpty()) {
             System.err.println("Attenzione: non e' stata aggiunta alcuna immagine");
         }
+    }
+
+    public void setOffertaScambio(OffertaScambio offertaScambio) {
+        this.offertaScambio = offertaScambio;
+    }
+
+    public OffertaScambio getOffertaScambio() {
+        return offertaScambio;
+    }
+
+    public void setAnnuncio(Annuncio annuncio) {
+        this.annuncio = annuncio;
+    }
+    public Annuncio getAnnuncio() {
+        return annuncio;
     }
 
     public int getid() { return id;}

@@ -4,15 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.ArrayList;
 public class OffertaVendita extends Offerta{
-    private BigDecimal prezzoOffertaVendita;
-    private ArrayList<OffertaVendita> OfferteVendita = new ArrayList<OffertaVendita>();
+    private BigDecimal prezzoOffertaVendita;;
+    private AnnuncioVendita annuncioVendita;
 
-    private OffertaVendita offertaVendita;
-
-    public OffertaVendita(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente, BigDecimal prezzoOffertaVendita, OffertaVendita offertaVendita) {
+    public OffertaVendita(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente, BigDecimal prezzoOffertaVendita, AnnuncioVendita annuncioVendita) {
         super(messaggio, stato, orarioInizio, orarioFine, oggetto, utente);
         this.prezzoOffertaVendita = prezzoOffertaVendita;
-        this.offertaVendita = offertaVendita;
+        this.annuncioVendita = annuncioVendita;
     }
     public BigDecimal getPrezzoOffertaVendita() {
         return prezzoOffertaVendita;
@@ -20,10 +18,10 @@ public class OffertaVendita extends Offerta{
     public void setPrezzoOffertaVendita(BigDecimal prezzoOffertaVendita) {
         this.prezzoOffertaVendita = prezzoOffertaVendita;
     }
-    public OffertaVendita getOffertaVendita() {
-        return offertaVendita;
+    public AnnuncioVendita getannuncioVendita() {
+        return annuncioVendita;
     }
-    public void OffertaVendita(OffertaVendita offertaVendita) {
-        this.offertaVendita = offertaVendita;
+    public void setAnnuncioVendita(AnnuncioVendita annuncioVendita) {
+        this.annuncioVendita = annuncioVendita;
     }
 }

@@ -25,6 +25,7 @@ public abstract class Annuncio {
         this.stato = STATO_ANNUNCIO.DISPONIBILE;
         if (oggetto != null) {
             this.oggetti.add(oggetto);
+            oggetto.setAnnuncio(this);
         } else {
             System.err.println("Attenzione: creato annuncio senza oggetto iniziale.");
         }
