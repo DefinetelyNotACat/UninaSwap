@@ -22,8 +22,9 @@ public class Categoria {
     public ArrayList<Oggetto> getOggetti() {
         return oggetti;
     }
-    public void setOggetti(Oggetto oggetto) {
+    public void aggiungiOggetto(Oggetto oggetto) {
         this.oggetti.add(oggetto);
+        oggetto.aggiungiCategoria(this);
     }
 
 }

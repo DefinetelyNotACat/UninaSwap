@@ -10,7 +10,7 @@ public class OffertaScambio extends Offerta{
         super(messaggio, stato, orarioInizio, orarioFine, oggetto, utente);
         this.Oggetti.add(oggetto);
         this.annuncioScambio = annuncioScambio;
-        this.annuncioScambio.ottieniOfferta(this);
+        oggetto.setOffertaScambio(this);
     }
     public ArrayList<Oggetto> getOggetti() {
         return Oggetti;

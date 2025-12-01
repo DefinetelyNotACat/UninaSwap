@@ -39,6 +39,7 @@ public class Oggetto {
         this.immagini = immagini;
         this.proprietario = proprietario;
         Categorie.add(categoria);
+        categoria.aggiungiOggetto(this);
         this.proprietario.aggiungiOggetto(this);
         if (immagini.isEmpty()) {
             System.err.println("Attenzione: non e' stata aggiunta alcuna immagine");
@@ -47,6 +48,7 @@ public class Oggetto {
 
     public void setOffertaScambio(OffertaScambio offertaScambio) {
         this.offertaScambio = offertaScambio;
+        this.offertaScambio.aggiungiOggetto(this);
     }
 
     public OffertaScambio getOffertaScambio() {
@@ -55,6 +57,7 @@ public class Oggetto {
 
     public void setAnnuncio(Annuncio annuncio) {
         this.annuncio = annuncio;
+        this.annuncio.aggiungiOggetto(this);
     }
     public Annuncio getAnnuncio() {
         return annuncio;
