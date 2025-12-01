@@ -4,38 +4,42 @@ public class Recensione {
 
     private int id;
 
-    private int Voto;
+    private int voto;
 
     private String commento;
 
-    private Utente autore;
+    private String recensito;
 
-    private Utente destinatario;
+    private String recensore;
 
-    public Utente getAutore() {
-        return autore; }
+    public String getRecensito() {
+        return recensito;
+    }
 
-    public Utente getDestinatario() {
-        return destinatario; }
+    public String getRecensore() {
+        return recensore;
+    }
 
-    public Recensione(int Voto) {
-        this.Voto = Voto;
+    public Recensione(String recensito, String recensore, int voto) {
+        this.recensito = recensito;
+        this.recensore = recensore;
+        this.voto = voto;
     }
 
     public int getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setVoto(int Voto) {
-        this.Voto = Voto;
+    public void setVoto(int voto) {
+        this.voto = voto;
     }
 
     public int getVoto() {
-        return Voto;
+        return voto;
     }
 
     public void setCommento(String commento) {
@@ -48,8 +52,7 @@ public class Recensione {
 
     @Override
     public String toString() {
-        return String.format("Voto: %d | Commento: %s (da %s)",
-                Voto, commento, autore.getUsername());
+        return "Recensione di :" + recensore + " dedicata a " + recensito + "\n" + commento + "\n" + voto;
     }
 
 }
