@@ -1,42 +1,37 @@
 .profile-picture{
     -fx-cursor: hand;
 }
-/* --- Stile del contenitore principale del menu --- */
 .profilo-context-menu {
-    -fx-background-color: #ffffff; /* Sfondo bianco */
-    -fx-background-radius: 5px;    /* Angoli arrotondati */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5); /* Ombra */
-    -fx-padding: 5px 0 5px 0;      /* Spaziatura interna verticale */
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);
+    -fx-padding: 5px 0 5px 0;
     -fx-cursor: hand;
 }
 
-/* --- Stile generico di ogni riga (MenuItem) --- */
 .profilo-context-menu .menu-item {
     -fx-background-color: transparent;
-    -fx-padding: 8px 15px 8px 15px; /* Spazio interno per renderli più alti */
+    -fx-padding: 8px 15px 8px 15px;
 }
 
-/* --- Stile del testo dentro i MenuItem --- */
 .profilo-context-menu .menu-item .label {
-    -fx-text-fill: #333333;       /* Colore testo scuro */
-    -fx-font-family: "Arial";     /* Font */
+    -fx-text-fill: #333333;
+    -fx-font-family: "Arial";
     -fx-font-size: 14px;
     -fx-cursor: hand;
 }
 
-/* --- Effetto Hover (quando passi il mouse sopra una voce) --- */
 .profilo-context-menu .menu-item:focused {
-    -fx-background-color: #f0f0f0; /* Grigio chiaro al passaggio mouse */
+    -fx-background-color: #f0f0f0;
     -fx-cursor: hand;
 }
 
-/* --- Stile specifico per il tasto Logout (se hai aggiunto la classe java) --- */
 .menu-item-logout .label {
-    -fx-text-fill: #dc3545; /* Rosso */
+    -fx-text-fill: #dc3545;
     -fx-font-weight: bold;
 }
 
 .menu-item-logout:focused {
-    -fx-background-color: #ffeef0; /* Sfondo rosso chiarissimo al passaggio */
+    -fx-background-color: #ffeef0;
 }
 

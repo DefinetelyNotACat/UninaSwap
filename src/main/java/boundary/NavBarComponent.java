@@ -97,12 +97,10 @@ public class NavBarComponent {
         menuProfilo = new ContextMenu();
         menuProfilo.getStyleClass().add("profilo-context-menu");
 
-        // Usa il metodo helper (passa null se non serve una classe speciale)
         MenuItem leMieOfferte = creaVoceMenu("Mostra le mie offerte", null);
         MenuItem iMieiAnnunci = creaVoceMenu("Mostra i miei annunci", null);
         MenuItem ilMioInventario = creaVoceMenu("Mostra il mio inventario", null);
 
-        // Per il logout passiamo la classe specifica
         MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
 
         logout.setOnAction(e -> {
@@ -136,17 +134,12 @@ public class NavBarComponent {
     // Metodo helper per creare voci di menu con il cursore HAND
     private MenuItem creaVoceMenu(String testo, String customClass) {
         MenuItem item = new MenuItem();
-
-        // Creiamo un'etichetta grafica invece del testo semplice
         Label label = new Label(testo);
 
-        // FORZIAMO IL CURSORE QUI (Questo vince su tutto)
         label.setCursor(javafx.scene.Cursor.HAND);
 
-        // Impostiamo la label come grafica del menu item
         item.setGraphic(label);
 
-        // Aggiungiamo eventuali classi CSS specifiche (es. per il logout)
         if (customClass != null) {
             item.getStyleClass().add(customClass);
             // Aggiungiamo la classe anche alla label per essere sicuri che prenda i colori
