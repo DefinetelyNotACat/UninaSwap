@@ -1,12 +1,10 @@
 package controller;
 
-import entity.Annuncio;
-import entity.Offerta;
-import entity.Oggetto;
-import entity.Utente;
+import entity.*;
 import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import dao.*;
+
 public class ControllerUninaSwap {
     private static ControllerUninaSwap istanziato = null;
     private UtenteDAO utenteDAO = new UtenteDAO();
@@ -139,4 +137,21 @@ public class ControllerUninaSwap {
     public void cancellaDB(){
         PopolaDBPostgreSQL.cancellaDB();
     }
+    public boolean pubblicaRecensione(Utente recensito, Utente recensore, int voto, String commento) {
+        Recensione recensione = new Recensione(recensito.getEmail(), recensore.getEmail(), voto);
+        if (commento != null) {
+            recensione.setCommento(commento);
+        }
+        RecensioneDAO recensioneDAO = new RecensioneDAO();
+        if (recensioneDAO.SalvaRecensione(recensione)) {
+            recensito.aggiungiRecensioneRicevuta(recensione);
+            recensore.aggiungiRecensioneScritta(recensione);
+            System.out.println("Recensione salvato");
+            return true;
+        } else {
+            System.out.println("Recensione non salvato");
+            return false;
+        }
+    }
 }
+

@@ -13,7 +13,6 @@ public class PostgreSQLConnection {
     static{
         try{
             Class.forName(DRIVER);
-            // System.out.println(URL + UTENTE +  PASSWORD + DRIVER);
         }catch (ClassNotFoundException e){
             System.err.println("Driver non trovato: " + e.getMessage());
             e.printStackTrace();

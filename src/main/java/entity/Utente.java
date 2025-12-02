@@ -10,8 +10,8 @@ public class Utente {
     private ArrayList<Offerta> Offerte = new ArrayList<Offerta>();
     private ArrayList<Oggetto> Oggetti = new ArrayList<Oggetto>();
     private String pathImmagineProfilo;
-    private ArrayList<Recensione> recensioniScritte;
-    private ArrayList<Recensione> recensioniProfilo;
+    private ArrayList<Recensione> recensioniScritte = new ArrayList<>();
+    private ArrayList<Recensione> recensioniProfilo = new ArrayList<>();
 
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
@@ -23,7 +23,17 @@ public class Utente {
         return id;
     }
 
-    //fai metodo aggiungi recensione
+    public void scriviRecensione(Recensione recensione){
+        this.recensioniScritte.add(recensione);
+
+    }
+    public void aggiungiRecensioneScritta(Recensione r) {
+        this.recensioniScritte.add(r);
+    }
+
+    public void aggiungiRecensioneRicevuta(Recensione r) {
+        this.recensioniProfilo.add(r);
+    }
 
     public ArrayList<Recensione> getRecensioniScritte() {
         return recensioniScritte;

@@ -142,7 +142,5 @@ public class PopolaDBPostgreSQL {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 }
