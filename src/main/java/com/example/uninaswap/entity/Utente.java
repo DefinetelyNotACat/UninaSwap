@@ -75,7 +75,7 @@ public class Utente {
 
         //Ritorna come stringa il path relativo dell'immagine
         //
-        return Paths.get(String.valueOf(id), "immagini", nomeFileFinale).toString();
+        return pathImmagineProfilo = Paths.get(String.valueOf(id), "immagini", nomeFileFinale).toString();
 
     }
 
