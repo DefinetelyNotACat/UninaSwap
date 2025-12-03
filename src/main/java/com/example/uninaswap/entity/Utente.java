@@ -41,8 +41,12 @@ public class Utente {
         //Se le cartelle non esistono le crea tutte in una sola volta
         //
         if (!Files.exists(cartellaUtente)) {
-            Files.createDirectory(cartellaUtente);
+            Files.createDirectories(cartellaUtente);
         }
+
+        //Fa diventare la stringa passata un oggetto di tipo Path
+        //
+        Path sorgenteImmagineCaricata = Paths.get(pathImmagineCaricata);
 
         //Faccio diventare la stringa contenente il path del file che l'utente sta caricando in un oggetto di tipo Path (Paths.get())
         //in maniera tale da ricavarci solo l'ultima parte che diventera' a sua volta un oggetto Path (.getFileName()) e poi lo passiamo come stringa attraverso il .toString()
@@ -62,9 +66,8 @@ public class Utente {
         //
         Path pathDestinazione = cartellaUtente.resolve(nomeFileFinale);
 
-        //Fa diventare la stringa passata un oggetto di tipo Path
-        //
-        Path sorgenteImmagineCaricata = Paths.get(immagineCaricata);
+
+        System.out.println("Questo e' il path dell'immagine originale : " + sorgenteImmagineCaricata.toString());
 
         //Copia del file caricato nella cartella di destinazione con il nuovo nome, in caso il file esista gia' lo sovrascrive
         //

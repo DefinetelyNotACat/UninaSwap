@@ -89,7 +89,7 @@ public class ControllerUninaSwap {
             password = passwordEncoder.encode(password);
             this.utente = new Utente(username, password, matricola, email);
             if(pathImmagineSelezionata != null){
-                utente.setPathImmagineProfilo(pathImmagineSelezionata);
+                utente.modificaImmagineProfilo(pathImmagineSelezionata);
             }
             utenteDAO.salvaUtente(utente);
             System.out.println("Utente Salvato");
