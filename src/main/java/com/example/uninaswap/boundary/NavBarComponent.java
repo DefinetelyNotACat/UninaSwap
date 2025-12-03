@@ -148,7 +148,6 @@ public class NavBarComponent {
             menuProfilo.show(fotoProfilo, event.getScreenX(), event.getScreenY());
         }
     }
-    // Metodo helper per creare voci di menu con il cursore HAND
     private MenuItem creaVoceMenu(String testo, String customClass) {
         MenuItem item = new MenuItem();
         Label label = new Label(testo);

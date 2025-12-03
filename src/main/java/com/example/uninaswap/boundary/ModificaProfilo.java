@@ -1,5 +1,7 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.entity.Utente;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,11 +19,18 @@ import java.util.ResourceBundle;
 public class ModificaProfilo implements Initializable {
     @FXML
     private ImageView profileImageView;
-
     private File immagineSelezionata;
+    private Utente profilo;
+    private ControllerUninaSwap controllerUninaSwap;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        controllerUninaSwap = ControllerUninaSwap.getInstance();
+        try {
+            profilo = controllerUninaSwap.getUtente();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         // Logica per il ritaglio circolare (Clip)
         if (profileImageView != null) {
             javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(

@@ -32,7 +32,6 @@ public class ControllerCambioBoundary {
     public void CambiaScena(String pathFxml, String TitoloScene, ActionEvent actionEvent){
         try {
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-
             // Riutilizzo della logica di sopra
             CambiaScena(pathFxml, TitoloScene, stage);
         } catch (Exception e) {
