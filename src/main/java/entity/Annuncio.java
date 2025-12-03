@@ -8,14 +8,13 @@ public abstract class Annuncio {
         DISPONIBILE,
         NONDISPONIBILE
     }
-
     protected Sede sede;
     protected String descrizione;
     protected LocalTime orarioInizio;
     protected LocalTime orarioFine;
     protected STATO_ANNUNCIO stato;
-    protected ArrayList<Oggetto> oggetti = new ArrayList<>();
-    protected ArrayList<Offerta> offerte = new ArrayList<>();
+    protected ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
+    protected ArrayList<Offerta> offerte = new ArrayList<Offerta>();
 
     public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
         this.sede = sede;
@@ -102,6 +101,9 @@ public abstract class Annuncio {
     protected void ottieniOfferta(Offerta offerta) throws Exception{
         if (offerta != null) {
             this.offerte.add(offerta);
+        }
+        else{
+            throw new Exception("Offerta non esistente");
         }
     }
 }

@@ -10,6 +10,12 @@ public class Utente {
     private ArrayList<Offerta> Offerte = new ArrayList<Offerta>();
     private ArrayList<Oggetto> Oggetti = new ArrayList<Oggetto>();
     private String pathImmagineProfilo;
+<<<<<<< Updated upstream
+=======
+    private ArrayList<Recensione> recensioniScritte = new ArrayList<Recensione>();
+    private ArrayList<Recensione> recensioniProfilo = new ArrayList<Recensione>();
+
+>>>>>>> Stashed changes
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
         this.password = password;

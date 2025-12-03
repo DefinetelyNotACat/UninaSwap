@@ -1,6 +1,4 @@
 package entity;
-
-import java.security.spec.ECField;
 import java.time.LocalTime;
 
 public abstract class Offerta {
@@ -10,7 +8,6 @@ public abstract class Offerta {
         IN_ATTESA,
         ACCETTATA
     }
-
     protected String messaggio;
     protected STATO_OFFERTA stato;
     protected LocalTime orarioInizio;
@@ -19,13 +16,19 @@ public abstract class Offerta {
     protected Annuncio annuncio;
     protected int id;
     protected Utente utente;
-    public Offerta(String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente) {
+    public Offerta(Annuncio annuncio, String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente) throws Exception {
+        this.annuncio = annuncio;
         this.messaggio = messaggio;
         this.stato = stato;
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
         this.oggetto = oggetto;
         this.utente = utente;
+<<<<<<< Updated upstream
+=======
+        this.utente.setOfferta(this);
+        this.annuncio.ottieniOfferta(this);
+>>>>>>> Stashed changes
     }
 
     public String getMessaggio() {
@@ -77,10 +80,10 @@ public abstract class Offerta {
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
     }
-    protected void immettiOfferta(Annuncio annuncio) throws Exception {
-        this.annuncio = annuncio;
-        annuncio.ottieniOfferta(this);
-    }
+//    protected void immettiOfferta(Annuncio annuncio) throws Exception {
+//        this.annuncio = annuncio;
+//        annuncio.ottieniOfferta(this);
+//    }
     public void setId(int id) {
         this.id = id;
     }
