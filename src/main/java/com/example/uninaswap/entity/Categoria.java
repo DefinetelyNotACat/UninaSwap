@@ -3,7 +3,6 @@ import java.util.ArrayList;
 
 public class Categoria {
     private String nome;
-
     ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
 
     public Categoria(String nome) {

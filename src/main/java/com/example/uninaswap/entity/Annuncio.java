@@ -16,7 +16,7 @@ public abstract class Annuncio {
     protected ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
     protected ArrayList<Offerta> offerte = new ArrayList<Offerta>();
 
-    public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) throws Exception {
+    public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
         this.sede = sede;
         this.sede.aggiungiAnnuncio(this);
         this.descrizione = descrizione;
@@ -24,10 +24,12 @@ public abstract class Annuncio {
         this.orarioFine = orarioFine;
         this.stato = STATO_ANNUNCIO.DISPONIBILE;
         if (oggetto != null) {
-            this.oggetti.add(oggetto);
-            oggetto.setAnnuncio(this);
-        } else {
-            System.err.println("Attenzione: creato annuncio senza oggetto iniziale.");
+            try {
+                this.oggetti.add(oggetto);
+                oggetto.setAnnuncio(this);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
