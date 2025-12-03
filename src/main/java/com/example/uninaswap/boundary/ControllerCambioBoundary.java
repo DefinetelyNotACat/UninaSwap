@@ -8,11 +8,12 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class ControllerCambioBoundary {
-    public void CambiaScena(String pathFxml, String TitoloScene, ActionEvent actionEvent){
+
+    // METODO 1: utile per i menu
+    public void CambiaScena(String pathFxml, String TitoloScene, Stage stage){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource(pathFxml));
             Parent root = loader.load();
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             double larghezza = stage.getScene().getWidth();
             double lunghezza = stage.getScene().getHeight();
             stage.setTitle(TitoloScene);
@@ -23,6 +24,18 @@ public class ControllerCambioBoundary {
         }
         catch (Exception e){
             System.out.println("Errore " + e.getMessage());
+            e.printStackTrace(); // Utile per vedere l'errore completo
+        }
+    }
+
+    // METODO 2: utile per i bottoni
+    public void CambiaScena(String pathFxml, String TitoloScene, ActionEvent actionEvent){
+        try {
+            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            // Riutilizzo della logica di sopra
+            CambiaScena(pathFxml, TitoloScene, stage);
+        } catch (Exception e) {
+            System.out.println("Errore nell'estrarre lo stage dall'evento: " + e.getMessage());
         }
     }
 }
