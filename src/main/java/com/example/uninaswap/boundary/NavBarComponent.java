@@ -12,6 +12,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import javafx.geometry.Point2D;
 import java.io.File;
+import com.example.uninaswap.Costanti;
+import javafx.stage.Stage;
 
 public class NavBarComponent {
 
@@ -23,7 +25,7 @@ public class NavBarComponent {
     private ContextMenu menuProfilo;
     private PauseTransition hideDelay;
     private final ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
-
+    private final ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
     @FXML
     public void initialize() {
         filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
@@ -97,7 +99,22 @@ public class NavBarComponent {
         MenuItem leMieOfferte = creaVoceMenu("Mostra le mie offerte", null);
         MenuItem iMieiAnnunci = creaVoceMenu("Mostra i miei annunci", null);
         MenuItem ilMioInventario = creaVoceMenu("Mostra il mio inventario", null);
+        MenuItem modificaProfilo = creaVoceMenu("Modifica Profilo", null);
 
+        modificaProfilo.setOnAction(event -> {
+            try {
+
+                Stage stage = (Stage) fotoProfilo.getScene().getWindow();
+                controllerCambioBoundary.CambiaScena(
+                        Costanti.pathModificaProfilo,
+                        "Modifica Profilo",
+                        stage
+                );
+            } catch (Exception e) {
+                System.err.println("Errore nel cambio scena: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
         MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
 
         logout.setOnAction(e -> {
@@ -105,7 +122,12 @@ public class NavBarComponent {
             // TODO! Logica logout...
         });
 
-        menuProfilo.getItems().addAll(leMieOfferte, iMieiAnnunci, ilMioInventario, new SeparatorMenuItem(), logout);
+        menuProfilo.getItems().addAll(
+                leMieOfferte,
+                iMieiAnnunci,
+                ilMioInventario,
+                modificaProfilo,
+                new SeparatorMenuItem(), logout);
 
         fotoProfilo.setOnMouseClicked(event -> {
             if (menuProfilo.isShowing()) {
@@ -137,7 +159,6 @@ public class NavBarComponent {
 
         if (customClass != null) {
             item.getStyleClass().add(customClass);
-            // Aggiungiamo la classe anche alla label per essere sicuri che prenda i colori
             label.getStyleClass().add(customClass);
         }
 
