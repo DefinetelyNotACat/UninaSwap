@@ -16,9 +16,9 @@ module com.example.uninaswap {
 
     opens com.example.uninaswap to javafx.fxml;
     opens com.example.uninaswap.boundary to javafx.fxml;
-    opens com.example.uninaswap.boundary.controller to javafx.fxml;
+    opens com.example.uninaswap.controller to javafx.fxml;
 
     exports com.example.uninaswap;
     exports com.example.uninaswap.boundary;
-    exports com.example.uninaswap.boundary.controller;
+    exports com.example.uninaswap.controller;
 }

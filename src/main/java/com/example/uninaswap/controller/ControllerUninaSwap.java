@@ -1,4 +1,4 @@
-package com.example.uninaswap.boundary.controller;
+package com.example.uninaswap.controller;
 
 import java.util.ArrayList;
 
