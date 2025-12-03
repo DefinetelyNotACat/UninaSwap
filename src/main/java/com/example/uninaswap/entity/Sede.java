@@ -6,7 +6,7 @@ public class Sede {
     private int id;
     private String nomeSede;
     private String indirizo;
-    private ArrayList<Annuncio> annunci=new ArrayList<Annuncio>();
+    private ArrayList<Annuncio> annunci = new ArrayList<Annuncio>();
 
     public Sede(String nomeSede, String indirizo) {
         this.nomeSede = nomeSede;

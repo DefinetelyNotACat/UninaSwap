@@ -23,6 +23,7 @@ public abstract class Annuncio {
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
         this.stato = STATO_ANNUNCIO.DISPONIBILE;
+        this.sede.aggiungiAnnuncio(this);
         if (oggetto != null) {
             try {
                 this.oggetti.add(oggetto);
