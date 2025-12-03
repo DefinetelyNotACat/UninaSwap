@@ -13,8 +13,12 @@ module com.example.uninaswap {
     requires spring.security.crypto;
     requires commons.logging;
     requires java.dotenv;
+
     opens com.example.uninaswap to javafx.fxml;
-    opens boundary to javafx.fxml;
+    opens com.example.uninaswap.boundary to javafx.fxml;
+    opens com.example.uninaswap.boundary.controller to javafx.fxml;
+
     exports com.example.uninaswap;
-    exports boundary;
+    exports com.example.uninaswap.boundary;
+    exports com.example.uninaswap.boundary.controller;
 }
