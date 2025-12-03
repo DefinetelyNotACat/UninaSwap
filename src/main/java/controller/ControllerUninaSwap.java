@@ -144,8 +144,8 @@ public class ControllerUninaSwap {
         }
         RecensioneDAO recensioneDAO = new RecensioneDAO();
         if (recensioneDAO.SalvaRecensione(recensione)) {
-            recensito.aggiungiRecensioneRicevuta(recensione);
-            recensore.aggiungiRecensioneScritta(recensione);
+            recensito.addRecensioneRicevuta(recensione);
+            recensore.addRecensioneInviata(recensione);
             System.out.println("Recensione salvato");
             return true;
         } else {

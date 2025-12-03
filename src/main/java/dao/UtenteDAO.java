@@ -6,14 +6,17 @@ import entity.*;
 import interfaces.GestoreUtente;
 
 public class UtenteDAO implements GestoreUtente {
+
     public boolean salvaUtente(Utente utente) {
-        String sql = "INSERT INTO utente (username, password, matricola, email) VALUES ( ?, ?, ?, ?)";
+        String sql = "INSERT INTO utente (username, password, matricola, email, pathImmagineProfilo) VALUES ( ?, ?, ?, ?, ?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
             query.setString(1, utente.getUsername());
             query.setString(2, utente.getPassword());
             query.setString(3, utente.getMatricola());
             query.setString(4, utente.getEmail());
+            query.setString(5, utente.getPathImmagineProfilo());
+
             int numModifiche = query.executeUpdate();
             return numModifiche > 0;
 
@@ -24,14 +27,16 @@ public class UtenteDAO implements GestoreUtente {
     }
 
     public boolean modificaUtente(Utente utente) {
-        String sql = "UPDATE utente SET username = ?, password = ?, matricola = ?, email = ? WHERE id = ?";
+        String sql = "UPDATE utente SET username = ?, password = ?, matricola = ?, email = ?, pathImmagineProfilo = ? WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
             query.setString(1, utente.getUsername());
             query.setString(2, utente.getPassword());
             query.setString(3, utente.getMatricola());
             query.setString(4, utente.getEmail());
-            query.setInt(5, utente.getId());
+            query.setString(5, utente.getPathImmagineProfilo());
+            query.setInt(6, utente.getId());
+
 
             int numModifiche = query.executeUpdate();
             return numModifiche > 0;
@@ -57,6 +62,7 @@ public class UtenteDAO implements GestoreUtente {
             return false;
         }
     }
+
     public Utente ottieniUtente(int id) {
         Utente utente = null;
         String sql = "SELECT * FROM utente WHERE id = ?";
@@ -66,6 +72,7 @@ public class UtenteDAO implements GestoreUtente {
             try (ResultSet rs = query.executeQuery()) {
                 if (rs.next()) {
                     utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matircola"), rs.getString("email"));
+                    utente.setPathImmagineProfilo(rs.getString("pathImmagineProfilo"));
                     utente.setId(id);
                 }
             }
@@ -90,6 +97,7 @@ public class UtenteDAO implements GestoreUtente {
                     try (ResultSet rs = query.executeQuery()) {
                         if (rs.next()) {
                             utente = new Utente(rs.getString("username"), rs.getString("password"), campoRicerca, rs.getString("email"));
+                            utente.setPathImmagineProfilo(rs.getString("pathImmagineProfilo"));
                             utente.setId(rs.getInt("id"));
                         }
                     }
@@ -98,6 +106,7 @@ public class UtenteDAO implements GestoreUtente {
                     try (ResultSet rs = query.executeQuery()) {
                         if (rs.next()) {
                             utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matricola"), campoRicerca);
+                            utente.setPathImmagineProfilo(rs.getString("pathImmagineProfilo"));
                             utente.setId(rs.getInt("id"));
                         }
                     }
@@ -117,6 +126,7 @@ public class UtenteDAO implements GestoreUtente {
              ResultSet rs = query.executeQuery()) {
             while (rs.next()) {
                 Utente utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matricola"), rs.getString("email"));
+                utente.setPathImmagineProfilo(rs.getString("pathImmagineProfilo"));
                 utente.setId(rs.getInt("id"));
                 tuttiUtenti.add(utente);
             }

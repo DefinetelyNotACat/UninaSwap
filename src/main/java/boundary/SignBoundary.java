@@ -185,11 +185,12 @@ public class SignBoundary implements Initializable {
         String password = passwordField.getText();
         String matricola = matricolaField.getText();
         String email = emailField.getText();
+        //Ho fatto che la registrazione utente prevede nel costruttore come path di base per l'immagine quella di default
         if (this.immagineSelezionata != null) {
             pathImmagine = this.immagineSelezionata.getAbsolutePath();
         }
         else{
-            pathImmagine = Costanti.pathFotoDefault;
+            pathImmagine = Costanti.pathImmagineDiProfiloDefault;
         }
         System.out.println("immagine profilo a path: " + pathImmagine);
         controllerUninaSwap.creaUtente(username, password, matricola, email, pathImmagine);

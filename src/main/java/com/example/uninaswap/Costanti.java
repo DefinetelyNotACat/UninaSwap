@@ -9,6 +9,7 @@ public class Costanti {
     public static String pathSignUp = "/com/example/uninaswap/signUp.fxml";
     public static String pathHomePage = "/com/example/uninaswap/HomePage.fxml";
     public static String pathLogo = "/com/example/uninaswap/images/uninaLogo.png";
-    public static String pathFotoDefault = "/com/example/uninaswap/images/profile_picture.jpg";
+    public static String pathImmagineDiProfiloDefault = "/com/example/uninaswap/images/immagine_di_profilo_default.jpg";
+    public static String pathUtenti = "dati_utenti";
 
 }

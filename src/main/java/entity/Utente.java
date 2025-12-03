@@ -1,46 +1,125 @@
 package entity;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import static com.example.uninaswap.Costanti.pathUtenti;
+import static com.example.uninaswap.Costanti.pathImmagineDiProfiloDefault;
 
 public class Utente {
+
+    //Attributi
+    private int id;
     private String username;
     private String password;
     private String matricola;
     private String email;
-    private int id;
-    private ArrayList<Offerta> Offerte = new ArrayList<Offerta>();
-    private ArrayList<Oggetto> Oggetti = new ArrayList<Oggetto>();
     private String pathImmagineProfilo;
-    private ArrayList<Recensione> recensioniScritte = new ArrayList<>();
-    private ArrayList<Recensione> recensioniProfilo = new ArrayList<>();
+    private ArrayList<Offerta> offerte = new ArrayList<Offerta>();
+    private ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
+    private ArrayList<Recensione> recensioniInviata = new ArrayList<>();
+    private ArrayList<Recensione> recensioniRicevuta = new ArrayList<>();
 
+    //Costruttori
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
         this.password = password;
         this.matricola = matricola;
         this.email = email;
+        this.pathImmagineProfilo = pathImmagineDiProfiloDefault;
     }
+
+    //Metodi di logica
+    public String modificaImmagineProfilo(String pathImmagineCaricata) throws IOException {
+
+        //Genera il path di destinazione dell'immagine: dati_utenti/{id}/immagini
+        //
+        Path cartellaUtente = Paths.get(pathUtenti, String.valueOf(this.id), "immagini");
+
+        //Se le cartelle non esistono le crea tutte in una sola volta
+        //
+        if (!Files.exists(cartellaUtente)) {
+            Files.createDirectory(cartellaUtente);
+        }
+
+        //Faccio diventare la stringa contenente il path del file che l'utente sta caricando in un oggetto di tipo Path (Paths.get())
+        //in maniera tale da ricavarci solo l'ultima parte che diventera' a sua volta un oggetto Path (.getFileName()) e poi lo passiamo come stringa attraverso il .toString()
+        //
+        String immagineCaricata = Paths.get(pathImmagineCaricata).getFileName().toString();
+
+        //Ci ricaviamo l'estensione dal file appena caricato
+        //
+        int indiceEstensione = immagineCaricata.lastIndexOf('.');
+        String estensioneFile = immagineCaricata.substring(indiceEstensione);
+
+        //Diamo un nome al file che andremo a salvare
+        //
+        String nomeFileFinale = "immagine_profilo" + estensioneFile;
+
+        //Definizione della del path che l'immagine avra' dopo il salvataggio attraverso cartellaUtente.resolve(nomeFileFile), resolve unisce il path della cartella con il nome del file
+        //
+        Path pathDestinazione = cartellaUtente.resolve(nomeFileFinale);
+
+        //Fa diventare la stringa passata un oggetto di tipo Path
+        //
+        Path sorgenteImmagineCaricata = Paths.get(immagineCaricata);
+
+        //Copia del file caricato nella cartella di destinazione con il nuovo nome, in caso il file esista gia' lo sovrascrive
+        //
+        Files.copy(sorgenteImmagineCaricata, pathDestinazione,  StandardCopyOption.REPLACE_EXISTING);
+
+        //Ritorna come stringa il path relativo dell'immagine
+        //
+        return Paths.get(String.valueOf(id), "immagini", nomeFileFinale).toString();
+
+    }
+
+    //Adder, Remover e Clearer
+    public boolean addRecensioneInviata(Recensione recensione) {
+        return this.recensioniInviata.add(recensione);
+    }
+
+    public boolean removeRecensioneInviata(Recensione recensione) {
+        return this.recensioniInviata.remove(recensione);
+    }
+
+    public void clearRecensioneInviata() {
+        this.recensioniInviata.clear();
+    }
+
+    public boolean addRecensioneRicevuta(Recensione recensione) {
+        return this.recensioniRicevuta.add(recensione);
+    }
+
+    public boolean removeRecensioneRicevuta(Recensione recensione) {
+        return this.recensioniRicevuta.remove(recensione);
+    }
+
+    public void clearRecensioneRicevuta() {
+        this.recensioniRicevuta.clear();
+    }
+
+    public boolean addOggetto(Oggetto oggetto){
+        return this.oggetti.add(oggetto);
+    }
+
+    public boolean removeOggetto(Oggetto oggetto){
+        return this.oggetti.remove(oggetto);
+    }
+
+    public void clearOggetto(){
+        this.oggetti.clear();
+    }
+
+    public void clearOfferte(){
+        this.offerte.clear();
+    }
+
+    //Setter e Getter
     public int getId() {
         return id;
-    }
-
-    public void scriviRecensione(Recensione recensione){
-        this.recensioniScritte.add(recensione);
-
-    }
-    public void aggiungiRecensioneScritta(Recensione r) {
-        this.recensioniScritte.add(r);
-    }
-
-    public void aggiungiRecensioneRicevuta(Recensione r) {
-        this.recensioniProfilo.add(r);
-    }
-
-    public ArrayList<Recensione> getRecensioniScritte() {
-        return recensioniScritte;
-    }
-
-    public ArrayList<Recensione> getRecensioniProfilo() {
-        return recensioniProfilo;
     }
 
     public void setId(int id) {
@@ -80,31 +159,40 @@ public class Utente {
     }
 
     public void setOfferta(Offerta offerta) {
-        this.Offerte.add(offerta);
+        this.offerte.add(offerta);
     }
-    public ArrayList<Offerta> getOfferte() {
-        return Offerte;
-    }
-    public void rimuoviOfferte(){
-        this.Offerte.clear();
-    }
+
     public void setPathImmagineProfilo(String pathImmagineProfilo) {
         this.pathImmagineProfilo = pathImmagineProfilo;
     }
+
     public String getPathImmagineProfilo() {
         return pathImmagineProfilo;
     }
+
+    public ArrayList<Offerta> getOfferte() {
+        return offerte;
+    }
+
+    public ArrayList<Oggetto> getOggetti() {
+        return oggetti;
+    }
+
+    public ArrayList<Recensione> getRecensioniInviate() {
+        return recensioniInviata;
+    }
+
+    public ArrayList<Recensione> getRecensioniRicevute() {
+        return recensioniRicevuta;
+    }
+
+    public void setOggetti(ArrayList<Oggetto> oggetti) {
+        oggetti = oggetti;
+    }
+
     @Override
     public String toString() {
         return "Username : " + this.username + " Email : " + this.email + " Matricola : " + this.matricola + " Password : " + this.password;
     }
-    public  ArrayList<Oggetto> getOggetti() {
-        return Oggetti;
-    }
-    public void setOggetti(ArrayList<Oggetto> oggetti) {
-        Oggetti = oggetti;
-    }
-    public void aggiungiOggetto(Oggetto oggetto){
-        Oggetti.add(oggetto);
-    }
+
 }
