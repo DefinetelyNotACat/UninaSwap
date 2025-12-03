@@ -2,7 +2,7 @@ package entity;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
-import java.util.ArrayList;
+
 public class OffertaVendita extends Offerta{
     private BigDecimal prezzoOffertaVendita;;
     private AnnuncioVendita annuncioVendita;
@@ -36,4 +36,19 @@ public class OffertaVendita extends Offerta{
             throw new Exception("Non puoi fare un'offerta di scambio su quest'annuncio");
         }
     }
+    public AnnuncioVendita getannuncioVendita() {
+        return (AnnuncioVendita) this.annuncio;
+    }
+
+//    public void immettiOfferta(Annuncio annuncio) throws Exception{
+//        if(annuncio instanceof AnnuncioVendita) {
+//            super.immettiOfferta(annuncio);
+//            this.annuncio = (AnnuncioVendita) annuncio;
+//            annuncio.ottieniOfferta(this);
+//        }
+//        else{
+//            throw new Exception("Non puoi fare un'offerta di scambio su quest'annuncio");
+//        }
+//    }
+
 }
