@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public interface GestoreSede {
     public boolean salvaSede(Sede sede);
     public boolean modificaSede(Sede sede);
-    public boolean salvaSede(int id);
-    public boolean OttieniSede(int id);
+    public boolean eliminaSede(int id);
+    public Sede OttieniSede(int id);
     public ArrayList<Sede> OttieniSedi();
 }

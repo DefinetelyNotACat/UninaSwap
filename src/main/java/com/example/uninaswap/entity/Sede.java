@@ -5,12 +5,12 @@ import java.util.ArrayList;
 public class Sede {
     private int id;
     private String nomeSede;
-    private String indirizo;
+    private String indirizzo;
     private ArrayList<Annuncio> annunci = new ArrayList<Annuncio>();
 
-    public Sede(String nomeSede, String indirizo) {
+    public Sede(String nomeSede, String indirizzo) {
         this.nomeSede = nomeSede;
-        this.indirizo = indirizo;
+        this.indirizzo = indirizzo;
     }
 
     public void aggiungiAnnuncio(Annuncio annuncio) {
@@ -41,10 +41,10 @@ public class Sede {
     public void setNomeSede(String nomeSede) {
         this.nomeSede = nomeSede;
     }
-    public String getIndirizo() {
-        return indirizo;
+    public String getIndirizzo() {
+        return indirizzo;
     }
-    public void setIndirizo(String indirizo) {
-        this.indirizo = indirizo;
+    public void setIndirizzo(String indirizzo) {
+        this.indirizzo = indirizzo;
     }
 }
