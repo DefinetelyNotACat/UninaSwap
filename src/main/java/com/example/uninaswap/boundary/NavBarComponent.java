@@ -101,21 +101,14 @@ public class NavBarComponent {
         MenuItem ilMioInventario = creaVoceMenu("Mostra il mio inventario", null);
         MenuItem modificaProfilo = creaVoceMenu("Modifica Profilo", null);
 
-        // 2. AGGIUNGIAMO L'AZIONE DI CAMBIO PAGINA
-// ... dentro setupMenuProfilo ...
-
         modificaProfilo.setOnAction(event -> {
             try {
-                // CORREZIONE QUI:
-                // Invece di passare 'event' (che fa crashare tutto perché MenuItem non è un Node),
-                // recuperiamo lo Stage dalla fotoProfilo che è sicura.
-                Stage stage = (Stage) fotoProfilo.getScene().getWindow();
 
-                // Chiamiamo il Metodo 1 del controller (quello che accetta 'Stage')
+                Stage stage = (Stage) fotoProfilo.getScene().getWindow();
                 controllerCambioBoundary.CambiaScena(
                         Costanti.pathModificaProfilo,
                         "Modifica Profilo",
-                        stage // <--- Passiamo lo STAGE, non l'evento!
+                        stage
                 );
             } catch (Exception e) {
                 System.err.println("Errore nel cambio scena: " + e.getMessage());
@@ -166,7 +159,6 @@ public class NavBarComponent {
 
         if (customClass != null) {
             item.getStyleClass().add(customClass);
-            // Aggiungiamo la classe anche alla label per essere sicuri che prenda i colori
             label.getStyleClass().add(customClass);
         }
 
