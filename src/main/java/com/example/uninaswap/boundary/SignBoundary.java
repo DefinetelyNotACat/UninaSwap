@@ -1,6 +1,6 @@
 package com.example.uninaswap.boundary;
 
-import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.boundary.controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;

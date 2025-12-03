@@ -1,6 +1,6 @@
 package com.example.uninaswap.boundary;
 
-import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.boundary.controller.ControllerUninaSwap;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;

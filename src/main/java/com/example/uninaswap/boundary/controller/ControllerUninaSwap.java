@@ -1,4 +1,4 @@
-package com.example.uninaswap.controller;
+package com.example.uninaswap.boundary.controller;
 
 import com.example.uninaswap.dao.*;
 import com.example.uninaswap.entity.*;

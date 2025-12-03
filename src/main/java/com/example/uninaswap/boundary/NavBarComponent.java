@@ -1,6 +1,6 @@
 package com.example.uninaswap.boundary;
 
-import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.boundary.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.Utente;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
