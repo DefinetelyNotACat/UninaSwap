@@ -29,14 +29,9 @@ public abstract class Offerta {
         this.orarioFine = orarioFine;
         this.oggetto = oggetto;
         this.utente = utente;
-
-        // RISOLUZIONE CONFLITTO:
-        // Manteniamo il collegamento bidirezionale (l'offerta si aggiunge alle liste di Utente e Annuncio).
-        // Aggiungiamo controlli null-safe.
         if (this.utente != null) {
             this.utente.setOfferta(this);
         }
-
         if (this.annuncio != null) {
             this.annuncio.ottieniOfferta(this);
         }

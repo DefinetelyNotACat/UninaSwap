@@ -16,7 +16,7 @@ public abstract class Annuncio {
     protected ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
     protected ArrayList<Offerta> offerte = new ArrayList<Offerta>();
 
-    public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
+    public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) throws Exception {
         this.sede = sede;
         this.sede.aggiungiAnnuncio(this);
         this.descrizione = descrizione;

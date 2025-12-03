@@ -5,27 +5,19 @@ import java.util.ArrayList;
 
 public class OffertaScambio extends Offerta {
 
-    // Uso il nome in minuscolo secondo le convenzioni Java
-    private ArrayList<Oggetto> oggetti = new ArrayList<>();
+    private ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
 
     // Costruttore
     public OffertaScambio(AnnuncioScambio annuncio, String messaggio, STATO_OFFERTA stato,
                           LocalTime orarioInizio, LocalTime orarioFine,
                           Oggetto oggettoPrincipale, Utente utente) throws Exception {
-
-        // Passiamo 'annuncio' al super costruttore
         super(annuncio, messaggio, stato, orarioInizio, orarioFine, oggettoPrincipale, utente);
-
-        // Aggiungiamo l'oggetto principale alla lista degli oggetti offerti per lo scambio
         if (oggettoPrincipale != null) {
             this.oggetti.add(oggettoPrincipale);
         }
 
-        // Nota: annuncio.ottieniOfferta(this) viene già chiamato nel costruttore padre (Offerta),
-        // ma se vuoi essere sicuro che venga trattato come OffertaScambio specifico, il polimorfismo lo gestirà.
     }
 
-    // Recupera l'annuncio castandolo dal padre, senza bisogno di un campo duplicato
     public AnnuncioScambio getAnnuncioScambio() {
         if (this.annuncio instanceof AnnuncioScambio) {
             return (AnnuncioScambio) this.annuncio;

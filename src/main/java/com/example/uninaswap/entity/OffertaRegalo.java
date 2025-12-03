@@ -4,25 +4,15 @@ import java.time.LocalTime;
 
 public class OffertaRegalo extends Offerta {
 
-    private AnnuncioRegalo annuncioRegalo;
-
     // Costruttore
     public OffertaRegalo(Annuncio annuncio, String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente, AnnuncioRegalo annuncioRegalo) throws Exception {
         super(annuncio, messaggio, stato, orarioInizio, orarioFine, oggetto, utente);
-        this.annuncioRegalo = annuncioRegalo;
-
-        // Collega questa offerta all'annuncio passato
-        // Nota: Utilizziamo il metodo polimorfico ottieniOfferta che abbiamo definito in AnnuncioRegalo
-        this.annuncioRegalo.ottieniOfferta(this);
     }
 
     public AnnuncioRegalo getAnnuncioRegalo() {
-        return annuncioRegalo;
+        return (AnnuncioRegalo) this.annuncio;
     }
 
-    public void setAnnuncioRegalo(AnnuncioRegalo annuncioRegalo) {
-        this.annuncioRegalo = annuncioRegalo;
-    }
 
 //    @Override
 //    public void immettiOfferta(Annuncio annuncio) {

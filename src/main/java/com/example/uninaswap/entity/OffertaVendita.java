@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalTime;
 
 public class OffertaVendita extends Offerta{
-    private BigDecimal prezzoOffertaVendita;;
-    private AnnuncioVendita annuncioVendita;
+    private BigDecimal prezzoOffertaVendita;
 
     public OffertaVendita(Annuncio annuncio, String messaggio,
                           STATO_OFFERTA stato, LocalTime orarioInizio,
@@ -13,8 +12,7 @@ public class OffertaVendita extends Offerta{
             throws Exception {
         super(annuncio, messaggio, stato, orarioInizio, orarioFine, oggetto, utente);
         this.prezzoOffertaVendita = prezzoOffertaVendita;
-        this.annuncioVendita = annuncioVendita;
-        this.annuncioVendita.ottieniOfferta(this);
+
     }
     public BigDecimal getPrezzoOffertaVendita() {
         return prezzoOffertaVendita;
@@ -23,10 +21,7 @@ public class OffertaVendita extends Offerta{
         this.prezzoOffertaVendita = prezzoOffertaVendita;
     }
     public AnnuncioVendita getannuncioVendita() {
-        return annuncioVendita;
-    }
-    public void setAnnuncioVendita(AnnuncioVendita annuncioVendita) {
-        this.annuncioVendita = annuncioVendita;
+        return (AnnuncioVendita) this.annuncio;
     }
 
 //    public void immettiOfferta(Annuncio annuncio) throws Exception{

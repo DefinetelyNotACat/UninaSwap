@@ -10,6 +10,7 @@ public class Oggetto {
         REGALATO,
         SCAMBIATO
     }
+    private DISPONIBILITA disponibilita = DISPONIBILITA.DISPONIBILE;
 
     protected enum CONDIZIONE {
         NUOVO,
@@ -53,11 +54,26 @@ public class Oggetto {
         return offertaScambio;
     }
 
-    public void setAnnuncio(Annuncio annuncio) {
-        this.annuncio = annuncio;
+    public void setAnnuncio(Annuncio annuncio) throws Exception{
+        if (this.disponibilita == DISPONIBILITA.DISPONIBILE) {
+            this.annuncio = annuncio;
+            this.disponibilita = DISPONIBILITA.OCCUPATO;
+        }
+        else{
+            throw new Exception("Oggetto occupato o inesistente");
+        }
+
     }
     public Annuncio getAnnuncio() {
         return annuncio;
+    }
+    public void rimuoviAnnuncio(Annuncio annuncio) throws Exception{
+        ArrayList <Oggetto> oggetti = annuncio.getOggetti();
+        for (Oggetto oggetto : oggetti) {
+            oggetto.disponibilita = DISPONIBILITA.DISPONIBILE;
+        }
+        oggetti.clear();
+        this.annuncio = null;
     }
 
     public int getid() { return id;}
