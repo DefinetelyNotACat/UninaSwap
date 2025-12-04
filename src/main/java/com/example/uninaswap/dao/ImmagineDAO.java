@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class ImmagineDAO {
 
-    public boolean inserisciImmagine(Immagine immagine, int idOggetto){
+    public boolean salvaImmagine(Immagine immagine, int idOggetto){
         String sql = "INSERT INTO immagine (dataCaricamenteo, path, idOggetto) VALUES ( ?, ?, ?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
@@ -27,7 +27,7 @@ public class ImmagineDAO {
         }
     }
 
-    public boolean rimuoviImmagine(int id){
+    public boolean eliminaImmagine(int id){
         String sql = "DELETE FROM immagine WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {

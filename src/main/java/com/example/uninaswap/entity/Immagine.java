@@ -24,27 +24,37 @@ public class Immagine {
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
+
     public Date getDataCaricamento() {
         return dataCaricamento;
     }
+
     public void setDataCaricamento(Date dataCaricamento) {
         this.dataCaricamento = dataCaricamento;
     }
+
     public String getPath() {
         return path;
     }
+
     public void setPath(String path) {
         this.path = path;
     }
+
     public Oggetto getOggetto() {
         return oggetto;
     }
+
     public void setOggetto(Oggetto oggetto) {
         this.oggetto = oggetto;
     }
+
+    //toString
+    //
     @Override
     public String toString() {
         return "Id: " + this.id + " Data Caricamento: " + this.dataCaricamento + " Path: " + this.path + " Oggetto: " + this.oggetto.toString();

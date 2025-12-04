@@ -7,6 +7,7 @@ import com.example.uninaswap.entity.Categoria;
 import com.example.uninaswap.interfaces.GestoreCategoriaDAO;
 
 public class CategoriaDAO implements GestoreCategoriaDAO {
+
     public boolean salvaCategoria(Categoria categoria){
         String sql = "INSERT INTO CATEGORIA (nome) VALUES (?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -34,6 +35,7 @@ public class CategoriaDAO implements GestoreCategoriaDAO {
                 return false;
             }
     }
+
     public boolean eliminaCategoria(String nome){
         String sql = "DELETE FROM CATEGORIA WHERE nome = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -50,6 +52,7 @@ public class CategoriaDAO implements GestoreCategoriaDAO {
         }
 
     }
+
     public Categoria  OttieniCategoria(String nome){
         Categoria categoria = null;
         String sql = "SELECT * FROM CATEGORIA WHERE nome = ?";
@@ -66,6 +69,7 @@ public class CategoriaDAO implements GestoreCategoriaDAO {
         }
         return categoria;
     }
+
     public ArrayList<Categoria> OttieniCategorie(){
         ArrayList<Categoria> categorie = new ArrayList<>();
         String sql = "SELECT * FROM CATEGORIA";
