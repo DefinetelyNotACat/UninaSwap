@@ -4,7 +4,7 @@ import com.example.uninaswap.entity.Categoria;
 
 import java.util.ArrayList;
 
-public interface GestoreCategoria {
+public interface GestoreCategoriaDAO {
     public boolean salvaCategoria(Categoria categoria);
     public boolean modificaCategoria(Categoria categoria);
     public boolean eliminaCategoria(String nome);

@@ -11,6 +11,7 @@ import static com.example.uninaswap.Costanti.pathImmagineDiProfiloDefault;
 public class Utente {
 
     //Attributi
+    //
     private int id;
     private String username;
     private String password;
@@ -23,6 +24,7 @@ public class Utente {
     private ArrayList<Recensione> recensioniRicevuta = new ArrayList<>();
 
     //Costruttori
+    //
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
         this.password = password;
@@ -32,6 +34,7 @@ public class Utente {
     }
 
     //Metodi di logica
+    //
     public String modificaImmagineProfilo(String pathImmagineCaricata) throws IOException {
 
         //Genera il path di destinazione dell'immagine: dati_utenti/{id}/immagini
@@ -80,6 +83,7 @@ public class Utente {
     }
 
     //Adder, Remover e Clearer
+    //
     public boolean addRecensioneInviata(Recensione recensione) {
         return this.recensioniInviata.add(recensione);
     }
@@ -121,6 +125,7 @@ public class Utente {
     }
 
     //Setter e Getter
+    //
     public int getId() {
         return id;
     }
@@ -193,6 +198,8 @@ public class Utente {
         oggetti = oggetti;
     }
 
+    //toString
+    //
     @Override
     public String toString() {
         return "Username : " + this.username + " Email : " + this.email + " Matricola : " + this.matricola + " Password : " + this.password;

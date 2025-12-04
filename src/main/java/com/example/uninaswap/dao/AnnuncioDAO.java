@@ -6,8 +6,9 @@ import java.util.ArrayList;
 
 import com.example.uninaswap.entity.Annuncio;
 import com.example.uninaswap.entity.Oggetto;
+import com.example.uninaswap.interfaces.GestoreAnnuncioDAO;
 
-public class AnnuncioDAO {
+public class AnnuncioDAO implements GestoreAnnuncioDAO {
     public boolean inserisciAnnuncio(Annuncio annuncio, int idSede, ArrayList<Oggetto> nuoviOggetti) {
         String sql = "INSERT INTO ANNUNCI (idSede, descrizione, orarioInizio, orarioFine, stato, ) VALUES ( ?, ?, ?, ?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -26,7 +27,7 @@ public class AnnuncioDAO {
         }
     }
     public boolean modificaAnnuncio(Annuncio annuncio){return true;}
-    public boolean salvaAnnuncio(int id){return true;}
-    public boolean OttieniAnnuncio(int id){return true;}
+    public boolean eliminaAnnuncio(int id){return true;}
+    public Annuncio OttieniAnnuncio(int id){return null;}
     public ArrayList<Annuncio> OttieniAnnunci(){return null;}
 }

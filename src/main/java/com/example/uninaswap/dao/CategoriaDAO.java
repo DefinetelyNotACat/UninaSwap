@@ -4,9 +4,9 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import com.example.uninaswap.entity.Categoria;
-import com.example.uninaswap.interfaces.GestoreCategoria;
+import com.example.uninaswap.interfaces.GestoreCategoriaDAO;
 
-public class CategoriaDAO implements GestoreCategoria {
+public class CategoriaDAO implements GestoreCategoriaDAO {
     public boolean salvaCategoria(Categoria categoria){
         String sql = "INSERT INTO CATEGORIA (nome) VALUES (?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();

@@ -5,12 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import com.example.uninaswap.entity.Recensione;
 import com.example.uninaswap.entity.Sede;
-import com.example.uninaswap.interfaces.GestoreOggetto;
-import com.example.uninaswap.interfaces.GestoreSede;
+import com.example.uninaswap.interfaces.GestoreSedeDAO;
 
-public class SedeDAO implements GestoreSede {
+public class SedeDAO implements GestoreSedeDAO {
     public boolean salvaSede(Sede sede){
         String sql = "INSERT INTO SEDE (nomeSede, indirizzo) VALUES (?, ?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();

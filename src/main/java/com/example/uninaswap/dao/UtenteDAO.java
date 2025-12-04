@@ -4,9 +4,9 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import com.example.uninaswap.entity.Utente;
-import com.example.uninaswap.interfaces.GestoreUtente;
+import com.example.uninaswap.interfaces.GestoreUtenteDAO;
 
-public class UtenteDAO implements GestoreUtente {
+public class UtenteDAO implements GestoreUtenteDAO {
 
     public boolean salvaUtente(Utente utente) {
         String sql = "INSERT INTO utente (username, password, matricola, email, immagine_profilo) VALUES ( ?, ?, ?, ?, ?)";

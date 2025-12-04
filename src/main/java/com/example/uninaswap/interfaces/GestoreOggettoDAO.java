@@ -4,7 +4,7 @@ import com.example.uninaswap.entity.Oggetto;
 
 import java.util.ArrayList;
 
-public interface GestoreOggetto {
+public interface GestoreOggettoDAO {
     public boolean salvaOggetto(Oggetto oggetto);
     public boolean modificaOggetto(Oggetto oggetto);
     public boolean eliminaOggetto(int id);

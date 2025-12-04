@@ -4,7 +4,9 @@ import java.time.LocalTime;
 
 public abstract class Offerta {
 
+    //Enum
     // Meglio public per poter essere usata fuori dal package
+    //
     public enum STATO_OFFERTA {
         RIFIUTATA,
         IN_ATTESA,
