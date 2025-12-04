@@ -33,7 +33,13 @@ public class ControllerUninaSwap {
         }
         throw new Exception("Utente non registrato!");
     }
-    public boolean ModificaUtente(Utente Utente) {
+    public boolean ModificaUtente(Utente utente) {
+        this.utente = utente;
+        try {
+            utenteDAO.modificaUtente(utente);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return true;
     }
     public ArrayList<Utente> OttieniUtenti(){

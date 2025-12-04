@@ -1,39 +1,88 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.Costanti; // Assumo tu abbia una classe Costanti
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.Utente;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ResourceBundle;
 
-public class ModificaProfilo implements Initializable {
-    @FXML
-    private ImageView profileImageView;
-    private File immagineSelezionata;
+public class ModificaProfilo {
+
+    @FXML private TextField matricolaField;
+    @FXML private TextField usernameField;
+    @FXML private TextField emailField;
+    @FXML private PasswordField passwordField;
+    @FXML private PasswordField confermaPasswordField;
+    @FXML private ImageView profileImageView;
+
     private Utente profilo;
+    private File immagineSelezionata;
     private ControllerUninaSwap controllerUninaSwap;
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    @FXML
+    public void initialize() {
         controllerUninaSwap = ControllerUninaSwap.getInstance();
+
+        // 1. Recupero Utente
         try {
             profilo = controllerUninaSwap.getUtente();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return;
         }
-        // Logica per il ritaglio circolare (Clip)
+
+        // 2. Riempio i campi testuali
+        if (profilo != null) {
+            matricolaField.setText(profilo.getMatricola());
+            usernameField.setText(profilo.getUsername());
+            emailField.setText(profilo.getEmail());
+
+            // 3. LOGICA ROBUSTA CARICAMENTO IMMAGINE
+            String pathImmagineDB = profilo.getPathImmagineProfilo();
+
+            try {
+                if (pathImmagineDB == null || pathImmagineDB.contains("default") || pathImmagineDB.isEmpty()) {
+                    // CASO A: Immagine di Default (Risorsa interna)
+                    // Nota: Assicurati che il percorso nell'FXML (@images/...) sia corretto,
+                    // oppure caricala qui esplicitamente:
+                    URL resource = getClass().getResource("/com/example/uninaswap/images/immagineProfiloDefault.jpg");
+                    if (resource != null) {
+                        profileImageView.setImage(new Image(resource.toExternalForm()));
+                    }
+                } else {
+                    // CASO B: Immagine caricata dall'utente (File su disco)
+                    File fileImmagine = new File(pathImmagineDB);
+                    if (fileImmagine.exists()) {
+                        // IMPORTANTE: Convertire File -> URI -> String
+                        profileImageView.setImage(new Image(fileImmagine.toURI().toString()));
+                    } else {
+                        System.out.println("Immagine non trovata sul disco: " + pathImmagineDB + " - Carico default.");
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Errore caricamento immagine: " + e.getMessage());
+                // Non crashare, lascia l'immagine che c'è nell'FXML
+            }
+        }
+
+        // 4. Applico il cerchio all'immagine (CLIP)
         if (profileImageView != null) {
-            javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(
+            // Reset della viewport per evitare zoom strani precedenti
+            profileImageView.setViewport(null);
+
+            Circle clip = new Circle(
                     profileImageView.getFitWidth() / 2,
                     profileImageView.getFitHeight() / 2,
                     profileImageView.getFitWidth() / 2
@@ -42,7 +91,6 @@ public class ModificaProfilo implements Initializable {
         }
     }
 
-    //Todo! evocare il controller per cambiare immagine pfp anche lato  DAO
     @FXML
     public void cambiaImmagineProfilo(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
@@ -56,10 +104,12 @@ public class ModificaProfilo implements Initializable {
 
         if (selectedFile != null) {
             this.immagineSelezionata = selectedFile;
+
+            // Carica l'immagine usando toURI() per evitare errori di percorso
             Image originalImage = new Image(selectedFile.toURI().toString());
 
             if (profileImageView != null) {
-                // Logica di ritaglio e centratura immagine
+                // Logica di ritaglio e centratura
                 double width = originalImage.getWidth();
                 double height = originalImage.getHeight();
                 double minDimension = Math.min(width, height);
@@ -74,15 +124,33 @@ public class ModificaProfilo implements Initializable {
                 Rectangle2D cropArea = new Rectangle2D(x, y, minDimension, minDimension);
                 profileImageView.setViewport(cropArea);
                 profileImageView.setImage(originalImage);
-                profileImageView.setSmooth(true);
-                profileImageView.setCache(true);
-                profileImageView.setPreserveRatio(true);
+                // Rimuovi clip precedenti se necessario o riapplicali
             }
         }
     }
 
-    // Getter per permettere a SignBoundary di recuperare il file scelto
-    public File getImmagineSelezionata() {
-        return immagineSelezionata;
+    @FXML
+    public void onSalvaClick(ActionEvent event) {
+        String nuovoUsername = usernameField.getText();
+        String nuovaPass = passwordField.getText();
+        String confermaPass = confermaPasswordField.getText();
+
+        if (!nuovaPass.isEmpty() && !nuovaPass.equals(confermaPass)) {
+            System.out.println("Le password non coincidono!");
+            return;
+        }
+
+        // Logica salvataggio...
+        String pathDaSalvare = (immagineSelezionata != null) ? immagineSelezionata.getAbsolutePath() : profilo.getPathImmagineProfilo();
+
+        System.out.println("Salvataggio... Nuovo path immagine: " + pathDaSalvare);
+        // controllerUninaSwap.aggiornaUtente(....);
+        controllerUninaSwap.ModificaUtente(this.profilo);
+    }
+
+    @FXML
+    public void onAnnullaClick(ActionEvent event) {
+        ControllerCambioBoundary cambio = new ControllerCambioBoundary();
+        cambio.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
     }
 }
