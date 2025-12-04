@@ -7,7 +7,6 @@ import javafx.scene.layout.AnchorPane;
 
 public class HomePageBoundary {
     ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
-
     @FXML private AnchorPane navbarComponent;
     @FXML private NavBarComponent navBarComponentController;
     @FXML private ImageView fotoProfilo;

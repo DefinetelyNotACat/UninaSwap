@@ -53,7 +53,6 @@ public class NavBarComponent {
                     Image image = new Image(fileImmagine.toURI().toString());
                     fotoProfilo.setImage(image);
                     centraImmagine(fotoProfilo, image);
-
                     caricato = true;
                 }
             }

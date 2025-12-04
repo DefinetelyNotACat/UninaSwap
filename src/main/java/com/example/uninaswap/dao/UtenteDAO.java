@@ -28,7 +28,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
     }
 
     public boolean modificaUtente(Utente utente) {
-        String sql = "UPDATE utente SET username = ?, password = ?, matricola = ?, email = ?, pathImmagineProfilo = ? WHERE email = ?";
+        String sql = "UPDATE utente SET username = ?, password = ?, matricola = ?, email = ?, immagine_profilo = ? WHERE email = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
             query.setString(1, utente.getUsername());

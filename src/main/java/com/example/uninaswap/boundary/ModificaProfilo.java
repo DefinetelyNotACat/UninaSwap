@@ -131,6 +131,7 @@ public class ModificaProfilo {
 
     @FXML
     public void onSalvaClick(ActionEvent event) {
+        ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
         String nuovoUsername = usernameField.getText();
         String nuovaPass = passwordField.getText();
         String confermaPass = confermaPasswordField.getText();
@@ -146,6 +147,7 @@ public class ModificaProfilo {
         System.out.println("Salvataggio... Nuovo path immagine: " + pathDaSalvare);
         // controllerUninaSwap.aggiornaUtente(....);
         controllerUninaSwap.ModificaUtente(this.profilo);
+        controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
     }
 
     @FXML
