@@ -42,6 +42,7 @@ public class ModificaProfilo implements Initializable {
         }
     }
 
+    //Todo! evocare il controller per cambiare immagine pfp anche lato  DAO
     @FXML
     public void cambiaImmagineProfilo(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
