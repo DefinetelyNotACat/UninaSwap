@@ -5,7 +5,7 @@ import com.example.uninaswap.entity.OffertaVendita;
 
 import java.util.ArrayList;
 
-public interface GestoreOfferta {
+public interface GestoreOffertaDAO {
     public boolean salvaOffertaVendita(OffertaVendita offertaVendita );
     public boolean modficaOfferta(OffertaVendita offertaVendita);
     public boolean eliminaOfferta(OffertaVendita offertaVendita);

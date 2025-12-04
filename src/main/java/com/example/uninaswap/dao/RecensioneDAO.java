@@ -4,9 +4,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.example.uninaswap.entity.Recensione;
-import com.example.uninaswap.interfaces.GestoreRecensione;
+import com.example.uninaswap.interfaces.GestoreRecensioneDAO;
 
-public class RecensioneDAO implements GestoreRecensione {
+public class RecensioneDAO implements GestoreRecensioneDAO {
     public Recensione OttieniRecensione(int id) {
         Recensione recensione = null;
         String sql = "SELECT * FROM RECENSIONE WHERE id = ?";

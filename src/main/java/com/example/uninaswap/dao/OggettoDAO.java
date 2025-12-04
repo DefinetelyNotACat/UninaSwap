@@ -3,8 +3,9 @@ package com.example.uninaswap.dao;
 import java.util.ArrayList;
 
 import com.example.uninaswap.entity.Oggetto;
+import com.example.uninaswap.interfaces.GestoreOggettoDAO;
 
-public class OggettoDAO {
+public class OggettoDAO implements GestoreOggettoDAO {
     public boolean salvaOggetto(Oggetto oggetto) {return true;}
     public boolean modificaOggetto(Oggetto oggetto) {return true;}
     public boolean eliminaOggetto(int id) {return true;}

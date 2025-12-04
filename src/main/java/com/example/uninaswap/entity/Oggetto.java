@@ -3,6 +3,8 @@ import java.util.ArrayList;
 
 public class Oggetto {
 
+    //Enum
+    //
     protected enum DISPONIBILITA {
         DISPONIBILE,
         OCCUPATO,
@@ -10,8 +12,6 @@ public class Oggetto {
         REGALATO,
         SCAMBIATO
     }
-    private DISPONIBILITA disponibilita = DISPONIBILITA.DISPONIBILE;
-
     protected enum CONDIZIONE {
         NUOVO,
         COME_NUOVO,
@@ -20,54 +20,71 @@ public class Oggetto {
         DISCRETE_CONDIZIONI,
         CATTIVE_COMDIZIONI
     }
-
     protected enum STATO_ANNUNCIO {
         DISPONIBILE,
         NONDISPONIBILE
     }
 
+    //Attributi
+    //
     private int id;
     private String nome;
-    private ArrayList<Categoria> categorie;
-    private ArrayList<String> immagini;
     private Utente proprietario;
-    private ArrayList<Categoria> Categorie = new ArrayList<Categoria>();
     private Annuncio annuncio;
     private OffertaScambio offertaScambio;
+    private DISPONIBILITA disponibilita = DISPONIBILITA.DISPONIBILE;
+    private ArrayList<Categoria> categorie;
+    private ArrayList<String> immagini;
+    private ArrayList<Categoria> Categorie = new ArrayList<Categoria>();
 
-    Oggetto(String nome, Categoria categoria, ArrayList<String> immagini, Utente proprietario) {
+    //Costruttori
+    //
+    Oggetto(String nome, ArrayList<Categoria> categoria, ArrayList<String> immagini, Utente proprietario) {
         this.nome = nome;
         this.immagini = immagini;
         this.proprietario = proprietario;
-        Categorie.add(categoria);
+        this.categorie = categoria;
         this.proprietario.addOggetto(this);
         if (immagini.isEmpty()) {
             System.err.println("Attenzione: non e' stata aggiunta alcuna immagine");
         }
     }
 
-    public void setOffertaScambio(OffertaScambio offertaScambio) {
-        this.offertaScambio = offertaScambio;
-    }
-
-    public OffertaScambio getOffertaScambio() {
-        return offertaScambio;
-    }
-
-    public void setAnnuncio(Annuncio annuncio) throws Exception{
-        if (this.disponibilita == DISPONIBILITA.DISPONIBILE) {
-            this.annuncio = annuncio;
-            this.disponibilita = DISPONIBILITA.OCCUPATO;
+    //Metodi di logica
+    //
+    public void modificaCategorie(ArrayList<Categoria> modificaCategorie) {
+        this.categorie.clear();
+        if (modificaCategorie != null) {
+            for (Categoria categorie : modificaCategorie) {
+                if (categorie != null) {
+                    this.categorie.add(categorie);
+                }
+            }
         }
-        else{
-            throw new Exception("Oggetto occupato o inesistente");
-        }
+    }
 
+    //Adder, Remover e Clearer
+    //
+    public boolean addImmagine(String immagini) {
+        if (immagini != null) {
+            return this.immagini.add(immagini);
+        }
+        return false;
     }
-    public Annuncio getAnnuncio() {
-        return annuncio;
+
+    public boolean revomeImmagine(String immagini){
+        return this.immagini.remove(immagini);
     }
-    public void rimuoviAnnuncio(Annuncio annuncio) throws Exception{
+
+    public boolean addCategoria(Categoria categorie) {
+        if (categorie != null) {
+            return this.categorie.add(categorie);
+        }
+        return false;
+    }
+
+    //Verificare nel caso di spostare questa funzione in annuncio//
+    public void removeAnnuncio(Annuncio annuncio) throws Exception{
         ArrayList <Oggetto> oggetti = annuncio.getOggetti();
         for (Oggetto oggetto : oggetti) {
             oggetto.disponibilita = DISPONIBILITA.DISPONIBILE;
@@ -76,6 +93,8 @@ public class Oggetto {
         this.annuncio = null;
     }
 
+    //Getter e Setter
+    //
     public int getid() { return id;}
 
     public void setid(int id) {
@@ -91,33 +110,38 @@ public class Oggetto {
     }
 
     public Utente getProprietario() {
-        return  proprietario;
+        return proprietario;
     }
 
-    public void nuovoProprietario(Utente proprietario) {
+    public void setProprietario(Utente proprietario) {
         this.proprietario = proprietario;
     }
 
-    public void modificaCategorie(ArrayList<Categoria> modificaCategoria) {
-        this.categorie.clear();
-        if (modificaCategoria != null) {
-            for (Categoria categorie : modificaCategoria) {
-                if (categorie != null) {
-                    this.categorie.add(categorie);
-                }
-            }
+    public void setAnnuncio(Annuncio annuncio) throws Exception{
+        if (this.disponibilita == DISPONIBILITA.DISPONIBILE) {
+            this.annuncio = annuncio;
+            this.disponibilita = DISPONIBILITA.OCCUPATO;
         }
+        else{
+            throw new Exception("Oggetto occupato o inesistente");
+        }
+
     }
 
+    public Annuncio getAnnuncio() {
+        return annuncio;
+    }
+
+    public void setOffertaScambio(OffertaScambio offertaScambio) {
+        this.offertaScambio = offertaScambio;
+    }
+
+    public OffertaScambio getOffertaScambio() {
+        return offertaScambio;
+    }
 
     public ArrayList<Categoria> getCategorie() {
         return categorie;
-    }
-
-    public void aggiungiCategoria(Categoria categorie) {
-        if (categorie != null) {
-            this.categorie.add(categorie);
-        }
     }
 
     public void setImmagini(ArrayList<String> nuoveImmagini) {
@@ -131,14 +155,9 @@ public class Oggetto {
         }
     }
 
-    public void aggiungiImmagine(String immagini) {
-        if (immagini != null) {
-            this.immagini.add(immagini);
-        }
+    @Override
+    public String toString() {
+        return "Id : " + this.id + ", Nome : " + this.nome + ", Proprietario : " + this.proprietario;
     }
-
-
-
-
 
 }

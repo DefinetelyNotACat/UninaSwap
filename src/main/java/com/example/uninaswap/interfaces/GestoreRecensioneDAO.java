@@ -4,7 +4,7 @@ import com.example.uninaswap.entity.Recensione;
 
 import java.util.List;
 
-public interface GestoreRecensione {
+public interface GestoreRecensioneDAO {
     public Recensione OttieniRecensione(int id);
     public List<Recensione> OttieniTutteRecensione();
     public boolean SalvaRecensione(Recensione recensione);

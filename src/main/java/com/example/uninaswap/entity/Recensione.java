@@ -2,30 +2,30 @@ package com.example.uninaswap.entity;
 
 public class Recensione {
 
+    //Attributi
+    //
     private int id;
-
     private int voto;
-
     private String commento;
-
     private String recensito;
-
     private String recensore;
-
     public String getRecensito() {
         return recensito;
     }
-
     public String getRecensore() {
         return recensore;
     }
 
+    //Costruttore
+    //
     public Recensione(String recensito, String recensore, int voto) {
         this.recensito = recensito;
         this.recensore = recensore;
         this.voto = voto;
     }
 
+    //Getter e Setter
+    //
     public int getId() {
         return this.id;
     }
@@ -50,6 +50,8 @@ public class Recensione {
         return commento;
     }
 
+    //toString
+    //
     @Override
     public String toString() {
         return "Recensione di :" + recensore + " dedicata a " + recensito + "\n" + commento + "\n" + voto;

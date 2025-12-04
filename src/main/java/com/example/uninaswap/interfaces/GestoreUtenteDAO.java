@@ -4,7 +4,7 @@ import com.example.uninaswap.entity.Utente;
 
 import java.util.ArrayList;
 
-public interface GestoreUtente {
+public interface GestoreUtenteDAO {
     public boolean salvaUtente(Utente utente);
     public boolean modificaUtente(Utente utente);
     public boolean eliminaUtente(int id);
