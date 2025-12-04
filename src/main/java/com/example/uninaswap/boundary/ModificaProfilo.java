@@ -143,9 +143,9 @@ public class ModificaProfilo {
 
         // Logica salvataggio...
         String pathDaSalvare = (immagineSelezionata != null) ? immagineSelezionata.getAbsolutePath() : profilo.getPathImmagineProfilo();
-
+        profilo.setUsername(nuovoUsername);
+        profilo.setPathImmagineProfilo(pathDaSalvare);
         System.out.println("Salvataggio... Nuovo path immagine: " + pathDaSalvare);
-        // controllerUninaSwap.aggiornaUtente(....);
         controllerUninaSwap.ModificaUtente(this.profilo);
         controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
     }
