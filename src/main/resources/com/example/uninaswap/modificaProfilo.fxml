@@ -56,14 +56,14 @@
             <VBox alignment="CENTER" spacing="15.0" maxWidth="400">
                 <children>
 
-                    <VBox alignment="CENTER_LEFT" spacing="5">
+                    <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Matricola" styleClass="label"/>
                             <TextField fx:id="matricolaField" editable="false" styleClass="form-field" style="-fx-opacity: 0.7;"/>
                         </children>
                     </VBox>
 
-                    <VBox alignment="CENTER_LEFT" spacing="5">
+                    <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Username" styleClass="label"/>
                             <TextField fx:id="usernameField" styleClass="form-field"/>
@@ -71,7 +71,7 @@
                         </children>
                     </VBox>
 
-                    <VBox alignment="CENTER_LEFT" spacing="5">
+                    <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Email" styleClass="label"/>
                             <TextField fx:id="emailField" styleClass="form-field"/>
@@ -79,7 +79,7 @@
                         </children>
                     </VBox>
 
-                    <VBox alignment="CENTER_LEFT" spacing="5">
+                    <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Nuova Password (lascia vuoto per non cambiare)" styleClass="label"/>
                             <PasswordField fx:id="passwordField" promptText="Nuova Password" styleClass="form-field"/>
@@ -87,7 +87,7 @@
                         </children>
                     </VBox>
 
-                    <VBox alignment="CENTER_LEFT" spacing="5">
+                    <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Conferma Nuova Password" styleClass="label"/>
                             <PasswordField fx:id="confermaPasswordField" promptText="Ripeti Password" styleClass="form-field"/>
