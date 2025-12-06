@@ -110,7 +110,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
 
                     // 3. Corretto il nome colonna del DB: "immagine_profilo" invece di "pathImmagineProfilo"
                     utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
-                    utente.setId(rs.getInt("id"));
+                    //utente.setId(rs.getInt("id"));
                 }
             }
         } catch (Exception e) {
@@ -127,7 +127,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
             while (rs.next()) {
                 Utente utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matricola"), rs.getString("email"));
                 utente.setPathImmagineProfilo(rs.getString("pathImmagineProfilo"));
-                utente.setId(rs.getInt("id"));
+               // utente.setId(rs.getInt("id"));
                 tuttiUtenti.add(utente);
             }
         } catch (Exception e) {

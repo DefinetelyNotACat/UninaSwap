@@ -67,11 +67,9 @@ public class SignBoundary implements Initializable {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
         try {
-            if (confermaPasswordField == null) {
-                    accediUtente();
-            } else {
                 if (confermaPasswordField == null) {
                     accediUtente();
+                    controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
                 } else {
                     boolean esisteGia = controllerUninaSwap.verificaUtenteUnico(
                             usernameField.getText(),
@@ -86,7 +84,6 @@ public class SignBoundary implements Initializable {
                         controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
                     }
                 }
-            }
         } catch (Exception e) {
             System.out.println("Errore! " + e.getMessage());
             if (erroreCredenziali != null) {
