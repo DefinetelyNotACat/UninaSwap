@@ -56,3 +56,12 @@
     -fx-font-size: 11px;
     -fx-font-weight: bold;
 }
+.log-error{
+    -fx-fill: #ff4444;
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+}
+.profile-picture{
+    -fx-fit-to-width: 150px;
+    -fx-fit-to-height: 150px;
+}

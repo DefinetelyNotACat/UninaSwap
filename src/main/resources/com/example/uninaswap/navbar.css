@@ -1,0 +1,37 @@
+.profile-picture{
+    -fx-cursor: hand;
+}
+.profilo-context-menu {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);
+    -fx-padding: 5px 0 5px 0;
+    -fx-cursor: hand;
+}
+
+.profilo-context-menu .menu-item {
+    -fx-background-color: transparent;
+    -fx-padding: 8px 15px 8px 15px;
+}
+
+.profilo-context-menu .menu-item .label {
+    -fx-text-fill: #333333;
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.profilo-context-menu .menu-item:focused {
+    -fx-background-color: #f0f0f0;
+    -fx-cursor: hand;
+}
+
+.menu-item-logout .label {
+    -fx-text-fill: #dc3545;
+    -fx-font-weight: bold;
+}
+
+.menu-item-logout:focused {
+    -fx-background-color: #ffeef0;
+}
+

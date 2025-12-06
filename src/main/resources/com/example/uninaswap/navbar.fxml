@@ -8,9 +8,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="boundary.NavBarComponent" stylesheets="@navbar.css">
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.NavBarComponent" stylesheets="@navbar.css">
     <top>
         <HBox alignment="CENTER_LEFT" spacing="10">
             <padding>
@@ -25,7 +24,7 @@
 
             <Button fx:id="bottonePubblicaAnnuncio" text="Cerca" />
 
-            <ImageView fx:id="fotoProfilo" fitHeight="36.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;" />
+            <ImageView fx:id="fotoProfilo" styleClass="profile-picture" fitHeight="36.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true" />
 
             <Region HBox.hgrow="ALWAYS" />
         </HBox>
