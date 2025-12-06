@@ -159,9 +159,9 @@ public class ModificaProfilo {
         profilo.setUsername(nuovoUsername);
         profilo.setPathImmagineProfilo(pathDaSalvare);
 
-        // Se la password è cambiata, aggiornala (logica ipotetica)
+        // Se la password è cambiata, aggiornala
         if(!nuovaPass.isEmpty()){
-            // profilo.setPassword(nuovaPass); // Assicurati di avere questo metodo
+            profilo.setPassword(nuovaPass);
         }
 
         System.out.println("Salvataggio... Nuovo path immagine: " + pathDaSalvare);

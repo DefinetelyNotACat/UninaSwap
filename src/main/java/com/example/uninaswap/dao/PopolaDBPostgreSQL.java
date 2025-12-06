@@ -6,7 +6,7 @@ import java.sql.Statement;
 
 public class PopolaDBPostgreSQL {
 
-    public static void creaDB() {
+    public static void creaDB() throws Exception{
         System.out.println("--- Creazione Schema con ENUM Nativi e Pulizia Tipi ---");
 
         try (Connection conn = PostgreSQLConnection.getConnection();

@@ -101,8 +101,12 @@ public class SignBoundary implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = ControllerUninaSwap.getInstance();
-        controllerUninaSwap.cancellaDB();
-        controllerUninaSwap.popolaDB();
+       // controllerUninaSwap.cancellaDB();
+//        try{
+//            controllerUninaSwap.popolaDB();
+//        } catch (Exception e){
+//            System.out.println("Errore! " + e.getMessage());
+//        }
 
         // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
         if (profileImageView != null) {
