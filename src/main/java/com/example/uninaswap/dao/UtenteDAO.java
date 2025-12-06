@@ -66,12 +66,18 @@ public class UtenteDAO implements GestoreUtenteDAO {
         Utente utente = null;
         String sql = "SELECT * FROM utente WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql);) {
+             PreparedStatement query = connessione.prepareStatement(sql)) {
+
             query.setInt(1, id);
             try (ResultSet rs = query.executeQuery()) {
                 if (rs.next()) {
-                    utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matircola"), rs.getString("email"));
-                    utente.setPathImmagineProfilo(rs.getString("pathImmagineProfilo"));
+                    utente = new Utente(
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("matricola"),
+                            rs.getString("email")
+                    );
+                    utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
                     utente.setId(id);
                 }
             }
@@ -80,7 +86,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return utente;
     }
-
     public Utente ottieniUtente(String campoRicerca) {
         Utente utente = null;
         String sql;
