@@ -117,8 +117,10 @@ public class NavBarComponent {
         MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
 
         logout.setOnAction(e -> {
+            Stage stage = (Stage) fotoProfilo.getScene().getWindow();
             System.out.println("Logout");
-            // TODO! Logica logout...
+            controllerUninaSwap.setUtente(null);
+            controllerCambioBoundary.CambiaScena(Costanti.pathSignIn, Costanti.accedi, stage);
         });
 
         menuProfilo.getItems().addAll(

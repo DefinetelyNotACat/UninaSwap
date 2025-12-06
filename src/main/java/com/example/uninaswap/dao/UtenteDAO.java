@@ -45,14 +45,11 @@ public class UtenteDAO implements GestoreUtenteDAO {
             return false;
         }
     }
-
     public boolean eliminaUtente(int id) {
         String sql = "DELETE FROM utente WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
-
             query.setInt(1, id);
-
             int numModifiche = query.executeUpdate();
             return numModifiche > 0;
 
