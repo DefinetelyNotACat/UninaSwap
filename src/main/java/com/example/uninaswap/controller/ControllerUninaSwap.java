@@ -180,5 +180,10 @@ public class ControllerUninaSwap {
             return false;
         }
     }
+    public boolean verificaCredenzialiDuplicate(String nuovoUsername, String nuovaMatricola, String emailAttuale) {
+        // Chiama il DAO per verificare nel database
+        return utenteDAO.verificaEsistenzaAltroUtente(nuovoUsername, nuovaMatricola, emailAttuale);
+    }
 }
+
 

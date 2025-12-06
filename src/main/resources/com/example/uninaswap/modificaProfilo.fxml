@@ -101,7 +101,7 @@
                         </padding>
                         <children>
                             <Button text="Annulla" onAction="#onAnnullaClick" styleClass="button" style="-fx-background-color: #gray;"/>
-                            <Button text="Salva Modifiche" onAction="#onSalvaClick" styleClass="button"/>
+                            <Button fx:id="salvaButton" text="Salva Modifiche" onAction="#onSalvaClick" styleClass="button"/>
                         </children>
                     </HBox>
 

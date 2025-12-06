@@ -135,4 +135,27 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return tuttiUtenti;
     }
+    // AGGIUNGI QUESTO METODO IN: com.example.uninaswap.dao.UtenteDAO
+
+    public boolean verificaEsistenzaAltroUtente(String username, String matricola, String emailDaEscludere) {
+        // Seleziona se esiste qualcuno con questo username O matricola, MA che non abbia la mia email
+        String sql = "SELECT COUNT(*) FROM utente WHERE (username = ? OR matricola = ?) AND email <> ?";
+
+        try (Connection connessione = PostgreSQLConnection.getConnection();
+             PreparedStatement query = connessione.prepareStatement(sql)) {
+
+            query.setString(1, username);
+            query.setString(2, matricola);
+            query.setString(3, emailDaEscludere);
+
+            try (ResultSet rs = query.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
