@@ -68,11 +68,25 @@ public class SignBoundary implements Initializable {
         System.out.println("Email: " + emailField.getText());
         try {
             if (confermaPasswordField == null) {
-                accediUtente();
+                    accediUtente();
             } else {
-                registraUtente();
+                if (confermaPasswordField == null) {
+                    accediUtente();
+                } else {
+                    boolean esisteGia = controllerUninaSwap.verificaUtenteUnico(
+                            usernameField.getText(),
+                            emailField.getText(),
+                            matricolaField.getText()
+                    );
+                    if (esisteGia) {
+                       // TODO! MESSAGGIO ERRORE
+                        System.out.println("Registrazione bloccata: Utente duplicato.");
+                    } else {
+                        registraUtente();
+                        controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+                    }
+                }
             }
-            controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
         } catch (Exception e) {
             System.out.println("Errore! " + e.getMessage());
             if (erroreCredenziali != null) {
@@ -335,40 +349,5 @@ public class SignBoundary implements Initializable {
         }
     }
 
-    public void cambiaImmagineProfilo(ActionEvent actionEvent) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleziona Immagine Profilo");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
-        );
-
-        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-        File selectedFile = fileChooser.showOpenDialog(stage);
-
-        if (selectedFile != null) {
-            this.immagineSelezionata = selectedFile;
-            Image originalImage = new Image(selectedFile.toURI().toString());
-
-            if (profileImageView != null) {
-                double width = originalImage.getWidth();
-                double height = originalImage.getHeight();
-                double minDimension = Math.min(width, height);
-                double x, y;
-                if (width > height) {
-                    x = (width - height) / 2;
-                    y = 0;
-                } else {
-                    x = 0;
-                    y = 0;
-                }
-                Rectangle2D cropArea = new Rectangle2D(x, y, minDimension, minDimension);
-                profileImageView.setViewport(cropArea);
-                profileImageView.setImage(originalImage);
-                profileImageView.setSmooth(true);
-                profileImageView.setCache(true);
-                profileImageView.setPreserveRatio(true);
-            }
-        }
-    }
 
 }

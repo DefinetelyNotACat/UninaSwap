@@ -184,6 +184,9 @@ public class ControllerUninaSwap {
         // Chiama il DAO per verificare nel database
         return utenteDAO.verificaEsistenzaAltroUtente(nuovoUsername, nuovaMatricola, emailAttuale);
     }
+    public boolean verificaUtenteUnico(String username, String email, String matricola){
+        return utenteDAO.verificaEsistenzaUtenteRegistrazione(username, email, matricola);
+    }
 }
 
 
