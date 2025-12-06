@@ -118,7 +118,9 @@ public class NavBarComponent {
 
         logout.setOnAction(e -> {
             System.out.println("Logout");
-            // TODO! Logica logout...
+            Stage stage = (Stage) fotoProfilo.getScene().getWindow();
+            controllerUninaSwap.setUtente(null);
+            controllerCambioBoundary.CambiaScena(Costanti.pathSignIn, Costanti.accedi, stage);
         });
 
         menuProfilo.getItems().addAll(
