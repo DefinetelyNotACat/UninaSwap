@@ -6,19 +6,17 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.Text?>
 <?import javafx.geometry.Insets?>
-
 <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED"
             xmlns="http://javafx.com/javafx/17.0.2-ea"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.uninaswap.boundary.ModificaProfilo"
-            stylesheets="@sign.css">
-
+            stylesheets="@sign.css, @banners.css">
     <content>
-        <VBox alignment="TOP_CENTER" spacing="30.0" styleClass="myPadding">
+        <VBox alignment="TOP_CENTER" spacing="30.0" styleClass="myPadding" fillWidth="false">
             <padding>
                 <Insets top="20.0" bottom="20.0"/>
             </padding>
-
+            <fx:include source="banners.fxml" fx:id="notifica"/>
             <VBox alignment="CENTER" spacing="15.0">
                 <children>
                     <ImageView fitHeight="100" fitWidth="100" pickOnBounds="true" preserveRatio="true">
@@ -104,7 +102,6 @@
                             <Button fx:id="salvaButton" text="Salva Modifiche" onAction="#onSalvaClick" styleClass="button"/>
                         </children>
                     </HBox>
-
                 </children>
             </VBox>
         </VBox>

@@ -25,7 +25,7 @@ public class NavBarComponent {
     private ContextMenu menuProfilo;
     private PauseTransition hideDelay;
     private final ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
-    private final ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
+    private final GestoreScene gestoreScene = new GestoreScene();
     @FXML
     public void initialize() {
         filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
@@ -104,7 +104,7 @@ public class NavBarComponent {
             try {
 
                 Stage stage = (Stage) fotoProfilo.getScene().getWindow();
-                controllerCambioBoundary.CambiaScena(
+                gestoreScene.CambiaScena(
                         Costanti.pathModificaProfilo,
                         "Modifica Profilo",
                         stage
@@ -120,7 +120,7 @@ public class NavBarComponent {
             Stage stage = (Stage) fotoProfilo.getScene().getWindow();
             System.out.println("Logout");
             controllerUninaSwap.setUtente(null);
-            controllerCambioBoundary.CambiaScena(Costanti.pathSignIn, Costanti.accedi, stage);
+            gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, stage);
         });
 
         menuProfilo.getItems().addAll(

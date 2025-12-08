@@ -1,0 +1,67 @@
+/* --- STILE GENERALE DEL CONTENITORE --- */
+.banner-base {
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+
+    /* QUI DECIDI LA GRANDEZZA MASSIMA */
+    /*-fx-max-width: infinity;*/
+    /* Se vuoi che stia al centro nel VBox padre, gestiscilo nel padre,
+       ma questo assicura che non si allarghi all'infinito */
+    /* Si adatta al contenuto -fx-max-width: -1;*/
+}
+
+/* --- STILE ICONA --- */
+.banner-icon {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-min-width: 30px;    /* Forza lo spazio minimo, così non escono i puntini */
+    -fx-alignment: CENTER;  /* Centra l'icona nel suo quadratino */
+}
+
+/* --- STILE BOTTONE CHIUDI (X) --- */
+.banner-close-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-text-fill: inherit; /* Prende il colore del testo del banner */
+}
+.banner-close-button:hover {
+    -fx-background-color: rgba(0,0,0,0.1); /* Leggero effetto hover */
+}
+
+/* --- VARIANTI COLORE (Come prima) --- */
+
+/* 1. SUCCESSO (Verde) */
+.banner-success {
+    -fx-background-color: #d4edda;
+    -fx-border-color: #c3e6cb;
+}
+.banner-success .label,
+.banner-success .banner-icon,
+.banner-success .banner-close-button {
+    -fx-text-fill: #155724;
+}
+
+/* 2. ERRORE (Rosso) */
+.banner-error {
+    -fx-background-color: #f8d7da;
+    -fx-border-color: #f5c6cb;
+}
+.banner-error .label,
+.banner-error .banner-icon,
+.banner-error .banner-close-button {
+    -fx-text-fill: #721c24;
+}
+
+/* 3. INFO (Blu) */
+.banner-info {
+    -fx-background-color: #d1ecf1;
+    -fx-border-color: #bee5eb;
+}
+.banner-info .label,
+.banner-info .banner-icon,
+.banner-info .banner-close-button {
+    -fx-text-fill: #0c5460;
+}

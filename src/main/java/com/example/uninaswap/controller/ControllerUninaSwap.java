@@ -2,9 +2,9 @@ package com.example.uninaswap.controller;
 
 import java.util.ArrayList;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.example.uninaswap.dao.*;
 import com.example.uninaswap.entity.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class ControllerUninaSwap {
     private static ControllerUninaSwap istanziato = null;
@@ -65,7 +65,8 @@ public class ControllerUninaSwap {
             e.printStackTrace();
             return false;
         }
-    }    public ArrayList<Utente> OttieniUtenti(){
+    }
+    public ArrayList<Utente> OttieniUtenti(){
         return null;
     }
     public boolean VerificaPrezzoAnnuncio(Offerta Offerta, Annuncio Annuncio) {
@@ -180,10 +181,11 @@ public class ControllerUninaSwap {
             return false;
         }
     }
+    //Metodo per quando si modifica l'utente
     public boolean verificaCredenzialiDuplicate(String nuovoUsername, String nuovaMatricola, String emailAttuale) {
-        // Chiama il DAO per verificare nel database
         return utenteDAO.verificaEsistenzaAltroUtente(nuovoUsername, nuovaMatricola, emailAttuale);
     }
+    //Metodo per quando si crea l'utente
     public boolean verificaUtenteUnico(String username, String email, String matricola){
         return utenteDAO.verificaEsistenzaUtenteRegistrazione(username, email, matricola);
     }

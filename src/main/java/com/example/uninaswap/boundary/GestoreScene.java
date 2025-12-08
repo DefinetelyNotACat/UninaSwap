@@ -7,7 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class ControllerCambioBoundary {
+public class GestoreScene {
 
     // METODO 1: utile per i menu
     public void CambiaScena(String pathFxml, String TitoloScene, Stage stage){

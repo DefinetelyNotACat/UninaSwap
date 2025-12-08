@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox fx:id="bannerContainer" alignment="CENTER_LEFT" spacing="10.0"
+      visible="false" managed="false"
+      styleClass="banner-base" stylesheets="@banners.css"
+      xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.uninaswap.boundary.Messaggio">
+
+    <Label fx:id="bannerIcon" styleClass="banner-icon"/>
+
+    <Label fx:id="bannerLabel" text="Messaggio..." HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+
+    <Button text="✕" onAction="#chiudiBanner" styleClass="banner-close-button"/>
+
+</HBox>

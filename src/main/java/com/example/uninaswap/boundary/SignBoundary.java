@@ -7,16 +7,12 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -59,7 +55,7 @@ public class SignBoundary implements Initializable {
     private static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
     private static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
 
-    private ControllerCambioBoundary controllerCambioBoundary = new ControllerCambioBoundary();
+    private GestoreScene gestoreScene = new GestoreScene();
     private ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
     private File immagineSelezionata;
 
@@ -69,7 +65,7 @@ public class SignBoundary implements Initializable {
         try {
                 if (confermaPasswordField == null) {
                     accediUtente();
-                    controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+                    gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
                 } else {
                     boolean esisteGia = controllerUninaSwap.verificaUtenteUnico(
                             usernameField.getText(),
@@ -81,7 +77,7 @@ public class SignBoundary implements Initializable {
                         System.out.println("Registrazione bloccata: Utente duplicato.");
                     } else {
                         registraUtente();
-                        controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+                        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
                     }
                 }
         } catch (Exception e) {
@@ -101,23 +97,17 @@ public class SignBoundary implements Initializable {
 
     public void onRegistraClick(ActionEvent actionEvent) {
         System.out.println(actionEvent + "\n" + actionEvent.getSource().toString());
-        controllerCambioBoundary.CambiaScena(Costanti.pathSignUp, Costanti.registrati, actionEvent);
+        gestoreScene.CambiaScena(Costanti.pathSignUp, Costanti.registrati, actionEvent);
     }
 
     public void onAccediClick(ActionEvent actionEvent) {
         System.out.println(actionEvent);
-        controllerCambioBoundary.CambiaScena(Costanti.pathSignIn, Costanti.accedi, actionEvent);
+        gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, actionEvent);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = ControllerUninaSwap.getInstance();
-       // controllerUninaSwap.cancellaDB();
-//        try{
-//            controllerUninaSwap.popolaDB();
-//        } catch (Exception e){
-//            System.out.println("Errore! " + e.getMessage());
-//        }
 
         // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
         if (profileImageView != null) {
@@ -142,7 +132,6 @@ public class SignBoundary implements Initializable {
         emailField.textProperty().addListener((observable, oldValue, newValue) -> {
             gestisciErrore(newValue, emailField, erroreEmail);
         });
-
         /*===========================================================
                Comprendiamo se siamo in signIn o signUp
         -------------------------------------------------------------*/
@@ -345,6 +334,4 @@ public class SignBoundary implements Initializable {
             }
         }
     }
-
-
 }

@@ -35,6 +35,9 @@ public class ModificaProfilo implements Initializable {
     @FXML private ImageView profileImageView;
     @FXML private Button salvaButton;
 
+    @FXML
+    private Messaggio notificaController;
+
     // --- Testi Errore ---
     @FXML private Text erroreUsername;
     @FXML private Text erroreMatricola;
@@ -51,12 +54,12 @@ public class ModificaProfilo implements Initializable {
     private Utente profiloUtente;
     private File fileImmagineSelezionata;
     private ControllerUninaSwap controllerUninaSwap;
-    private ControllerCambioBoundary controllerCambioBoundary;
+    private GestoreScene gestoreScene;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         controllerUninaSwap = ControllerUninaSwap.getInstance();
-        controllerCambioBoundary = new ControllerCambioBoundary();
+        gestoreScene = new GestoreScene();
 
         // 1. Recupero Utente
         try {
@@ -248,7 +251,7 @@ public class ModificaProfilo implements Initializable {
 
         // Salva DB
         if (controllerUninaSwap.ModificaUtente(profiloUtente)) {
-            controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
+            gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
         } else {
             mostraErroreGenerico("Errore salvataggio DB");
         }
@@ -256,12 +259,13 @@ public class ModificaProfilo implements Initializable {
 
     @FXML
     public void onAnnullaClick(ActionEvent event) {
-        controllerCambioBoundary.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
+        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
     }
 
     // --- Gestione Immagine ---
     @FXML
     public void cambiaImmagineProfilo(ActionEvent event) {
+        notificaController.mostraMessaggio("Funzione cambio immagine in arrivo...", "INFO");
         FileChooser fc = new FileChooser();
         fc.setTitle("Seleziona Immagine");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
@@ -310,7 +314,7 @@ public class ModificaProfilo implements Initializable {
         if (erroreGenerico != null) {
             erroreGenerico.setText(msg);
             erroreGenerico.setVisible(true);
-            erroreGenerico.setManaged(true);
+            erroreGenerico.setManaged(false);
         }
     }
 }
