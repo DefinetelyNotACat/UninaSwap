@@ -23,7 +23,6 @@ public class Messaggio {
         bannerLabel.setText(messaggio);
         //resetto tutti gli stili
         bannerContainer.getStyleClass().removeAll("banner-success", "banner-error", "banner-info");
-        // 3. Aggiunge la classe giusta in base al tipo
         switch (tipo) {
             case "SUCCESS":
                 bannerContainer.getStyleClass().add("banner-success");
@@ -38,8 +37,6 @@ public class Messaggio {
                 bannerIcon.setText("ⓘ");
                 break;
         }
-
-        // 4. Rende visibile il banner
         bannerContainer.setVisible(true);
         bannerContainer.setManaged(true);
         if (delay != null) {

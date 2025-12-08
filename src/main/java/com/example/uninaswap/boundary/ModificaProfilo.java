@@ -3,6 +3,7 @@ package com.example.uninaswap.boundary;
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.Utente;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
@@ -10,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -26,7 +28,6 @@ import java.util.ResourceBundle;
 
 public class ModificaProfilo implements Initializable {
 
-    // --- Componenti FXML (Assicurati che gli fx:id nel file FXML coincidano) ---
     @FXML private TextField matricolaField;
     @FXML private TextField usernameField;
     @FXML private TextField emailField;
@@ -60,16 +61,20 @@ public class ModificaProfilo implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         controllerUninaSwap = ControllerUninaSwap.getInstance();
         gestoreScene = new GestoreScene();
-
-        // 1. Recupero Utente
         try {
             profiloUtente = controllerUninaSwap.getUtente();
         } catch (Exception e) {
             mostraErroreGenerico("Errore nel recupero utente.");
+            notificaController.mostraMessaggio("Errore nel recupero utente", "ERROR");
+            Platform.runLater(()->{
+                Stage stage = (Stage) salvaButton.getScene().getWindow();
+                gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, stage);
+            }
+
+            );
             return;
         }
 
-        // 2. Popolamento campi
         if (profiloUtente != null) {
             matricolaField.setText(profiloUtente.getMatricola());
             usernameField.setText(profiloUtente.getUsername());
@@ -219,7 +224,6 @@ public class ModificaProfilo implements Initializable {
             testoErrore.setManaged(false);
         }
     }
-
     // --- Logica Click Salva ---
     @FXML
     public void onSalvaClick(ActionEvent event) {
@@ -314,7 +318,7 @@ public class ModificaProfilo implements Initializable {
         if (erroreGenerico != null) {
             erroreGenerico.setText(msg);
             erroreGenerico.setVisible(true);
-            erroreGenerico.setManaged(false);
+            erroreGenerico.setManaged(true);
         }
     }
 }
