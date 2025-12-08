@@ -19,20 +19,32 @@ public class Messaggio {
 
     private PauseTransition delay;
 
-    public void mostraMessaggio(String messaggio, String tipo) {
+    private String messaggio;
+
+    private TIPI tipo;
+
+    public enum TIPI{
+        SUCCESS,
+        ERROR,
+        INFO
+    };
+
+    public void mostraMessaggio(String messaggio, TIPI tipo) {
+        this.messaggio = messaggio;
+        this.tipo = tipo;
         bannerLabel.setText(messaggio);
         //resetto tutti gli stili
         bannerContainer.getStyleClass().removeAll("banner-success", "banner-error", "banner-info");
         switch (tipo) {
-            case "SUCCESS":
+            case SUCCESS:
                 bannerContainer.getStyleClass().add("banner-success");
                 bannerIcon.setText("✔");
                 break;
-            case "ERROR":
+            case ERROR:
                 bannerContainer.getStyleClass().add("banner-error");
                 bannerIcon.setText("✘");
                 break;
-            case "INFO":
+            case INFO:
                 bannerContainer.getStyleClass().add("banner-info");
                 bannerIcon.setText("ⓘ");
                 break;
@@ -42,7 +54,7 @@ public class Messaggio {
         if (delay != null) {
             delay.stop();
         }
-        delay = new PauseTransition(Duration.seconds(5));
+        delay = new PauseTransition(Duration.seconds(8));
         delay.setOnFinished(event -> chiudiBanner());
         delay.play();
     }
@@ -50,5 +62,11 @@ public class Messaggio {
     public void chiudiBanner() {
         bannerContainer.setVisible(false);
         bannerContainer.setManaged(false);
+    }
+    public TIPI getTipo() {
+        return tipo;
+    }
+    public String getMessaggio() {
+        return messaggio;
     }
 }

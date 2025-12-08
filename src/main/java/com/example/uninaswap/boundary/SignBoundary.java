@@ -50,6 +50,9 @@ public class SignBoundary implements Initializable {
     @FXML
     private ImageView profileImageView;
 
+    @FXML
+    private Messaggio notificaController;
+
     private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9.]{6,64}@studenti\\.unina\\.it$";
     private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
     private static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
@@ -332,6 +335,12 @@ public class SignBoundary implements Initializable {
                 errorePassword.setVisible(false);
                 errorePassword.setManaged(false);
             }
+        }
+
+    }
+    public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
+        if (notificaController != null) {
+            notificaController.mostraMessaggio(testo, tipo);
         }
     }
 }

@@ -11,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -25,6 +24,8 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static com.example.uninaswap.boundary.Messaggio.TIPI.*;
 
 public class ModificaProfilo implements Initializable {
 
@@ -64,11 +65,9 @@ public class ModificaProfilo implements Initializable {
         try {
             profiloUtente = controllerUninaSwap.getUtente();
         } catch (Exception e) {
-            mostraErroreGenerico("Errore nel recupero utente.");
-            notificaController.mostraMessaggio("Errore nel recupero utente", "ERROR");
             Platform.runLater(()->{
                 Stage stage = (Stage) salvaButton.getScene().getWindow();
-                gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, stage);
+                gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, stage, "Errore nel recupero utente, Accedere o Registrarsi", ERROR);
             }
 
             );
@@ -269,7 +268,7 @@ public class ModificaProfilo implements Initializable {
     // --- Gestione Immagine ---
     @FXML
     public void cambiaImmagineProfilo(ActionEvent event) {
-        notificaController.mostraMessaggio("Funzione cambio immagine in arrivo...", "INFO");
+        notificaController.mostraMessaggio("Funzione cambio immagine in arrivo...", INFO);
         FileChooser fc = new FileChooser();
         fc.setTitle("Seleziona Immagine");
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
@@ -302,7 +301,6 @@ public class ModificaProfilo implements Initializable {
 
     private void impostaImmagineCircolare(Image img) {
         if (img == null || profileImageView == null) return;
-
         double min = Math.min(img.getWidth(), img.getHeight());
         double x = (img.getWidth() - min) / 2;
         double y = (img.getHeight() - min) / 2;

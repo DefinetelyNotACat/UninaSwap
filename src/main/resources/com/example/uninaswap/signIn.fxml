@@ -16,6 +16,15 @@
             fitToWidth="true" vbarPolicy="ALWAYS">
     <content>
         <VBox alignment="TOP_CENTER" styleClass="myPadding">
+
+            <VBox alignment="CENTER" fillWidth="false">
+                <fx:include source="banners.fxml" fx:id="notifica"/>
+
+                <padding>
+                    <Insets bottom="10.0"/>
+                </padding>
+            </VBox>
+
             <VBox alignment="CENTER" spacing="10">
                 <children>
                     <ImageView fitHeight="150" fitWidth="150" pickOnBounds="true" preserveRatio="true">
@@ -31,9 +40,10 @@
                           styleClass="description"/>
                 </children>
                 <padding>
-                    <Insets top="40.0" bottom="20.0"/>
+                    <Insets top="10.0" bottom="20.0"/>
                 </padding>
             </VBox>
+
             <VBox alignment="CENTER" spacing="30.0">
                 <children>
                     <VBox alignment="CENTER" spacing="13">
@@ -51,7 +61,7 @@
                                     <Text text="Password" styleClass="label"/>
                                     <PasswordField fx:id="passwordField" promptText="Password" styleClass="form-field"/>
                                     <Text text="Inserire una password corretta (almeno 8 caratteri massimo 20, almeno 1 maiuscola, almeno 1 minuscola, almeno 1 numero)"
-                                        fx:id="errorePassword" styleClass="error-text" visible="false" managed="false"/>
+                                          fx:id="errorePassword" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>
                             <VBox alignment="CENTER" spacing="5">
