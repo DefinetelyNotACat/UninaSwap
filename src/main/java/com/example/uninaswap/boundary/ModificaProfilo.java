@@ -3,6 +3,7 @@ package com.example.uninaswap.boundary;
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.Utente;
+import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -27,7 +28,7 @@ import java.util.ResourceBundle;
 
 import static com.example.uninaswap.boundary.Messaggio.TIPI.*;
 
-public class ModificaProfilo implements Initializable {
+public class ModificaProfilo implements Initializable, GestoreMessaggio {
 
     @FXML private TextField matricolaField;
     @FXML private TextField usernameField;
@@ -317,6 +318,12 @@ public class ModificaProfilo implements Initializable {
             erroreGenerico.setText(msg);
             erroreGenerico.setVisible(true);
             erroreGenerico.setManaged(true);
+        }
+    }
+    @Override
+    public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
+        if (notificaController != null) {
+            notificaController.mostraMessaggio(testo, tipo);
         }
     }
 }

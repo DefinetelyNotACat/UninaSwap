@@ -1,5 +1,6 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -29,9 +30,19 @@ public class GestoreScene {
     }
 
     // METODO 2: utile per i bottoni
-    public void CambiaScena(String pathFxml, String TitoloScene, ActionEvent actionEvent){
+    public void CambiaScena(String pathFxml, String TitoloScene, ActionEvent actionEvent, String messaggio, Messaggio.TIPI tipo){
         try {
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            // Riutilizzo della logica di sopra
+            CambiaScena(pathFxml, TitoloScene, stage, messaggio, tipo);
+        } catch (Exception e) {
+            System.out.println("Errore nell'estrarre lo stage dall'evento: " + e.getMessage());
+        }
+    }
+
+    public void CambiaScena(String pathFxml, String TitoloScene, ActionEvent event){
+        try {
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             // Riutilizzo della logica di sopra
             CambiaScena(pathFxml, TitoloScene, stage);
         } catch (Exception e) {
@@ -50,10 +61,15 @@ public class GestoreScene {
             stage.setScene(scene);
             stage.show();
             Object controller = loader.getController();
-            if (controller instanceof SignBoundary) {
-                ((SignBoundary) controller).mostraMessaggioEsterno(messaggio, tipo);
+            if(controller instanceof GestoreMessaggio){
+                ((GestoreMessaggio) controller).mostraMessaggioEsterno(messaggio, tipo);
             }
             //TODO! verificare per ogni boundary
+            /*
+            *
+            * ! ATTENZIONE ! POTREBBE NON ESSERE LA MIGLIOR IDEA
+            * DA DISCUTERE
+            * */
         }
         catch (Exception e){
             System.out.println("Errore " + e.getMessage());

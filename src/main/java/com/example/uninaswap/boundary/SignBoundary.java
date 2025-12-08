@@ -2,6 +2,7 @@ package com.example.uninaswap.boundary;
 
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
+import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
@@ -17,7 +18,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class SignBoundary implements Initializable {
+public class SignBoundary implements Initializable, GestoreMessaggio {
 
     @FXML
     private Text erroreCredenziali;
@@ -338,6 +339,7 @@ public class SignBoundary implements Initializable {
         }
 
     }
+    @Override
     public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
         if (notificaController != null) {
             notificaController.mostraMessaggio(testo, tipo);
