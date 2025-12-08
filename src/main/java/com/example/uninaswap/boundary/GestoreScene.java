@@ -10,6 +10,13 @@ import javafx.stage.Stage;
 import com.example.uninaswap.boundary.Messaggio;
 public class GestoreScene {
 
+    /* ============================================SPIEGAZIONE CODICE ============================================
+    * Ci sono diversi cambia scena, 2 sono utili per quando l'utente preme un bottone, gli altri 2 sono
+    * quando l'utente deve essere ridirezionato da un elemento che non è un bottone, esiste la variante con
+    * il messaggio da dare l'utente e quella senza
+    *
+    *
+    * */
     // METODO 1: utile per i menu
     public void CambiaScena(String pathFxml, String TitoloScene, Stage stage){
         try{
@@ -25,7 +32,7 @@ public class GestoreScene {
         }
         catch (Exception e){
             System.out.println("Errore " + e.getMessage());
-            e.printStackTrace(); // Utile per vedere l'errore completo
+            e.printStackTrace();
         }
     }
 
