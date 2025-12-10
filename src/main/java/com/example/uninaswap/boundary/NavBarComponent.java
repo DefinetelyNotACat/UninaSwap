@@ -26,6 +26,7 @@ public class NavBarComponent {
     private PauseTransition hideDelay;
     private final ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
     private final GestoreScene gestoreScene = new GestoreScene();
+
     @FXML
     public void initialize() {
         filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
@@ -45,15 +46,25 @@ public class NavBarComponent {
     public void aggiornaFotoProfilo() {
         try {
             Utente utente = controllerUninaSwap.getUtente();
+
             boolean caricato = false;
+            if (utente == null){
+                System.out.println("Utente e' null");
+            }if (utente.getPathImmagineProfilo() == null){
+                System.out.println("PathImmagineProfilo e' null");
+            }
 
             if (utente != null && utente.getPathImmagineProfilo() != null) {
                 File fileImmagine = new File(utente.getPathImmagineProfilo());
+                System.out.println("Java cerca il file qui: " + fileImmagine.getAbsolutePath());
+                System.out.println(" sono entrata nell'if del utente e utente path e il path dell'immagine e': " + utente.getPathImmagineProfilo());
+                System.out.println("Il file e: " + fileImmagine.exists());
                 if (fileImmagine.exists()) {
                     Image image = new Image(fileImmagine.toURI().toString());
                     fotoProfilo.setImage(image);
                     centraImmagine(fotoProfilo, image);
                     caricato = true;
+                    System.out.println("Caricata immagine");
                 }
             }
 
@@ -61,6 +72,7 @@ public class NavBarComponent {
                 Image defaultImg = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
                 fotoProfilo.setImage(defaultImg);
                 centraImmagine(fotoProfilo, defaultImg);
+                System.out.println("Immagine non trovata, caricata immagine di default");
             }
             applicaCerchio();
 
@@ -68,6 +80,7 @@ public class NavBarComponent {
             System.err.println("Errore caricamento foto profilo navbar: " + e.getMessage());
         }
     }
+
     private void centraImmagine(ImageView imageView, Image img) {
         if (img == null) return;
         double width = img.getWidth();
@@ -139,7 +152,9 @@ public class NavBarComponent {
         });
 
         // fotoProfilo.setCursor(javafx.scene.Cursor.HAND);
-    }    private void showmenuProfilo(MouseEvent event) {
+    }
+
+    private void showmenuProfilo(MouseEvent event) {
         if (menuProfilo.isShowing()) return;
 
         Point2D point = fotoProfilo.localToScreen(0, fotoProfilo.getBoundsInLocal().getHeight());
@@ -149,6 +164,7 @@ public class NavBarComponent {
             menuProfilo.show(fotoProfilo, event.getScreenX(), event.getScreenY());
         }
     }
+
     private MenuItem creaVoceMenu(String testo, String customClass) {
         MenuItem item = new MenuItem();
         Label label = new Label(testo);

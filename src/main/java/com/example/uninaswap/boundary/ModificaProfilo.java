@@ -247,7 +247,12 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
         profiloUtente.setUsername(nuovoUser);
         profiloUtente.setMatricola(nuovaMatr);
         String pathImg = (fileImmagineSelezionata != null) ? fileImmagineSelezionata.getAbsolutePath() : profiloUtente.getPathImmagineProfilo();
-        profiloUtente.setPathImmagineProfilo(pathImg);
+        try {
+            profiloUtente.modificaImmagineProfilo(pathImg);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         if (!nuovaPass.isEmpty()) {
             profiloUtente.setPassword(nuovaPass);
