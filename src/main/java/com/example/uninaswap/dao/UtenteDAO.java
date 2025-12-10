@@ -45,6 +45,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
             return false;
         }
     }
+
     public boolean eliminaUtente(int id) {
         String sql = "DELETE FROM utente WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -83,6 +84,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return utente;
     }
+
     public Utente ottieniUtente(String campoRicerca) {
         Utente utente = null;
         String sql;
@@ -118,6 +120,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return utente;
     }
+
     public ArrayList<Utente> ottieniTuttiUtenti() {
         ArrayList<Utente> tuttiUtenti = new ArrayList<>();
         String sql = "SELECT * FROM utente";
@@ -156,6 +159,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return false;
     }
+
     public boolean verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) {
         String sql = "SELECT COUNT(*) FROM utente WHERE username = ? OR email = ? OR matricola = ?";
 

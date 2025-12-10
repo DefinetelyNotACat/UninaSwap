@@ -41,9 +41,13 @@ public class Utente {
         //
         Path cartellaUtente = Paths.get(pathUtenti, String.valueOf(this.id), "immagini");
 
+        System.out.println("La cartella per le immagini e': " + Paths.get(cartellaUtente.toString()));
+
         //Se le cartelle non esistono le crea tutte in una sola volta
         //
         if (!Files.exists(cartellaUtente)) {
+            System.out.println("La cartella per le immagini non esiste, la creo");
+
             Files.createDirectories(cartellaUtente);
         }
 

@@ -13,26 +13,31 @@ public class ControllerUninaSwap {
     private AnnuncioDAO annuncioDAO = new AnnuncioDAO();
     private Utente utente;
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-    private ControllerUninaSwap(){
-    }
+
+    private ControllerUninaSwap(){}
+
     public static ControllerUninaSwap getInstance() {
         if (istanziato == null) {
             istanziato = new ControllerUninaSwap();
         }
         return istanziato;
     }
+
     public boolean EffettuaSignIn(String Username, String Email , String Matricola,String Password) {
         return true;
     }
+
     public boolean VerificaLogIn(String Username, String Email , String Matricola,String Password) {
         return true;
     }
+
     public Utente getUtente() throws Exception{
         if(this.utente != null) {
             return this.utente;
         }
         throw new Exception("Utente non registrato!");
     }
+
     public boolean ModificaUtente(Utente utenteModificato) {
         try {
             // 1. Recuperiamo la versione attuale dell'utente dal DB usando l'email (che è univoca)
@@ -66,52 +71,71 @@ public class ControllerUninaSwap {
             return false;
         }
     }
+
     public ArrayList<Utente> OttieniUtenti(){
         return null;
     }
+
     public boolean VerificaPrezzoAnnuncio(Offerta Offerta, Annuncio Annuncio) {
         return true;
     }
+
     public ArrayList<Annuncio> OttieniAnnunci(){
         return null;
     }
+
     public ArrayList<Offerta> OttieniOfferte() {return null;}
+
     public ArrayList<Offerta> OttieniLeMieOfferte(){return null;}
+
     public boolean SalvaOggetto(Oggetto Oggetto){
         return true;
     }
+
     public boolean Recensire (Utente utenteRecensore, Utente utenteRecensito){
         return true;
     }
+
     public boolean SalvaOggetto(Oggetto oggetto, Utente utente){
         return true;
     }
+
     public boolean EliminaOggetto(Oggetto oggetto, Utente utente){
         return true;
     }
+
     public ArrayList<Oggetto> VediIMieiOggetti(Utente utente){
         return null;
     }
+
     public boolean PubblicaAnnuncio(Annuncio annuncio){
         return true;
     }
+
     public boolean EliminaAnnuncio(Annuncio annuncio){
         return true;
     }
+
     public boolean EseguiOfferta(Utente utente, Offerta offerta){
         return true;
     }
+
     public boolean ModificaOfferta(Offerta offerta){
         return true;
     }
+
     public boolean EliminaOfferta(Offerta offerta){
         return true;
     }
+
     public void setUtente(Utente utente) {
         this.utente = utente;
     }
+
     public ArrayList<Offerta> LeMieOfferte(Utente utente){return null;}
+
     public ArrayList<Offerta> OfferteRicevuteAnnuncio(){return null;}
+
     public void creaUtente(
             String username, String password, String matricola, String email
             ){
@@ -129,6 +153,7 @@ public class ControllerUninaSwap {
         }
 
     }
+
     public void accediUtente(String email, String password) throws Exception {
         Utente utenteTrovato = utenteDAO.ottieniUtente(email);
         if (utenteTrovato == null) {
@@ -143,6 +168,7 @@ public class ControllerUninaSwap {
             throw new Exception("Credenziali Errate! Password non combaciano");
         }
     }
+
     public void registraUtente(Utente utente){
         try{
             utenteDAO.salvaUtente(utente);
@@ -153,18 +179,23 @@ public class ControllerUninaSwap {
         }
 
     }
+
     public String hashPassword(String password){
         return passwordEncoder.encode(password);
     }
+
     public boolean checkPassword(String password, String passwordHashata) {
         return passwordEncoder.matches(password, passwordHashata);
     }
+
     public void popolaDB() throws Exception {
         PopolaDBPostgreSQL.creaDB();
     }
+
     public void cancellaDB(){
         PopolaDBPostgreSQL.cancellaDB();
     }
+
     public boolean pubblicaRecensione(Utente recensito, Utente recensore, int voto, String commento) {
         Recensione recensione = new Recensione(recensito.getEmail(), recensore.getEmail(), voto);
         if (commento != null) {
@@ -181,10 +212,12 @@ public class ControllerUninaSwap {
             return false;
         }
     }
+
     //Metodo per quando si modifica l'utente
     public boolean verificaCredenzialiDuplicate(String nuovoUsername, String nuovaMatricola, String emailAttuale) {
         return utenteDAO.verificaEsistenzaAltroUtente(nuovoUsername, nuovaMatricola, emailAttuale);
     }
+
     //Metodo per quando si crea l'utente
     public boolean verificaUtenteUnico(String username, String email, String matricola){
         return utenteDAO.verificaEsistenzaUtenteRegistrazione(username, email, matricola);
