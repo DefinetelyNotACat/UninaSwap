@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.example.uninaswap.dao.*;
 import com.example.uninaswap.entity.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class ControllerUninaSwap {
     private static ControllerUninaSwap istanziato = null;
@@ -33,40 +34,32 @@ public class ControllerUninaSwap {
         }
         throw new Exception("Utente non registrato!");
     }
-    public boolean ModificaUtente(Utente utenteModificato) {
+    public boolean ModificaUtente(Utente utenteModificato) throws Exception{
         try {
-            // 1. Recuperiamo la versione attuale dell'utente dal DB usando l'email (che è univoca)
-            //    Questo ci serve per vedere la password vecchia (hashata)
             Utente utenteNelDB = utenteDAO.ottieniUtente(utenteModificato.getEmail());
 
-            if (utenteNelDB == null) {
-                System.out.println("Errore: Utente non trovato nel DB per la modifica.");
-                return false;
-            }
+            if (utenteNelDB == null) return false;
 
-            // 2. Controllo Password
-            // Se la password nell'oggetto modificato è DIVERSA da quella nel DB,
-            // significa che la Boundary ha settato una nuova password in chiaro.
-            if (!utenteModificato.getPassword().equals(utenteNelDB.getPassword())) {
-                System.out.println("Rilevata nuova password. Eseguo l'hashing...");
-                String passwordHashata = passwordEncoder.encode(utenteModificato.getPassword());
-                utenteModificato.setPassword(passwordHashata);
+            String passwordInserita = utenteModificato.getPassword(); // Es: "Ciro123"
+            String passwordNelDB = utenteNelDB.getPassword();        // Es: "$2a$10$abc..."
+            if (passwordEncoder.matches(passwordInserita, passwordNelDB)) {
+                System.out.println("L'utente ha inserito la stessa password che aveva già.");
+                throw new Exception("Inserire password diversa dalla propria");
             } else {
-                System.out.println("La password non è cambiata. Mantengo il vecchio hash.");
+                System.out.println("L'utente ha inserito una password DIVERSA. La cambio.");
+                String nuovoHash = passwordEncoder.encode(passwordInserita);
+                utenteModificato.setPassword(nuovoHash);
+
             }
 
-            // 3. Aggiorniamo l'utente locale del controller
             this.utente = utenteModificato;
-
-            // 4. Salviamo nel DB
             return utenteDAO.modificaUtente(utenteModificato);
 
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-    }
-    public ArrayList<Utente> OttieniUtenti(){
+    }    public ArrayList<Utente> OttieniUtenti(){
         return null;
     }
     public boolean VerificaPrezzoAnnuncio(Offerta Offerta, Annuncio Annuncio) {
