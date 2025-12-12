@@ -37,6 +37,7 @@ public class ControllerUninaSwap {
     public boolean ModificaUtente(Utente utenteModificato) throws Exception{
         try {
             Utente utenteNelDB = utenteDAO.ottieniUtente(utenteModificato.getEmail());
+            System.out.println("Nel controller\nUntente preso con id: " + utenteNelDB.getId());
 
             if (utenteNelDB == null) return false;
 

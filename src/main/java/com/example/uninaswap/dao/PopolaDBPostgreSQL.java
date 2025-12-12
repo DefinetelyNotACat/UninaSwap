@@ -11,6 +11,8 @@ public class PopolaDBPostgreSQL {
 
         try (Connection conn = PostgreSQLConnection.getConnection();
              Statement stmt = conn.createStatement()) {
+
+            // Creazione Enum
             stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NONDISPONIBILE');");
             stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME_NUOVO', 'OTTIME_CONDIZIONI', 'BUONE_CONDIZIONI', 'DISCRETE_CONDIZIONI', 'CATTIVE_CONDIZIONI');");
             stmt.executeUpdate("CREATE TYPE disponibilita_oggetto AS ENUM ('DISPONIBILE', 'OCCUPATO', 'VENDUTO', 'REGALATO', 'SCAMBIATO');");
@@ -18,8 +20,10 @@ public class PopolaDBPostgreSQL {
 
             System.out.println("TIPI ENUM CREATI.");
 
+            // MODIFICA: Aggiunto ID numerico, matricola diventa UNIQUE
             String queryUtente = "CREATE TABLE UTENTE (" +
-                    "matricola VARCHAR(20) PRIMARY KEY, " +
+                    "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
+                    "matricola VARCHAR(20) UNIQUE NOT NULL, " +
                     "email VARCHAR(100) UNIQUE NOT NULL, " +
                     "username VARCHAR(50) NOT NULL, " +
                     "password VARCHAR(255) NOT NULL, " +
@@ -42,9 +46,10 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryCategoria);
             System.out.println("Tabella CATEGORIA CREATA");
 
+            // MODIFICA: FK punta a utente_id (INTEGER)
             String queryAnnuncio = "CREATE TABLE ANNUNCIO (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
-                    "utente_matricola VARCHAR(20) NOT NULL, " +
+                    "utente_id INTEGER NOT NULL, " +
                     "sede_id INTEGER NOT NULL, " +
                     "tipo_annuncio VARCHAR(20) NOT NULL, " +
                     "stato stato_annuncio, " +
@@ -54,7 +59,7 @@ public class PopolaDBPostgreSQL {
                     "prezzo DOUBLE PRECISION, " +
                     "prezzo_minimo DOUBLE PRECISION, " +
                     "nomi_items_scambio TEXT, " +
-                    "CONSTRAINT fk_utente_annuncio FOREIGN KEY (utente_matricola) REFERENCES UTENTE(matricola) ON DELETE CASCADE, " +
+                    "CONSTRAINT fk_utente_annuncio FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE, " +
                     "CONSTRAINT fk_sede_annuncio FOREIGN KEY (sede_id) REFERENCES SEDE(id) ON DELETE SET NULL" +
                     ");";
             stmt.executeUpdate(queryAnnuncio);
@@ -83,9 +88,10 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryOggettoCategoria);
             System.out.println("Tabella OGGETTO_CATEGORIA CREATA");
 
+            // MODIFICA: FK punta a utente_id (INTEGER)
             String queryOfferta = "CREATE TABLE OFFERTA (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
-                    "utente_matricola VARCHAR(20) NOT NULL, " +
+                    "utente_id INTEGER NOT NULL, " +
                     "annuncio_id INTEGER NOT NULL, " +
                     "tipo_offerta VARCHAR(20), " +
                     "messaggio TEXT, " +
@@ -93,20 +99,21 @@ public class PopolaDBPostgreSQL {
                     "orario_inizio TIME, " +
                     "orario_fine TIME, " +
                     "prezzo_offerta DOUBLE PRECISION, " +
-                    "CONSTRAINT fk_utente_offerta FOREIGN KEY (utente_matricola) REFERENCES UTENTE(matricola) ON DELETE CASCADE, " +
+                    "CONSTRAINT fk_utente_offerta FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE, " +
                     "CONSTRAINT fk_annuncio_offerta FOREIGN KEY (annuncio_id) REFERENCES ANNUNCIO(id) ON DELETE CASCADE" +
                     ");";
             stmt.executeUpdate(queryOfferta);
             System.out.println("Tabella OFFERTA CREATA");
 
+            // MODIFICA: FK puntano a recensore_id e recensito_id (INTEGER)
             String queryRecensione = "CREATE TABLE RECENSIONE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
-                    "recensore_matricola VARCHAR(20) NOT NULL, " +
-                    "recensito_matricola VARCHAR(20) NOT NULL, " +
+                    "recensore_id INTEGER NOT NULL, " +
+                    "recensito_id INTEGER NOT NULL, " +
                     "voto INTEGER CHECK (voto >= 1 AND voto <= 5), " +
                     "commento TEXT, " +
-                    "CONSTRAINT fk_recensore FOREIGN KEY (recensore_matricola) REFERENCES UTENTE(matricola) ON DELETE CASCADE, " +
-                    "CONSTRAINT fk_recensito FOREIGN KEY (recensito_matricola) REFERENCES UTENTE(matricola) ON DELETE CASCADE" +
+                    "CONSTRAINT fk_recensore FOREIGN KEY (recensore_id) REFERENCES UTENTE(id) ON DELETE CASCADE, " +
+                    "CONSTRAINT fk_recensito FOREIGN KEY (recensito_id) REFERENCES UTENTE(id) ON DELETE CASCADE" +
                     ");";
             stmt.executeUpdate(queryRecensione);
             System.out.println("Tabella RECENSIONE CREATA");
@@ -118,13 +125,12 @@ public class PopolaDBPostgreSQL {
             e.printStackTrace();
         }
     }
+
     public static void cancellaDB(){
         try(Connection conn = PostgreSQLConnection.getConnection();
             Statement stmt = conn.createStatement();){
-            stmt.executeUpdate("DROP TYPE IF EXISTS stato_annuncio CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS condizione_oggetto CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS stato_offerta CASCADE;");
+
+            // Ordine di cancellazione: dalle tabelle figlie alle tabelle padri
             stmt.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");
@@ -133,11 +139,13 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate("DROP TABLE IF EXISTS CATEGORIA CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS SEDE CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS UTENTE CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS categoria CASCADE;");
+
+            // Cancellazione tipi enum
             stmt.executeUpdate("DROP TYPE IF EXISTS stato_annuncio CASCADE;");
             stmt.executeUpdate("DROP TYPE IF EXISTS condizione_oggetto CASCADE;");
             stmt.executeUpdate("DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;");
             stmt.executeUpdate("DROP TYPE IF EXISTS stato_offerta CASCADE;");
+
             System.out.println("PULIZIA COMPLETATA.");
         } catch (SQLException e) {
             throw new RuntimeException(e);
