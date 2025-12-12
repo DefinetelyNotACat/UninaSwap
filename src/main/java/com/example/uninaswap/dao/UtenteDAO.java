@@ -77,6 +77,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
                     );
                     utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
                     utente.setId(id);
+                    System.out.println("utente trovato e con id: " + id + "");
                 }
             }
         } catch (Exception e) {
@@ -92,8 +93,10 @@ public class UtenteDAO implements GestoreUtenteDAO {
         // 1. Decidiamo la query in base al contenuto della stringa
         if (campoRicerca.contains("@")) {
             sql = "SELECT * FROM utente WHERE email = ?";
+            System.out.println("email trovata");
         } else {
             sql = "SELECT * FROM utente WHERE matricola = ?";
+            System.out.println("matricola trovata");
         }
 
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -109,6 +112,10 @@ public class UtenteDAO implements GestoreUtenteDAO {
                             rs.getString("matricola"),
                             rs.getString("email")
                     );
+                    utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
+                    utente.setId(rs.getInt("id"));
+                    int id = utente.getId();
+                    System.out.println("utente trovato e con id: " + id + "");
 
                     // 3. Corretto il nome colonna del DB: "immagine_profilo" invece di "pathImmagineProfilo"
                     utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));

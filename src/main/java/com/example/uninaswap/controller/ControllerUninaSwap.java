@@ -43,6 +43,7 @@ public class ControllerUninaSwap {
             // 1. Recuperiamo la versione attuale dell'utente dal DB usando l'email (che è univoca)
             //    Questo ci serve per vedere la password vecchia (hashata)
             Utente utenteNelDB = utenteDAO.ottieniUtente(utenteModificato.getEmail());
+            System.out.println("Nel controller\nUntente preso con id: " + utenteNelDB.getId());
 
             if (utenteNelDB == null) {
                 System.out.println("Errore: Utente non trovato nel DB per la modifica.");

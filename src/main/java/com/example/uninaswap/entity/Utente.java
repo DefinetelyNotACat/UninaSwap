@@ -36,7 +36,7 @@ public class Utente {
     //Metodi di logica
     //
     public String modificaImmagineProfilo(String pathImmagineCaricata) throws IOException {
-
+        System.out.println("Sono nella modifica e l'id e': " + this.id);
         //Genera il path di destinazione dell'immagine: dati_utenti/{id}/immagini
         //
         Path cartellaUtente = Paths.get(pathUtenti, String.valueOf(this.id), "immagini");

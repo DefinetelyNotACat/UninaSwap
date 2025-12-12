@@ -10,7 +10,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         PopolaDBPostgreSQL popolaDB = new PopolaDBPostgreSQL();
-        popolaDB.cancellaDB();
+        //popolaDB.cancellaDB();
         popolaDB.creaDB();
         System.out.println("Hello World!");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("signIn.fxml"));
