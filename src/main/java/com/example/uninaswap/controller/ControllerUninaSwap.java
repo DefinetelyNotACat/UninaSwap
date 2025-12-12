@@ -126,6 +126,7 @@ public class ControllerUninaSwap {
         }
         catch(Exception e){
             System.out.println("Errore! Utente non salvato " + e.getMessage());
+
         }
 
     }
@@ -143,13 +144,13 @@ public class ControllerUninaSwap {
             throw new Exception("Credenziali Errate! Password non combaciano");
         }
     }
-    public void registraUtente(Utente utente){
+    public void registraUtente(Utente utente) throws Exception{
         try{
             utenteDAO.salvaUtente(utente);
             System.out.println("Utente registrato");
         }
         catch(Exception e){
-            System.out.println("Errore! Utente non salvato " + e.getMessage());
+            throw new Exception("Errore! Utente non salvato " + e.getMessage());
         }
 
     }

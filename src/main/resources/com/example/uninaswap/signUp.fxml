@@ -79,8 +79,6 @@
                                 <children>
                                     <Text text="Conferma Password" styleClass="label"/>
                                     <PasswordField fx:id="confermaPasswordField" promptText="Conferma Password" styleClass="form-field"/>
-                                    <Text text="Le 2 password devono essere identiche"
-                                          fx:id="erroreConfermaPassword" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>
 
@@ -92,6 +90,8 @@
                             <Button fx:id="confermaButton" onAction="#onConfermaClick" text="Conferma" styleClass="button"/>
                         </children>
                     </HBox>
+                    <Text text="Esiste già un utente con queste credenziali"
+                          fx:id="erroreUtenteEsistente" styleClass="error-text" visible="false" managed="false"/>
                 </children>
                 <padding>
                     <Insets bottom="20.0"/>

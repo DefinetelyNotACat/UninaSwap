@@ -8,7 +8,7 @@ import com.example.uninaswap.interfaces.GestoreUtenteDAO;
 
 public class UtenteDAO implements GestoreUtenteDAO {
 
-    public boolean salvaUtente(Utente utente) {
+    public boolean salvaUtente(Utente utente){
         String sql = "INSERT INTO utente (username, password, matricola, email, immagine_profilo) VALUES ( ?, ?, ?, ?, ?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {

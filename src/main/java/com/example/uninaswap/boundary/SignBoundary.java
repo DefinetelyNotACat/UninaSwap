@@ -2,6 +2,7 @@ package com.example.uninaswap.boundary;
 
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
+import com.example.uninaswap.dao.PopolaDBPostgreSQL;
 import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -19,7 +20,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SignBoundary implements Initializable, GestoreMessaggio {
-
+    @FXML
+    private Text erroreUtenteEsistente;
     @FXML
     private Text erroreCredenziali;
     @FXML
@@ -77,11 +79,22 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
                             matricolaField.getText()
                     );
                     if (esisteGia) {
-                       // TODO! MESSAGGIO ERRORE
                         System.out.println("Registrazione bloccata: Utente duplicato.");
+                        if (erroreUtenteEsistente != null) {
+                            erroreUtenteEsistente.setVisible(true);
+                            erroreUtenteEsistente.setManaged(true);
+                        }
                     } else {
-                        registraUtente();
-                        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+                        try {
+                            registraUtente();
+                            gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+                        }catch (Exception e){
+                            System.out.println("Errore! " + e.getMessage() + "Esiste un altro account con questa email ");
+                            erroreUtenteEsistente.setManaged(true);
+                            erroreUtenteEsistente.setVisible(true);
+                            erroreUtenteEsistente.setText(e.getMessage());
+
+                        }
                     }
                 }
         } catch (Exception e) {
@@ -112,6 +125,11 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = ControllerUninaSwap.getInstance();
+//        try {
+//            controllerUninaSwap.popolaDB();
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
 
         // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
         if (profileImageView != null) {
@@ -187,15 +205,19 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
         }
     }
 
-    private void registraUtente() {
+    private void registraUtente() throws Exception{
         String pathImmagine = null;
         String username = usernameField.getText();
         String password = passwordField.getText();
         String matricola = matricolaField.getText();
         String email = emailField.getText();
-        //Ho fatto che la registrazione utente prevede nel costruttore come path di base per l'immagine quella di default
+        // Ho fatto che la registrazione utente prevede nel costruttore come path di base per l'immagine quella di default
         System.out.println("immagine profilo a path: " + pathImmagine);
-        controllerUninaSwap.creaUtente(username, password, matricola, email);
+        try {
+            controllerUninaSwap.creaUtente(username, password, matricola, email);
+        }catch (Exception e){
+            throw new Exception(e.getMessage());
+        }
     }
 
     private void validaPasswords() {
@@ -272,6 +294,10 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
         if (erroreCredenziali != null) {
             erroreCredenziali.setVisible(false);
             erroreCredenziali.setManaged(false);
+        }
+        if(erroreUtenteEsistente != null){
+            erroreUtenteEsistente.setVisible(false);
+            erroreUtenteEsistente.setManaged(false);
         }
         if (field == usernameField || field == matricolaField) {
             boolean eVuoto = newValue == null || newValue.trim().isEmpty();
