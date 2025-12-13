@@ -254,10 +254,14 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
         }
 
         // Salva DB
-        if (controllerUninaSwap.ModificaUtente(profiloUtente)) {
-            gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
-        } else {
-            mostraErroreGenerico("Errore salvataggio DB");
+        try {
+            if (controllerUninaSwap.ModificaUtente(profiloUtente)) {
+                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
+            } else {
+                mostraErroreGenerico("Errore salvataggio DB");
+            }
+        } catch (Exception e) {
+            erroreGenerico.setText(e.getMessage());
         }
     }
 
