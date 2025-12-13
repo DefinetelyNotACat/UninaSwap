@@ -2,7 +2,6 @@ package com.example.uninaswap.boundary;
 
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
-import com.example.uninaswap.dao.PopolaDBPostgreSQL;
 import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -83,12 +82,14 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
                         if (erroreUtenteEsistente != null) {
                             erroreUtenteEsistente.setVisible(true);
                             erroreUtenteEsistente.setManaged(true);
+                            erroreUtenteEsistente.setText("Registrazione bloccata: Esiste già un utente con queste credenziali");
                         }
                     } else {
                         try {
                             registraUtente();
                             gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
                         }catch (Exception e){
+                            System.out.println("Exception riga 91 eseguita");
                             System.out.println("Errore! " + e.getMessage() + "Esiste un altro account con questa email ");
                             erroreUtenteEsistente.setManaged(true);
                             erroreUtenteEsistente.setVisible(true);
@@ -363,7 +364,6 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
                 errorePassword.setManaged(false);
             }
         }
-
     }
     @Override
     public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {

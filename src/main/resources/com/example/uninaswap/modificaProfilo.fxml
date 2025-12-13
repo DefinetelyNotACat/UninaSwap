@@ -64,7 +64,7 @@
                     <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Username" styleClass="label"/>
-                            <TextField fx:id="usernameField" styleClass="form-field"/>
+                            <TextField fx:id="usernameField" styleClass="form-field" editable="false" style="-fx-opacity: 0.7;"/>
                             <Text text="Username non valido" fx:id="erroreUsername" styleClass="error-text" visible="false" managed="false"/>
                         </children>
                     </VBox>

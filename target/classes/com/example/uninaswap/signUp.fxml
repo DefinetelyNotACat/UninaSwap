@@ -90,7 +90,7 @@
                             <Button fx:id="confermaButton" onAction="#onConfermaClick" text="Conferma" styleClass="button"/>
                         </children>
                     </HBox>
-                    <Text text="Esiste già un utente con queste credenziali"
+                    <Text text=""
                           fx:id="erroreUtenteEsistente" styleClass="error-text" visible="false" managed="false"/>
                 </children>
                 <padding>
