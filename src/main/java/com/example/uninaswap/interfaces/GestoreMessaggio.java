@@ -1,5 +1,4 @@
 package com.example.uninaswap.interfaces;
-
 import com.example.uninaswap.boundary.Messaggio;
 
 public interface GestoreMessaggio {
