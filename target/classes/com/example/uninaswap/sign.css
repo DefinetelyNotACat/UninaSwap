@@ -53,7 +53,7 @@
 }
 .error-text {
     -fx-fill: #ff4444; 
-    -fx-font-size: 11px;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
 }
 .log-error{
