@@ -180,12 +180,8 @@ public class ControllerUninaSwap {
         return utenteDAO.verificaEsistenzaAltroUtente(nuovoUsername, nuovaMatricola, emailAttuale);
     }
     //Metodo per quando si crea l'utente
-    public void verificaUtenteUnico(String username, String email, String matricola) throws Exception{
-        try {
+    public void verificaUtenteUnico(String username, String email, String matricola) throws Exception {
             utenteDAO.verificaEsistenzaUtenteRegistrazione(username, email, matricola);
-        } catch (Exception e) {
-            throw e;
-        }
     }
 }
 
