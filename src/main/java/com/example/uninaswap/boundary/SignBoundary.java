@@ -68,45 +68,39 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
         try {
-                if (confermaPasswordField == null) {
-                    accediUtente();
-                    gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
-                } else {
-                    boolean esisteGia = controllerUninaSwap.verificaUtenteUnico(
+            if (confermaPasswordField == null) {
+                // --- LOGIN ---
+                accediUtente();
+                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+            }
+            // --- SIGN-UP ---
+            else {
+                try {
+                    controllerUninaSwap.verificaUtenteUnico(
                             usernameField.getText(),
                             emailField.getText(),
                             matricolaField.getText()
                     );
-                    if (esisteGia) {
-                        System.out.println("Registrazione bloccata: Utente duplicato.");
-                        if (erroreUtenteEsistente != null) {
-                            erroreUtenteEsistente.setVisible(true);
-                            erroreUtenteEsistente.setManaged(true);
-                            erroreUtenteEsistente.setText("Registrazione bloccata: Esiste già un utente con queste credenziali");
-                        }
-                    } else {
-                        try {
-                            registraUtente();
-                            gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
-                        }catch (Exception e){
-                            System.out.println("Exception riga 91 eseguita");
-                            System.out.println("Errore! " + e.getMessage() + "Esiste un altro account con questa email ");
-                            erroreUtenteEsistente.setManaged(true);
-                            erroreUtenteEsistente.setVisible(true);
-                            erroreUtenteEsistente.setText(e.getMessage());
+                    registraUtente();
+                    gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
 
-                        }
+                } catch (Exception e) {
+                    System.out.println("Eccezione registrazione catturata: " + e.getMessage());
+                    if (erroreUtenteEsistente != null) {
+                        erroreUtenteEsistente.setManaged(true);
+                        erroreUtenteEsistente.setVisible(true);
+                        erroreUtenteEsistente.setText(e.getMessage());
                     }
                 }
+            }
         } catch (Exception e) {
-            System.out.println("Errore! " + e.getMessage());
+            System.out.println("Errore login/generico! " + e.getMessage());
             if (erroreCredenziali != null) {
                 erroreCredenziali.setVisible(true);
                 erroreCredenziali.setManaged(true);
             }
         }
     }
-
     private void accediUtente() throws Exception {
         String email = emailField.getText();
         String password = passwordField.getText();

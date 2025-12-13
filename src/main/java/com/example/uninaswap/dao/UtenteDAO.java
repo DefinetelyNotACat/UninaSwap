@@ -156,8 +156,8 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return false;
     }
-    public boolean verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) {
-        String sql = "SELECT COUNT(*) FROM utente WHERE username = ? OR email = ? OR matricola = ?";
+    public void verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) throws Exception{
+        String sql = "SELECT username, email, matricola FROM utente WHERE username = ? OR email = ? OR matricola = ?";
 
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
@@ -165,16 +165,30 @@ public class UtenteDAO implements GestoreUtenteDAO {
             query.setString(1, username);
             query.setString(2, email);
             query.setString(3, matricola);
-
             try (ResultSet rs = query.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt(1) > 0;
+                    String nomeutente = rs.getString(1);
+                    String emailutente = rs.getString(2);
+                    String matricolautente = rs.getString(3);
+
+                    System.out.println(nomeutente);
+
+                    if(username.equals(nomeutente)){
+                        //TODO! EXCEPTION USERNAME UGUALE
+                        throw new Exception("Username già preso");
+                    }
+                    else if(email.equals(emailutente)){
+                        //TODO! EXCEPTION EMAIL UGUALE
+                        throw new Exception("email già presa");
+
+                    }
+                    else if(matricola.equals(matricolautente)){
+                        //TODO! EXCEPTION MATRICOLA UGUALE
+                        throw new Exception("Matricola già presa");
+                    }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return true;
     }
 
 }
