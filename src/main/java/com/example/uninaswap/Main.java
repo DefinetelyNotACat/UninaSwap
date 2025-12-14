@@ -1,5 +1,4 @@
 package com.example.uninaswap;
-import com.example.uninaswap.dao.PopolaDBPostgreSQL;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,9 +8,6 @@ import javafx.scene.image.Image;
 public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        PopolaDBPostgreSQL popolaDB = new PopolaDBPostgreSQL();
-        //popolaDB.cancellaDB();
-        popolaDB.creaDB();
         System.out.println("Hello World!");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("signIn.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
