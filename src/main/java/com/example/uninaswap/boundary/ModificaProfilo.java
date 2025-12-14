@@ -74,13 +74,11 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
             );
             return;
         }
-
         if (profiloUtente != null) {
             matricolaField.setText(profiloUtente.getMatricola());
             usernameField.setText(profiloUtente.getUsername());
             emailField.setText(profiloUtente.getEmail());
             emailField.setDisable(true); // Email non modificabile
-
             caricaImmagineProfilo();
         }
 
@@ -251,6 +249,7 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
 
         if (!nuovaPass.isEmpty()) {
             profiloUtente.setPassword(nuovaPass);
+            System.out.println("nuova password vale " + nuovaPass);
         }
 
         // Salva DB
@@ -261,6 +260,7 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
                 mostraErroreGenerico("Errore salvataggio DB");
             }
         } catch (Exception e) {
+
             erroreGenerico.setText(e.getMessage());
         }
     }

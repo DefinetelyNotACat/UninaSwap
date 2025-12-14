@@ -102,6 +102,7 @@
                             <Button fx:id="salvaButton" text="Salva Modifiche" onAction="#onSalvaClick" styleClass="button"/>
                         </children>
                     </HBox>
+                    <Text fx:id="erroreGenerico"  visible="false" managed="false"/>
                 </children>
             </VBox>
         </VBox>

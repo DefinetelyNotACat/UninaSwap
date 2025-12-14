@@ -22,6 +22,10 @@ public class ControllerUninaSwap {
         }
         return istanziato;
     }
+    public void setUtente(Utente utente) {
+        this.utente = utente;
+    }
+
     public boolean EffettuaSignIn(String Username, String Email , String Matricola,String Password) {
         return true;
     }
@@ -34,22 +38,32 @@ public class ControllerUninaSwap {
         }
         throw new Exception("Utente non registrato!");
     }
-    public boolean ModificaUtente(Utente utenteModificato) throws Exception{
+    public boolean ModificaUtente(Utente utenteModificato) throws Exception {
         try {
             Utente utenteNelDB = utenteDAO.ottieniUtente(utenteModificato.getEmail());
-
+            // se non esiste nel DB allora usciamo
             if (utenteNelDB == null) return false;
 
-            String passwordInserita = utenteModificato.getPassword(); // Es: "Ciro123"
-            String passwordNelDB = utenteNelDB.getPassword();        // Es: "$2a$10$abc..."
-            if (passwordEncoder.matches(passwordInserita, passwordNelDB)) {
-                System.out.println("L'utente ha inserito la stessa password che aveva già.");
-                throw new Exception("Inserire password diversa dalla propria");
-            } else {
-                System.out.println("L'utente ha inserito una password DIVERSA. La cambio.");
-                String nuovoHash = passwordEncoder.encode(passwordInserita);
-                utenteModificato.setPassword(nuovoHash);
+            String passwordAttuale = utenteModificato.getPassword();
+            System.out.println("Password attuale vale " + passwordAttuale);
+            String passwordNelDB = utenteNelDB.getPassword();
 
+            // Se la passwordattuale è uguale a quella nel DB
+            if (passwordAttuale.equals(passwordNelDB)) {
+                System.out.println("La password non è stata modificata (Hash identici). Non faccio nulla.");
+                // Do not re-encode. It's already correct.
+            }
+            // CASE 2: The password is DIFFERENT. This means it is likely RAW TEXT entered by the user.
+            else {
+                // Check if the user accidentally typed their old password in plain text.
+                if (passwordEncoder.matches(passwordAttuale, passwordNelDB)) {
+                    throw new Exception("Inserire una password diversa da quella attuale.");
+                }
+
+                // It's a new, valid raw password. Hash it.
+                System.out.println("Nuova password rilevata. Eseguo l'hashing.");
+                String nuovoHash = passwordEncoder.encode(passwordAttuale);
+                utenteModificato.setPassword(nuovoHash);
             }
 
             this.utente = utenteModificato;
@@ -57,7 +71,8 @@ public class ControllerUninaSwap {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            // It is better to re-throw the exception so the Boundary can catch the specific message
+            throw e;
         }
     }    public ArrayList<Utente> OttieniUtenti(){
         return null;
@@ -99,9 +114,6 @@ public class ControllerUninaSwap {
     }
     public boolean EliminaOfferta(Offerta offerta){
         return true;
-    }
-    public void setUtente(Utente utente) {
-        this.utente = utente;
     }
     public ArrayList<Offerta> LeMieOfferte(Utente utente){return null;}
     public ArrayList<Offerta> OfferteRicevuteAnnuncio(){return null;}
