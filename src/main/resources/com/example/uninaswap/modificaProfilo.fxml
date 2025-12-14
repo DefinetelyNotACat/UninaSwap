@@ -64,7 +64,7 @@
                     <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Username" styleClass="label"/>
-                            <TextField fx:id="usernameField" styleClass="form-field" editable="false" style="-fx-opacity: 0.7;"/>
+                            <TextField fx:id="usernameField" styleClass="form-field"/>
                             <Text text="Username non valido" fx:id="erroreUsername" styleClass="error-text" visible="false" managed="false"/>
                         </children>
                     </VBox>
@@ -102,7 +102,7 @@
                             <Button fx:id="salvaButton" text="Salva Modifiche" onAction="#onSalvaClick" styleClass="button"/>
                         </children>
                     </HBox>
-                    <Text fx:id="erroreGenerico"  visible="false" managed="false"/>
+                    <Text fx:id="erroreGenerico"  styleClass="error-text" visible="false" managed="false"/>
                 </children>
             </VBox>
         </VBox>

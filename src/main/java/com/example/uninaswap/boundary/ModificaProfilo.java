@@ -148,7 +148,10 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
 
     // --- Gestione Stili CSS Generica ---
     private void gestisciStileCampo(String valore, TextField campo, Text testoErrore, boolean isMatricola) {
-        if (erroreGenerico != null) erroreGenerico.setVisible(false);
+        if (erroreGenerico != null) {
+            erroreGenerico.setVisible(false);
+            erroreGenerico.setManaged(false);
+        }
 
         boolean isVuoto = valore == null || valore.trim().isEmpty();
         boolean regexOk = valore != null && valore.matches(REGEX_CAMPI_SEMPLICI);
@@ -197,6 +200,10 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
 
     // Helpers CSS
     private void applicaStileErrore(Node nodo, Text testoErrore) {
+        if(erroreGenerico != null) {
+            erroreGenerico.setVisible(false);
+            erroreGenerico.setManaged(false);
+        }
         if (!nodo.getStyleClass().contains("error")) nodo.getStyleClass().add("error");
         nodo.getStyleClass().remove("right");
         if (testoErrore != null) {
@@ -260,7 +267,8 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
                 mostraErroreGenerico("Errore salvataggio DB");
             }
         } catch (Exception e) {
-
+            erroreGenerico.setVisible(true);
+            erroreGenerico.setManaged(true);
             erroreGenerico.setText(e.getMessage());
         }
     }
