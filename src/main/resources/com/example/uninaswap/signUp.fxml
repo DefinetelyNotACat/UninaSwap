@@ -79,6 +79,7 @@
                                 <children>
                                     <Text text="Conferma Password" styleClass="label"/>
                                     <PasswordField fx:id="confermaPasswordField" promptText="Conferma Password" styleClass="form-field"/>
+                                    <Text text="Le password non coincidono" fx:id="erroreConfermaPassword" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>
 
