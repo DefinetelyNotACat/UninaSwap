@@ -172,20 +172,16 @@ public class UtenteDAO implements GestoreUtenteDAO {
                     String matricolautente = rs.getString(3);
 
                     System.out.println(nomeutente);
-
-                    if(username.equals(nomeutente)){
-                        //TODO! EXCEPTION USERNAME UGUALE
+                    if(matricola.equals(matricolautente)){
+                        throw new Exception("Matricola già presa");
+                    }
+                    else if(username.equals(nomeutente)){
                         throw new Exception("Username già preso");
                     }
                     else if(email.equals(emailutente)){
-                        //TODO! EXCEPTION EMAIL UGUALE
                         throw new Exception("email già presa");
+                    }
 
-                    }
-                    else if(matricola.equals(matricolautente)){
-                        //TODO! EXCEPTION MATRICOLA UGUALE
-                        throw new Exception("Matricola già presa");
-                    }
                 }
             }
         }
