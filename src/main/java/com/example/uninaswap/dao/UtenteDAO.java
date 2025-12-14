@@ -1,32 +1,26 @@
-    package com.example.uninaswap.dao;
+package com.example.uninaswap.dao;
 
-    import java.sql.*;
-    import java.util.ArrayList;
+import java.sql.*;
+import java.util.ArrayList;
 
-    import com.example.uninaswap.entity.Utente;
-    import com.example.uninaswap.interfaces.GestoreUtenteDAO;
+import com.example.uninaswap.entity.Utente;
+import com.example.uninaswap.interfaces.GestoreUtenteDAO;
 
-    public class UtenteDAO implements GestoreUtenteDAO {
+public class UtenteDAO implements GestoreUtenteDAO {
 
-        public boolean salvaUtente(Utente utente) {
-            String sql = "INSERT INTO utente (username, password, matricola, email, immagine_profilo) VALUES ( ?, ?, ?, ?, ?)";
-            try (Connection connessione = PostgreSQLConnection.getConnection();
-                 PreparedStatement query = connessione.prepareStatement(sql)) {
-                query.setString(1, utente.getUsername());
-                query.setString(2, utente.getPassword());
-                query.setString(3, utente.getMatricola());
-                query.setString(4, utente.getEmail());
-                query.setString(5, utente.getPathImmagineProfilo());
+    public boolean salvaUtente(Utente utente) {
+        String sql = "INSERT INTO utente (username, password, matricola, email, immagine_profilo) VALUES ( ?, ?, ?, ?, ?)";
+        try (Connection connessione = PostgreSQLConnection.getConnection();
+             PreparedStatement query = connessione.prepareStatement(sql)) {
+            query.setString(1, utente.getUsername());
+            query.setString(2, utente.getPassword());
+            query.setString(3, utente.getMatricola());
+            query.setString(4, utente.getEmail());
+            query.setString(5, utente.getPathImmagineProfilo());
 
-                int numModifiche = query.executeUpdate();
-                return numModifiche > 0;
+            int numModifiche = query.executeUpdate();
+            return numModifiche > 0;
 
-<<<<<<< Updated upstream
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-=======
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -100,27 +94,11 @@
             sql = "SELECT * FROM utente WHERE email = ?";
         } else {
             sql = "SELECT * FROM utente WHERE matricola = ?";
->>>>>>> Stashed changes
         }
 
-        public boolean modificaUtente(Utente utente) {
-            String sql = "UPDATE utente SET username = ?, password = ?, matricola = ?, email = ?, immagine_profilo = ? WHERE email = ?";
-            try (Connection connessione = PostgreSQLConnection.getConnection();
-                 PreparedStatement query = connessione.prepareStatement(sql)) {
-                query.setString(1, utente.getUsername());
-                query.setString(2, utente.getPassword());
-                query.setString(3, utente.getMatricola());
-                query.setString(4, utente.getEmail());
-                query.setString(5, utente.getPathImmagineProfilo());
-                query.setString(6, utente.getEmail());
-                int numModifiche = query.executeUpdate();
-                return numModifiche > 0;
+        try (Connection connessione = PostgreSQLConnection.getConnection();
+             PreparedStatement query = connessione.prepareStatement(sql)) {
 
-<<<<<<< Updated upstream
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-=======
             query.setString(1, campoRicerca);
 
             try (ResultSet rs = query.executeQuery()) {
@@ -134,25 +112,12 @@
 
                     // 3. Corretto il nome colonna del DB: "immagine_profilo" invece di "pathImmagineProfilo"
                     utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
-                    // utente.setId(rs.getInt("id")); // NOTE: This was commented out in your version, kept as is.
+                    //utente.setId(rs.getInt("id"));
                 }
->>>>>>> Stashed changes
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-<<<<<<< Updated upstream
-
-        public boolean eliminaUtente(int id) {
-            String sql = "DELETE FROM utente WHERE id = ?";
-            try (Connection connessione = PostgreSQLConnection.getConnection();
-                 PreparedStatement query = connessione.prepareStatement(sql)) {
-                query.setInt(1, id);
-                int numModifiche = query.executeUpdate();
-                return numModifiche > 0;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-=======
         return utente;
     }
 
@@ -167,30 +132,16 @@
                 utente.setPathImmagineProfilo(rs.getString("pathImmagineProfilo"));
                 // utente.setId(rs.getInt("id"));
                 tuttiUtenti.add(utente);
->>>>>>> Stashed changes
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return tuttiUtenti;
+    }
 
-        public Utente ottieniUtente(int id) {
-            Utente utente = null;
-            String sql = "SELECT * FROM utente WHERE id = ?";
-            try (Connection connessione = PostgreSQLConnection.getConnection();
-                 PreparedStatement query = connessione.prepareStatement(sql)) {
+    public boolean verificaEsistenzaAltroUtente(String username, String emailDaEscludere, String matricola) {
+        String sql = "SELECT COUNT(*) FROM utente WHERE (username = ? OR matricola = ?) AND email <> ?";
 
-<<<<<<< Updated upstream
-                query.setInt(1, id);
-                try (ResultSet rs = query.executeQuery()) {
-                    if (rs.next()) {
-                        utente = new Utente(
-                                rs.getString("username"),
-                                rs.getString("password"),
-                                rs.getString("matricola"),
-                                rs.getString("email")
-                        );
-                        utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
-                        utente.setId(id);
-                        System.out.println("utente trovato e con id: " + id + "");
-=======
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
 
@@ -209,7 +160,7 @@
         return false;
     }
 
-    // This method uses YOUR logic to throw specific exceptions (Matricola, Email, Username)
+    // QUESTO È IL METODO CORRETTO (PAKY) CHE LANCIA LE ECCEZIONI SPECIFICHE
     public void verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) throws Exception {
         String sql = "SELECT username, email, matricola FROM utente WHERE username = ? OR email = ? OR matricola = ?";
 
@@ -221,134 +172,23 @@
             query.setString(3, matricola);
             try (ResultSet rs = query.executeQuery()) {
                 if (rs.next()) {
-                    String nomeutente = rs.getString("username"); // Changed index to column name for safety, but index works too
+                    String nomeutente = rs.getString("username");
                     String emailutente = rs.getString("email");
                     String matricolautente = rs.getString("matricola");
 
                     System.out.println("Conflict found with: " + nomeutente);
-
-                    if(username.equals(nomeutente)){
+                    if(matricola.equals(matricolautente)){
+                        throw new Exception("Matricola già presa");
+                    }
+                    else if(username.equals(nomeutente)){
                         throw new Exception("Username già preso");
                     }
                     else if(email.equals(emailutente)){
                         throw new Exception("email già presa");
                     }
-                    else if(matricola.equals(matricolautente)){
-                        throw new Exception("Matricola già presa");
->>>>>>> Stashed changes
-                    }
+
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-            return utente;
         }
-<<<<<<< Updated upstream
-
-        public Utente ottieniUtente(String campoRicerca) {
-            Utente utente = null;
-            String sql;
-
-            // 1. Decidiamo la query in base al contenuto della stringa
-            if (campoRicerca.contains("@")) {
-                sql = "SELECT * FROM utente WHERE email = ?";
-                System.out.println("email trovata");
-            } else {
-                sql = "SELECT * FROM utente WHERE matricola = ?";
-                System.out.println("matricola trovata");
-            }
-
-            try (Connection connessione = PostgreSQLConnection.getConnection();
-                 PreparedStatement query = connessione.prepareStatement(sql)) {
-
-                query.setString(1, campoRicerca);
-
-                try (ResultSet rs = query.executeQuery()) {
-                    if (rs.next()) {
-                        utente = new Utente(
-                                rs.getString("username"),
-                                rs.getString("password"),
-                                rs.getString("matricola"),
-                                rs.getString("email")
-                        );
-                        utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
-                        utente.setId(rs.getInt("id"));
-                        int id = utente.getId();
-                        System.out.println("utente trovato e con id: " + id + "");
-
-                        // 3. Corretto il nome colonna del DB: "immagine_profilo" invece di "pathImmagineProfilo"
-                        utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
-                        //utente.setId(rs.getInt("id"));
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return utente;
-        }
-
-        public ArrayList<Utente> ottieniTuttiUtenti() {
-            ArrayList<Utente> tuttiUtenti = new ArrayList<>();
-            String sql = "SELECT * FROM utente";
-            try (Connection connessione = PostgreSQLConnection.getConnection();
-                 PreparedStatement query = connessione.prepareStatement(sql);
-                 ResultSet rs = query.executeQuery()) {
-                while (rs.next()) {
-                    Utente utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matricola"), rs.getString("email"));
-                    utente.setPathImmagineProfilo(rs.getString("pathImmagineProfilo"));
-                   // utente.setId(rs.getInt("id"));
-                    tuttiUtenti.add(utente);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return tuttiUtenti;
-        }
-
-        public boolean verificaEsistenzaAltroUtente(String username, String emailDaEscludere, String matricola) {
-            String sql = "SELECT COUNT(*) FROM utente WHERE (username = ? OR matricola = ?) AND email <> ?";
-
-            try (Connection connessione = PostgreSQLConnection.getConnection();
-                 PreparedStatement query = connessione.prepareStatement(sql)) {
-
-                query.setString(1, username);
-                query.setString(2, matricola);
-                query.setString(3, emailDaEscludere);
-
-                try (ResultSet rs = query.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getInt(1) > 0;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return false;
-        }
-
-        public boolean verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) {
-            String sql = "SELECT COUNT(*) FROM utente WHERE username = ? OR email = ? OR matricola = ?";
-
-            try (Connection connessione = PostgreSQLConnection.getConnection();
-                 PreparedStatement query = connessione.prepareStatement(sql)) {
-
-                query.setString(1, username);
-                query.setString(2, email);
-                query.setString(3, matricola);
-
-                try (ResultSet rs = query.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getInt(1) > 0;
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return true;
-        }
-
-    }
-=======
     }
 }
->>>>>>> Stashed changes
