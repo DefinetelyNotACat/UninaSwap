@@ -13,7 +13,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -62,7 +61,7 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
 
     private GestoreScene gestoreScene = new GestoreScene();
     private ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
-    private File immagineSelezionata;
+
 
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
@@ -94,7 +93,6 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Errore login/generico! " + e.getMessage());
             if (erroreCredenziali != null) {
                 erroreCredenziali.setVisible(true);
                 erroreCredenziali.setManaged(true);

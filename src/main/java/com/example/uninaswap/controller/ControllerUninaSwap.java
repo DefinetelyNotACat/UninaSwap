@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.example.uninaswap.dao.*;
 import com.example.uninaswap.entity.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class ControllerUninaSwap {
     private static ControllerUninaSwap istanziato = null;
@@ -48,19 +47,18 @@ public class ControllerUninaSwap {
             System.out.println("Password attuale vale " + passwordAttuale);
             String passwordNelDB = utenteNelDB.getPassword();
 
-            // Se la passwordattuale è uguale a quella nel DB
+            // Se la passwordattuale è uguale a quella nel DB (nel caso in cui il metodo setPassword non è stato chiamato)
             if (passwordAttuale.equals(passwordNelDB)) {
                 System.out.println("La password non è stata modificata (Hash identici). Non faccio nulla.");
-                // Do not re-encode. It's already correct.
             }
-            // CASE 2: The password is DIFFERENT. This means it is likely RAW TEXT entered by the user.
+            /*Se la passwordattuale è diversa a quella nel DB (il setPassword è stato chiamato, quindi abbiamo la password
+            * plain inserita*/
             else {
-                // Check if the user accidentally typed their old password in plain text.
+                // se la password nuova inserita è uguale a quella vecchia che si aveva già
                 if (passwordEncoder.matches(passwordAttuale, passwordNelDB)) {
                     throw new Exception("Inserire una password diversa da quella attuale.");
                 }
-
-                // It's a new, valid raw password. Hash it.
+                // altrimenti la password è cambiata
                 System.out.println("Nuova password rilevata. Eseguo l'hashing.");
                 String nuovoHash = passwordEncoder.encode(passwordAttuale);
                 utenteModificato.setPassword(nuovoHash);
