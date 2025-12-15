@@ -98,6 +98,21 @@ public class NavBarComponent {
         MenuItem leMieOfferte = creaVoceMenu("Mostra le mie offerte", null);
         MenuItem iMieiAnnunci = creaVoceMenu("Mostra i miei annunci", null);
         MenuItem ilMioInventario = creaVoceMenu("Mostra il mio inventario", null);
+        // Aggiungi l'azione al click
+        ilMioInventario.setOnAction(event -> {
+            try {
+                Stage stage = (Stage) fotoProfilo.getScene().getWindow();
+                gestoreScene.CambiaScena(
+                        Costanti.pathAggiungiOggetto, // Assicurati di avere questa costante o metti la stringa del path
+                        Costanti.aggiungiOggetto,
+                        stage
+                );
+            } catch (Exception e) {
+                System.err.println("Errore apertura inventario: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+        // --------------------
         MenuItem modificaProfilo = creaVoceMenu("Modifica Profilo", null);
 
         modificaProfilo.setOnAction(event -> {
@@ -138,7 +153,7 @@ public class NavBarComponent {
             }
         });
 
-        // fotoProfilo.setCursor(javafx.scene.Cursor.HAND);
+        fotoProfilo.setCursor(javafx.scene.Cursor.HAND);
     }    private void showmenuProfilo(MouseEvent event) {
         if (menuProfilo.isShowing()) return;
 

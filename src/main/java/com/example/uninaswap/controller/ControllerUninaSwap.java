@@ -24,7 +24,6 @@ public class ControllerUninaSwap {
     public void setUtente(Utente utente) {
         this.utente = utente;
     }
-
     public boolean EffettuaSignIn(String Username, String Email , String Matricola,String Password) {
         return true;
     }
@@ -191,6 +190,10 @@ public class ControllerUninaSwap {
     //Metodo per quando si crea l'utente
     public void verificaUtenteUnico(String username, String email, String matricola) throws Exception {
             utenteDAO.verificaEsistenzaUtenteRegistrazione(username, email, matricola);
+    }
+    public ArrayList<Categoria> getCategorie() {
+        CategoriaDAO categoriaDAO = new CategoriaDAO();
+        return categoriaDAO.OttieniCategorie();
     }
 }
 

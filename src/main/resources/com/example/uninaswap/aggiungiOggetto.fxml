@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.AggiungiOggetto">
+    <content>
+        <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="myPadding">
+
+            <VBox alignment="CENTER" fillWidth="false">
+                <fx:include fx:id="notifica" source="banners.fxml"/>
+                <padding>
+                    <Insets bottom="10.0" />
+                </padding>
+            </VBox>
+
+            <VBox alignment="CENTER" spacing="10">
+                <children>
+                    <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@images/uninaLogo.png" />
+                        </image>
+                        <clip>
+                            <Circle centerX="50.0" centerY="50.0" radius="50.0" />
+                        </clip>
+                    </ImageView>
+                    <Text styleClass="bold,title" text="Vendi Oggetto" textAlignment="CENTER" />
+                    <Text styleClass="description" text="Inserisci i dettagli dell'oggetto che vuoi scambiare o vendere" />
+                </children>
+                <padding>
+                    <Insets bottom="20.0" top="10.0" />
+                </padding>
+            </VBox>
+
+            <VBox alignment="CENTER" maxWidth="500.0" spacing="20.0">
+                <children>
+
+                    <VBox spacing="5">
+                        <children>
+                            <Text styleClass="label" text="Nome Oggetto" />
+                            <TextField fx:id="nomeOggettoField" promptText="Es. Libro di Analisi 1" styleClass="form-field" />
+                            <Text fx:id="erroreNome" managed="false" styleClass="error-text" text="Nome non valido" visible="false" />
+                        </children>
+                    </VBox>
+
+                    <VBox spacing="5">
+                        <children>
+                            <Text styleClass="label" text="Categoria" />
+                            <ComboBox fx:id="categoriaBox" maxWidth="Infinity" promptText="Seleziona una categoria" styleClass="form-field" />
+                            <Text fx:id="erroreCategoria" managed="false" styleClass="error-text" text="Selezionare una categoria" visible="false" />
+                        </children>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <children>
+                            <Text styleClass="label" text="Condizione" />
+                            <HBox alignment="CENTER_LEFT" spacing="20.0">
+                                <children>
+                                    <RadioButton fx:id="condizioneNuovo" mnemonicParsing="false" selected="true" styleClass="radio-button" text="Nuovo">
+                                        <toggleGroup>
+                                            <ToggleGroup fx:id="condizioneGroup" />
+                                        </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="condizioneUsato" mnemonicParsing="false" styleClass="radio-button" text="Usato" toggleGroup="$condizioneGroup" />
+                                    <RadioButton fx:id="condizioneDanneggiato" mnemonicParsing="false" styleClass="radio-button" text="Danneggiato" toggleGroup="$condizioneGroup" />
+                                </children>
+                            </HBox>
+                        </children>
+                    </VBox>
+
+                    <VBox spacing="10">
+                        <children>
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Text styleClass="label" text="Foto dell'oggetto" />
+                                <Button fx:id="caricaFotoButton" onAction="#onCaricaFotoClick" style="-fx-font-size: 12px;" styleClass="button" text="+ Aggiungi" />
+                            </HBox>
+
+                            <ScrollPane fitToHeight="true" minHeight="120.0" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="NEVER">
+                                <content>
+                                    <HBox fx:id="contenitoreImmagini" alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 5;">
+                                        <Text style="-fx-fill: gray; -fx-font-style: italic;" text="Nessuna immagine caricata" />
+                                    </HBox>
+                                </content>
+                            </ScrollPane>
+                            <Text fx:id="erroreImmagini" managed="false" styleClass="error-text" text="Inserire almeno un'immagine" visible="false" />
+                        </children>
+                    </VBox>
+
+                </children>
+            </VBox>
+
+            <HBox alignment="CENTER" spacing="20.0">
+                <children>
+                    <Button fx:id="annullaButton" onAction="#onAnnullaClick" style="-fx-background-color: #7f8c8d;" styleClass="button" text="Annulla" />
+                    <Button fx:id="pubblicaButton" onAction="#onPubblicaClick" text="Pubblica Annuncio" styleClass="button" />
+                </children>
+                <padding>
+                    <Insets top="20.0" bottom="30.0"/>
+                </padding>
+            </HBox>
+
+        </VBox>
+    </content>
+</ScrollPane>

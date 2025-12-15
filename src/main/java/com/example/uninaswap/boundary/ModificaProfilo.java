@@ -262,7 +262,7 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
         // Salva DB
         try {
             if (controllerUninaSwap.ModificaUtente(profiloUtente)) {
-                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event, "Prodilo modificato con successo", SUCCESS);
+                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event, "Profilo modificato con successo", SUCCESS);
             } else {
                 mostraErroreGenerico("Errore salvataggio DB");
             }

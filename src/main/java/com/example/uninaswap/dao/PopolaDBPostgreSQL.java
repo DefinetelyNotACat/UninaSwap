@@ -11,6 +11,8 @@ public class PopolaDBPostgreSQL {
 
         try (Connection conn = PostgreSQLConnection.getConnection();
              Statement stmt = conn.createStatement()) {
+
+            // Creazione dei tipi ENUM
             stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NONDISPONIBILE');");
             stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME_NUOVO', 'OTTIME_CONDIZIONI', 'BUONE_CONDIZIONI', 'DISCRETE_CONDIZIONI', 'CATTIVE_CONDIZIONI');");
             stmt.executeUpdate("CREATE TYPE disponibilita_oggetto AS ENUM ('DISPONIBILE', 'OCCUPATO', 'VENDUTO', 'REGALATO', 'SCAMBIATO');");
@@ -18,6 +20,7 @@ public class PopolaDBPostgreSQL {
 
             System.out.println("TIPI ENUM CREATI.");
 
+            // Creazione Tabella UTENTE
             String queryUtente = "CREATE TABLE UTENTE (" +
                     "matricola VARCHAR(20) PRIMARY KEY, " +
                     "email VARCHAR(100) UNIQUE NOT NULL, " +
@@ -28,6 +31,7 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryUtente);
             System.out.println("Tabella UTENTE CREATA");
 
+            // Creazione Tabella SEDE
             String querySede = "CREATE TABLE SEDE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "nome_sede VARCHAR(100), " +
@@ -36,12 +40,21 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(querySede);
             System.out.println("Tabella SEDE CREATA");
 
+            // Creazione Tabella CATEGORIA
             String queryCategoria = "CREATE TABLE CATEGORIA (" +
                     "nome VARCHAR(50) PRIMARY KEY" +
                     ");";
             stmt.executeUpdate(queryCategoria);
             System.out.println("Tabella CATEGORIA CREATA");
 
+            // --- INSERIMENTO CATEGORIE DI DEFAULT ---
+            stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Informatica');");
+            stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Abbigliamento');");
+            stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Libri di testo');");
+            System.out.println("Categorie di default (Informatica, Abbigliamento, Libri di testo) inserite.");
+            // ----------------------------------------
+
+            // Creazione Tabella ANNUNCIO
             String queryAnnuncio = "CREATE TABLE ANNUNCIO (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "utente_matricola VARCHAR(20) NOT NULL, " +
@@ -60,6 +73,7 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryAnnuncio);
             System.out.println("Tabella ANNUNCIO CREATA");
 
+            // Creazione Tabella OGGETTO
             String queryOggetto = "CREATE TABLE OGGETTO (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "annuncio_id INTEGER NOT NULL, " +
@@ -73,6 +87,7 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryOggetto);
             System.out.println("Tabella OGGETTO CREATA");
 
+            // Creazione Tabella OGGETTO_CATEGORIA
             String queryOggettoCategoria = "CREATE TABLE OGGETTO_CATEGORIA (" +
                     "oggetto_id INTEGER NOT NULL, " +
                     "categoria_nome VARCHAR(50) NOT NULL, " +
@@ -83,6 +98,7 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryOggettoCategoria);
             System.out.println("Tabella OGGETTO_CATEGORIA CREATA");
 
+            // Creazione Tabella OFFERTA
             String queryOfferta = "CREATE TABLE OFFERTA (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "utente_matricola VARCHAR(20) NOT NULL, " +
@@ -99,6 +115,7 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryOfferta);
             System.out.println("Tabella OFFERTA CREATA");
 
+            // Creazione Tabella RECENSIONE
             String queryRecensione = "CREATE TABLE RECENSIONE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "recensore_matricola VARCHAR(20) NOT NULL, " +
@@ -118,13 +135,12 @@ public class PopolaDBPostgreSQL {
             e.printStackTrace();
         }
     }
+
     public static void cancellaDB(){
         try(Connection conn = PostgreSQLConnection.getConnection();
             Statement stmt = conn.createStatement();){
-            stmt.executeUpdate("DROP TYPE IF EXISTS stato_annuncio CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS condizione_oggetto CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS stato_offerta CASCADE;");
+
+            // Cancellazione Tabelle e Tipi
             stmt.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");
@@ -133,11 +149,12 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate("DROP TABLE IF EXISTS CATEGORIA CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS SEDE CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS UTENTE CASCADE;");
-            stmt.executeUpdate("DROP TYPE IF EXISTS categoria CASCADE;");
+
             stmt.executeUpdate("DROP TYPE IF EXISTS stato_annuncio CASCADE;");
             stmt.executeUpdate("DROP TYPE IF EXISTS condizione_oggetto CASCADE;");
             stmt.executeUpdate("DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;");
             stmt.executeUpdate("DROP TYPE IF EXISTS stato_offerta CASCADE;");
+
             System.out.println("PULIZIA COMPLETATA.");
         } catch (SQLException e) {
             throw new RuntimeException(e);
