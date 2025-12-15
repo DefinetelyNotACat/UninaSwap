@@ -195,6 +195,10 @@ public class ControllerUninaSwap {
         CategoriaDAO categoriaDAO = new CategoriaDAO();
         return categoriaDAO.OttieniCategorie();
     }
+    public ArrayList <String> getCondizioni(){
+        CondizioneDAO condizioneDAO = new CondizioneDAO();
+        return condizioneDAO.ottieniTutteCondizioni();
+    }
 }
 
 

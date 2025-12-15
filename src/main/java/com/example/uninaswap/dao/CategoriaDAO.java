@@ -53,7 +53,7 @@ public class CategoriaDAO implements GestoreCategoriaDAO {
 
     }
 
-    public Categoria  OttieniCategoria(String nome){
+    public Categoria OttieniCategoria(String nome){
         Categoria categoria = null;
         String sql = "SELECT * FROM CATEGORIA WHERE nome = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -71,7 +71,7 @@ public class CategoriaDAO implements GestoreCategoriaDAO {
     }
 
     public ArrayList<Categoria> OttieniCategorie(){
-        ArrayList<Categoria> categorie = new ArrayList<>();
+        ArrayList <Categoria> categorie = new ArrayList<Categoria>();
         String sql = "SELECT * FROM CATEGORIA";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql);

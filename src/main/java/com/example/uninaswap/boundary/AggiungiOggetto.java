@@ -14,6 +14,9 @@ import com.example.uninaswap.controller.ControllerUninaSwap;
 public class AggiungiOggetto implements Initializable {
     @FXML
     private ComboBox<String> categoriaBox;
+    @FXML
+    private ComboBox<String> condizioneBox;
+
     private ControllerUninaSwap controllerUninaSwap;
     public void onCaricaFotoClick(ActionEvent actionEvent) {
     }
@@ -29,9 +32,15 @@ public class AggiungiOggetto implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle){
         controllerUninaSwap = ControllerUninaSwap.getInstance();
         ArrayList<Categoria> categorie = controllerUninaSwap.getCategorie();
+        ArrayList <String> condizioni = controllerUninaSwap.getCondizioni();
         for (Categoria categoria : categorie){
             categoriaBox.getItems().add(categoria.getNome());
         }
+       for(String condizione : condizioni){
+           condizioneBox.getItems().add(condizione);
+       }
+
+
 
     }
 }

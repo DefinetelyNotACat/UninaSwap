@@ -64,20 +64,11 @@ stylesheets="inventario.css">
                         </children>
                     </VBox>
 
-                    <VBox spacing="8">
+                    <VBox spacing="5">
                         <children>
                             <Text styleClass="label" text="Condizione" />
-                            <HBox alignment="CENTER_LEFT" spacing="20.0">
-                                <children>
-                                    <RadioButton fx:id="condizioneNuovo" mnemonicParsing="false" selected="true" styleClass="radio-button" text="Nuovo">
-                                        <toggleGroup>
-                                            <ToggleGroup fx:id="condizioneGroup" />
-                                        </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton fx:id="condizioneUsato" mnemonicParsing="false" styleClass="radio-button" text="Usato" toggleGroup="$condizioneGroup" />
-                                    <RadioButton fx:id="condizioneDanneggiato" mnemonicParsing="false" styleClass="radio-button" text="Danneggiato" toggleGroup="$condizioneGroup" />
-                                </children>
-                            </HBox>
+                            <ComboBox fx:id="condizioneBox" maxWidth="Infinity" promptText="Seleziona la condizione" styleClass="form-field" />
+                            <Text fx:id="erroreCondizione" managed="false" styleClass="error-text" text="Selezionare una condizione" visible="false" />
                         </children>
                     </VBox>
 

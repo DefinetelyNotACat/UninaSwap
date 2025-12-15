@@ -13,6 +13,7 @@ module com.example.uninaswap {
     requires spring.security.crypto;
     requires commons.logging;
     requires java.dotenv;
+    requires org.postgresql.jdbc;
 
     opens com.example.uninaswap to javafx.fxml;
     opens com.example.uninaswap.boundary to javafx.fxml;
