@@ -262,7 +262,7 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
         // Salva DB
         try {
             if (controllerUninaSwap.ModificaUtente(profiloUtente)) {
-                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
+                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event, "Prodilo modificato con successo", SUCCESS);
             } else {
                 mostraErroreGenerico("Errore salvataggio DB");
             }
@@ -275,7 +275,7 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
 
     @FXML
     public void onAnnullaClick(ActionEvent event) {
-        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
+        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event, "Modifica profilo annullata", INFO);
     }
 
     // --- Gestione Immagine ---

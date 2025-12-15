@@ -69,7 +69,6 @@ public class ControllerUninaSwap {
 
         } catch (Exception e) {
             e.printStackTrace();
-            // It is better to re-throw the exception so the Boundary can catch the specific message
             throw e;
         }
     }    public ArrayList<Utente> OttieniUtenti(){
