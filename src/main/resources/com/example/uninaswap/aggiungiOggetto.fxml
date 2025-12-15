@@ -85,13 +85,12 @@ stylesheets="inventario.css">
                         <children>
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <Text styleClass="label" text="Foto dell'oggetto" />
-                                <Button fx:id="caricaFotoButton" onAction="#onCaricaFotoClick" style="-fx-font-size: 12px;" styleClass="button" text="+ Aggiungi" />
-                            </HBox>
+                                <Button fx:id="caricaFotoButton" onAction="#onCaricaFotoClick" text="+ Aggiungi" styleClass="button, button-small"/>                            </HBox>
 
-                            <ScrollPane fitToHeight="true" minHeight="120.0" style="-fx-background-color: transparent; -fx-background: transparent;" vbarPolicy="NEVER">
+                            <ScrollPane fitToHeight="true" minHeight="120.0" vbarPolicy="NEVER" styleClass="scroll-pane-transparent">
                                 <content>
-                                    <HBox fx:id="contenitoreImmagini" alignment="CENTER_LEFT" spacing="10.0" style="-fx-padding: 5;">
-                                        <Text style="-fx-fill: gray; -fx-font-style: italic;" text="Nessuna immagine caricata" />
+                                    <HBox fx:id="contenitoreImmagini" styleClass="image-container">
+                                        <Text text="Nessuna immagine caricata" styleClass="placeholder-text" />
                                     </HBox>
                                 </content>
                             </ScrollPane>
@@ -104,7 +103,7 @@ stylesheets="inventario.css">
 
             <HBox alignment="CENTER" spacing="20.0">
                 <children>
-                    <Button fx:id="annullaButton" onAction="#onAnnullaClick" style="-fx-background-color: #7f8c8d;" styleClass="button" text="Annulla" />
+                    <Button fx:id="annullaButton" onAction="#onAnnullaClick" text="Annulla" styleClass="button, button-secondary" />
                     <Button fx:id="pubblicaButton" onAction="#onPubblicaClick" text="Pubblica Annuncio" styleClass="button" />
                 </children>
                 <padding>
