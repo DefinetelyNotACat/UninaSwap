@@ -76,6 +76,7 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
         }
         if (profiloUtente != null) {
             matricolaField.setText(profiloUtente.getMatricola());
+            matricolaField.setDisable(true);
             usernameField.setText(profiloUtente.getUsername());
             emailField.setText(profiloUtente.getEmail());
             emailField.setDisable(true); // Email non modificabile

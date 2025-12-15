@@ -28,8 +28,7 @@ public class AggiungiOggetto implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
         controllerUninaSwap = ControllerUninaSwap.getInstance();
-        ArrayList<Categoria> categorie = new ArrayList<Categoria>();
-        categorie = controllerUninaSwap.getCategorie();
+        ArrayList<Categoria> categorie = controllerUninaSwap.getCategorie();
         for (Categoria categoria : categorie){
             categoriaBox.getItems().add(categoria.getNome());
         }

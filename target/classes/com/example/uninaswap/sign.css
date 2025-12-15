@@ -65,3 +65,15 @@
     -fx-fit-to-width: 150px;
     -fx-fit-to-height: 150px;
 }
+.annulla{
+    -fx-background-color: #808080;
+}
+
+.button-cambia-immagine{
+    -fx-background-color: #007bff;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+.matricolafield, .emailfield{
+    -fx-opacity: 0.7;
+}
