@@ -71,7 +71,7 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
             if (confermaPasswordField == null) {
                 // --- LOGIN ---
                 accediUtente();
-                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Accesso effettuato con successo", Messaggio.TIPI.SUCCESS);
             }
             // --- SIGN-UP ---
             else {
@@ -82,7 +82,7 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
                             matricolaField.getText()
                     );
                     registraUtente();
-                    gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+                    gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Registrazione effettuata con successo", Messaggio.TIPI.SUCCESS);
 
                 } catch (Exception e) {
                     System.out.println("Eccezione registrazione catturata: " + e.getMessage());
