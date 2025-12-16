@@ -13,9 +13,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import static com.example.uninaswap.Costanti.*;
 
 public class SignBoundary implements Initializable, GestoreMessaggio {
     @FXML
@@ -53,11 +53,6 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
 
     @FXML
     private Messaggio notificaController;
-
-    private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9.]{6,64}@studenti\\.unina\\.it$";
-    private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
-    private static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
-    private static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
 
     private GestoreScene gestoreScene = new GestoreScene();
     private ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();

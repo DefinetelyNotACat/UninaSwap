@@ -10,8 +10,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import com.example.uninaswap.controller.ControllerUninaSwap;
+import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 
 public class AggiungiOggetto implements Initializable {
+
+    @FXML
+    private Text erroreNome;
+    @FXML
+    private TextField nomeOggettoField;
     @FXML
     private ComboBox<String> categoriaBox;
     @FXML
@@ -31,6 +38,7 @@ public class AggiungiOggetto implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
         controllerUninaSwap = ControllerUninaSwap.getInstance();
+
         ArrayList<Categoria> categorie = controllerUninaSwap.getCategorie();
         ArrayList <String> condizioni = controllerUninaSwap.getCondizioni();
         for (Categoria categoria : categorie){
@@ -39,8 +47,20 @@ public class AggiungiOggetto implements Initializable {
        for(String condizione : condizioni){
            condizioneBox.getItems().add(condizione);
        }
-
-
-
+       if(nomeOggettoField != null){
+           nomeOggettoField.textProperty().addListener((observable, oldValue, newValue) -> {
+               if(erroreNome != null){
+                   erroreNome.setVisible(false);
+                   erroreNome.setManaged(false);
+               }
+               boolean lunghezzaOk = nomeOggettoField.getText().replace(" ", "").length() >= 5;
+               if(!nomeOggettoField.getText().matches(Costanti.OGGETTO_FIELD_REGEX) || !lunghezzaOk){
+                   erroreNome.setText("Errore! inserire un nome che sia di almeno 5 lettere (spazi esclusi) senza caratteri speciali");
+                   erroreNome.setManaged(true);
+                   erroreNome.setVisible(true);
+               }
+           });
+       }
     }
+
 }
