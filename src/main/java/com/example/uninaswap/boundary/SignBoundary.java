@@ -13,10 +13,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import static com.example.uninaswap.Costanti.*;
 
 public class SignBoundary implements Initializable, GestoreMessaggio {
     @FXML
@@ -55,14 +54,9 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
     @FXML
     private Messaggio notificaController;
 
-    private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9.]{6,64}@studenti\\.unina\\.it$";
-    private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
-    private static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
-    private static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
-
     private GestoreScene gestoreScene = new GestoreScene();
     private ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
-    private File immagineSelezionata;
+
 
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
@@ -71,7 +65,7 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
             if (confermaPasswordField == null) {
                 // --- LOGIN ---
                 accediUtente();
-                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Accesso effettuato con successo", Messaggio.TIPI.SUCCESS);
             }
             // --- SIGN-UP ---
             else {
@@ -82,7 +76,7 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
                             matricolaField.getText()
                     );
                     registraUtente();
-                    gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
+                    gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Registrazione effettuata con successo", Messaggio.TIPI.SUCCESS);
 
                 } catch (Exception e) {
                     System.out.println("Eccezione registrazione catturata: " + e.getMessage());
@@ -94,7 +88,6 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Errore login/generico! " + e.getMessage());
             if (erroreCredenziali != null) {
                 erroreCredenziali.setVisible(true);
                 erroreCredenziali.setManaged(true);
@@ -120,11 +113,12 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = ControllerUninaSwap.getInstance();
-//        try {
-//            controllerUninaSwap.popolaDB();
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
+//       try {
+//           controllerUninaSwap.cancellaDB();
+//           controllerUninaSwap.popolaDB();
+//       } catch (Exception e) {
+//           throw new RuntimeException(e);
+//       }
 
         // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
         if (profileImageView != null) {

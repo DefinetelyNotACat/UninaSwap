@@ -8,7 +8,7 @@ import com.example.uninaswap.interfaces.GestoreUtenteDAO;
 
 public class UtenteDAO implements GestoreUtenteDAO {
 
-    public boolean salvaUtente(Utente utente) {
+    public boolean salvaUtente(Utente utente){
         String sql = "INSERT INTO utente (username, password, matricola, email, immagine_profilo) VALUES ( ?, ?, ?, ?, ?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
@@ -45,7 +45,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
             return false;
         }
     }
-
     public boolean eliminaUtente(int id) {
         String sql = "DELETE FROM utente WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -84,7 +83,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return utente;
     }
-
     public Utente ottieniUtente(String campoRicerca) {
         Utente utente = null;
         String sql;
@@ -120,7 +118,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return utente;
     }
-
     public ArrayList<Utente> ottieniTuttiUtenti() {
         ArrayList<Utente> tuttiUtenti = new ArrayList<>();
         String sql = "SELECT * FROM utente";
@@ -130,7 +127,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
             while (rs.next()) {
                 Utente utente = new Utente(rs.getString("username"), rs.getString("password"), rs.getString("matricola"), rs.getString("email"));
                 utente.setPathImmagineProfilo(rs.getString("pathImmagineProfilo"));
-                // utente.setId(rs.getInt("id"));
+               // utente.setId(rs.getInt("id"));
                 tuttiUtenti.add(utente);
             }
         } catch (Exception e) {
@@ -159,9 +156,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return false;
     }
-
-    // QUESTO È IL METODO CORRETTO (PAKY) CHE LANCIA LE ECCEZIONI SPECIFICHE
-    public void verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) throws Exception {
+    public void verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) throws Exception{
         String sql = "SELECT username, email, matricola FROM utente WHERE username = ? OR email = ? OR matricola = ?";
 
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -172,11 +167,11 @@ public class UtenteDAO implements GestoreUtenteDAO {
             query.setString(3, matricola);
             try (ResultSet rs = query.executeQuery()) {
                 if (rs.next()) {
-                    String nomeutente = rs.getString("username");
-                    String emailutente = rs.getString("email");
-                    String matricolautente = rs.getString("matricola");
+                    String nomeutente = rs.getString(1);
+                    String emailutente = rs.getString(2);
+                    String matricolautente = rs.getString(3);
 
-                    System.out.println("Conflict found with: " + nomeutente);
+                    System.out.println(nomeutente);
                     if(matricola.equals(matricolautente)){
                         throw new Exception("Matricola già presa");
                     }
@@ -191,4 +186,5 @@ public class UtenteDAO implements GestoreUtenteDAO {
             }
         }
     }
+
 }

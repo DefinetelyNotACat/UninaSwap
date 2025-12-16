@@ -74,13 +74,12 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
             );
             return;
         }
-
         if (profiloUtente != null) {
             matricolaField.setText(profiloUtente.getMatricola());
+            matricolaField.setDisable(true);
             usernameField.setText(profiloUtente.getUsername());
             emailField.setText(profiloUtente.getEmail());
             emailField.setDisable(true); // Email non modificabile
-
             caricaImmagineProfilo();
         }
 
@@ -150,7 +149,10 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
 
     // --- Gestione Stili CSS Generica ---
     private void gestisciStileCampo(String valore, TextField campo, Text testoErrore, boolean isMatricola) {
-        if (erroreGenerico != null) erroreGenerico.setVisible(false);
+        if (erroreGenerico != null) {
+            erroreGenerico.setVisible(false);
+            erroreGenerico.setManaged(false);
+        }
 
         boolean isVuoto = valore == null || valore.trim().isEmpty();
         boolean regexOk = valore != null && valore.matches(REGEX_CAMPI_SEMPLICI);
@@ -199,6 +201,10 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
 
     // Helpers CSS
     private void applicaStileErrore(Node nodo, Text testoErrore) {
+        if(erroreGenerico != null) {
+            erroreGenerico.setVisible(false);
+            erroreGenerico.setManaged(false);
+        }
         if (!nodo.getStyleClass().contains("error")) nodo.getStyleClass().add("error");
         nodo.getStyleClass().remove("right");
         if (testoErrore != null) {
@@ -256,23 +262,26 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
 
         if (!nuovaPass.isEmpty()) {
             profiloUtente.setPassword(nuovaPass);
+            System.out.println("nuova password vale " + nuovaPass);
         }
 
         // Salva DB
         try {
             if (controllerUninaSwap.ModificaUtente(profiloUtente)) {
-                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
+                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event, "Profilo modificato con successo", SUCCESS);
             } else {
                 mostraErroreGenerico("Errore salvataggio DB");
             }
         } catch (Exception e) {
+            erroreGenerico.setVisible(true);
+            erroreGenerico.setManaged(true);
             erroreGenerico.setText(e.getMessage());
         }
     }
 
     @FXML
     public void onAnnullaClick(ActionEvent event) {
-        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
+        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event, "Modifica profilo annullata", INFO);
     }
 
     // --- Gestione Immagine ---

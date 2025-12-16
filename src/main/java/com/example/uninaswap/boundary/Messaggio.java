@@ -54,7 +54,7 @@ public class Messaggio {
         if (delay != null) {
             delay.stop();
         }
-        delay = new PauseTransition(Duration.seconds(8));
+        delay = new PauseTransition(Duration.seconds(5));
         delay.setOnFinished(event -> chiudiBanner());
         delay.play();
     }

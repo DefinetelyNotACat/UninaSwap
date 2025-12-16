@@ -2,15 +2,22 @@ package com.example.uninaswap;
 
 public class Costanti {
     private Costanti() {}
-    public static String accedi = "Accedi - UninaSwap";
-    public static String registrati = "Registrati - UninaSwap";
-    public static String homepage = "Homepage - UninaSwap";
-    public static String pathSignIn = "/com/example/uninaswap/signIn.fxml";
-    public static String pathModificaProfilo = "/com/example/uninaswap/modificaProfilo.fxml";
-    public static String pathSignUp = "/com/example/uninaswap/signUp.fxml";
-    public static String pathHomePage = "/com/example/uninaswap/HomePage.fxml";
-    public static String pathLogo = "/com/example/uninaswap/images/uninaLogo.png";
-    public static String pathImmagineDiProfiloDefault = "/com/example/uninaswap/images/immagine_di_profilo_default.jpg";
-    public static String pathUtenti = "src/main/java/com/example/uninaswap/data_utenti/";
+    public static final String accedi = "Accedi - UninaSwap";
+    public static final String registrati = "Registrati - UninaSwap";
+    public static final String homepage = "Homepage - UninaSwap";
+    public static final String pathSignIn = "/com/example/uninaswap/signIn.fxml";
+    public static final String pathModificaProfilo = "/com/example/uninaswap/modificaProfilo.fxml";
+    public static final String pathSignUp = "/com/example/uninaswap/signUp.fxml";
+    public static final String pathHomePage = "/com/example/uninaswap/HomePage.fxml";
+    public static final String pathLogo = "/com/example/uninaswap/images/uninaLogo.png";
+    public static final String pathImmagineDiProfiloDefault = "/com/example/uninaswap/images/immagine_di_profilo_default.jpg";
+    public static final String pathUtenti = "dati_utenti";
+    public static final String pathAggiungiOggetto = "/com/example/uninaswap/aggiungiOggetto.fxml";
+    public static final String aggiungiOggetto = "aggiungi oggetto";
+    public static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9.]{6,64}@studenti\\.unina\\.it$";
+    public static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
+    public static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
+    public static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
+    public static final String OGGETTO_FIELD_REGEX = "^[a-zA-Z0-9 ]+$";
 
 }
