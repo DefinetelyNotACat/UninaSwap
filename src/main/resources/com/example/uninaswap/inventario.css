@@ -1,0 +1,31 @@
+/*Il contenitore della lista */
+.form-field .list-view {
+    -fx-background-color: #ffffff;
+}
+
+/* Le celle nella lista */
+.form-field .list-view .list-cell {
+    -fx-text-fill: #333333;
+    -fx-padding: 8px 10px;
+    -fx-cursor: hand;
+}
+
+/*Hover SOLO nella lista */
+.form-field .list-view .list-cell:filled:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #0056b3;
+}
+
+/* Selected SOLO DENTRO LA LISTA  */
+.form-field .list-view .list-cell:filled:selected,
+.form-field .list-view .list-cell:filled:selected:hover {
+    -fx-background-color: #0056b3;
+    -fx-text-fill: white;
+}
+
+/* Forza il bottone principale ad essere neutro/trasparente */
+/* Questo serve se il bottone prende strani colori di default */
+.form-field .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+}

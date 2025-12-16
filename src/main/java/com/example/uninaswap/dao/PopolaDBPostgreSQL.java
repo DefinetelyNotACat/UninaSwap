@@ -14,7 +14,6 @@ public class PopolaDBPostgreSQL {
 
             // Creazione dei tipi ENUM
             stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NON_DISPONIBILE');");
-            //TODO! TROVARE UNA SOLUZIONE TRA IL RIMUOVERE IL _ OPPURE LA FUNZIONE PER SCAMBIARE _ CON " " PER LATO UTENTE
             stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME NUOVO', 'OTTIME CONDIZIONI', 'BUONE CONDIZIONI', 'DISCRETE CONDIZIONI', 'CATTIVE CONDIZIONI');");
             stmt.executeUpdate("CREATE TYPE disponibilita_oggetto AS ENUM ('DISPONIBILE', 'OCCUPATO', 'VENDUTO', 'REGALATO', 'SCAMBIATO');");
             stmt.executeUpdate("CREATE TYPE stato_offerta AS ENUM ('IN ATTESA', 'ACCETTATA', 'RIFIUTATA');");

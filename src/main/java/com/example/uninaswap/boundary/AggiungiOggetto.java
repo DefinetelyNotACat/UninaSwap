@@ -42,9 +42,11 @@ public class AggiungiOggetto implements Initializable {
         ArrayList <String> condizioni = controllerUninaSwap.getCondizioni();
         for (Categoria categoria : categorie){
             categoriaBox.getItems().add(categoria.getNome());
+            categoriaBox.setCursor(javafx.scene.Cursor.HAND);
         }
        for(String condizione : condizioni){
            condizioneBox.getItems().add(condizione);
+           condizioneBox.setCursor(javafx.scene.Cursor.HAND);
        }
        if(nomeOggettoField != null){
            nomeOggettoField.textProperty().addListener((observable, oldValue, newValue) -> {
