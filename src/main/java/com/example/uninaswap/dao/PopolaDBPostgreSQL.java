@@ -70,13 +70,13 @@ public class PopolaDBPostgreSQL {
             // 6. OGGETTO
             String queryOggetto = "CREATE TABLE OGGETTO (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
-                    "annuncio_id INTEGER NOT NULL, " +
+                    "annuncio_id INTEGER, " + // <--- MODIFICA QUI (niente NOT NULL)
                     "utente_id INTEGER NOT NULL, " +
                     "nome VARCHAR(100) NOT NULL, " +
                     "descrizione TEXT, " +
                     "condizione condizione_oggetto, " +
                     "disponibilita disponibilita_oggetto DEFAULT 'DISPONIBILE', " +
-                    "CONSTRAINT fk_annuncio_oggetto FOREIGN KEY (annuncio_id) REFERENCES ANNUNCIO(id) ON DELETE CASCADE, " +
+                    "CONSTRAINT fk_annuncio_oggetto FOREIGN KEY (annuncio_id) REFERENCES ANNUNCIO(id) ON DELETE SET NULL, " +
                     "CONSTRAINT fk_utente_oggetto FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE" +
                     ");";
             stmt.executeUpdate(queryOggetto);
@@ -86,8 +86,8 @@ public class PopolaDBPostgreSQL {
             String queryImmagine = "CREATE TABLE IMMAGINE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "oggetto_id INTEGER NOT NULL, " +
-                    "path TEXT NOT NULL, " + // Modificato da url a path
-                    "data_caricamento TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " + // Aggiunta data
+                    "path TEXT NOT NULL, " + // <--- Usiamo path
+                    "data_caricamento TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                     "CONSTRAINT fk_oggetto_immagine FOREIGN KEY (oggetto_id) REFERENCES OGGETTO(id) ON DELETE CASCADE" +
                     ");";
             stmt.executeUpdate(queryImmagine);

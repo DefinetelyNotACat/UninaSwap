@@ -33,9 +33,8 @@ public class Oggetto {
     private Annuncio annuncio;
     private OffertaScambio offertaScambio;
     private DISPONIBILITA disponibilita = DISPONIBILITA.DISPONIBILE;
-    private ArrayList<Categoria> categorie;
-    private ArrayList<String> immagini;
-    private ArrayList<Categoria> Categorie = new ArrayList<Categoria>();
+    private ArrayList<Categoria> categorie = new ArrayList<>();
+    private ArrayList<String> immagini = new ArrayList<>();
 
     //Costruttori
     //
@@ -83,6 +82,8 @@ public class Oggetto {
         return false;
     }
 
+
+
     //Verificare nel caso di spostare questa funzione in annuncio//
     public void removeAnnuncio(Annuncio annuncio) throws Exception{
         ArrayList <Oggetto> oggetti = annuncio.getOggetti();
@@ -95,9 +96,9 @@ public class Oggetto {
 
     //Getter e Setter
     //
-    public int getid() { return id;}
+    public int getId() { return id;}
 
-    public void setid(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -153,6 +154,10 @@ public class Oggetto {
                 }
             }
         }
+    }
+
+    public ArrayList<String> getImmagini() {
+        return immagini;
     }
 
     @Override
