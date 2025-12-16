@@ -38,7 +38,6 @@ public class AggiungiOggetto implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle){
         controllerUninaSwap = ControllerUninaSwap.getInstance();
-
         ArrayList<Categoria> categorie = controllerUninaSwap.getCategorie();
         ArrayList <String> condizioni = controllerUninaSwap.getCondizioni();
         for (Categoria categoria : categorie){
