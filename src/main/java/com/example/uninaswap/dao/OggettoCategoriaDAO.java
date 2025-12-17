@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
 
     /**
-     * Collega una categoria ad un oggetto nella tabella ponte.
+     * Collega una singola categoria (Nuova connessione, no transazione).
      */
     public boolean associaCategoria(int idOggetto, String nomeCategoria) {
         String sql = "INSERT INTO OGGETTO_CATEGORIA (oggetto_id, categoria_nome) VALUES (?, ?)";
@@ -23,9 +23,27 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            // Gestione errore (es. se la coppia esiste già, violazione Primary Key)
-            System.err.println("Errore durante l'associazione Oggetto-Categoria: " + e.getMessage());
+            System.err.println("Errore associazione Oggetto-Categoria: " + e.getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Collega una LISTA di categorie usando una connessione ESISTENTE (Per Transazioni).
+     * Sostituisce il vecchio metodo 'salvaListaCategorie'.
+     */
+    public void associaCategorie(Connection conn, int idOggetto, ArrayList<Categoria> categorie) throws SQLException {
+        if (categorie == null || categorie.isEmpty()) return;
+
+        String sql = "INSERT INTO OGGETTO_CATEGORIA (oggetto_id, categoria_nome) VALUES (?, ?)";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (Categoria cat : categorie) {
+                stmt.setInt(1, idOggetto);
+                stmt.setString(2, cat.getNome());
+                stmt.addBatch(); // Aggiunge al batch
+            }
+            stmt.executeBatch(); // Esegue tutto insieme
         }
     }
 
@@ -51,26 +69,26 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
 
     /**
      * Rimuove TUTTE le categorie associate a un oggetto.
-     * Utile prima di salvare una modifica per fare "reset" delle categorie.
      */
     public boolean rimuoviTutteLeCategorieDiOggetto(int idOggetto, Connection connEsterna) throws SQLException {
         String sql = "DELETE FROM OGGETTO_CATEGORIA WHERE oggetto_id = ?";
 
-        // Qui usiamo una logica flessibile: se ci passano una connessione (dentro una transazione) usiamo quella,
-        // altrimenti ne apriamo una nuova.
         PreparedStatement stmt = null;
-        boolean nuovaConnessione = (connEsterna == null);
-        Connection conn = nuovaConnessione ? PostgreSQLConnection.getConnection() : connEsterna;
+        boolean chiudiConnessione = (connEsterna == null);
+        Connection conn = chiudiConnessione ? PostgreSQLConnection.getConnection() : connEsterna;
 
         try {
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, idOggetto);
-            return stmt.executeUpdate() >= 0; // >= 0 perché potrebbe non averne nessuna, ma non è errore
+            // executeUpdate ritorna il numero di righe cancellate.
+            // Se ritorna 0 non è un errore (l'oggetto non aveva categorie), quindi torniamo true comunque se non ci sono eccezioni.
+            stmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
             throw e;
         } finally {
             if (stmt != null) stmt.close();
-            if (nuovaConnessione && conn != null) conn.close();
+            if (chiudiConnessione && conn != null) conn.close();
         }
     }
 
@@ -98,18 +116,8 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
         return lista;
     }
 
-    /**
-     * Metodo helper per salvare una lista intera in transazione (usato da OggettoDAO)
-     */
+    @Override
     public void salvaListaCategorie(Connection conn, int idOggetto, ArrayList<Categoria> categorie) throws SQLException {
-        String sql = "INSERT INTO OGGETTO_CATEGORIA (oggetto_id, categoria_nome) VALUES (?, ?)";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            for (Categoria cat : categorie) {
-                stmt.setInt(1, idOggetto);
-                stmt.setString(2, cat.getNome());
-                stmt.addBatch(); // Ottimizzazione: prepara tutti gli inserimenti
-            }
-            stmt.executeBatch(); // Esegue tutti insieme
-        }
+
     }
 }

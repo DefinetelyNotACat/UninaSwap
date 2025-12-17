@@ -35,7 +35,6 @@ public class CategoriaDAO implements GestoreCategoriaDAO {
     }
 
     public Categoria OttieniCategoria(String nome){
-        // ... (codice invariato rispetto al tuo esempio)
         return new Categoria(nome); // Semplificazione se esiste
     }
 

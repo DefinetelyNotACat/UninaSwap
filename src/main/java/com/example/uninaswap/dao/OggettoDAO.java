@@ -12,12 +12,14 @@ public class OggettoDAO implements GestoreOggettoDAO {
 
     // Istanze delle DAO ausiliarie
     private OggettoCategoriaDAO oggettoCategoriaDAO = new OggettoCategoriaDAO();
+    // Assumo che ImmagineDAO esista e abbia il metodo inserisciImmaginiBatch
     private ImmagineDAO immagineDAO = new ImmagineDAO();
 
     /**
      * Salva Oggetto, Categorie e Immagini in un'unica Transazione.
      */
     public boolean salvaOggetto(Oggetto oggetto, Utente utente) {
+        // Nota: ?::type è la sintassi di cast di PostgreSQL. Assicurati che i tipi esistano nel DB.
         String sqlOggetto = "INSERT INTO OGGETTO (utente_id, nome, condizione, disponibilita) VALUES (?, ?, ?::condizione_oggetto, ?::disponibilita_oggetto)";
 
         Connection conn = null;
@@ -49,10 +51,13 @@ public class OggettoDAO implements GestoreOggettoDAO {
             }
 
             // 2. Inserimento Categorie (Tabella Ponte) usando la stessa connessione
-            oggettoCategoriaDAO.salvaCategorie(conn, idOggettoGenerato, oggetto.getCategorie());
+            // FIX: Chiamata corretta al metodo che accetta (Connection, int, ArrayList)
+            oggettoCategoriaDAO.associaCategorie(conn, idOggettoGenerato, oggetto.getCategorie());
 
             // 3. Inserimento Immagini usando la stessa connessione
-            immagineDAO.inserisciImmaginiBatch(conn, idOggettoGenerato, oggetto.getImmagini());
+            if (oggetto.getImmagini() != null && !oggetto.getImmagini().isEmpty()) {
+                immagineDAO.inserisciImmaginiBatch(conn, idOggettoGenerato, oggetto.getImmagini());
+            }
 
             conn.commit(); // --- CONFERMA TRANSAZIONE ---
             return true;
@@ -121,7 +126,7 @@ public class OggettoDAO implements GestoreOggettoDAO {
         return oggetto;
     }
 
-    // Metodi Stub (da implementare se servono)
+    // Metodi da implementare se servono
     public boolean modificaOggetto(Oggetto oggetto) { return true; }
     public boolean eliminaOggetto(int idOggetto) { return true; }
     public boolean associaUtente(int idUtente, int idOggetto) { return true; }
