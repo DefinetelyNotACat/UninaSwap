@@ -16,10 +16,6 @@ public class Categoria {
 
     //Adder, Remover, Clearer
     //
-    public void aggiungiOggetto(Oggetto oggetto) {
-        this.oggetti.add(oggetto);
-        oggetto.addCategoria(this);
-    }
 
     //Getter e Setter
     //

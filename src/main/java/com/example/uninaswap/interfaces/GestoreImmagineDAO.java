@@ -7,9 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface GestoreImmagineDAO {
-    public boolean inserisciImmagine(Immagine immagine, int idOggetto);
-    public boolean inserisciImmagine(Connection conn, Immagine immagine, int idOggetto) throws SQLException;
+    public boolean inserisciImmagine(String immagine, int idOggetto);
+    public boolean inserisciImmagine(Connection conn, String immagine, int idOggetto) throws SQLException;
     public boolean rimuoviImmagine(Immagine immagine);
     public ArrayList<Immagine> ottieniImmagini(int idOggetto);
+    public ArrayList<String> ottieniImmaginiStringhe(int idOggetto);
     public ArrayList<Immagine> ottieniTutteImmagini();
 }

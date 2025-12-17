@@ -5,22 +5,25 @@ public class Oggetto {
 
     //Enum
     //
-    protected enum DISPONIBILITA {
+    public enum DISPONIBILITA {
         DISPONIBILE,
         OCCUPATO,
         VENDUTO,
         REGALATO,
         SCAMBIATO
     }
-    protected enum CONDIZIONE {
+
+    public enum CONDIZIONE {
         NUOVO,
         COME_NUOVO,
         OTTIME_CONDIZIONI,
         BUONE_CONDIZIONI,
         DISCRETE_CONDIZIONI,
-        CATTIVE_COMDIZIONI
+        CATTIVE_CONDIZIONI
     }
-    protected enum STATO_ANNUNCIO {
+
+    //Credo vada tolto, non dovrebbe servire qui lo stato annuncio
+    public enum STATO_ANNUNCIO {
         DISPONIBILE,
         NONDISPONIBILE
     }
@@ -32,57 +35,45 @@ public class Oggetto {
     private Utente proprietario;
     private Annuncio annuncio;
     private OffertaScambio offertaScambio;
+    private Categoria categoria;
     private DISPONIBILITA disponibilita = DISPONIBILITA.DISPONIBILE;
-    private ArrayList<Categoria> categorie = new ArrayList<>();
+    private CONDIZIONE condizione = CONDIZIONE.NUOVO;
+    private STATO_ANNUNCIO statoAnnuncio = STATO_ANNUNCIO.DISPONIBILE;
     private ArrayList<String> immagini = new ArrayList<>();
 
     //Costruttori
     //
-    Oggetto(String nome, ArrayList<Categoria> categoria, ArrayList<String> immagini, Utente proprietario) {
+    public Oggetto(String nome,Categoria categoria, ArrayList<String> immaginiCaricate, Utente proprietario, CONDIZIONE condizione) {
         this.nome = nome;
-        this.immagini = immagini;
+        if (immaginiCaricate != null) {
+            for (String immagini : immaginiCaricate) {
+                if (immagini != null) {
+                    this.immagini.add(immagini);
+                }
+            }
+        }
+        this.condizione = condizione;
+        this.disponibilita = DISPONIBILITA.DISPONIBILE;
         this.proprietario = proprietario;
-        this.categorie = categoria;
+        this.categoria = categoria;
         this.proprietario.addOggetto(this);
         if (immagini.isEmpty()) {
             System.err.println("Attenzione: non e' stata aggiunta alcuna immagine");
         }
     }
 
-    //Metodi di logica
-    //
-    public void modificaCategorie(ArrayList<Categoria> modificaCategorie) {
-        this.categorie.clear();
-        if (modificaCategorie != null) {
-            for (Categoria categorie : modificaCategorie) {
-                if (categorie != null) {
-                    this.categorie.add(categorie);
-                }
-            }
-        }
-    }
-
     //Adder, Remover e Clearer
     //
-    public boolean addImmagine(String immagini) {
-        if (immagini != null) {
-            return this.immagini.add(immagini);
+    public boolean addImmagine(String immagine) {
+        if (immagine != null) {
+            return this.immagini.add(immagine);
         }
         return false;
     }
 
-    public boolean revomeImmagine(String immagini){
-        return this.immagini.remove(immagini);
+    public boolean revomeImmagine(String immagine){
+        return this.immagini.remove(immagine);
     }
-
-    public boolean addCategoria(Categoria categorie) {
-        if (categorie != null) {
-            return this.categorie.add(categorie);
-        }
-        return false;
-    }
-
-
 
     //Verificare nel caso di spostare questa funzione in annuncio//
     public void removeAnnuncio(Annuncio annuncio) throws Exception{
@@ -141,8 +132,25 @@ public class Oggetto {
         return offertaScambio;
     }
 
-    public ArrayList<Categoria> getCategorie() {
-        return categorie;
+    public Categoria getCategorie() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public DISPONIBILITA getDisponibilita() {
+        return disponibilita;
+    }
+    public void setDisponibilita(DISPONIBILITA disponibilita) {
+        this.disponibilita = disponibilita;
+    }
+    public CONDIZIONE getCondizione() {
+        return condizione;
+    }
+    public void setCondizione(CONDIZIONE condizione) {
+        this.condizione = condizione;
     }
 
     public void setImmagini(ArrayList<String> nuoveImmagini) {

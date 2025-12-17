@@ -7,7 +7,7 @@ import java.sql.Statement;
 public class PopolaDBPostgreSQL {
 
     public static void creaDB() throws Exception {
-        System.out.println("--- Creazione Schema Finale: Path Locali e Date ---");
+        System.out.println("--- Creazione Schema Finale: Relazione 1-N Oggetto-Categoria ---");
 
         try (Connection conn = PostgreSQLConnection.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -40,7 +40,7 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(querySede);
             System.out.println("Tabella SEDE CREATA");
 
-            // 4. CATEGORIA
+            // 4. CATEGORIA (Deve essere creata PRIMA di OGGETTO)
             String queryCategoria = "CREATE TABLE CATEGORIA (" +
                     "nome VARCHAR(50) PRIMARY KEY" +
                     ");";
@@ -67,42 +67,34 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryAnnuncio);
             System.out.println("Tabella ANNUNCIO CREATA");
 
-            // 6. OGGETTO
+            // 6. OGGETTO (Modificata: Aggiunta categoria_nome)
             String queryOggetto = "CREATE TABLE OGGETTO (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
-                    "annuncio_id INTEGER, " + // <--- MODIFICA QUI (niente NOT NULL)
+                    "annuncio_id INTEGER, " +
                     "utente_id INTEGER NOT NULL, " +
+                    "categoria_nome VARCHAR(50), " + // <--- NUOVA COLONNA (FK)
                     "nome VARCHAR(100) NOT NULL, " +
-                    "descrizione TEXT, " +
                     "condizione condizione_oggetto, " +
                     "disponibilita disponibilita_oggetto DEFAULT 'DISPONIBILE', " +
                     "CONSTRAINT fk_annuncio_oggetto FOREIGN KEY (annuncio_id) REFERENCES ANNUNCIO(id) ON DELETE SET NULL, " +
-                    "CONSTRAINT fk_utente_oggetto FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE" +
+                    "CONSTRAINT fk_utente_oggetto FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE, " +
+                    "CONSTRAINT fk_categoria_oggetto FOREIGN KEY (categoria_nome) REFERENCES CATEGORIA(nome) ON DELETE SET NULL" + // <--- VINCOLO FK
                     ");";
             stmt.executeUpdate(queryOggetto);
-            System.out.println("Tabella OGGETTO CREATA");
+            System.out.println("Tabella OGGETTO CREATA (Con FK Categoria)");
 
-            // 7. IMMAGINE (Modificata: path + data_caricamento)
+            // 7. IMMAGINE
             String queryImmagine = "CREATE TABLE IMMAGINE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "oggetto_id INTEGER NOT NULL, " +
-                    "path TEXT NOT NULL, " + // <--- Usiamo path
+                    "path TEXT NOT NULL, " +
                     "data_caricamento TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
                     "CONSTRAINT fk_oggetto_immagine FOREIGN KEY (oggetto_id) REFERENCES OGGETTO(id) ON DELETE CASCADE" +
                     ");";
             stmt.executeUpdate(queryImmagine);
             System.out.println("Tabella IMMAGINE CREATA");
 
-            // 8. OGGETTO_CATEGORIA
-            String queryOggettoCategoria = "CREATE TABLE OGGETTO_CATEGORIA (" +
-                    "oggetto_id INTEGER NOT NULL, " +
-                    "categoria_nome VARCHAR(50) NOT NULL, " +
-                    "PRIMARY KEY (oggetto_id, categoria_nome), " +
-                    "CONSTRAINT fk_objcat_oggetto FOREIGN KEY (oggetto_id) REFERENCES OGGETTO(id) ON DELETE CASCADE, " +
-                    "CONSTRAINT fk_objcat_categoria FOREIGN KEY (categoria_nome) REFERENCES CATEGORIA(nome) ON DELETE CASCADE" +
-                    ");";
-            stmt.executeUpdate(queryOggettoCategoria);
-            System.out.println("Tabella OGGETTO_CATEGORIA CREATA");
+            // 8. OGGETTO_CATEGORIA RIMOSSA COMPLETAMENTE
 
             // 9. OFFERTA
             String queryOfferta = "CREATE TABLE OFFERTA (" +
@@ -152,7 +144,7 @@ public class PopolaDBPostgreSQL {
 
             stmt.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");
+            // stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;"); // RIMOSSA
             stmt.executeUpdate("DROP TABLE IF EXISTS IMMAGINE CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS ANNUNCIO CASCADE;");

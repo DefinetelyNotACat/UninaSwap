@@ -70,6 +70,8 @@ public class CategoriaDAO implements GestoreCategoriaDAO {
         return categoria;
     }
 
+
+
     public ArrayList<Categoria> OttieniCategorie(){
         ArrayList <Categoria> categorie = new ArrayList<Categoria>();
         String sql = "SELECT * FROM CATEGORIA";

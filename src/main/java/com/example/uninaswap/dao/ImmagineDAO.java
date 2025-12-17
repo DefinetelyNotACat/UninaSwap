@@ -8,8 +8,7 @@ import java.util.ArrayList;
 
 public class ImmagineDAO implements GestoreImmagineDAO {
 
-    public boolean inserisciImmagine(Immagine immagine, int idOggetto){
-        // Delega al metodo che accetta la connessione, aprendone una nuova
+    public boolean inserisciImmagine(String immagine, int idOggetto){
         try (Connection conn = PostgreSQLConnection.getConnection()) {
             return inserisciImmagine(conn, immagine, idOggetto);
         } catch (SQLException e) {
@@ -18,19 +17,13 @@ public class ImmagineDAO implements GestoreImmagineDAO {
         }
     }
 
-    public boolean inserisciImmagine(Connection conn, Immagine immagine, int idOggetto) throws SQLException {
-        // Nota: nomi colonne allineati al tuo schema DB creato prima
+    public boolean inserisciImmagine(Connection conn, String immagine, int idOggetto) throws SQLException {
         String sql = "INSERT INTO IMMAGINE (data_caricamento, path, oggetto_id) VALUES (CURRENT_TIMESTAMP, ?, ?)";
-
-        // NON chiudiamo la connessione qui (try-with-resources solo su statement)
         try (PreparedStatement query = conn.prepareStatement(sql)) {
-            // Nota: data_caricamento lo gestiamo con DEFAULT CURRENT_TIMESTAMP nel DB o qui
-            // Se vuoi passarlo da java: query.setTimestamp(1, ...);
-
-            query.setString(1, immagine.getPath());
+            query.setString(1, immagine);
             query.setInt(2, idOggetto);
-
-            return query.executeUpdate() > 0;
+            int numModifiche = query.executeUpdate();
+            return numModifiche > 0;
         }
     }
 
@@ -39,7 +32,7 @@ public class ImmagineDAO implements GestoreImmagineDAO {
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
 
-            query.setInt(1, id);
+            query.setInt(1, immagine.getId());
 
             int numModifiche = query.executeUpdate();
             return numModifiche > 0;
@@ -60,11 +53,8 @@ public class ImmagineDAO implements GestoreImmagineDAO {
             query.setInt(1, idOggetto);
             try (ResultSet rs = query.executeQuery()) {
                 while (rs.next()) {
-                    Immagine img = new Immagine(); // Assumo costruttore vuoto o set
+                    Immagine img = new Immagine((rs.getTimestamp("data_caricamento")), (rs.getString("path")), (rs.getInt("id"))); // Assumo costruttore vuoto o set
                     img.setId(rs.getInt("id"));
-                    img.setPath(rs.getString("path"));
-                    img.setDataCaricamento(rs.getTimestamp("data_caricamento")); // Usa Timestamp per data+ora
-                    img.setIdOggetto(rs.getInt("oggetto_id"));
                     lista.add(img);
                 }
             }
@@ -74,7 +64,43 @@ public class ImmagineDAO implements GestoreImmagineDAO {
         return lista;
     }
 
+    public ArrayList<String> ottieniImmaginiStringhe(int idOggetto) {
+        ArrayList<String> lista = new ArrayList<>();
+        String sql = "SELECT * FROM IMMAGINE WHERE oggetto_id = ?";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement query = conn.prepareStatement(sql)) {
+
+            query.setInt(1, idOggetto);
+            try (ResultSet rs = query.executeQuery()) {
+                while (rs.next()) {
+                    String img = rs.getString("path");
+                    lista.add(img);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
+
+    }
+
     public ArrayList<Immagine> ottieniTutteImmagini(){
-        return null;
+        ArrayList<Immagine> lista = new ArrayList<>();
+        String sql = "SELECT * FROM IMMAGINE";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement query = conn.prepareStatement(sql)) {
+            try (ResultSet rs = query.executeQuery()) {
+                while (rs.next()) {
+                    Immagine img = new Immagine((rs.getTimestamp("data_caricamento")), (rs.getString("path")), (rs.getInt("id"))); // Assumo costruttore vuoto o set
+                    img.setId(rs.getInt("id"));
+                    lista.add(img);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
     }
 }
