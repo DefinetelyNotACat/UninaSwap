@@ -101,10 +101,9 @@ public class PopolaDBPostgreSQL {
             // 8. OGGETTO_CATEGORIA (Tabella Ponte)
             String queryOggettoCategoria = "CREATE TABLE OGGETTO_CATEGORIA (" +
                     "oggetto_id INTEGER NOT NULL, " +
-                    "categoria_nome UNIQUE VARCHAR(50) NOT NULL, " +
-                    "PRIMARY KEY (oggetto_id), " +
-                    "CONSTRAINT fk_objcat_oggetto FOREIGN KEY (o" +
-                    "ggetto_id) REFERENCES OGGETTO(id) ON DELETE CASCADE, " +
+                    "categoria_nome VARCHAR(50) NOT NULL, " +
+                    "PRIMARY KEY (oggetto_id, categoria_nome), " +
+                    "CONSTRAINT fk_objcat_oggetto FOREIGN KEY (oggetto_id) REFERENCES OGGETTO(id) ON DELETE CASCADE, " +
                     "CONSTRAINT fk_objcat_categoria FOREIGN KEY (categoria_nome) REFERENCES CATEGORIA(nome) ON DELETE CASCADE" +
                     ");";
             stmt.executeUpdate(queryOggettoCategoria);
