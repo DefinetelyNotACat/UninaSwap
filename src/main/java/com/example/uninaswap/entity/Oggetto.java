@@ -1,176 +1,94 @@
 package com.example.uninaswap.entity;
+
 import java.util.ArrayList;
 
 public class Oggetto {
 
-    //Enum
-    //
+    // --- ENUM (Public per essere visti dal DAO) ---
     public enum DISPONIBILITA {
-        DISPONIBILE,
-        OCCUPATO,
-        VENDUTO,
-        REGALATO,
-        SCAMBIATO
+        DISPONIBILE, OCCUPATO, VENDUTO, REGALATO, SCAMBIATO
     }
 
     public enum CONDIZIONE {
-        NUOVO,
-        COME_NUOVO,
-        OTTIME_CONDIZIONI,
-        BUONE_CONDIZIONI,
-        DISCRETE_CONDIZIONI,
-        CATTIVE_CONDIZIONI
+        NUOVO, COME_NUOVO, OTTIME_CONDIZIONI, BUONE_CONDIZIONI, DISCRETE_CONDIZIONI, CATTIVE_CONDIZIONI
     }
 
-    //Credo vada tolto, non dovrebbe servire qui lo stato annuncio
-    public enum STATO_ANNUNCIO {
-        DISPONIBILE,
-        NONDISPONIBILE
-    }
-
-    //Attributi
-    //
+    // --- ATTRIBUTI ---
     private int id;
     private String nome;
     private Utente proprietario;
     private Annuncio annuncio;
-    private OffertaScambio offertaScambio;
-    private Categoria categoria;
+
+    // Relazione N:M -> Lista di categorie
+    private ArrayList<Categoria> categorie = new ArrayList<>();
+
+    // Default values
     private DISPONIBILITA disponibilita = DISPONIBILITA.DISPONIBILE;
     private CONDIZIONE condizione = CONDIZIONE.NUOVO;
-    private STATO_ANNUNCIO statoAnnuncio = STATO_ANNUNCIO.DISPONIBILE;
+
     private ArrayList<String> immagini = new ArrayList<>();
 
-    //Costruttori
-    //
-    public Oggetto(String nome,Categoria categoria, ArrayList<String> immaginiCaricate, Utente proprietario, CONDIZIONE condizione) {
+    // --- COSTRUTTORI ---
+
+    // Costruttore vuoto (essenziale per i DAO)
+    public Oggetto() {}
+
+    // Costruttore completo
+    public Oggetto(String nome, ArrayList<Categoria> categorie, ArrayList<String> immaginiCaricate, Utente proprietario, CONDIZIONE condizione) {
         this.nome = nome;
+        this.proprietario = proprietario;
+        this.condizione = condizione;
+
+        // Copia sicura delle categorie
+        if (categorie != null) {
+            this.categorie.addAll(categorie);
+        }
+
+        // Copia sicura delle immagini
         if (immaginiCaricate != null) {
-            for (String immagini : immaginiCaricate) {
-                if (immagini != null) {
-                    this.immagini.add(immagini);
-                }
+            for (String img : immaginiCaricate) {
+                if (img != null) this.immagini.add(img);
             }
         }
-        this.condizione = condizione;
-        this.disponibilita = DISPONIBILITA.DISPONIBILE;
-        this.proprietario = proprietario;
-        this.categoria = categoria;
-        this.proprietario.addOggetto(this);
-        if (immagini.isEmpty()) {
-            System.err.println("Attenzione: non e' stata aggiunta alcuna immagine");
+
+        // Associazione bidirezionale (opzionale, ma utile)
+        if(this.proprietario != null) {
+            this.proprietario.addOggetto(this);
         }
     }
 
-    //Adder, Remover e Clearer
-    //
-    public boolean addImmagine(String immagine) {
-        if (immagine != null) {
-            return this.immagini.add(immagine);
-        }
-        return false;
-    }
+    // --- GETTER E SETTER ---
 
-    public boolean revomeImmagine(String immagine){
-        return this.immagini.remove(immagine);
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    //Verificare nel caso di spostare questa funzione in annuncio//
-    public void removeAnnuncio(Annuncio annuncio) throws Exception{
-        ArrayList <Oggetto> oggetti = annuncio.getOggetti();
-        for (Oggetto oggetto : oggetti) {
-            oggetto.disponibilita = DISPONIBILITA.DISPONIBILE;
-        }
-        oggetti.clear();
-        this.annuncio = null;
-    }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
 
-    //Getter e Setter
-    //
-    public int getId() { return id;}
+    public Utente getProprietario() { return proprietario; }
+    public void setProprietario(Utente proprietario) { this.proprietario = proprietario; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public Annuncio getAnnuncio() { return annuncio; }
+    public void setAnnuncio(Annuncio annuncio) { this.annuncio = annuncio; }
 
-    public String getNome() {
-        return nome;
-    }
+    public CONDIZIONE getCondizione() { return condizione; }
+    public void setCondizione(CONDIZIONE condizione) { this.condizione = condizione; }
 
-    public void setNome(String Nome) {
-        this.nome = nome;
-    }
+    public DISPONIBILITA getDisponibilita() { return disponibilita; }
+    public void setDisponibilita(DISPONIBILITA disponibilita) { this.disponibilita = disponibilita; }
 
-    public Utente getProprietario() {
-        return proprietario;
-    }
+    // Gestione Categorie
+    public ArrayList<Categoria> getCategorie() { return categorie; }
+    public void setCategorie(ArrayList<Categoria> categorie) { this.categorie = categorie; }
+    public void addCategoria(Categoria c) { if(c!=null) this.categorie.add(c); }
 
-    public void setProprietario(Utente proprietario) {
-        this.proprietario = proprietario;
-    }
-
-    public void setAnnuncio(Annuncio annuncio) throws Exception{
-        if (this.disponibilita == DISPONIBILITA.DISPONIBILE) {
-            this.annuncio = annuncio;
-            this.disponibilita = DISPONIBILITA.OCCUPATO;
-        }
-        else{
-            throw new Exception("Oggetto occupato o inesistente");
-        }
-
-    }
-
-    public Annuncio getAnnuncio() {
-        return annuncio;
-    }
-
-    public void setOffertaScambio(OffertaScambio offertaScambio) {
-        this.offertaScambio = offertaScambio;
-    }
-
-    public OffertaScambio getOffertaScambio() {
-        return offertaScambio;
-    }
-
-    public Categoria getCategorie() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
-
-    public DISPONIBILITA getDisponibilita() {
-        return disponibilita;
-    }
-    public void setDisponibilita(DISPONIBILITA disponibilita) {
-        this.disponibilita = disponibilita;
-    }
-    public CONDIZIONE getCondizione() {
-        return condizione;
-    }
-    public void setCondizione(CONDIZIONE condizione) {
-        this.condizione = condizione;
-    }
-
-    public void setImmagini(ArrayList<String> nuoveImmagini) {
-        this.immagini.clear();
-        if (nuoveImmagini != null) {
-            for (String immagini : nuoveImmagini) {
-                if (immagini != null) {
-                    this.immagini.add(immagini);
-                }
-            }
-        }
-    }
-
-    public ArrayList<String> getImmagini() {
-        return immagini;
-    }
+    // Gestione Immagini
+    public ArrayList<String> getImmagini() { return immagini; }
+    public void setImmagini(ArrayList<String> immagini) { this.immagini = immagini; }
+    public void addImmagine(String img) { if(img!=null) this.immagini.add(img); }
 
     @Override
     public String toString() {
-        return "Id : " + this.id + ", Nome : " + this.nome + ", Proprietario : " + this.proprietario;
+        return "Oggetto [id=" + id + ", nome=" + nome + ", categorie=" + categorie + "]";
     }
-
 }
