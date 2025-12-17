@@ -12,9 +12,9 @@ public class PopolaDBPostgreSQL {
         try (Connection conn = PostgreSQLConnection.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            // 1. ENUM
-            stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NONDISPONIBILE');");
-            stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME_NUOVO', 'OTTIME_CONDIZIONI', 'BUONE_CONDIZIONI', 'DISCRETE_CONDIZIONI', 'CATTIVE_CONDIZIONI');");
+            // Creazione dei tipi ENUM
+            stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NON_DISPONIBILE');");
+            stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME NUOVO', 'OTTIME CONDIZIONI', 'BUONE CONDIZIONI', 'DISCRETE CONDIZIONI', 'CATTIVE CONDIZIONI');");
             stmt.executeUpdate("CREATE TYPE disponibilita_oggetto AS ENUM ('DISPONIBILE', 'OCCUPATO', 'VENDUTO', 'REGALATO', 'SCAMBIATO');");
             stmt.executeUpdate("CREATE TYPE stato_offerta AS ENUM ('IN_ATTESA', 'ACCETTATA', 'RIFIUTATA');");
             System.out.println("TIPI ENUM CREATI.");
