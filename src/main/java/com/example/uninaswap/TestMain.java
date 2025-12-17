@@ -1,6 +1,7 @@
 package com.example.uninaswap;
 
 import com.example.uninaswap.dao.OggettoDAO;
+import com.example.uninaswap.dao.UtenteDAO;
 import com.example.uninaswap.entity.Categoria;
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
@@ -13,25 +14,47 @@ public class TestMain {
 
         // 1. Setup DAO
         OggettoDAO oggettoDAO = new OggettoDAO();
+        UtenteDAO utenteDAO = new UtenteDAO();
 
-        // 2. Creiamo un Utente Finto (Assicurati che l'ID 1 esista nel DB o cambialo)
-        Utente utenteTest = new Utente("Mario","ASCAUGFJH12","N86005532","USHABALUSHA@studenti.unina.it");
-        utenteTest.setId(1);
+        // 2. Setup Utente (Con controllo esistenza per evitare crash FK)
+        String emailTest = "USHABALUSHA@studenti.unina.it";
+        Utente utenteTest = new Utente("Mario", "ASCAUGFJH12", "N86005532", emailTest);
+
+        // Salviamo l'utente se non esiste, altrimenti l'inserimento oggetto fallirebbe
+        // Se esiste già, lo recuperiamo per avere l'ID corretto
+        if (!utenteDAO.salvaUtente(utenteTest)) {
+            System.out.println("Utente esistente o errore creazione, provo a recuperarlo...");
+        }
+        utenteTest = utenteDAO.ottieniUtente(emailTest);
+
+        if (utenteTest == null) {
+            System.err.println("❌ Errore critico: Impossibile recuperare un utente valido. Test interrotto.");
+            return;
+        }
+        System.out.println("Utente per il test: ID " + utenteTest.getId());
+
 
         // 3. Creiamo l'Oggetto
         Oggetto nuovoOggetto = new Oggetto();
         nuovoOggetto.setNome("Libro Java Avanzato - Test Transazione");
-        nuovoOggetto.setCondizione(Oggetto.CONDIZIONE.NUOVO); // Assicurati di usare i tuoi ENUM corretti
+        nuovoOggetto.setCondizione(Oggetto.CONDIZIONE.NUOVO);
         nuovoOggetto.setDisponibilita(Oggetto.DISPONIBILITA.DISPONIBILE);
 
-        // 4. Aggiungiamo Categorie (Test Batch)
+        // 4. Aggiungiamo Categorie (CORRETTO BASANDOSI SULL'IMMAGINE DB)
         ArrayList<Categoria> categorie = new ArrayList<>();
-        categorie.add(new Categoria("Libri"));
+
+        // "Informatica" esiste nel DB (riga 1)
         categorie.add(new Categoria("Informatica"));
-        categorie.add(new Categoria("Universita"));
+
+        // "Libri" NON esisteva, l'ho corretto in "Libri di testo" (riga 3)
+        categorie.add(new Categoria("Libri di testo"));
+
+        // Ho rimosso "Universita" perché non c'è nella tua tabella.
+        // Se vuoi aggiungerne una terza valida, potresti usare "Cancelleria" o "Elettronica".
+
         nuovoOggetto.setCategorie(categorie);
 
-        // 5. Aggiungiamo Immagini (Test Batch)
+        // 5. Aggiungiamo Immagini
         ArrayList<String> immagini = new ArrayList<>();
         immagini.add("/path/to/img1.jpg");
         immagini.add("/path/to/img2.jpg");
@@ -52,13 +75,17 @@ public class TestMain {
                 System.out.println("Verifica Rilettura:");
                 System.out.println("- Nome: " + oggettoLetto.getNome());
                 System.out.println("- Categorie trovate: " + oggettoLetto.getCategorie().size());
+                // Stampa i nomi delle categorie trovate per essere sicuri
+                for(Categoria c : oggettoLetto.getCategorie()) {
+                    System.out.println("  > " + c.getNome());
+                }
                 System.out.println("- Immagini trovate: " + oggettoLetto.getImmagini().size());
             } else {
                 System.err.println("❌ ERRORE: L'oggetto risulta salvato ma non riesco a rileggerlo.");
             }
 
         } else {
-            System.err.println("❌ FALLIMENTO: Il salvataggio ha restituito false.");
+            System.err.println("❌ FALLIMENTO: Il salvataggio ha restituito false (Controlla console per stacktrace).");
         }
     }
 }
