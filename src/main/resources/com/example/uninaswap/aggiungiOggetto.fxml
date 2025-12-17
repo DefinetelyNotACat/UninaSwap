@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
+
+<ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.AggiungiOggetto"
+stylesheets="@inventario.css, @sign.css">
+    <content>
+        <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="myPadding">
+
+            <VBox alignment="CENTER" fillWidth="false">
+                <fx:include fx:id="notifica" source="banners.fxml"/>
+                <padding>
+                    <Insets bottom="10.0" />
+                </padding>
+            </VBox>
+
+            <VBox alignment="CENTER" spacing="10">
+                <children>
+                    <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@images/uninaLogo.png" />
+                        </image>
+                        <clip>
+                            <Circle centerX="50.0" centerY="50.0" radius="50.0" />
+                        </clip>
+                    </ImageView>
+                    <Text styleClass="bold,title" text="Vendi Oggetto" textAlignment="CENTER" />
+                    <Text styleClass="description" text="Inserisci i dettagli dell'oggetto che vuoi scambiare o vendere" />
+                </children>
+                <padding>
+                    <Insets bottom="20.0" top="10.0" />
+                </padding>
+            </VBox>
+
+            <VBox alignment="CENTER" maxWidth="500.0" spacing="20.0">
+                <children>
+                    <VBox spacing="5" alignment="CENTER">
+                        <children>
+                            <Text styleClass="label" text="Nome Oggetto"/>
+                            <TextField fx:id="nomeOggettoField" promptText="Es. Libro di Analisi 1" styleClass="form-field" />
+                            <Text fx:id="erroreNome" managed="false" styleClass="error-text" text="Nome non valido" visible="false" />
+                        </children>
+                    </VBox>
+                    <VBox spacing="5" alignment="CENTER">
+                        <children>
+                            <Text styleClass="label" text="Categoria" />
+                            <ComboBox fx:id="categoriaBox" maxWidth="Infinity" promptText="Seleziona una categoria" styleClass="form-field" />
+                            <Text fx:id="erroreCategoria" managed="false" styleClass="error-text" text="Selezionare una categoria" visible="false" />
+                        </children>
+                    </VBox>
+
+                    <VBox spacing="5" alignment="CENTER">
+                        <children>
+                            <Text styleClass="label" text="Condizione" />
+                            <ComboBox fx:id="condizioneBox" maxWidth="Infinity" promptText="Seleziona la condizione" styleClass="form-field" />
+                            <Text fx:id="erroreCondizione" managed="false" styleClass="error-text" text="Selezionare una condizione" visible="false" />
+                        </children>
+                    </VBox>
+
+                    <VBox spacing="10" alignment="CENTER">
+                        <children>
+                            <HBox alignment="CENTER" spacing="10">
+                                <Text styleClass="label" text="Foto dell'oggetto" />
+                                <Button fx:id="caricaFotoButton" onAction="#onCaricaFotoClick" text="+ Aggiungi" styleClass="button, button-small"/>                            </HBox>
+
+                            <ScrollPane fitToHeight="true" minHeight="120.0" vbarPolicy="NEVER" styleClass="scroll-pane-transparent">
+                                <content>
+                                    <HBox fx:id="contenitoreImmagini" styleClass="image-container">
+                                        <Text text="Nessuna immagine caricata" styleClass="placeholder-text" />
+                                    </HBox>
+                                </content>
+                            </ScrollPane>
+                            <Text fx:id="erroreImmagini" managed="false" styleClass="error-text" text="Inserire almeno un'immagine" visible="false" />
+                        </children>
+                    </VBox>
+
+                </children>
+            </VBox>
+
+            <HBox alignment="CENTER" spacing="20.0">
+                <children>
+                    <Button fx:id="annullaButton" onAction="#onAnnullaClick" text="Annulla" styleClass="button, button-secondary" />
+                    <Button fx:id="pubblicaButton" onAction="#onPubblicaClick" text="Pubblica Annuncio" styleClass="button" />
+                </children>
+                <padding>
+                    <Insets top="20.0" bottom="30.0"/>
+                </padding>
+            </HBox>
+
+        </VBox>
+    </content>
+</ScrollPane>

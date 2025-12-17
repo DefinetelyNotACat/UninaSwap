@@ -108,17 +108,18 @@ public class UtenteDAO implements GestoreUtenteDAO {
                             rs.getString("email")
                     );
 
-                    // 3. Corretto il nome colonna del DB: "immagine_profilo" invece di "pathImmagineProfilo"
                     utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
-                    //utente.setId(rs.getInt("id"));
+
+                    // --- QUESTA È LA RIGA FONDAMENTALE MANCANTE ---
+                    utente.setId(rs.getInt("id"));
+                    // ----------------------------------------------
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return utente;
-    }
-    public ArrayList<Utente> ottieniTuttiUtenti() {
+    }    public ArrayList<Utente> ottieniTuttiUtenti() {
         ArrayList<Utente> tuttiUtenti = new ArrayList<>();
         String sql = "SELECT * FROM utente";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -156,8 +157,8 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
         return false;
     }
-    public boolean verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) {
-        String sql = "SELECT COUNT(*) FROM utente WHERE username = ? OR email = ? OR matricola = ?";
+    public void verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) throws Exception{
+        String sql = "SELECT username, email, matricola FROM utente WHERE username = ? OR email = ? OR matricola = ?";
 
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
@@ -165,16 +166,26 @@ public class UtenteDAO implements GestoreUtenteDAO {
             query.setString(1, username);
             query.setString(2, email);
             query.setString(3, matricola);
-
             try (ResultSet rs = query.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt(1) > 0;
+                    String nomeutente = rs.getString(1);
+                    String emailutente = rs.getString(2);
+                    String matricolautente = rs.getString(3);
+
+                    System.out.println(nomeutente);
+                    if(matricola.equals(matricolautente)){
+                        throw new Exception("Matricola già presa");
+                    }
+                    else if(username.equals(nomeutente)){
+                        throw new Exception("Username già preso");
+                    }
+                    else if(email.equals(emailutente)){
+                        throw new Exception("email già presa");
+                    }
+
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return true;
     }
 
 }

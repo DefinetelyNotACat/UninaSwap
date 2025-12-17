@@ -44,9 +44,7 @@
                             </clip>
                         </ImageView>
 
-                        <Button text="CAMBIA IMMAGINE"
-                                onAction="#cambiaImmagineProfilo"
-                                style="-fx-background-color: #007bff; -fx-text-fill: white; -fx-cursor: hand;"/>
+                        <Button text="CAMBIA IMMAGINE" onAction="#cambiaImmagineProfilo" styleClass="button-cambia-immagine"/>
                     </VBox>
                 </children>
             </VBox>
@@ -57,8 +55,7 @@
                     <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Matricola" styleClass="label"/>
-                            <TextField fx:id="matricolaField" editable="false" styleClass="form-field" style="-fx-opacity: 0.7;"/>
-                        </children>
+                            <TextField fx:id="matricolaField" editable="false" styleClass="form-field"/>                        </children>
                     </VBox>
 
                     <VBox alignment="CENTER" spacing="5">
@@ -72,7 +69,7 @@
                     <VBox alignment="CENTER" spacing="5">
                         <children>
                             <Text text="Email" styleClass="label"/>
-                            <TextField fx:id="emailField" styleClass="form-field"/>
+                            <TextField fx:id="emailField" styleClass="form-field" editable="false"/>
                             <Text text="Email non valida" fx:id="erroreEmail" styleClass="error-text" visible="false" managed="false"/>
                         </children>
                     </VBox>
@@ -98,10 +95,11 @@
                             <Insets top="20.0"/>
                         </padding>
                         <children>
-                            <Button text="Annulla" onAction="#onAnnullaClick" styleClass="button" style="-fx-background-color: #gray;"/>
+                            <Button text="Annulla" onAction="#onAnnullaClick" styleClass="button, annulla"/>
                             <Button fx:id="salvaButton" text="Salva Modifiche" onAction="#onSalvaClick" styleClass="button"/>
                         </children>
                     </HBox>
+                    <Text fx:id="erroreGenerico"  styleClass="error-text" visible="false" managed="false"/>
                 </children>
             </VBox>
         </VBox>

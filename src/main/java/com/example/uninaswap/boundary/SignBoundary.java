@@ -2,7 +2,6 @@ package com.example.uninaswap.boundary;
 
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.Costanti;
-import com.example.uninaswap.dao.PopolaDBPostgreSQL;
 import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -14,10 +13,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
-
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import static com.example.uninaswap.Costanti.*;
 
 public class SignBoundary implements Initializable, GestoreMessaggio {
     @FXML
@@ -56,56 +54,46 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
     @FXML
     private Messaggio notificaController;
 
-    private static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9.]{6,64}@studenti\\.unina\\.it$";
-    private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
-    private static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
-    private static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
-
     private GestoreScene gestoreScene = new GestoreScene();
     private ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
-    private File immagineSelezionata;
+
 
     public void onConfermaClick(ActionEvent actionEvent) {
         System.out.println("Login premuto! Validazione OK.");
         System.out.println("Email: " + emailField.getText());
         try {
-                if (confermaPasswordField == null) {
-                    accediUtente();
-                    gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
-                } else {
-                    boolean esisteGia = controllerUninaSwap.verificaUtenteUnico(
+            if (confermaPasswordField == null) {
+                // --- LOGIN ---
+                accediUtente();
+                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Accesso effettuato con successo", Messaggio.TIPI.SUCCESS);
+            }
+            // --- SIGN-UP ---
+            else {
+                try {
+                    controllerUninaSwap.verificaUtenteUnico(
                             usernameField.getText(),
                             emailField.getText(),
                             matricolaField.getText()
                     );
-                    if (esisteGia) {
-                        System.out.println("Registrazione bloccata: Utente duplicato.");
-                        if (erroreUtenteEsistente != null) {
-                            erroreUtenteEsistente.setVisible(true);
-                            erroreUtenteEsistente.setManaged(true);
-                        }
-                    } else {
-                        try {
-                            registraUtente();
-                            gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
-                        }catch (Exception e){
-                            System.out.println("Errore! " + e.getMessage() + "Esiste un altro account con questa email ");
-                            erroreUtenteEsistente.setManaged(true);
-                            erroreUtenteEsistente.setVisible(true);
-                            erroreUtenteEsistente.setText(e.getMessage());
+                    registraUtente();
+                    gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Registrazione effettuata con successo", Messaggio.TIPI.SUCCESS);
 
-                        }
+                } catch (Exception e) {
+                    System.out.println("Eccezione registrazione catturata: " + e.getMessage());
+                    if (erroreUtenteEsistente != null) {
+                        erroreUtenteEsistente.setManaged(true);
+                        erroreUtenteEsistente.setVisible(true);
+                        erroreUtenteEsistente.setText(e.getMessage());
                     }
                 }
+            }
         } catch (Exception e) {
-            System.out.println("Errore! " + e.getMessage());
             if (erroreCredenziali != null) {
                 erroreCredenziali.setVisible(true);
                 erroreCredenziali.setManaged(true);
             }
         }
     }
-
     private void accediUtente() throws Exception {
         String email = emailField.getText();
         String password = passwordField.getText();
@@ -126,6 +114,7 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = ControllerUninaSwap.getInstance();
 //        try {
+//            controllerUninaSwap.cancellaDB();
 //            controllerUninaSwap.popolaDB();
 //        } catch (Exception e) {
 //            throw new RuntimeException(e);
@@ -363,7 +352,6 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
                 errorePassword.setManaged(false);
             }
         }
-
     }
     @Override
     public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
