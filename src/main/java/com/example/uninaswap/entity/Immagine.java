@@ -10,14 +10,14 @@ public class Immagine {
     private int id;
     private Date dataCaricamento;
     private String path;
-    private Oggetto oggetto;
+    private int idOggetto;
 
     //Costruttori
     //
-    public Immagine(Date dataCaricamento, String path, Oggetto oggetto) {
+    public Immagine(Date dataCaricamento, String path, int idOggetto) {
         this.dataCaricamento = dataCaricamento;
         this.path = path;
-        this.oggetto = oggetto;
+        this.idOggetto = idOggetto;
     }
 
     //Getter e Setter
@@ -45,18 +45,18 @@ public class Immagine {
         this.path = path;
     }
 
-    public Oggetto getOggetto() {
-        return oggetto;
+    public int getIdOggetto() {
+        return idOggetto;
     }
 
-    public void setOggetto(Oggetto oggetto) {
-        this.oggetto = oggetto;
+    public void setIdOggetto(int idOggetto) {
+        this.idOggetto = idOggetto;
     }
 
     //toString
     //
     @Override
     public String toString() {
-        return "Id: " + this.id + " Data Caricamento: " + this.dataCaricamento + " Path: " + this.path + " Oggetto: " + this.oggetto.toString();
+        return "Id: " + this.id + " Data Caricamento: " + this.dataCaricamento + " Path: " + this.path + " Id Oggetto: " + this.idOggetto;
     }
 }

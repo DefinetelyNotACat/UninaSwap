@@ -1,67 +1,54 @@
 package com.example.uninaswap.dao;
 
-import com.example.uninaswap.entity.Immagine;
-
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class ImmagineDAO {
 
-    public boolean salvaImmagine(Immagine immagine, int idOggetto){
-        String sql = "INSERT INTO immagine (dataCaricamenteo, path, idOggetto) VALUES ( ?, ?, ?)";
-        try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql)) {
-            query.setDate(1, (Date) immagine.getDataCaricamento());
-            query.setString(2, immagine.getPath());
-            query.setInt(3, idOggetto);
-
-            int numModifiche = query.executeUpdate();
-            return numModifiche > 0;
-
-        } catch (Exception e) {
+    // Metodo standard per inserimento singolo (apre/chiude connessione)
+    public boolean inserisciImmagine(String path, int idOggetto) {
+        try (Connection conn = PostgreSQLConnection.getConnection()) {
+            inserisciImmaginiBatch(conn, idOggetto, new ArrayList<String>() {{ add(path); }});
+            return true;
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public boolean eliminaImmagine(int id){
-        String sql = "DELETE FROM immagine WHERE id = ?";
-        try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql)) {
+    // Metodo per transazione: accetta Connection e lista di stringhe
+    public void inserisciImmaginiBatch(Connection conn, int idOggetto, ArrayList<String> paths) throws SQLException {
+        if (paths == null || paths.isEmpty()) return;
 
-            query.setInt(1, id);
+        String sql = "INSERT INTO IMMAGINE (path, oggetto_id, data_caricamento) VALUES (?, ?, CURRENT_TIMESTAMP)";
 
-            int numModifiche = query.executeUpdate();
-            return numModifiche > 0;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (String path : paths) {
+                stmt.setString(1, path);
+                stmt.setInt(2, idOggetto);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
         }
     }
 
-    public Immagine ottieniImmaigne(int id){
-        Immagine immagine = null;
-        String sql = "SELECT * FROM immagine WHERE id = ?";
-        try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql);) {
-            query.setInt(1, id);
-            try (ResultSet rs = query.executeQuery()) {
-                if (rs.next()) {
-                    //immagine = new Immagine(rs.getDate("data_inserimento"), rs.getString("path"), rs.getInt("idOggetto"));
-                    immagine.setId(id);
+    // Metodo di lettura
+    public ArrayList<String> ottieniImmaginiStringhe(int idOggetto) {
+        ArrayList<String> lista = new ArrayList<>();
+        String sql = "SELECT path FROM IMMAGINE WHERE oggetto_id = ?";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idOggetto);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while(rs.next()) {
+                    lista.add(rs.getString("path"));
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return immagine;
-    }
-
-    public ArrayList<Immagine> ottieniTutteImmagini(){
-        return null;
+        return lista;
     }
 }
