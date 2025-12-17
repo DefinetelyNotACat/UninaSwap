@@ -3,38 +3,36 @@ import java.util.ArrayList;
 
 public class Categoria {
 
-    //Attributi
-    //
     private String nome;
-    ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
+    // Eviterei di mantenere la lista degli oggetti qui dentro per evitare loop infiniti
+    // o caricamenti pesanti non necessari, a meno che non serva specificamente.
+    // private ArrayList<Oggetto> oggetti = new ArrayList<>();
 
-    //Costruttori
-    //
     public Categoria(String nome) {
         this.nome = nome;
     }
 
-    //Adder, Remover, Clearer
-    //
+    public Categoria() {}
 
-    //Getter e Setter
-    //
     public String getNome() {
         return nome;
     }
 
-    public void setNome(String Nome) {
+    public void setNome(String nome) {
         this.nome = nome;
     }
 
-    public ArrayList<Oggetto> getOggetti() {
-        return oggetti;
-    }
-
-    //toString
-    //
     @Override
     public String toString() {
         return nome;
+    }
+
+    // Equals e HashCode sono importanti per far funzionare bene le ArrayList
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Categoria categoria = (Categoria) o;
+        return nome != null ? nome.equals(categoria.nome) : categoria.nome == null;
     }
 }

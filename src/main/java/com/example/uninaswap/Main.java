@@ -1,5 +1,4 @@
 package com.example.uninaswap;
-import com.example.uninaswap.dao.PopolaDBPostgreSQL;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,9 +10,6 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         System.out.println("Hello World!");
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("signIn.fxml"));
-        PopolaDBPostgreSQL db = new PopolaDBPostgreSQL();
-        db.cancellaDB();
-        db.creaDB();
         Scene scene = new Scene(fxmlLoader.load());
         String iconPath = Costanti.pathLogo;
         Image icon = new Image(getClass().getResourceAsStream(iconPath));

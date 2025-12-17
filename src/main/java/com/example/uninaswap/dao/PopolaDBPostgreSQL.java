@@ -7,19 +7,20 @@ import java.sql.Statement;
 public class PopolaDBPostgreSQL {
 
     public static void creaDB() throws Exception {
-        System.out.println("--- Creazione Schema Finale: Relazione 1-N Oggetto-Categoria ---");
+        System.out.println("--- Creazione Schema Finale: Relazione N-M Oggetto-Categoria e Dati Default ---");
 
         try (Connection conn = PostgreSQLConnection.getConnection();
              Statement stmt = conn.createStatement()) {
 
-            // 1. ENUM
-            stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NONDISPONIBILE');");
-            stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME_NUOVO', 'OTTIME_CONDIZIONI', 'BUONE_CONDIZIONI', 'DISCRETE_CONDIZIONI', 'CATTIVE_CONDIZIONI');");
+            // 1. Creazione dei tipi ENUM
+            // Uso i nomi con underscore (es. IN_ATTESA) perché sono più sicuri per la mappatura Java
+            stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NON_DISPONIBILE');");
+            stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME NUOVO', 'OTTIME CONDIZIONI', 'BUONE CONDIZIONI', 'DISCRETE CONDIZIONI', 'CATTIVE CONDIZIONI');");
             stmt.executeUpdate("CREATE TYPE disponibilita_oggetto AS ENUM ('DISPONIBILE', 'OCCUPATO', 'VENDUTO', 'REGALATO', 'SCAMBIATO');");
             stmt.executeUpdate("CREATE TYPE stato_offerta AS ENUM ('IN_ATTESA', 'ACCETTATA', 'RIFIUTATA');");
             System.out.println("TIPI ENUM CREATI.");
 
-            // 2. UTENTE
+            // 2. UTENTE (Mantengo ID numerico per compatibilità col DAO)
             String queryUtente = "CREATE TABLE UTENTE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "matricola VARCHAR(20) UNIQUE NOT NULL, " +
@@ -40,12 +41,17 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(querySede);
             System.out.println("Tabella SEDE CREATA");
 
-            // 4. CATEGORIA (Deve essere creata PRIMA di OGGETTO)
+            // 4. CATEGORIA
             String queryCategoria = "CREATE TABLE CATEGORIA (" +
                     "nome VARCHAR(50) PRIMARY KEY" +
                     ");";
             stmt.executeUpdate(queryCategoria);
             System.out.println("Tabella CATEGORIA CREATA");
+
+            stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Informatica');");
+            stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Abbigliamento');");
+            stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Libri di testo');");
+            stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Elettronica');");
 
             // 5. ANNUNCIO
             String queryAnnuncio = "CREATE TABLE ANNUNCIO (" +
@@ -67,23 +73,21 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryAnnuncio);
             System.out.println("Tabella ANNUNCIO CREATA");
 
-            // 6. OGGETTO (Modificata: Aggiunta categoria_nome)
+            // 6. OGGETTO
             String queryOggetto = "CREATE TABLE OGGETTO (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "annuncio_id INTEGER, " +
                     "utente_id INTEGER NOT NULL, " +
-                    "categoria_nome VARCHAR(50), " + // <--- NUOVA COLONNA (FK)
                     "nome VARCHAR(100) NOT NULL, " +
                     "condizione condizione_oggetto, " +
                     "disponibilita disponibilita_oggetto DEFAULT 'DISPONIBILE', " +
                     "CONSTRAINT fk_annuncio_oggetto FOREIGN KEY (annuncio_id) REFERENCES ANNUNCIO(id) ON DELETE SET NULL, " +
-                    "CONSTRAINT fk_utente_oggetto FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE, " +
-                    "CONSTRAINT fk_categoria_oggetto FOREIGN KEY (categoria_nome) REFERENCES CATEGORIA(nome) ON DELETE SET NULL" + // <--- VINCOLO FK
+                    "CONSTRAINT fk_utente_oggetto FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE" +
                     ");";
             stmt.executeUpdate(queryOggetto);
-            System.out.println("Tabella OGGETTO CREATA (Con FK Categoria)");
+            System.out.println("Tabella OGGETTO CREATA");
 
-            // 7. IMMAGINE
+            // 7. IMMAGINE (Mantengo tabella separata per il DAO Immagini)
             String queryImmagine = "CREATE TABLE IMMAGINE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "oggetto_id INTEGER NOT NULL, " +
@@ -94,7 +98,16 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryImmagine);
             System.out.println("Tabella IMMAGINE CREATA");
 
-            // 8. OGGETTO_CATEGORIA RIMOSSA COMPLETAMENTE
+            // 8. OGGETTO_CATEGORIA (Tabella Ponte)
+            String queryOggettoCategoria = "CREATE TABLE OGGETTO_CATEGORIA (" +
+                    "oggetto_id INTEGER NOT NULL, " +
+                    "categoria_nome VARCHAR(50) NOT NULL, " +
+                    "PRIMARY KEY (oggetto_id, categoria_nome), " +
+                    "CONSTRAINT fk_objcat_oggetto FOREIGN KEY (oggetto_id) REFERENCES OGGETTO(id) ON DELETE CASCADE, " +
+                    "CONSTRAINT fk_objcat_categoria FOREIGN KEY (categoria_nome) REFERENCES CATEGORIA(nome) ON DELETE CASCADE" +
+                    ");";
+            stmt.executeUpdate(queryOggettoCategoria);
+            System.out.println("Tabella OGGETTO_CATEGORIA CREATA");
 
             // 9. OFFERTA
             String queryOfferta = "CREATE TABLE OFFERTA (" +
@@ -144,7 +157,7 @@ public class PopolaDBPostgreSQL {
 
             stmt.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
-            // stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;"); // RIMOSSA
+            stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS IMMAGINE CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS ANNUNCIO CASCADE;");

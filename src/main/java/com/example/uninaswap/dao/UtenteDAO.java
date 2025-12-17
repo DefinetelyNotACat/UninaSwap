@@ -108,17 +108,18 @@ public class UtenteDAO implements GestoreUtenteDAO {
                             rs.getString("email")
                     );
 
-                    // 3. Corretto il nome colonna del DB: "immagine_profilo" invece di "pathImmagineProfilo"
                     utente.setPathImmagineProfilo(rs.getString("immagine_profilo"));
-                    //utente.setId(rs.getInt("id"));
+
+                    // --- QUESTA È LA RIGA FONDAMENTALE MANCANTE ---
+                    utente.setId(rs.getInt("id"));
+                    // ----------------------------------------------
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return utente;
-    }
-    public ArrayList<Utente> ottieniTuttiUtenti() {
+    }    public ArrayList<Utente> ottieniTuttiUtenti() {
         ArrayList<Utente> tuttiUtenti = new ArrayList<>();
         String sql = "SELECT * FROM utente";
         try (Connection connessione = PostgreSQLConnection.getConnection();
