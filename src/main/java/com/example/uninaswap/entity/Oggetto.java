@@ -43,6 +43,7 @@ public class Oggetto {
     }
 
     public enum CONDIZIONE {
+        // Map the Enum Constant -> "Human Readable Label"
         NUOVO("Nuovo"),
         COME_NUOVO("Come Nuovo"),
         OTTIME_CONDIZIONI("Ottime Condizioni"),
@@ -72,13 +73,12 @@ public class Oggetto {
                 }
             }
             try {
-                return CONDIZIONE.valueOf(text.replace(" ", "_").toUpperCase());
+                return CONDIZIONE.valueOf(text.toUpperCase());
             } catch (Exception e) {
                 return null;
             }
         }
     }
-
     // --- ATTRIBUTI ---
     private int id;
     private String nome;
