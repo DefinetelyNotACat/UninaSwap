@@ -36,8 +36,8 @@ stylesheets="@inventario.css, @sign.css">
                             <Circle centerX="50.0" centerY="50.0" radius="50.0" />
                         </clip>
                     </ImageView>
-                    <Text styleClass="bold,title" text="Vendi Oggetto" textAlignment="CENTER" />
-                    <Text styleClass="description" text="Inserisci i dettagli dell'oggetto che vuoi scambiare o vendere" />
+                    <Text styleClass="bold,title" text="Aggiungi Oggetto" textAlignment="CENTER" />
+                    <Text styleClass="description" text="Inserisci i dettagli dell'oggetto che vuoi scambiare, regalare o vendere" />
                 </children>
                 <padding>
                     <Insets bottom="20.0" top="10.0" />
@@ -92,7 +92,7 @@ stylesheets="@inventario.css, @sign.css">
             <HBox alignment="CENTER" spacing="20.0">
                 <children>
                     <Button fx:id="annullaButton" onAction="#onAnnullaClick" text="Annulla" styleClass="button, button-secondary" />
-                    <Button fx:id="pubblicaButton" onAction="#onPubblicaClick" text="Pubblica Annuncio" styleClass="button" />
+                    <Button fx:id="aggiungiButton" onAction="#onPubblicaClick" text="Aggiungi Oggetto" styleClass="button" />
                 </children>
                 <padding>
                     <Insets top="20.0" bottom="30.0"/>

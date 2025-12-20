@@ -29,29 +29,60 @@ import java.util.ResourceBundle;
 
 public class AggiungiOggetto implements Initializable {
 
-    @FXML
-    private Text erroreNome;
-    @FXML
-    private TextField nomeOggettoField;
-    @FXML
-    private ComboBox<String> categoriaBox;
-    @FXML
-    private ComboBox<String> condizioneBox;
-    @FXML
-    private HBox contenitoreImmagini;
-    @FXML
-    private Button caricaFotoButton;
+    @FXML private Text erroreNome;
+    @FXML private TextField nomeOggettoField;
+    @FXML private ComboBox<String> categoriaBox;
+    @FXML private ComboBox<String> condizioneBox;
+    @FXML private HBox contenitoreImmagini;
+    @FXML private Button caricaFotoButton;
+    @FXML private Text erroreImmagini; // Utile per nascondere l'errore se si aggiungono foto
+
+    // --- MODIFICA 1: Colleghiamo il bottone dal FXML ---
+    @FXML private Button aggiungiButton;
 
     private ControllerUninaSwap controllerUninaSwap;
     private final OggettoDAO oggettoDAO = new OggettoDAO();
     private final List<File> immaginiSelezionate = new ArrayList<>();
+
+    // --- MODIFICA 2: Metodo centrale per verificare validità ---
+    private void controllaCampiValidi() {
+        // 1. Validazione Nome
+        String testoNome = nomeOggettoField.getText();
+        boolean nomeOk = false;
+        if (testoNome != null) {
+            String nomePulito = testoNome.replace(" ", "");
+            // Lunghezza >= 5 E Regex (lettere/numeri)
+            if (nomePulito.length() >= 5 && testoNome.matches(Costanti.OGGETTO_FIELD_REGEX)) {
+                nomeOk = true;
+            }
+        }
+
+        // 2. Validazione Categoria e Condizione
+        boolean categoriaOk = categoriaBox.getValue() != null;
+        boolean condizioneOk = condizioneBox.getValue() != null;
+
+        // 3. Validazione Immagini (Almeno una)
+        boolean immaginiOk = !immaginiSelezionate.isEmpty();
+
+        // Aggiorna visibilità errore immagini (opzionale ma carino)
+        if (erroreImmagini != null) {
+            erroreImmagini.setVisible(!immaginiOk);
+            erroreImmagini.setManaged(!immaginiOk);
+        }
+
+        // 4. Abilita/Disabilita il bottone
+        // Il bottone è DISABILITATO se NON sono tutti ok
+        if (aggiungiButton != null) {
+            aggiungiButton.setDisable(!(nomeOk && categoriaOk && condizioneOk && immaginiOk));
+        }
+    }
 
     @FXML
     public void onCaricaFotoClick(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleziona Immagini Oggetto");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg")
+                new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
 
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
@@ -60,6 +91,8 @@ public class AggiungiOggetto implements Initializable {
         if (files != null) {
             immaginiSelezionate.addAll(files);
             aggiornaVisualizzazioneImmagini();
+            // --- MODIFICA 3: Ricontrolla i campi dopo aver aggiunto foto ---
+            controllaCampiValidi();
         }
     }
 
@@ -93,6 +126,8 @@ public class AggiungiOggetto implements Initializable {
             rimuoviBtn.setOnAction(e -> {
                 immaginiSelezionate.remove(file);
                 aggiornaVisualizzazioneImmagini();
+                // --- MODIFICA 3: Ricontrolla i campi dopo aver rimosso foto ---
+                controllaCampiValidi();
             });
 
             VBox boxSingolaFoto = new VBox(5);
@@ -113,19 +148,11 @@ public class AggiungiOggetto implements Initializable {
     }
 
     public void onPubblicaClick(ActionEvent actionEvent) {
+
         String nome = nomeOggettoField.getText();
         String nomeCategoria = categoriaBox.getValue();
         String nomeCondizione = condizioneBox.getValue();
 
-        if (nome == null || nome.trim().length() < 5) {
-            erroreNome.setText("Nome troppo corto");
-            erroreNome.setVisible(true);
-            erroreNome.setManaged(true);
-            return;
-        }
-        if (nomeCategoria == null || nomeCondizione == null) {
-            return;
-        }
         Utente utenteCorrente = null;
         try {
             utenteCorrente = controllerUninaSwap.getUtente();
@@ -173,6 +200,11 @@ public class AggiungiOggetto implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         controllerUninaSwap = ControllerUninaSwap.getInstance();
 
+        // Disabilita il bottone all'avvio
+        if (aggiungiButton != null) {
+            aggiungiButton.setDisable(true);
+        }
+
         ArrayList<Categoria> categorie = controllerUninaSwap.getCategorie();
         ArrayList<String> condizioni = controllerUninaSwap.getCondizioni();
 
@@ -194,11 +226,17 @@ public class AggiungiOggetto implements Initializable {
             }
         });
         categoriaBox.setCursor(Cursor.HAND);
+        // Listener  categoria
+        categoriaBox.valueProperty().addListener((obs, oldVal, newVal) -> controllaCampiValidi());
+
 
         for (String condizione : condizioni) {
             condizioneBox.getItems().add(condizione);
         }
         condizioneBox.setCursor(Cursor.HAND);
+        // Listener condizione
+        condizioneBox.valueProperty().addListener((obs, oldVal, newVal) -> controllaCampiValidi());
+
 
         if (nomeOggettoField != null) {
             nomeOggettoField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -206,12 +244,13 @@ public class AggiungiOggetto implements Initializable {
                     erroreNome.setVisible(false);
                     erroreNome.setManaged(false);
                 }
-                boolean lunghezzaOk = nomeOggettoField.getText().replace(" ", "").length() >= 5;
-                if (!nomeOggettoField.getText().matches(Costanti.OGGETTO_FIELD_REGEX) || !lunghezzaOk) {
+                boolean lunghezzaOk = newValue.replace(" ", "").length() >= 5;
+                if (!newValue.matches(Costanti.OGGETTO_FIELD_REGEX) || !lunghezzaOk) {
                     erroreNome.setText("Errore! inserire un nome che sia di almeno 5 lettere (spazi esclusi) senza caratteri speciali");
                     erroreNome.setManaged(true);
                     erroreNome.setVisible(true);
                 }
+                controllaCampiValidi();
             });
         }
     }
