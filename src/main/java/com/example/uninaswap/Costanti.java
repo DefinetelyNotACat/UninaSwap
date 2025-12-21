@@ -19,5 +19,6 @@ public class Costanti {
     public static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
     public static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
     public static final String OGGETTO_FIELD_REGEX = "^[a-zA-Z0-9 ]+$";
-
+    public static final String PRICE_REGEX = "^[0-9]+([.,][0-9]{1,2})?$";
+    public static final String TIME_REGEX = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
 }

@@ -74,7 +74,7 @@
                                     <TextField fx:id="orarioFineField" promptText="Alle (es. 18:00)" styleClass="form-field" HBox.hgrow="ALWAYS"/>
                                 </children>
                             </HBox>
-                            <Text fx:id="erroreOrario" managed="false" styleClass="error-text" text="Orari non validi (Formato HH:mm)" visible="false" textAlignment="CENTER" />
+                            <Text fx:id="erroreOrario" managed="false" styleClass="error-text" text="Formato, o, orari non validi" visible="false" textAlignment="CENTER" />
                         </children>
                     </VBox>
 
