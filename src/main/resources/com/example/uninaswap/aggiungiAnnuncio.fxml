@@ -59,7 +59,7 @@
                     <VBox spacing="5" alignment="CENTER">
                         <children>
                             <Text styleClass="label" text="Sede di Riferimento" />
-                            <ComboBox fx:id="sedeBox" maxWidth="Infinity" promptText="Seleziona una sede (es. Monte Sant'Angelo)" styleClass="form-field" />
+                            <ComboBox fx:id="sedeBox" maxWidth="Infinity" promptText="Seleziona una sede" styleClass="form-field" />
                             <Text fx:id="erroreSede" managed="false" styleClass="error-text" text="Selezionare una sede valida" visible="false" />
                         </children>
                     </VBox>
