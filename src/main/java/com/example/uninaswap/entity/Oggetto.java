@@ -4,25 +4,89 @@ import java.util.ArrayList;
 
 public class Oggetto {
 
-    // --- ENUM (Public per essere visti dal DAO) ---
+    // --- ENUM ---
+
     public enum DISPONIBILITA {
-        DISPONIBILE, OCCUPATO, VENDUTO, REGALATO, SCAMBIATO
+        DISPONIBILE("Disponibile"),
+        OCCUPATO("Occupato"),
+        VENDUTO("Venduto"),
+        REGALATO("Regalato"),
+        SCAMBIATO("Scambiato");
+
+        private final String etichetta;
+
+        DISPONIBILITA(String etichetta) {
+            this.etichetta = etichetta;
+        }
+
+        public String getEtichetta() {
+            return etichetta;
+        }
+
+        @Override
+        public String toString() {
+            return etichetta;
+        }
+
+        public static DISPONIBILITA fromString(String text) {
+            for (DISPONIBILITA b : DISPONIBILITA.values()) {
+                if (b.etichetta.equalsIgnoreCase(text)) {
+                    return b;
+                }
+            }
+            try {
+                return DISPONIBILITA.valueOf(text.replace(" ", "_").toUpperCase());
+            } catch (Exception e) {
+                return null;
+            }
+        }
     }
 
     public enum CONDIZIONE {
-        NUOVO, COME_NUOVO, OTTIME_CONDIZIONI, BUONE_CONDIZIONI, DISCRETE_CONDIZIONI, CATTIVE_CONDIZIONI
-    }
+        // Map the Enum Constant -> "Human Readable Label"
+        NUOVO("Nuovo"),
+        COME_NUOVO("Come Nuovo"),
+        OTTIME_CONDIZIONI("Ottime Condizioni"),
+        BUONE_CONDIZIONI("Buone Condizioni"),
+        DISCRETE_CONDIZIONI("Discrete Condizioni"),
+        CATTIVE_CONDIZIONI("Cattive Condizioni");
 
+        private final String etichetta;
+
+        CONDIZIONE(String etichetta) {
+            this.etichetta = etichetta;
+        }
+
+        public String getEtichetta() {
+            return etichetta;
+        }
+
+        @Override
+        public String toString() {
+            return etichetta;
+        }
+
+        public static CONDIZIONE fromString(String text) {
+            for (CONDIZIONE c : CONDIZIONE.values()) {
+                if (c.etichetta.equalsIgnoreCase(text)) {
+                    return c;
+                }
+            }
+            try {
+                return CONDIZIONE.valueOf(text.toUpperCase());
+            } catch (Exception e) {
+                return null;
+            }
+        }
+    }
     // --- ATTRIBUTI ---
     private int id;
     private String nome;
     private Utente proprietario;
     private Annuncio annuncio;
 
-    // Relazione N:M -> Lista di categorie
     private ArrayList<Categoria> categorie = new ArrayList<>();
 
-    // Default values
     private DISPONIBILITA disponibilita = DISPONIBILITA.DISPONIBILE;
     private CONDIZIONE condizione = CONDIZIONE.NUOVO;
 
@@ -30,28 +94,23 @@ public class Oggetto {
 
     // --- COSTRUTTORI ---
 
-    // Costruttore vuoto (essenziale per i DAO)
     public Oggetto() {}
 
-    // Costruttore completo
     public Oggetto(String nome, ArrayList<Categoria> categorie, ArrayList<String> immaginiCaricate, Utente proprietario, CONDIZIONE condizione) {
         this.nome = nome;
         this.proprietario = proprietario;
         this.condizione = condizione;
 
-        // Copia sicura delle categorie
         if (categorie != null) {
             this.categorie.addAll(categorie);
         }
 
-        // Copia sicura delle immagini
         if (immaginiCaricate != null) {
             for (String img : immaginiCaricate) {
                 if (img != null) this.immagini.add(img);
             }
         }
 
-        // Associazione bidirezionale (opzionale, ma utile)
         if(this.proprietario != null) {
             this.proprietario.addOggetto(this);
         }
@@ -77,18 +136,16 @@ public class Oggetto {
     public DISPONIBILITA getDisponibilita() { return disponibilita; }
     public void setDisponibilita(DISPONIBILITA disponibilita) { this.disponibilita = disponibilita; }
 
-    // Gestione Categorie
     public ArrayList<Categoria> getCategorie() { return categorie; }
     public void setCategorie(ArrayList<Categoria> categorie) { this.categorie = categorie; }
     public void addCategoria(Categoria c) { if(c!=null) this.categorie.add(c); }
 
-    // Gestione Immagini
     public ArrayList<String> getImmagini() { return immagini; }
     public void setImmagini(ArrayList<String> immagini) { this.immagini = immagini; }
     public void addImmagine(String img) { if(img!=null) this.immagini.add(img); }
 
     @Override
     public String toString() {
-        return "Oggetto [id=" + id + ", nome=" + nome + ", categorie=" + categorie + "]";
+        return "Oggetto [id=" + id + ", nome=" + nome + ", condizione=" + condizione+ "]";
     }
 }
