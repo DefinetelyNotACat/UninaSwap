@@ -76,7 +76,6 @@ public class AggiungiAnnuncio {
     }
 
     private void caricaSedi() {
-        // TODO: Recuperare dal DB
         ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
 
         List <Sede> sedi = controllerUninaSwap.getSedi();
