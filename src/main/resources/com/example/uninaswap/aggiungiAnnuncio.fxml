@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
@@ -52,6 +53,14 @@
                             <Text styleClass="label" text="Testo dell'Annuncio"/>
                             <TextArea fx:id="descrizioneAnnuncioArea" promptText="Descrivi il tuo annuncio..." wrapText="true" prefRowCount="3" styleClass="form-field" />
                             <Text fx:id="erroreDescrizione" managed="false" styleClass="error-text" text="Inserire una descrizione valida" visible="false" />
+                        </children>
+                    </VBox>
+
+                    <VBox spacing="5" alignment="CENTER">
+                        <children>
+                            <Text styleClass="label" text="Sede di Riferimento" />
+                            <ComboBox fx:id="sedeBox" maxWidth="Infinity" promptText="Seleziona una sede (es. Monte Sant'Angelo)" styleClass="form-field" />
+                            <Text fx:id="erroreSede" managed="false" styleClass="error-text" text="Selezionare una sede valida" visible="false" />
                         </children>
                     </VBox>
 
@@ -136,7 +145,7 @@
                             <Insets top="10" bottom="10" />
                         </padding>
                         <style>
-                            -fx-background-color: rgba(0,255,0,0.05); /* Leggero verde per indicare regalo */
+                            -fx-background-color: rgba(0,255,0,0.05);
                             -fx-background-radius: 10;
                         </style>
                     </VBox>
