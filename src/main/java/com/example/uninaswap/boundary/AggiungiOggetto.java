@@ -32,8 +32,6 @@ public class AggiungiOggetto implements Initializable {
     @FXML private Text erroreNome;
     @FXML private TextField nomeOggettoField;
     @FXML private ComboBox<String> categoriaBox;
-
-    // --- MODIFICA IMPORTANTE: La ComboBox ora usa l'ENUM, non String ---
     @FXML private ComboBox<Oggetto.CONDIZIONE> condizioneBox;
 
     @FXML private HBox contenitoreImmagini;
@@ -45,8 +43,12 @@ public class AggiungiOggetto implements Initializable {
     private final OggettoDAO oggettoDAO = new OggettoDAO();
     private final List<File> immaginiSelezionate = new ArrayList<>();
 
+    // =================================================================================
+    // LOGICA DI VALIDAZIONE
+    // =================================================================================
+
     private void controllaCampiValidi() {
-        // 1. Validazione Nome
+        // Validazione Nome
         String testoNome = nomeOggettoField.getText();
         boolean nomeOk = false;
         if (testoNome != null) {
@@ -56,11 +58,9 @@ public class AggiungiOggetto implements Initializable {
             }
         }
 
-        // 2. Validazione Categoria e Condizione
+        // Validazione Categoria, Condizione e Immagini
         boolean categoriaOk = categoriaBox.getValue() != null;
         boolean condizioneOk = condizioneBox.getValue() != null;
-
-        // 3. Validazione Immagini
         boolean immaginiOk = !immaginiSelezionate.isEmpty();
 
         if (erroreImmagini != null) {
@@ -72,6 +72,10 @@ public class AggiungiOggetto implements Initializable {
             aggiungiButton.setDisable(!(nomeOk && categoriaOk && condizioneOk && immaginiOk));
         }
     }
+
+    // =================================================================================
+    // GESTIONE IMMAGINI
+    // =================================================================================
 
     @FXML
     public void onCaricaFotoClick(ActionEvent actionEvent) {
@@ -136,16 +140,18 @@ public class AggiungiOggetto implements Initializable {
         }
     }
 
+    // =================================================================================
+    // AZIONI UTENTE (PUBBLICA / ANNULLA)
+    // =================================================================================
+
     public void onAnnullaClick(ActionEvent actionEvent) {
         GestoreScene gestoreScene = new GestoreScene();
-        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Annullamento aggiungimento prodotto", Messaggio.TIPI.INFO);
+        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Operazione annullata", Messaggio.TIPI.INFO);
     }
 
     public void onPubblicaClick(ActionEvent actionEvent) {
         String nome = nomeOggettoField.getText();
         String nomeCategoria = categoriaBox.getValue();
-
-        // --- MODIFICA: Prendiamo direttamente l'ENUM dalla Box ---
         Oggetto.CONDIZIONE condizioneScelta = condizioneBox.getValue();
 
         Utente utenteCorrente = null;
@@ -159,16 +165,14 @@ public class AggiungiOggetto implements Initializable {
         Oggetto nuovoOggetto = new Oggetto();
         nuovoOggetto.setNome(nome);
         nuovoOggetto.setDisponibilita(Oggetto.DISPONIBILITA.DISPONIBILE);
-
-        // --- MODIFICA: Assegnazione diretta (Niente più conversioni strane) ---
         nuovoOggetto.setCondizione(condizioneScelta);
 
-        // Gestione Categoria
+        // Associazione categorie
         ArrayList<Categoria> listaCategorie = new ArrayList<>();
         listaCategorie.add(new Categoria(nomeCategoria));
         nuovoOggetto.setCategorie(listaCategorie);
 
-        // Gestione Immagini
+        // Conversione percorsi immagini
         ArrayList<String> percorsiStringa = new ArrayList<>();
         for (File f : immaginiSelezionate) {
             percorsiStringa.add(f.getAbsolutePath());
@@ -185,6 +189,10 @@ public class AggiungiOggetto implements Initializable {
         }
     }
 
+    // =================================================================================
+    // INITIALIZE
+    // =================================================================================
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         controllerUninaSwap = ControllerUninaSwap.getInstance();
@@ -193,7 +201,7 @@ public class AggiungiOggetto implements Initializable {
             aggiungiButton.setDisable(true);
         }
 
-        // --- Gestione Categorie (Rimane String perché vengono dal DB/Controller) ---
+        // --- Configurazione Categorie ---
         ArrayList<Categoria> categorie = controllerUninaSwap.getCategorie();
         for (Categoria categoria : categorie) {
             categoriaBox.getItems().add(categoria.getNome());
@@ -203,24 +211,17 @@ public class AggiungiOggetto implements Initializable {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setCursor(Cursor.DEFAULT);
-                } else {
-                    setText(item);
-                    setCursor(Cursor.HAND);
-                }
+                setText((empty || item == null) ? null : item);
+                setCursor(empty ? Cursor.DEFAULT : Cursor.HAND);
             }
         });
         categoriaBox.setCursor(Cursor.HAND);
         categoriaBox.valueProperty().addListener((obs, oldVal, newVal) -> controllaCampiValidi());
 
+        // --- Configurazione Condizioni ---
+        condizioneBox.getItems().setAll(controllerUninaSwap.getCondizioni());
 
-        // --- MODIFICA: Gestione Condizioni (Popolamento diretto dell'ENUM) ---
-        // Usiamo .setAll() passando tutti i valori dell'Enum direttamente
-        condizioneBox.getItems().setAll(Oggetto.CONDIZIONE.values());
-
-        // Questo serve per visualizzare il testo pulito "Come Nuovo" dentro la lista
+        // 1. Visualizzazione nella lista dropdown (Sostituisce _ con spazio)
         condizioneBox.setCellFactory(lv -> new ListCell<Oggetto.CONDIZIONE>() {
             @Override
             protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
@@ -229,12 +230,14 @@ public class AggiungiOggetto implements Initializable {
                     setText(null);
                     setCursor(Cursor.DEFAULT);
                 } else {
-                    setText(item.toString()); // Usa il toString() che abbiamo modificato nell'Enum
+                    // Trasforma "COME_NUOVO" in "COME NUOVO" per l'utente
+                    setText(item.toString().replace("_", " "));
                     setCursor(Cursor.HAND);
                 }
             }
         });
-        // Questo serve per visualizzare il testo pulito sul bottone quando selezionato
+
+        // 2. Visualizzazione del valore selezionato (il bottone)
         condizioneBox.setButtonCell(new ListCell<Oggetto.CONDIZIONE>() {
             @Override
             protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
@@ -242,16 +245,15 @@ public class AggiungiOggetto implements Initializable {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.toString());
+                    setText(item.toString().replace("_", " "));
                 }
             }
         });
 
         condizioneBox.setCursor(Cursor.HAND);
         condizioneBox.valueProperty().addListener((obs, oldVal, newVal) -> controllaCampiValidi());
-        // -------------------------------------------------------------------
 
-
+        // --- Listener Validazione Nome ---
         if (nomeOggettoField != null) {
             nomeOggettoField.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (erroreNome != null) {
@@ -259,8 +261,9 @@ public class AggiungiOggetto implements Initializable {
                     erroreNome.setManaged(false);
                 }
                 boolean lunghezzaOk = newValue.replace(" ", "").length() >= 5;
+                // Nota: Costanti.OGGETTO_FIELD_REGEX deve essere definito nella tua classe Costanti
                 if (!newValue.matches(Costanti.OGGETTO_FIELD_REGEX) || !lunghezzaOk) {
-                    erroreNome.setText("Errore! inserire un nome che sia di almeno 5 lettere (spazi esclusi) senza caratteri speciali");
+                    erroreNome.setText("Errore! inserire un nome valido (min 5 caratteri, no speciali)");
                     erroreNome.setManaged(true);
                     erroreNome.setVisible(true);
                 }

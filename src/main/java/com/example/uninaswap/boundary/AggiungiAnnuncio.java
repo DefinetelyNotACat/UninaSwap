@@ -1,5 +1,6 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.controller.ControllerUninaSwap;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -72,7 +73,8 @@ public class AggiungiAnnuncio {
      * Carica le sedi disponibili (Simulazione DB)
      */
     private void caricaSedi() {
-        // TODO: Recuperare dal DB
+        // TODO: Recuperare dal DB\
+        ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
         List<String> sedi = List.of("Monte Sant'Angelo", "Piazzale Tecchio", "Via Claudio", "Corso Umberto", "Policlinico");
         sedeBox.getItems().addAll(sedi);
     }
