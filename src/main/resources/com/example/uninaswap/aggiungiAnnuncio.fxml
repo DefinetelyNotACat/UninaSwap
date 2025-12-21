@@ -64,6 +64,20 @@
                         </children>
                     </VBox>
 
+                    <VBox spacing="5" alignment="CENTER">
+                        <children>
+                            <Text styleClass="label" text="Fascia Oraria Disponibile (HH:mm)" />
+                            <HBox alignment="CENTER" spacing="10.0">
+                                <children>
+                                    <TextField fx:id="orarioInizioField" promptText="Dalle (es. 09:00)" styleClass="form-field" HBox.hgrow="ALWAYS" />
+                                    <Text text="-" style="-fx-fill: #666;" />
+                                    <TextField fx:id="orarioFineField" promptText="Alle (es. 18:00)" styleClass="form-field" HBox.hgrow="ALWAYS"/>
+                                </children>
+                            </HBox>
+                            <Text fx:id="erroreOrario" managed="false" styleClass="error-text" text="Orari non validi (Formato HH:mm)" visible="false" textAlignment="CENTER" />
+                        </children>
+                    </VBox>
+
                     <VBox spacing="10" alignment="CENTER">
                         <children>
                             <Text styleClass="label" text="Seleziona Oggetti dal tuo Inventario" />
