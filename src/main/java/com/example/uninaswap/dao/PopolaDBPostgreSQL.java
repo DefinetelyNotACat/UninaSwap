@@ -13,14 +13,13 @@ public class PopolaDBPostgreSQL {
              Statement stmt = conn.createStatement()) {
 
             // 1. Creazione dei tipi ENUM
-            // Uso i nomi con underscore (es. IN_ATTESA) perché sono più sicuri per la mappatura Java
             stmt.executeUpdate("CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NON_DISPONIBILE');");
             stmt.executeUpdate("CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME NUOVO', 'OTTIME CONDIZIONI', 'BUONE CONDIZIONI', 'DISCRETE CONDIZIONI', 'CATTIVE CONDIZIONI');");
             stmt.executeUpdate("CREATE TYPE disponibilita_oggetto AS ENUM ('DISPONIBILE', 'OCCUPATO', 'VENDUTO', 'REGALATO', 'SCAMBIATO');");
             stmt.executeUpdate("CREATE TYPE stato_offerta AS ENUM ('IN_ATTESA', 'ACCETTATA', 'RIFIUTATA');");
             System.out.println("TIPI ENUM CREATI.");
 
-            // 2. UTENTE (Mantengo ID numerico per compatibilità col DAO)
+            // 2. UTENTE
             String queryUtente = "CREATE TABLE UTENTE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "matricola VARCHAR(20) UNIQUE NOT NULL, " +
@@ -41,6 +40,18 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(querySede);
             System.out.println("Tabella SEDE CREATA");
 
+            // --- INSERT DELLE SEDI ---
+            System.out.println("Inserimento Sedi Default...");
+            stmt.executeUpdate("INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Monte Sant''Angelo', 'Via Cinthia, 21');");
+            stmt.executeUpdate("INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Piazzale Tecchio', 'Piazzale Tecchio, 80');");
+            stmt.executeUpdate("INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Via Claudio', 'Via Claudio, 21');");
+            stmt.executeUpdate("INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Corso Umberto', 'Corso Umberto I, 40');");
+            stmt.executeUpdate("INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('San Giovanni', 'Corso Nicolangelo Protopisani, 70');");
+            stmt.executeUpdate("INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Policlinico', 'Via Sergio Pansini, 5');");
+            stmt.executeUpdate("INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Architettura - Palazzo Gravina', 'Via Monteoliveto, 3');");
+            stmt.executeUpdate("INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Veterinaria', 'Via Federico Delpino, 1');");
+            System.out.println("Sedi inserite.");
+
             // 4. CATEGORIA
             String queryCategoria = "CREATE TABLE CATEGORIA (" +
                     "nome VARCHAR(50) PRIMARY KEY" +
@@ -52,6 +63,8 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Abbigliamento');");
             stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Libri di testo');");
             stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Elettronica');");
+            stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Cancelleria');");
+            stmt.executeUpdate("INSERT INTO CATEGORIA (nome) VALUES ('Accessori');");
 
             // 5. ANNUNCIO
             String queryAnnuncio = "CREATE TABLE ANNUNCIO (" +
@@ -87,7 +100,7 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryOggetto);
             System.out.println("Tabella OGGETTO CREATA");
 
-            // 7. IMMAGINE (Mantengo tabella separata per il DAO Immagini)
+            // 7. IMMAGINE
             String queryImmagine = "CREATE TABLE IMMAGINE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
                     "oggetto_id INTEGER NOT NULL, " +
@@ -98,7 +111,7 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryImmagine);
             System.out.println("Tabella IMMAGINE CREATA");
 
-            // 8. OGGETTO_CATEGORIA (Tabella Ponte)
+            // 8. OGGETTO_CATEGORIA
             String queryOggettoCategoria = "CREATE TABLE OGGETTO_CATEGORIA (" +
                     "oggetto_id INTEGER NOT NULL, " +
                     "categoria_nome VARCHAR(50) NOT NULL, " +

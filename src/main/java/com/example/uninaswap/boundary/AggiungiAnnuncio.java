@@ -1,5 +1,7 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.entity.Sede;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -75,8 +77,12 @@ public class AggiungiAnnuncio {
 
     private void caricaSedi() {
         // TODO: Recuperare dal DB
-        List<String> sedi = List.of("Monte Sant'Angelo", "Piazzale Tecchio", "Via Claudio", "Corso Umberto");
-        sedeBox.getItems().addAll(sedi);
+        ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
+
+        List <Sede> sedi = controllerUninaSwap.getSedi();
+        for (Sede sede : sedi) {
+            sedeBox.getItems().add(sede.getNomeSede());
+        }
     }
 
     private void caricaInventarioUtente() {

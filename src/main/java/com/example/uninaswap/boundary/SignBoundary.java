@@ -112,13 +112,13 @@
 
                 @Override
                 public void initialize(URL url, ResourceBundle resourceBundle) {
-                    this.controllerUninaSwap = ControllerUninaSwap.getInstance();
-            //        try {
-            //            controllerUninaSwap.cancellaDB();
-            //            controllerUninaSwap.popolaDB();
-            //        } catch (Exception e) {
-            //            throw new RuntimeException(e);
-            //        }
+                  this.controllerUninaSwap = ControllerUninaSwap.getInstance();
+                 try {
+                     controllerUninaSwap.cancellaDB();
+                     controllerUninaSwap.popolaDB();
+                 } catch (Exception e) {
+                     throw new RuntimeException(e);
+                 }
 
                     // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
                     if (profileImageView != null) {

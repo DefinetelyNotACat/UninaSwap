@@ -199,6 +199,10 @@ public class ControllerUninaSwap {
         CondizioneDAO condizioneDAO = new CondizioneDAO();
         return condizioneDAO.ottieniTutteCondizioni();
     }
+    public ArrayList <Sede> getSedi(){
+        SedeDAO sediDAO = new SedeDAO();
+        return sediDAO.OttieniSedi();
+    }
 
 }
 
