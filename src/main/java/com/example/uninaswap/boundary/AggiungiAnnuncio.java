@@ -10,7 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -207,7 +206,7 @@ public class AggiungiAnnuncio {
         pubblicaButton.disableProperty().bind(
                 descrizioneValida.not()
                         .or(sedeValida.not())
-                        .or(orariValidi.not()) // Aggiunto controllo orari
+                        .or(orariValidi.not())
                         .or(almenoUnOggettoSelezionato.not())
                         .or(tipologiaSelezionata.not())
                         .or(sezioneSpecificaValida.not())
@@ -215,7 +214,7 @@ public class AggiungiAnnuncio {
     }
 
     // =================================================================================
-    // EVENT HANDLERS & HELPER METHODS
+    // EVENT HANDLERS ED HELPER METHODS
     // =================================================================================
 
     @FXML
