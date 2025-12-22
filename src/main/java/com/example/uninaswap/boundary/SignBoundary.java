@@ -76,7 +76,7 @@
                                         matricolaField.getText()
                                 );
                                 registraUtente();
-                                gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Registrazione effettuata con successo", Messaggio.TIPI.SUCCESS);
+                                gestoreScene.CambiaScena(pathSignIn, pathSignIn, actionEvent, "Registrazione effettuata con successo, accedi", Messaggio.TIPI.SUCCESS);
 
                             } catch (Exception e) {
                                 System.out.println("Eccezione registrazione catturata: " + e.getMessage());
@@ -113,12 +113,12 @@
                 @Override
                 public void initialize(URL url, ResourceBundle resourceBundle) {
                   this.controllerUninaSwap = ControllerUninaSwap.getInstance();
-                 try {
-                     controllerUninaSwap.cancellaDB();
-                     controllerUninaSwap.popolaDB();
-                 } catch (Exception e) {
-                     throw new RuntimeException(e);
-                 }
+                // try {
+                //     controllerUninaSwap.cancellaDB();
+                //     controllerUninaSwap.popolaDB();
+                // } catch (Exception e) {
+                //     throw new RuntimeException(e);
+                // }
 
                     // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
                     if (profileImageView != null) {
