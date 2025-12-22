@@ -5,6 +5,7 @@ import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.dao.OggettoDAO;
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
+import com.example.uninaswap.interfaces.GestoreMessaggio; // Assumo che tu abbia questa interfaccia
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,18 +18,23 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class Inventario implements Initializable {
+public class Inventario implements Initializable, GestoreMessaggio {
 
     @FXML private GridPane gridInventario;
     @FXML private Text testoVuoto;
+    @FXML private Button btnAggiungiNuovo;
 
-    private ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
-    private OggettoDAO oggettoDAO = new OggettoDAO();
-    private GestoreScene gestoreScene = new GestoreScene();
+    // Riferimento al controller del banner incluso (fx:id="notifica")
+    @FXML private Messaggio notificaController;
+
+    private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+    private final OggettoDAO oggettoDAO = new OggettoDAO();
+    private final GestoreScene gestoreScene = new GestoreScene();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -36,14 +42,22 @@ public class Inventario implements Initializable {
     }
 
     private void caricaOggetti() {
-        gridInventario.getChildren().clear(); // Pulisce la griglia
-        Utente utente = controller.getUtente();
+        // 1. Pulizia della griglia esistente
+        gridInventario.getChildren().clear();
 
-        // Recuperiamo gli oggetti dell'utente (implementare questo metodo nel controller/DAO se manca)
-        // Esempio: List<Oggetto> oggetti = controller.getOggettiUtente(utente.getId());
-        // Qui uso un mock se non hai il metodo pronto, sostituisci con la chiamata reale:
+        // 2. Recupero Utente
+        Utente utente = null;
+        try {
+            utente = controller.getUtente();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return; // Se non c'è utente, non carico nulla
+        }
+
+        // 3. Recupero Oggetti dal DB
         List<Oggetto> oggetti = oggettoDAO.ottieniTuttiOggetti(utente.getId());
 
+        // 4. Gestione lista vuota
         if (oggetti.isEmpty()) {
             testoVuoto.setVisible(true);
             testoVuoto.setManaged(true);
@@ -53,15 +67,16 @@ public class Inventario implements Initializable {
         testoVuoto.setVisible(false);
         testoVuoto.setManaged(false);
 
+        // 5. Popolamento Griglia
         int colonna = 0;
-        int riga = 1;
+        int riga = 0;
 
         for (Oggetto obj : oggetti) {
             VBox card = creaCardOggetto(obj);
             gridInventario.add(card, colonna, riga);
 
             colonna++;
-            // Layout a 3 colonne, poi va a capo
+            // Layout a 3 colonne (0, 1, 2)
             if (colonna == 3) {
                 colonna = 0;
                 riga++;
@@ -73,11 +88,11 @@ public class Inventario implements Initializable {
         VBox card = new VBox();
         card.setAlignment(Pos.CENTER);
         card.setSpacing(10);
-        card.getStyleClass().add("inventory-card"); // Assicurati di avere questa classe nel CSS
+        card.getStyleClass().add("inventory-card"); // Assicurati che questa classe esista nel CSS
         card.setPrefWidth(250);
         card.setPrefHeight(300);
 
-        // 1. Immagine
+        // --- 1. Immagine ---
         ImageView imgView = new ImageView();
         imgView.setFitWidth(200);
         imgView.setFitHeight(180);
@@ -86,33 +101,46 @@ public class Inventario implements Initializable {
         try {
             String path = (obj.getImmagini() != null && !obj.getImmagini().isEmpty())
                     ? obj.getImmagini().get(0)
-                    : "@images/placeholder.png";
-            // Gestione path file o risorsa
-            if(path.startsWith("@") || path.startsWith("file:")) {
-                imgView.setImage(new Image(path));
+                    : null;
+
+            if (path != null && !path.isEmpty()) {
+                // Gestione path assoluto vs risorsa
+                if (path.startsWith("http") || path.startsWith("file:")) {
+                    imgView.setImage(new Image(path));
+                } else {
+                    // Se è un path locale del disco (es. C:\Users\...) bisogna aggiungere "file:"
+                    File file = new File(path);
+                    if (file.exists()) {
+                        imgView.setImage(new Image(file.toURI().toString()));
+                    } else {
+                        // Fallback se il file non esiste più
+                        imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
+                    }
+                }
             } else {
-                imgView.setImage(new Image("file:" + path));
+                // Placeholder se non ha immagini
+                imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
             }
         } catch (Exception e) {
-            // Immagine di fallback
+            System.err.println("Errore caricamento immagine per oggetto " + obj.getId());
             imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
         }
 
-        // 2. Nome Oggetto
+        // --- 2. Nome Oggetto ---
         Text nome = new Text(obj.getNome());
         nome.getStyleClass().add("label");
         nome.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
-        // 3. Pulsanti Azione (Modifica / Elimina)
+        // --- 3. Pulsanti Azione ---
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
 
         Button btnModifica = new Button("Modifica");
         btnModifica.getStyleClass().add("button-small");
-        btnModifica.setOnAction(e -> onModificaOggetto(obj));
+        btnModifica.setOnAction(e -> onModificaOggetto(obj, e));
 
         Button btnElimina = new Button("Elimina");
-        btnElimina.getStyleClass().addAll("button-small", "button-danger"); // button-danger per colore rosso
+        btnElimina.getStyleClass().addAll("button-small", "button-danger"); // Assumi di avere una classe rossa nel CSS
         btnElimina.setOnAction(e -> onEliminaOggetto(obj));
 
         buttonBox.getChildren().addAll(btnModifica, btnElimina);
@@ -121,30 +149,42 @@ public class Inventario implements Initializable {
         return card;
     }
 
-    private void onModificaOggetto(Oggetto obj) {
+    private void onModificaOggetto(Oggetto obj, ActionEvent event) {
         System.out.println("Modifica oggetto: " + obj.getNome());
-        // Qui dovresti navigare alla schermata "AggiungiOggetto" ma passandogli l'oggetto da modificare
-        // Per ora stampiamo in console.
-        // Esempio: gestoreScene.CambiaScenaConDati(..., obj);
+        // TODO: Implementare passaggio dati.
+        // Solitamente si usa un metodo nel controller di destinazione tipo "setOggetto(obj)"
+        // gestoreScene.CambiaScenaConDati(Costanti.pathAggiungiOggetto, "Modifica Oggetto", event, obj);
+        mostraMessaggioEsterno("Funzionalità modifica in arrivo", Messaggio.TIPI.INFO);
     }
 
     private void onEliminaOggetto(Oggetto obj) {
         boolean eliminato = oggettoDAO.eliminaOggetto(obj.getId());
+
         if (eliminato) {
-            System.out.println("Oggetto eliminato");
-            caricaOggetti(); // Ricarica la griglia
+            mostraMessaggioEsterno("Oggetto eliminato con successo", Messaggio.TIPI.SUCCESS);
+            caricaOggetti(); // Ricarica la griglia per far sparire l'oggetto
         } else {
-            System.err.println("Errore eliminazione");
+            mostraMessaggioEsterno("Errore durante l'eliminazione", Messaggio.TIPI.ERROR);
         }
     }
 
     @FXML
     public void onAggiungiNuovoClick(ActionEvent event) {
-        gestoreScene.CambiaScena(Costanti.pathAggiungiOggetto, "Aggiungi Oggetto", event);
+        gestoreScene.CambiaScena(Costanti.pathAggiungiOggetto, Costanti.aggiungiOggetto, event);
     }
 
     @FXML
     public void onIndietroClick(ActionEvent event) {
         gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
+    }
+
+    // Implementazione interfaccia GestoreMessaggio per usare il banner incluso
+    @Override
+    public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
+        if (notificaController != null) {
+            notificaController.mostraMessaggio(testo, tipo);
+        } else {
+            System.out.println("Banner notifica non caricato: " + testo);
+        }
     }
 }

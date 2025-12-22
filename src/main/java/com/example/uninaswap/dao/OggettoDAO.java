@@ -14,9 +14,8 @@ public class OggettoDAO implements GestoreOggettoDAO {
     private OggettoCategoriaDAO oggettoCategoriaDAO = new OggettoCategoriaDAO();
     // Assumo che ImmagineDAO esista e abbia il metodo inserisciImmaginiBatch
     private ImmagineDAO immagineDAO = new ImmagineDAO();
-
     /**
-     * Salva Oggetto, Categorie e Immagini in un'unica Transazione.
+     * +Salva Oggetto, Categorie e Immagini in un'unica Transazione.
      */
     public boolean salvaOggetto(Oggetto oggetto, Utente utente) {
         // Nota: ?::type è la sintassi di cast di PostgreSQL. Assicurati che i tipi esistano nel DB.
