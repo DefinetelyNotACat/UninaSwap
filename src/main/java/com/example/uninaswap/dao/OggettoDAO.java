@@ -133,5 +133,8 @@ public class OggettoDAO implements GestoreOggettoDAO {
     public boolean rimuoviDaUtente(int idUtente, int idOggetto) { return true; }
     public boolean associaAnnuncio(int idUtente, int idAnnuncio) { return true; }
     public boolean rimuoviDaAnnuncio(int idUtente, int idAannuncio) { return true; }
-    public ArrayList<Oggetto> ottieniTuttiOggetti() { return null; }
+    public ArrayList<Oggetto> ottieniTuttiOggetti(int idUtente) {
+        //TODO! QUERY DA FARE QUI
+        return null;
+    }
 }

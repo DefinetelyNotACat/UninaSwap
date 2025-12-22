@@ -14,5 +14,5 @@ public interface GestoreOggettoDAO {
     public boolean associaAnnuncio(int idU, int idA);
     public boolean rimuoviDaAnnuncio(int idU, int idA);
     public Oggetto ottieniOggetto(int id, Utente utente);
-    public ArrayList<Oggetto> ottieniTuttiOggetti();
+    public ArrayList<Oggetto> ottieniTuttiOggetti(int idUtente);
 }

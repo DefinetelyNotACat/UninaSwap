@@ -1,14 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.uninaswap.boundary.Inventario"
-            prefHeight="400.0" prefWidth="600.0">
+<ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.Inventario" stylesheets="@inventario.css, @sign.css">
+    <content>
+        <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="myPadding">
 
-</AnchorPane>
+            <VBox alignment="CENTER" fillWidth="false">
+                <fx:include fx:id="notifica" source="banners.fxml"/>
+                <padding>
+                    <Insets bottom="10.0" />
+                </padding>
+            </VBox>
+
+            <VBox alignment="CENTER" spacing="10">
+                <children>
+                    <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@images/uninaLogo.png" />
+                        </image>
+                        <clip>
+                            <Circle centerX="40.0" centerY="40.0" radius="40.0" />
+                        </clip>
+                    </ImageView>
+                    <Text styleClass="bold,title" text="Il Tuo Inventario" textAlignment="CENTER" />
+                    <Text styleClass="description" text="Gestisci i tuoi oggetti: modificane i dettagli o eliminali" />
+                </children>
+                <padding>
+                    <Insets bottom="10.0" top="10.0" />
+                </padding>
+            </VBox>
+
+            <HBox alignment="CENTER_RIGHT" maxWidth="900.0">
+                <Button fx:id="btnAggiungiNuovo" text="+ Aggiungi Oggetto" onAction="#onAggiungiNuovoClick" styleClass="button, button-small"/>
+            </HBox>
+
+            <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
+                <children>
+                    <GridPane fx:id="gridInventario" alignment="CENTER" hgap="20.0" vgap="20.0">
+                        <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        </rowConstraints>
+                    </GridPane>
+
+                    <Text fx:id="testoVuoto" text="Non hai ancora inserito oggetti nel tuo inventario." styleClass="placeholder-text" visible="false" managed="false"/>
+                </children>
+                <padding>
+                    <Insets bottom="50.0" left="20.0" right="20.0" />
+                </padding>
+            </VBox>
+
+            <Button onAction="#onIndietroClick" text="Torna alla Home" styleClass="button, button-secondary"/>
+
+        </VBox>
+    </content>
+</ScrollPane>
