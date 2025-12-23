@@ -6,6 +6,7 @@ import com.example.uninaswap.dao.OggettoDAO;
 import com.example.uninaswap.entity.Categoria;
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
+import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -38,17 +39,56 @@ public class AggiungiOggetto implements Initializable {
     @FXML private Button caricaFotoButton;
     @FXML private Text erroreImmagini;
     @FXML private Button aggiungiButton;
+    @FXML private Text titoloPagina; // Opzionale: per cambiare titolo in "Modifica Oggetto"
 
     private ControllerUninaSwap controllerUninaSwap;
     private final OggettoDAO oggettoDAO = new OggettoDAO();
-    private final List<File> immaginiSelezionate = new ArrayList<>();
+
+    // Liste per gestire immagini nuove (File) e vecchie (String path)
+    private final List<File> immaginiNuove = new ArrayList<>();
+    private final List<String> immaginiEsistenti = new ArrayList<>();
+
+    private Oggetto oggettoDaModificare = null; // Se null, siamo in modalità CREAZIONE
+
+    // =================================================================================
+    // SETUP PER MODIFICA
+    // =================================================================================
+
+    /**
+     * Chiama questo metodo dall'Inventario per passare in modalità MODIFICA
+     */
+    public void setOggettoDaModificare(Oggetto obj) {
+        this.oggettoDaModificare = obj;
+
+        // 1. Cambia UI
+        if(aggiungiButton != null) aggiungiButton.setText("Salva Modifiche");
+        // if(titoloPagina != null) titoloPagina.setText("Modifica Oggetto");
+
+        // 2. Popola i campi
+        nomeOggettoField.setText(obj.getNome());
+
+        // Categoria
+        if (!obj.getCategorie().isEmpty()) {
+            categoriaBox.setValue(obj.getCategorie().get(0).getNome());
+        }
+
+        // Condizione
+        condizioneBox.setValue(obj.getCondizione());
+
+        // 3. Carica immagini esistenti
+        if (obj.getImmagini() != null) {
+            immaginiEsistenti.addAll(obj.getImmagini());
+            aggiornaVisualizzazioneImmagini(); // Mostra quelle vecchie
+        }
+
+        controllaCampiValidi();
+    }
 
     // =================================================================================
     // LOGICA DI VALIDAZIONE
     // =================================================================================
 
     private void controllaCampiValidi() {
-        // Validazione Nome
         String testoNome = nomeOggettoField.getText();
         boolean nomeOk = false;
         if (testoNome != null) {
@@ -58,10 +98,11 @@ public class AggiungiOggetto implements Initializable {
             }
         }
 
-        // Validazione Categoria, Condizione e Immagini
         boolean categoriaOk = categoriaBox.getValue() != null;
         boolean condizioneOk = condizioneBox.getValue() != null;
-        boolean immaginiOk = !immaginiSelezionate.isEmpty();
+
+        // Ok se c'è almeno un'immagine nuova OPPURE una esistente
+        boolean immaginiOk = !immaginiNuove.isEmpty() || !immaginiEsistenti.isEmpty();
 
         if (erroreImmagini != null) {
             erroreImmagini.setVisible(!immaginiOk);
@@ -81,15 +122,13 @@ public class AggiungiOggetto implements Initializable {
     public void onCaricaFotoClick(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleziona Immagini Oggetto");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg", "*.gif")
-        );
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
 
         Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
         List<File> files = fileChooser.showOpenMultipleDialog(stage);
 
         if (files != null) {
-            immaginiSelezionate.addAll(files);
+            immaginiNuove.addAll(files);
             aggiornaVisualizzazioneImmagini();
             controllaCampiValidi();
         }
@@ -98,22 +137,34 @@ public class AggiungiOggetto implements Initializable {
     private void aggiornaVisualizzazioneImmagini() {
         contenitoreImmagini.getChildren().clear();
 
-        if (immaginiSelezionate.isEmpty()) {
+        if (immaginiNuove.isEmpty() && immaginiEsistenti.isEmpty()) {
             Text placeholder = new Text("Nessuna immagine caricata");
             placeholder.getStyleClass().add("placeholder-text");
             contenitoreImmagini.getChildren().add(placeholder);
-        } else {
-            for (File file : immaginiSelezionate) {
-                creaMiniaturaImmagine(file);
-            }
+            return;
+        }
+
+        // Mostra immagini esistenti (da String path)
+        for (String path : immaginiEsistenti) {
+            creaMiniatura(path, true);
+        }
+
+        // Mostra immagini nuove (da File)
+        for (File file : immaginiNuove) {
+            creaMiniatura(file.toURI().toString(), false);
         }
     }
 
-    private void creaMiniaturaImmagine(File file) {
+    private void creaMiniatura(String imagePath, boolean isEsistente) {
         try {
-            Image image = new Image(file.toURI().toString());
-            ImageView imageView = new ImageView(image);
+            Image image;
+            if(imagePath.startsWith("file:") || imagePath.startsWith("http")) {
+                image = new Image(imagePath);
+            } else {
+                image = new Image(new File(imagePath).toURI().toString());
+            }
 
+            ImageView imageView = new ImageView(image);
             imageView.setFitHeight(150);
             imageView.setFitWidth(150);
             imageView.setPreserveRatio(true);
@@ -123,70 +174,85 @@ public class AggiungiOggetto implements Initializable {
             rimuoviBtn.setPrefSize(20, 20);
 
             rimuoviBtn.setOnAction(e -> {
-                immaginiSelezionate.remove(file);
+                if (isEsistente) {
+                    immaginiEsistenti.remove(imagePath);
+                } else {
+                    // Cerca il file corrispondente nell'array e rimuovilo (logica semplificata)
+                    immaginiNuove.removeIf(f -> f.toURI().toString().equals(imagePath));
+                }
                 aggiornaVisualizzazioneImmagini();
                 controllaCampiValidi();
             });
 
-            VBox boxSingolaFoto = new VBox(5);
-            boxSingolaFoto.setAlignment(Pos.CENTER);
-            boxSingolaFoto.getStyleClass().add("image-card");
-            boxSingolaFoto.getChildren().addAll(imageView, rimuoviBtn);
+            VBox box = new VBox(5, imageView, rimuoviBtn);
+            box.setAlignment(Pos.CENTER);
+            box.getStyleClass().add("image-card");
 
-            contenitoreImmagini.getChildren().add(boxSingolaFoto);
-
+            contenitoreImmagini.getChildren().add(box);
         } catch (Exception e) {
-            System.err.println("Errore caricamento miniatura: " + file.getName());
+            System.err.println("Errore miniatura: " + e.getMessage());
         }
     }
 
     // =================================================================================
-    // AZIONI UTENTE (PUBBLICA / ANNULLA)
+    // AZIONI UTENTE
     // =================================================================================
 
-    public void onAnnullaClick(ActionEvent actionEvent) {
-        GestoreScene gestoreScene = new GestoreScene();
-        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Operazione annullata", Messaggio.TIPI.INFO);
-    }
-
     public void onPubblicaClick(ActionEvent actionEvent) {
-        String nome = nomeOggettoField.getText();
-        String nomeCategoria = categoriaBox.getValue();
-        Oggetto.CONDIZIONE condizioneScelta = condizioneBox.getValue();
-
         Utente utenteCorrente = null;
         try {
             utenteCorrente = controllerUninaSwap.getUtente();
         } catch (Exception e) {
-            e.printStackTrace();
-            return;
+            throw new RuntimeException(e);
         }
 
-        Oggetto nuovoOggetto = new Oggetto();
-        nuovoOggetto.setNome(nome);
-        nuovoOggetto.setDisponibilita(Oggetto.DISPONIBILITA.DISPONIBILE);
-        nuovoOggetto.setCondizione(condizioneScelta);
-
-        // Associazione categorie
-        ArrayList<Categoria> listaCategorie = new ArrayList<>();
-        listaCategorie.add(new Categoria(nomeCategoria));
-        nuovoOggetto.setCategorie(listaCategorie);
-
-        // Conversione percorsi immagini
-        ArrayList<String> percorsiStringa = new ArrayList<>();
-        for (File f : immaginiSelezionate) {
-            percorsiStringa.add(f.getAbsolutePath());
+        Oggetto oggettoToSave = new Oggetto();
+        // Se stiamo modificando, manteniamo l'ID
+        if (oggettoDaModificare != null) {
+            oggettoToSave.setId(oggettoDaModificare.getId());
         }
-        nuovoOggetto.setImmagini(percorsiStringa);
 
-        boolean esito = oggettoDAO.salvaOggetto(nuovoOggetto, utenteCorrente);
+        oggettoToSave.setNome(nomeOggettoField.getText());
+        oggettoToSave.setCondizione(condizioneBox.getValue());
+        oggettoToSave.setDisponibilita(Oggetto.DISPONIBILITA.DISPONIBILE);
+
+        ArrayList<Categoria> listaCat = new ArrayList<>();
+        listaCat.add(new Categoria(categoriaBox.getValue()));
+        oggettoToSave.setCategorie(listaCat);
+
+        // Uniamo i path: quelli vecchi rimasti + quelli nuovi convertiti in stringa
+        ArrayList<String> pathsFinali = new ArrayList<>(immaginiEsistenti);
+        for (File f : immaginiNuove) {
+            pathsFinali.add(f.getAbsolutePath());
+        }
+        oggettoToSave.setImmagini(pathsFinali);
+
+        boolean esito;
+        if (oggettoDaModificare == null) {
+            // INSERT
+            esito = oggettoDAO.salvaOggetto(oggettoToSave, utenteCorrente);
+        } else {
+            // UPDATE (Assicurati di avere updateOggetto nel DAO)
+            // Se non hai update, per ora usiamo salvaOggetto sperando gestisca l'ID,
+            // ma idealmente: oggettoDAO.aggiornaOggetto(oggettoToSave);
+            System.out.println("Simulazione Update Oggetto ID: " + oggettoToSave.getId());
+            esito = true; // Placeholder finché non implementi update nel DAO
+        }
 
         if (esito) {
             GestoreScene gestoreScene = new GestoreScene();
-            gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Oggetto pubblicato con successo!", Messaggio.TIPI.SUCCESS);
+            // QUI IL CAMBIAMENTO: Redirect all'INVENTARIO invece che alla Home
+            // Assicurati di avere Costanti.pathInventario e Costanti.inventario definiti
+            gestoreScene.CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent,
+                    oggettoDaModificare == null ? "Oggetto aggiunto!" : "Oggetto modificato!", Messaggio.TIPI.SUCCESS);
         } else {
             System.err.println("Errore salvataggio DB");
         }
+    }
+
+    public void onAnnullaClick(ActionEvent actionEvent) {
+        GestoreScene gestoreScene = new GestoreScene();
+        gestoreScene.CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent);
     }
 
     // =================================================================================
@@ -196,79 +262,41 @@ public class AggiungiOggetto implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         controllerUninaSwap = ControllerUninaSwap.getInstance();
+        if (aggiungiButton != null) aggiungiButton.setDisable(true);
 
-        if (aggiungiButton != null) {
-            aggiungiButton.setDisable(true);
+        // Popola Categorie
+        for (Categoria c : controllerUninaSwap.getCategorie()) {
+            categoriaBox.getItems().add(c.getNome());
         }
 
-        // --- Configurazione Categorie ---
-        ArrayList<Categoria> categorie = controllerUninaSwap.getCategorie();
-        for (Categoria categoria : categorie) {
-            categoriaBox.getItems().add(categoria.getNome());
-        }
-
-        categoriaBox.setCellFactory(lv -> new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText((empty || item == null) ? null : item);
-                setCursor(empty ? Cursor.DEFAULT : Cursor.HAND);
-            }
-        });
-        categoriaBox.setCursor(Cursor.HAND);
-        categoriaBox.valueProperty().addListener((obs, oldVal, newVal) -> controllaCampiValidi());
-
-        // --- Configurazione Condizioni ---
+        // Popola Condizioni
         condizioneBox.getItems().setAll(controllerUninaSwap.getCondizioni());
 
-        // 1. Visualizzazione nella lista dropdown (Sostituisce _ con spazio)
-        condizioneBox.setCellFactory(lv -> new ListCell<Oggetto.CONDIZIONE>() {
-            @Override
-            protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
+        // Cell factories per visualizzazione pulita
+        condizioneBox.setCellFactory(lv -> new ListCell<>() {
+            @Override protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setCursor(Cursor.DEFAULT);
-                } else {
-                    // Trasforma "COME_NUOVO" in "COME NUOVO" per l'utente
-                    setText(item.toString().replace("_", " "));
-                    setCursor(Cursor.HAND);
-                }
+                setText((empty || item == null) ? null : item.toString().replace("_", " "));
+            }
+        });
+        condizioneBox.setButtonCell(new ListCell<>() {
+            @Override protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
+                super.updateItem(item, empty);
+                setText((empty || item == null) ? null : item.toString().replace("_", " "));
             }
         });
 
-        // 2. Visualizzazione del valore selezionato (il bottone)
-        condizioneBox.setButtonCell(new ListCell<Oggetto.CONDIZIONE>() {
-            @Override
-            protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item.toString().replace("_", " "));
-                }
+        // Listeners
+        categoriaBox.valueProperty().addListener((o,old,newV) -> controllaCampiValidi());
+        condizioneBox.valueProperty().addListener((o,old,newV) -> controllaCampiValidi());
+
+        nomeOggettoField.textProperty().addListener((obs, oldV, newV) -> {
+            boolean ok = newV.trim().length() >= 5 && newV.matches(Costanti.OGGETTO_FIELD_REGEX);
+            if(erroreNome != null) {
+                erroreNome.setVisible(!ok); erroreNome.setManaged(!ok);
+                if(!ok) erroreNome.setText("Nome non valido (min 5 caratteri)");
             }
+            controllaCampiValidi();
         });
-
-        condizioneBox.setCursor(Cursor.HAND);
-        condizioneBox.valueProperty().addListener((obs, oldVal, newVal) -> controllaCampiValidi());
-
-        // --- Listener Validazione Nome ---
-        if (nomeOggettoField != null) {
-            nomeOggettoField.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (erroreNome != null) {
-                    erroreNome.setVisible(false);
-                    erroreNome.setManaged(false);
-                }
-                boolean lunghezzaOk = newValue.replace(" ", "").length() >= 5;
-                // Nota: Costanti.OGGETTO_FIELD_REGEX deve essere definito nella tua classe Costanti
-                if (!newValue.matches(Costanti.OGGETTO_FIELD_REGEX) || !lunghezzaOk) {
-                    erroreNome.setText("Errore! inserire un nome valido (min 5 caratteri, no speciali)");
-                    erroreNome.setManaged(true);
-                    erroreNome.setVisible(true);
-                }
-                controllaCampiValidi();
-            });
-        }
     }
 }

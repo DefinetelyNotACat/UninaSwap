@@ -66,3 +66,35 @@
 .button.button-remove:hover {
     -fx-background-color: #cc0000;
 }
+.context-menu .menu-item {
+    -fx-cursor: hand;
+}
+
+.context-menu .menu-item > .label {
+    -fx-cursor: hand;
+}
+/* Cursor HAND sul popup del ComboBox */
+.combo-box-popup .list-view {
+    -fx-cursor: hand;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-cursor: hand;
+}
+
+/* Hover incluso */
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-cursor: hand;
+}
+
+.combo-box {
+    -fx-cursor: hand;
+}
+
+.combo-box .arrow-button {
+    -fx-cursor: hand;
+}
+
+.combo-box .arrow {
+    -fx-cursor: hand;
+}

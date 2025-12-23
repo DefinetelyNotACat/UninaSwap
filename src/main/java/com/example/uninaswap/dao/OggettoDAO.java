@@ -2,6 +2,7 @@ package com.example.uninaswap.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
@@ -32,9 +33,19 @@ public class OggettoDAO implements GestoreOggettoDAO {
             try (PreparedStatement stmt = conn.prepareStatement(sqlOggetto, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setInt(1, utente.getId());
                 stmt.setString(2, oggetto.getNome());
-                // Enum -> String per il DB
-                stmt.setString(3, oggetto.getCondizione().name());
-                stmt.setString(4, oggetto.getDisponibilita().name());
+
+                // Enum -> String per il DB (FIX: Sostituisco _ con spazio per compatibilità DB)
+                if (oggetto.getCondizione() != null) {
+                    stmt.setString(3, oggetto.getCondizione().name().replace("_", " "));
+                } else {
+                    stmt.setNull(3, Types.VARCHAR);
+                }
+
+                if (oggetto.getDisponibilita() != null) {
+                    stmt.setString(4, oggetto.getDisponibilita().name().replace("_", " "));
+                } else {
+                    stmt.setString(4, "DISPONIBILE");
+                }
 
                 int rows = stmt.executeUpdate();
                 if (rows == 0) throw new SQLException("Inserimento oggetto fallito.");
@@ -51,7 +62,9 @@ public class OggettoDAO implements GestoreOggettoDAO {
 
             // 2. Inserimento Categorie (Tabella Ponte) usando la stessa connessione
             // FIX: Chiamata corretta al metodo che accetta (Connection, int, ArrayList)
-            oggettoCategoriaDAO.associaCategorie(conn, idOggettoGenerato, oggetto.getCategorie());
+            if (oggetto.getCategorie() != null) {
+                oggettoCategoriaDAO.associaCategorie(conn, idOggettoGenerato, oggetto.getCategorie());
+            }
 
             // 3. Inserimento Immagini usando la stessa connessione
             if (oggetto.getImmagini() != null && !oggetto.getImmagini().isEmpty()) {
@@ -97,17 +110,7 @@ public class OggettoDAO implements GestoreOggettoDAO {
             stmt.setInt(1, idOggetto);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    oggetto = new Oggetto();
-                    oggetto.setId(rs.getInt("id"));
-                    oggetto.setNome(rs.getString("nome"));
-
-                    // Enum Conversion (String DB -> Enum Java)
-                    String condStr = rs.getString("condizione");
-                    if(condStr != null) oggetto.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr));
-
-                    String dispStr = rs.getString("disponibilita");
-                    if(dispStr != null) oggetto.setDisponibilita(Oggetto.DISPONIBILITA.valueOf(dispStr));
-
+                    oggetto = mapResultSetToOggetto(rs);
                     oggetto.setProprietario(utente);
 
                     // 1. Recupero Categorie (tramite DAO ponte)
@@ -125,15 +128,79 @@ public class OggettoDAO implements GestoreOggettoDAO {
         return oggetto;
     }
 
+    public ArrayList<Oggetto> ottieniTuttiOggetti(int idUtente) {
+        ArrayList<Oggetto> lista = new ArrayList<>();
+        String sql = "SELECT * FROM OGGETTO WHERE utente_id = ? ORDER BY id DESC";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idUtente);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Oggetto obj = mapResultSetToOggetto(rs);
+
+                    // Recupero immagini per visualizzazione anteprima
+                    obj.setImmagini(immagineDAO.ottieniImmaginiStringhe(obj.getId()));
+                    // Recupero categorie
+                    obj.setCategorie(oggettoCategoriaDAO.ottieniCategoriePerOggetto(obj.getId()));
+
+                    lista.add(obj);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public boolean eliminaOggetto(int idOggetto) {
+        String sql = "DELETE FROM OGGETTO WHERE id = ?";
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idOggetto);
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Helper privato per mappare il ResultSet ed evitare duplicazione codice
+    private Oggetto mapResultSetToOggetto(ResultSet rs) throws SQLException {
+        Oggetto oggetto = new Oggetto();
+        oggetto.setId(rs.getInt("id"));
+        oggetto.setNome(rs.getString("nome"));
+
+        // Enum Conversion (String DB -> Enum Java)
+        // FIX: Sostituisco spazio con _ per tornare all'Enum Java
+        String condStr = rs.getString("condizione");
+        if(condStr != null) {
+            try {
+                oggetto.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr.replace(" ", "_").toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                System.err.println("Enum non riconosciuto: " + condStr);
+            }
+        }
+
+        String dispStr = rs.getString("disponibilita");
+        if(dispStr != null) {
+            try {
+                oggetto.setDisponibilita(Oggetto.DISPONIBILITA.valueOf(dispStr.replace(" ", "_").toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                System.err.println("Enum non riconosciuto: " + dispStr);
+            }
+        }
+        return oggetto;
+    }
+
     // Metodi da implementare se servono
     public boolean modificaOggetto(Oggetto oggetto) { return true; }
-    public boolean eliminaOggetto(int idOggetto) { return true; }
     public boolean associaUtente(int idUtente, int idOggetto) { return true; }
     public boolean rimuoviDaUtente(int idUtente, int idOggetto) { return true; }
     public boolean associaAnnuncio(int idUtente, int idAnnuncio) { return true; }
     public boolean rimuoviDaAnnuncio(int idUtente, int idAannuncio) { return true; }
-    public ArrayList<Oggetto> ottieniTuttiOggetti(int idUtente) {
-        //TODO! QUERY DA FARE QUI
-        return null;
-    }
 }

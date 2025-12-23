@@ -12,6 +12,7 @@ public class Costanti {
     public static final String pathLogo = "/com/example/uninaswap/images/uninaLogo.png";
     public static final String pathImmagineDiProfiloDefault = "/com/example/uninaswap/images/immagine_di_profilo_default.jpg";
     public static final String pathUtenti = "dati_utenti";
+    public static final String pathInventario = "/com/example/uninaswap/inventario.fxml";
     public static final String pathAggiungiOggetto = "/com/example/uninaswap/aggiungiOggetto.fxml";
     public static final String aggiungiOggetto = "aggiungi oggetto";
     public static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9.]{6,64}@studenti\\.unina\\.it$";
@@ -21,4 +22,5 @@ public class Costanti {
     public static final String OGGETTO_FIELD_REGEX = "^[a-zA-Z0-9 ]+$";
     public static final String PRICE_REGEX = "^[0-9]+([.,][0-9]{1,2})?$";
     public static final String TIME_REGEX = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
+    public static final String inventario = "il mio inventario";
 }

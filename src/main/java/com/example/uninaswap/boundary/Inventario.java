@@ -5,11 +5,15 @@ import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.dao.OggettoDAO;
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
-import com.example.uninaswap.interfaces.GestoreMessaggio; // Assumo che tu abbia questa interfaccia
+import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,8 +21,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -27,9 +33,6 @@ public class Inventario implements Initializable, GestoreMessaggio {
 
     @FXML private GridPane gridInventario;
     @FXML private Text testoVuoto;
-    @FXML private Button btnAggiungiNuovo;
-
-    // Riferimento al controller del banner incluso (fx:id="notifica")
     @FXML private Messaggio notificaController;
 
     private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
@@ -51,17 +54,17 @@ public class Inventario implements Initializable, GestoreMessaggio {
             utente = controller.getUtente();
         } catch (Exception e) {
             e.printStackTrace();
-            return; // Se non c'è utente, non carico nulla
+            return;
         }
 
         // 3. Recupero Oggetti dal DB
         List<Oggetto> oggetti = oggettoDAO.ottieniTuttiOggetti(utente.getId());
 
-        // 4. Gestione lista vuota
-        if (oggetti.isEmpty()) {
+        // --- FIX HERE: Check for NULL before checking isEmpty() ---
+        if (oggetti == null || oggetti.isEmpty()) {
             testoVuoto.setVisible(true);
             testoVuoto.setManaged(true);
-            return;
+            return; // Important: Return here so the loop below doesn't run on null
         }
 
         testoVuoto.setVisible(false);
@@ -76,115 +79,98 @@ public class Inventario implements Initializable, GestoreMessaggio {
             gridInventario.add(card, colonna, riga);
 
             colonna++;
-            // Layout a 3 colonne (0, 1, 2)
             if (colonna == 3) {
                 colonna = 0;
                 riga++;
             }
         }
     }
-
     private VBox creaCardOggetto(Oggetto obj) {
         VBox card = new VBox();
         card.setAlignment(Pos.CENTER);
         card.setSpacing(10);
-        card.getStyleClass().add("inventory-card"); // Assicurati che questa classe esista nel CSS
-        card.setPrefWidth(250);
-        card.setPrefHeight(300);
+        card.getStyleClass().add("inventory-card");
+        card.setPrefSize(250, 300);
 
-        // --- 1. Immagine ---
         ImageView imgView = new ImageView();
-        imgView.setFitWidth(200);
-        imgView.setFitHeight(180);
-        imgView.setPreserveRatio(true);
+        imgView.setFitWidth(200); imgView.setFitHeight(180); imgView.setPreserveRatio(true);
 
         try {
-            String path = (obj.getImmagini() != null && !obj.getImmagini().isEmpty())
-                    ? obj.getImmagini().get(0)
-                    : null;
-
-            if (path != null && !path.isEmpty()) {
-                // Gestione path assoluto vs risorsa
-                if (path.startsWith("http") || path.startsWith("file:")) {
-                    imgView.setImage(new Image(path));
-                } else {
-                    // Se è un path locale del disco (es. C:\Users\...) bisogna aggiungere "file:"
-                    File file = new File(path);
-                    if (file.exists()) {
-                        imgView.setImage(new Image(file.toURI().toString()));
-                    } else {
-                        // Fallback se il file non esiste più
-                        imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
-                    }
-                }
+            String path = (obj.getImmagini() != null && !obj.getImmagini().isEmpty()) ? obj.getImmagini().get(0) : null;
+            if (path != null) {
+                if (path.startsWith("file:") || path.startsWith("http")) imgView.setImage(new Image(path));
+                else imgView.setImage(new Image(new File(path).toURI().toString()));
             } else {
-                // Placeholder se non ha immagini
                 imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
             }
         } catch (Exception e) {
-            System.err.println("Errore caricamento immagine per oggetto " + obj.getId());
             imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
         }
 
-        // --- 2. Nome Oggetto ---
         Text nome = new Text(obj.getNome());
         nome.getStyleClass().add("label");
         nome.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
-        // --- 3. Pulsanti Azione ---
-        HBox buttonBox = new HBox(10);
-        buttonBox.setAlignment(Pos.CENTER);
+        HBox btnBox = new HBox(10);
+        btnBox.setAlignment(Pos.CENTER);
 
+        // Tasto Modifica con logica di passaggio scena
         Button btnModifica = new Button("Modifica");
         btnModifica.getStyleClass().add("button-small");
         btnModifica.setOnAction(e -> onModificaOggetto(obj, e));
 
         Button btnElimina = new Button("Elimina");
-        btnElimina.getStyleClass().addAll("button-small", "button-danger"); // Assumi di avere una classe rossa nel CSS
+        btnElimina.getStyleClass().addAll("button-small", "button-danger");
         btnElimina.setOnAction(e -> onEliminaOggetto(obj));
 
-        buttonBox.getChildren().addAll(btnModifica, btnElimina);
-
-        card.getChildren().addAll(imgView, nome, buttonBox);
+        btnBox.getChildren().addAll(btnModifica, btnElimina);
+        card.getChildren().addAll(imgView, nome, btnBox);
         return card;
     }
 
     private void onModificaOggetto(Oggetto obj, ActionEvent event) {
-        System.out.println("Modifica oggetto: " + obj.getNome());
-        // TODO: Implementare passaggio dati.
-        // Solitamente si usa un metodo nel controller di destinazione tipo "setOggetto(obj)"
-        // gestoreScene.CambiaScenaConDati(Costanti.pathAggiungiOggetto, "Modifica Oggetto", event, obj);
-        mostraMessaggioEsterno("Funzionalità modifica in arrivo", Messaggio.TIPI.INFO);
+        try {
+            // Caricamento manuale per passare i dati al controller
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathAggiungiOggetto));
+            Parent root = loader.load();
+
+            // Otteniamo il controller e passiamo l'oggetto
+            AggiungiOggetto controllerAggiungi = loader.getController();
+            controllerAggiungi.setOggettoDaModificare(obj);
+
+            // Cambio scena
+            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Modifica Oggetto");
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostraMessaggioEsterno("Errore caricamento pagina modifica", Messaggio.TIPI.ERROR);
+        }
     }
 
     private void onEliminaOggetto(Oggetto obj) {
-        boolean eliminato = oggettoDAO.eliminaOggetto(obj.getId());
-
-        if (eliminato) {
-            mostraMessaggioEsterno("Oggetto eliminato con successo", Messaggio.TIPI.SUCCESS);
-            caricaOggetti(); // Ricarica la griglia per far sparire l'oggetto
+        if (oggettoDAO.eliminaOggetto(obj.getId())) {
+            mostraMessaggioEsterno("Oggetto eliminato!", Messaggio.TIPI.SUCCESS);
+            caricaOggetti();
         } else {
-            mostraMessaggioEsterno("Errore durante l'eliminazione", Messaggio.TIPI.ERROR);
+            mostraMessaggioEsterno("Errore eliminazione.", Messaggio.TIPI.ERROR);
         }
     }
 
     @FXML
     public void onAggiungiNuovoClick(ActionEvent event) {
-        gestoreScene.CambiaScena(Costanti.pathAggiungiOggetto, Costanti.aggiungiOggetto, event);
+        // Qui usiamo GestoreScene normale perché non dobbiamo passare dati
+        gestoreScene.CambiaScena(Costanti.pathAggiungiOggetto, "Aggiungi Oggetto", event);
     }
 
-    @FXML
-    public void onIndietroClick(ActionEvent event) {
+    @FXML public void onIndietroClick(ActionEvent event) {
         gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
     }
 
-    // Implementazione interfaccia GestoreMessaggio per usare il banner incluso
     @Override
     public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
-        if (notificaController != null) {
-            notificaController.mostraMessaggio(testo, tipo);
-        } else {
-            System.out.println("Banner notifica non caricato: " + testo);
-        }
+        if (notificaController != null) notificaController.mostraMessaggio(testo, tipo);
     }
 }
