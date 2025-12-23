@@ -139,9 +139,20 @@ public class Inventario implements Initializable, GestoreMessaggio {
             AggiungiOggetto controllerAggiungi = loader.getController();
             controllerAggiungi.setOggettoDaModificare(obj);
 
-            // Cambio scena
+            // 1. Recupero lo stage attuale
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
+
+            // 2. Salvo le dimensioni attuali della scena (larghezza e altezza)
+            double larghezzaAttuale = stage.getScene().getWidth();
+            double altezzaAttuale = stage.getScene().getHeight();
+
+            // 3. Creo la nuova scena IMPONENDO le dimensioni vecchie
+            Scene scene = new Scene(root, larghezzaAttuale, altezzaAttuale);
+
+            // 4. Se usi CSS globali, ricordati di riaggiungerli (opzionale ma consigliato)
+            // scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+            stage.setScene(scene);
             stage.setTitle("Modifica Oggetto");
             stage.show();
 
