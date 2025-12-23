@@ -207,17 +207,27 @@ public class AggiungiOggetto implements Initializable {
         }
 
         Oggetto oggettoToSave = new Oggetto();
-        // Se stiamo modificando, manteniamo l'ID
+        // Se stiamo modificando, manteniamo l'ID fondamentale per la query SQL WHERE id=?
         if (oggettoDaModificare != null) {
             oggettoToSave.setId(oggettoDaModificare.getId());
         }
 
         oggettoToSave.setNome(nomeOggettoField.getText());
         oggettoToSave.setCondizione(condizioneBox.getValue());
-        oggettoToSave.setDisponibilita(Oggetto.DISPONIBILITA.DISPONIBILE);
+
+        // Attenzione: se permetti di modificare la disponibilità, devi prenderla da una box.
+        // Se l'interfaccia non ha il campo disponibilità, mantieni quella vecchia o metti DISPONIBILE
+        if (oggettoDaModificare != null) {
+            oggettoToSave.setDisponibilita(oggettoDaModificare.getDisponibilita());
+        } else {
+            oggettoToSave.setDisponibilita(Oggetto.DISPONIBILITA.DISPONIBILE);
+        }
 
         ArrayList<Categoria> listaCat = new ArrayList<>();
-        listaCat.add(new Categoria(categoriaBox.getValue()));
+        // Attenzione: Categoria deve essere valida (non null)
+        if (categoriaBox.getValue() != null) {
+            listaCat.add(new Categoria(categoriaBox.getValue()));
+        }
         oggettoToSave.setCategorie(listaCat);
 
         // Uniamo i path: quelli vecchi rimasti + quelli nuovi convertiti in stringa
@@ -229,27 +239,27 @@ public class AggiungiOggetto implements Initializable {
 
         boolean esito;
         if (oggettoDaModificare == null) {
-            // INSERT
+            // --- CASO INSERIMENTO (Nuovo Oggetto) ---
             esito = oggettoDAO.salvaOggetto(oggettoToSave, utenteCorrente);
         } else {
-            // UPDATE (Assicurati di avere updateOggetto nel DAO)
-            // Se non hai update, per ora usiamo salvaOggetto sperando gestisca l'ID,
-            // ma idealmente: oggettoDAO.aggiornaOggetto(oggettoToSave);
-            System.out.println("Simulazione Update Oggetto ID: " + oggettoToSave.getId());
-            esito = true; // Placeholder finché non implementi update nel DAO
+            // --- CASO MODIFICA (Update) ---
+            // PRIMA C'ERA SOLO LA SIMULAZIONE, ORA CHIAMIAMO IL DAO:
+            System.out.println("Eseguo Update Reale per Oggetto ID: " + oggettoToSave.getId());
+
+            // CHIAMA IL METODO CHE ABBIAMO CORRETTO NEL DAO
+            esito = oggettoDAO.modificaOggetto(oggettoToSave);
         }
 
         if (esito) {
             GestoreScene gestoreScene = new GestoreScene();
-            // QUI IL CAMBIAMENTO: Redirect all'INVENTARIO invece che alla Home
-            // Assicurati di avere Costanti.pathInventario e Costanti.inventario definiti
+            // Torna all'inventario mostrando il messaggio di successo
             gestoreScene.CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent,
-                    oggettoDaModificare == null ? "Oggetto aggiunto!" : "Oggetto modificato!", Messaggio.TIPI.SUCCESS);
+                    oggettoDaModificare == null ? "Oggetto aggiunto!" : "Oggetto modificato con successo!", Messaggio.TIPI.SUCCESS);
         } else {
             System.err.println("Errore salvataggio DB");
+            // Opzionale: Mostra un alert di errore all'utente qui
         }
     }
-
     public void onAnnullaClick(ActionEvent actionEvent) {
         GestoreScene gestoreScene = new GestoreScene();
         gestoreScene.CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent);

@@ -198,9 +198,68 @@ public class OggettoDAO implements GestoreOggettoDAO {
     }
 
     // Metodi da implementare se servono
-    public boolean modificaOggetto(Oggetto oggetto) { return true; }
-    public boolean associaUtente(int idUtente, int idOggetto) { return true; }
+    @Override
+    public boolean modificaOggetto(Oggetto oggetto) {
+        // SQL: Aggiorna nome, condizione e disponibilità
+        String sql = "UPDATE OGGETTO SET nome = ?, condizione = ?::condizione_oggetto, disponibilita = ?::disponibilita_oggetto WHERE id = ?";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            // 1. Nome
+            stmt.setString(1, oggetto.getNome());
+
+            // 2. Condizione (Usa il metodo helper per correggere il formato)
+            if (oggetto.getCondizione() != null) {
+                // Converte "DISCRETE_CONDIZIONI" -> "Discrete condizioni"
+                String valoreCorretto = toDbEnum(oggetto.getCondizione().name());
+                stmt.setString(2, valoreCorretto);
+            } else {
+                stmt.setNull(2, Types.VARCHAR);
+            }
+
+            // 3. Disponibilità (Usa il metodo helper per correggere il formato)
+            if (oggetto.getDisponibilita() != null) {
+                // Converte "DISPONIBILE" -> "Disponibile" (se necessario)
+                String valoreCorretto = toDbEnum(oggetto.getDisponibilita().name());
+                stmt.setString(3, valoreCorretto);
+            } else {
+                stmt.setString(3, "DISPONIBILE");
+            }
+
+            // 4. ID Oggetto
+            stmt.setInt(4, oggetto.getId());
+
+            // Esegui l'aggiornamento
+            int rows = stmt.executeUpdate();
+
+            if (rows > 0) {
+                System.out.println("Oggetto aggiornato con successo nel DB!");
+                return true;
+            } else {
+                System.err.println("Errore: Nessun oggetto trovato con ID " + oggetto.getId());
+                return false;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Controlla la console se vedi errori qui!
+            return false;
+        }
+    }
+
+    // --- METODO FONDAMENTALE DA AGGIUNGERE ---
+    // Questo metodo trasforma "DISCRETE_CONDIZIONI" in "Discrete condizioni"
+// --- VERSIONE DEFINITIVA PER POSTGRESQL (MAIUSCOLO) ---
+    private String toDbEnum(String val) {
+        if (val == null) return null;
+
+        // Esempio: "DISCRETE_CONDIZIONI" (Java) diventa "DISCRETE CONDIZIONI" (DB)
+        // NON usiamo .toLowerCase() perché il tuo DB vuole il MAIUSCOLO.
+        return val.replace("_", " ");
+    }    public boolean associaUtente(int idUtente, int idOggetto) { return true; }
     public boolean rimuoviDaUtente(int idUtente, int idOggetto) { return true; }
     public boolean associaAnnuncio(int idUtente, int idAnnuncio) { return true; }
     public boolean rimuoviDaAnnuncio(int idUtente, int idAannuncio) { return true; }
+
+
 }
