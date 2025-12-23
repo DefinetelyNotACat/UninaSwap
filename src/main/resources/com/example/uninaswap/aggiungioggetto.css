@@ -125,3 +125,20 @@
 .button-danger:hover {
     -fx-background-color: #c82333;
 }
+/* Stile Badge Super Compatto */
+.badge {
+    -fx-padding: 2px 2px;           /* Padding ridotto: più sottile */
+    -fx-background-radius: 12px;    /* Molto arrotondato (pillola) */
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI", sans-serif; /* Forza un font pulito */
+    -fx-font-size: 10px;            /* Scritta piccola ma leggibile */
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-effect: null;               /* Rimuoviamo l'ombra per pulizia (opzionale) */
+}
+
+/* Colori più "pastello" e moderni per la leggibilità */
+.badge-blue { -fx-background-color: #3498db; }
+.badge-green { -fx-background-color: #2ecc71; }
+.badge-red { -fx-background-color: #e74c3c; }
+.badge-orange { -fx-background-color: #f1c40f; }

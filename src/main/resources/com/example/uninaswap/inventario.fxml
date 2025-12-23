@@ -51,7 +51,6 @@
                 <children>
                     <GridPane fx:id="gridInventario" alignment="CENTER" hgap="25.0" vgap="25.0">
                     </GridPane>
-
                     <Text fx:id="testoVuoto" text="Non hai ancora inserito oggetti nel tuo inventario." styleClass="placeholder-text" visible="false" managed="false"/>
                 </children>
                 <padding>

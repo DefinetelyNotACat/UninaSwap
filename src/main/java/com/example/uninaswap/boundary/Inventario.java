@@ -1,5 +1,5 @@
 package com.example.uninaswap.boundary;
-
+import javafx.scene.layout.FlowPane;
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.dao.OggettoDAO;
@@ -19,9 +19,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.control.Label;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,32 +92,80 @@ public class Inventario implements Initializable, GestoreMessaggio {
         card.setAlignment(Pos.CENTER);
         card.setSpacing(10);
         card.getStyleClass().add("inventory-card");
-        card.setPrefSize(250, 320);
-        card.setMinSize(250, 320);
-        card.setMaxSize(250, 320);
+
+        // --- 1. DIMENSIONI DINAMICHE ---
+        card.setPrefWidth(260);
+        card.setMinWidth(260);
+        card.setMaxWidth(260);
+
+        card.setMinHeight(340);
+        card.setPrefHeight(javafx.scene.layout.Region.USE_COMPUTED_SIZE);
+        card.setMaxHeight(Double.MAX_VALUE);
+
+        // --- IMMAGINE (Questa è la parte che mancava!) ---
         ImageView imgView = new ImageView();
-        imgView.setFitWidth(200); imgView.setFitHeight(180); imgView.setPreserveRatio(true);
+        imgView.setFitWidth(220);
+        imgView.setFitHeight(180);
+        imgView.setPreserveRatio(true);
 
         try {
+            // Prende la prima immagine se esiste, altrimenti null
             String path = (obj.getImmagini() != null && !obj.getImmagini().isEmpty()) ? obj.getImmagini().get(0) : null;
+
             if (path != null) {
-                if (path.startsWith("file:") || path.startsWith("http")) imgView.setImage(new Image(path));
-                else imgView.setImage(new Image(new File(path).toURI().toString()));
+                // Gestione file locali o URL web
+                if (path.startsWith("file:") || path.startsWith("http")) {
+                    imgView.setImage(new Image(path));
+                } else {
+                    imgView.setImage(new Image(new File(path).toURI().toString()));
+                }
             } else {
+                // Immagine di default se non ce ne sono
                 imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
             }
         } catch (Exception e) {
+            // Fallback in caso di errore nel caricamento
             imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
         }
 
+        // --- NOME ---
         Text nome = new Text(obj.getNome());
         nome.getStyleClass().add("label");
         nome.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
+        // --- 2. BADGES (FlowPane) ---
+        FlowPane badgeBox = new FlowPane();
+        badgeBox.setAlignment(Pos.CENTER);
+        badgeBox.setHgap(5);
+        badgeBox.setVgap(5);
+        badgeBox.setPrefWrapLength(230);
+
+        // Spilla Condizione
+        String testoCondizione = String.valueOf(obj.getCondizione());
+        Label badgeCondizione = new Label(testoCondizione);
+        badgeCondizione.getStyleClass().addAll("badge", "badge-blue");
+        badgeCondizione.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
+
+        // Spilla Stato
+        String testoStato = String.valueOf(obj.getDisponibilita());
+        Label badgeStato = new Label(testoStato);
+        badgeStato.getStyleClass().add("badge");
+        badgeStato.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
+
+        if ("DISPONIBILE".equalsIgnoreCase(testoStato)) {
+            badgeStato.getStyleClass().add("badge-green");
+        } else if ("SCAMBIATO".equalsIgnoreCase(testoStato) || "ELIMINATO".equalsIgnoreCase(testoStato)) {
+            badgeStato.getStyleClass().add("badge-red");
+        } else {
+            badgeStato.getStyleClass().add("badge-orange");
+        }
+
+        badgeBox.getChildren().addAll(badgeCondizione, badgeStato);
+
+        // --- BOTTONI ---
         HBox btnBox = new HBox(10);
         btnBox.setAlignment(Pos.CENTER);
 
-        // Tasto Modifica con logica di passaggio scena
         Button btnModifica = new Button("Modifica");
         btnModifica.getStyleClass().add("button-small");
         btnModifica.setOnAction(e -> onModificaOggetto(obj, e));
@@ -125,10 +175,10 @@ public class Inventario implements Initializable, GestoreMessaggio {
         btnElimina.setOnAction(e -> onEliminaOggetto(obj));
 
         btnBox.getChildren().addAll(btnModifica, btnElimina);
-        card.getChildren().addAll(imgView, nome, btnBox);
+
+        card.getChildren().addAll(imgView, nome, badgeBox, btnBox);
         return card;
     }
-
     private void onModificaOggetto(Oggetto obj, ActionEvent event) {
         try {
             // Caricamento manuale per passare i dati al controller
