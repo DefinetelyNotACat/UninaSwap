@@ -7,7 +7,6 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
@@ -42,21 +41,21 @@
             </VBox>
 
             <HBox alignment="CENTER_RIGHT" maxWidth="900.0">
+                <padding>
+                    <Insets right="20.0" />
+                </padding>
                 <Button fx:id="btnAggiungiNuovo" text="+ Aggiungi Oggetto" onAction="#onAggiungiNuovoClick" styleClass="button, button-small"/>
             </HBox>
 
             <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
                 <children>
-                    <GridPane fx:id="gridInventario" alignment="CENTER" hgap="20.0" vgap="20.0">
-                        <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        </rowConstraints>
+                    <GridPane fx:id="gridInventario" alignment="CENTER" hgap="25.0" vgap="25.0">
                     </GridPane>
 
                     <Text fx:id="testoVuoto" text="Non hai ancora inserito oggetti nel tuo inventario." styleClass="placeholder-text" visible="false" managed="false"/>
                 </children>
                 <padding>
-                    <Insets bottom="50.0" left="20.0" right="20.0" />
+                    <Insets bottom="50.0" left="20.0" right="20.0" top="10.0"/>
                 </padding>
             </VBox>
 

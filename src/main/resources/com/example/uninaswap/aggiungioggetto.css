@@ -98,3 +98,30 @@
 .combo-box .arrow {
     -fx-cursor: hand;
 }
+
+/* Card stile moderno */
+.inventory-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    /* Ombra leggera per dare profondità */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-padding: 15px;
+}
+
+.inventory-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 6);
+    -fx-cursor: hand;
+    -fx-border-color: #b0b0b0;
+}
+
+/* Pulsante Elimina Rosso */
+.button-danger {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+}
+.button-danger:hover {
+    -fx-background-color: #c82333;
+}

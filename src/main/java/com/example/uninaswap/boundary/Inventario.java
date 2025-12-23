@@ -90,8 +90,9 @@ public class Inventario implements Initializable, GestoreMessaggio {
         card.setAlignment(Pos.CENTER);
         card.setSpacing(10);
         card.getStyleClass().add("inventory-card");
-        card.setPrefSize(250, 300);
-
+        card.setPrefSize(250, 320);
+        card.setMinSize(250, 320);
+        card.setMaxSize(250, 320);
         ImageView imgView = new ImageView();
         imgView.setFitWidth(200); imgView.setFitHeight(180); imgView.setPreserveRatio(true);
 
