@@ -102,7 +102,6 @@ public class Inventario implements Initializable, GestoreMessaggio {
         card.setPrefHeight(javafx.scene.layout.Region.USE_COMPUTED_SIZE);
         card.setMaxHeight(Double.MAX_VALUE);
 
-        // --- IMMAGINE (Questa è la parte che mancava!) ---
         ImageView imgView = new ImageView();
         imgView.setFitWidth(220);
         imgView.setFitHeight(180);
@@ -131,7 +130,7 @@ public class Inventario implements Initializable, GestoreMessaggio {
         // --- NOME ---
         Text nome = new Text(obj.getNome());
         nome.getStyleClass().add("label");
-        nome.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+        nome.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
 
         // --- 2. BADGES (FlowPane) ---
         FlowPane badgeBox = new FlowPane();

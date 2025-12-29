@@ -200,50 +200,81 @@ public class OggettoDAO implements GestoreOggettoDAO {
     // Metodi da implementare se servono
     @Override
     public boolean modificaOggetto(Oggetto oggetto) {
-        // SQL: Aggiorna nome, condizione e disponibilità
-        String sql = "UPDATE OGGETTO SET nome = ?, condizione = ?::condizione_oggetto, disponibilita = ?::disponibilita_oggetto WHERE id = ?";
+        // 1. Query per i dati testuali dell'oggetto
+        String sqlUpdateOggetto = "UPDATE OGGETTO SET nome = ?, condizione = ?::condizione_oggetto, disponibilita = ?::disponibilita_oggetto WHERE id = ?";
 
-        try (Connection conn = PostgreSQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        try {
+            conn = PostgreSQLConnection.getConnection();
+            conn.setAutoCommit(false); // --- INIZIO TRANSAZIONE ---
 
-            // 1. Nome
-            stmt.setString(1, oggetto.getNome());
+            // A. AGGIORNAMENTO DATI BASE (Nome, Condizione, Disp)
+            try (PreparedStatement stmt = conn.prepareStatement(sqlUpdateOggetto)) {
+                stmt.setString(1, oggetto.getNome());
 
-            // 2. Condizione (Usa il metodo helper per correggere il formato)
-            if (oggetto.getCondizione() != null) {
-                // Converte "DISCRETE_CONDIZIONI" -> "Discrete condizioni"
-                String valoreCorretto = toDbEnum(oggetto.getCondizione().name());
-                stmt.setString(2, valoreCorretto);
-            } else {
-                stmt.setNull(2, Types.VARCHAR);
+                // Condizione
+                if (oggetto.getCondizione() != null) {
+                    stmt.setString(2, toDbEnum(oggetto.getCondizione().name()));
+                } else {
+                    stmt.setNull(2, Types.VARCHAR);
+                }
+
+                // Disponibilità
+                if (oggetto.getDisponibilita() != null) {
+                    stmt.setString(3, toDbEnum(oggetto.getDisponibilita().name()));
+                } else {
+                    stmt.setString(3, "DISPONIBILE");
+                }
+
+                stmt.setInt(4, oggetto.getId());
+
+                int rows = stmt.executeUpdate();
+                if (rows == 0) {
+                    throw new SQLException("Nessun oggetto trovato con ID: " + oggetto.getId());
+                }
             }
 
-            // 3. Disponibilità (Usa il metodo helper per correggere il formato)
-            if (oggetto.getDisponibilita() != null) {
-                // Converte "DISPONIBILE" -> "Disponibile" (se necessario)
-                String valoreCorretto = toDbEnum(oggetto.getDisponibilita().name());
-                stmt.setString(3, valoreCorretto);
-            } else {
-                stmt.setString(3, "DISPONIBILE");
+            // B. GESTIONE CATEGORIE (Cancella vecchie -> Inserisci nuova)
+            // 1. Cancella
+            oggettoCategoriaDAO.eliminaCategoriePerOggetto(conn, oggetto.getId());
+
+            // 2. Inserisci (se l'oggetto ha categorie selezionate)
+            if (oggetto.getCategorie() != null && !oggetto.getCategorie().isEmpty()) {
+                // Assicurati che il metodo associaCategorie accetti la Connection 'conn' aperta!
+                oggettoCategoriaDAO.associaCategorie(conn, oggetto.getId(), oggetto.getCategorie());
             }
 
-            // 4. ID Oggetto
-            stmt.setInt(4, oggetto.getId());
+            // C. GESTIONE IMMAGINI (Cancella vecchie -> Inserisci nuove)
+            // 1. Cancella
+            immagineDAO.eliminaImmaginiPerOggetto(conn, oggetto.getId());
 
-            // Esegui l'aggiornamento
-            int rows = stmt.executeUpdate();
-
-            if (rows > 0) {
-                System.out.println("Oggetto aggiornato con successo nel DB!");
-                return true;
-            } else {
-                System.err.println("Errore: Nessun oggetto trovato con ID " + oggetto.getId());
-                return false;
+            // 2. Inserisci
+            if (oggetto.getImmagini() != null && !oggetto.getImmagini().isEmpty()) {
+                // Assicurati che inserisciImmaginiBatch accetti la Connection 'conn' aperta!
+                immagineDAO.inserisciImmaginiBatch(conn, oggetto.getId(), oggetto.getImmagini());
             }
+
+            conn.commit(); // --- CONFERMA TUTTO ---
+            System.out.println("Oggetto (Dati, Categorie, Immagini) aggiornato con successo!");
+            return true;
 
         } catch (SQLException e) {
-            e.printStackTrace(); // Controlla la console se vedi errori qui!
+            e.printStackTrace();
+            // Se qualcosa va storto, annulla tutto
+            if (conn != null) {
+                try {
+                    System.err.println("Rollback eseguito per errore: " + e.getMessage());
+                    conn.rollback();
+                } catch (SQLException ex) { ex.printStackTrace(); }
+            }
             return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 

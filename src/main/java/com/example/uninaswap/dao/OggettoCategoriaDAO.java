@@ -132,4 +132,5 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
             stmt.executeUpdate();
         }
     }
+
 }
