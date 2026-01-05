@@ -56,7 +56,7 @@
 
 /* Opzionale: cambia colore quando passi sopra una voce */
 .choice-box .menu-item:focused {
-    -fx-background-color: #f0f0f0;
+    -fx-background-color: #0665e3;
 }
 
 /* La manina quando passi sopra la scatola chiusa */
