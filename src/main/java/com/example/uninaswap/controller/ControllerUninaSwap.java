@@ -159,7 +159,7 @@ public class ControllerUninaSwap {
         return passwordEncoder.encode(password);
     }
     public boolean checkPassword(String password, String passwordHashata) {
-        return passwordEncoder.matches(password, passwordHashata);
+       return passwordEncoder.matches(password, passwordHashata);
     }
     public void popolaDB() throws Exception {
         PopolaDBPostgreSQL.creaDB();
@@ -195,10 +195,15 @@ public class ControllerUninaSwap {
         CategoriaDAO categoriaDAO = new CategoriaDAO();
         return categoriaDAO.OttieniCategorie();
     }
-    public ArrayList <String> getCondizioni(){
+    public ArrayList<Oggetto.CONDIZIONE> getCondizioni() {
         CondizioneDAO condizioneDAO = new CondizioneDAO();
         return condizioneDAO.ottieniTutteCondizioni();
     }
+    public ArrayList <Sede> getSedi(){
+        SedeDAO sediDAO = new SedeDAO();
+        return sediDAO.OttieniSedi();
+    }
+
 }
 
 

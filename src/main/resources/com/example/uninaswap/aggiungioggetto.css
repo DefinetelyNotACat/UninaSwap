@@ -1,0 +1,144 @@
+.form-field .list-view {
+    -fx-background-color: #ffffff;
+}
+
+.form-field .list-view .list-cell {
+    -fx-text-fill: #333333;
+    -fx-padding: 8px 10px;
+    -fx-cursor: hand;
+}
+
+.form-field .list-view .list-cell:filled:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: #0056b3;
+}
+
+.form-field .list-view .list-cell:filled:selected,
+.form-field .list-view .list-cell:filled:selected:hover {
+    -fx-background-color: #0056b3;
+    -fx-text-fill: white;
+}
+
+
+.form-field .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+}
+
+.image-preview-box {
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5px;
+    -fx-padding: 5px;
+    -fx-background-color: white;
+}
+
+.button-remove {
+    -fx-background-color: #ff0101;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-cursor: hand;
+    -fx-background-radius: 3px;
+}
+
+.button-remove:hover {
+    -fx-background-color: #cc0000;
+}
+
+.image-card {
+    -fx-padding: 5px;
+    -fx-background-color: transparent;
+}
+
+
+.button.button-remove {
+    -fx-background-color: #ff0101;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-cursor: hand;
+    -fx-background-radius: 3px;
+    -fx-min-width: 30px;
+    -fx-min-height: 30px;
+    -fx-padding: 0;
+}
+
+.button.button-remove:hover {
+    -fx-background-color: #cc0000;
+}
+.context-menu .menu-item {
+    -fx-cursor: hand;
+}
+
+.context-menu .menu-item > .label {
+    -fx-cursor: hand;
+}
+/* Cursor HAND sul popup del ComboBox */
+.combo-box-popup .list-view {
+    -fx-cursor: hand;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-cursor: hand;
+}
+
+/* Hover incluso */
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-cursor: hand;
+}
+
+.combo-box {
+    -fx-cursor: hand;
+}
+
+.combo-box .arrow-button {
+    -fx-cursor: hand;
+}
+
+.combo-box .arrow {
+    -fx-cursor: hand;
+}
+
+/* Card stile moderno */
+.inventory-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    /* Ombra leggera per dare profondità */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-padding: 15px;
+}
+
+.inventory-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 6);
+    -fx-cursor: hand;
+    -fx-border-color: #b0b0b0;
+}
+
+/* Pulsante Elimina Rosso */
+.button-danger {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+}
+.button-danger:hover {
+    -fx-background-color: #c82333;
+}
+/* Stile Badge Super Compatto */
+.badge {
+    -fx-padding: 2px 2px;           /* Padding ridotto: più sottile */
+    -fx-background-radius: 12px;    /* Molto arrotondato (pillola) */
+    -fx-text-fill: white;
+    -fx-font-family: "Segoe UI", sans-serif; /* Forza un font pulito */
+    -fx-font-size: 10px;            /* Scritta piccola ma leggibile */
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-effect: null;               /* Rimuoviamo l'ombra per pulizia (opzionale) */
+}
+
+/* Colori più "pastello" e moderni per la leggibilità */
+.badge-blue { -fx-background-color: #3498db; }
+.badge-green { -fx-background-color: #2ecc71; }
+.badge-red { -fx-background-color: #e74c3c; }
+.badge-orange { -fx-background-color: #f1c40f; }

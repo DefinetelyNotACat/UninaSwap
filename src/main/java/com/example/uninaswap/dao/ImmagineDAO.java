@@ -51,4 +51,13 @@ public class ImmagineDAO {
         }
         return lista;
     }
+    public void eliminaImmaginiPerOggetto(Connection conn, int idOggetto) throws SQLException {
+        // ATTENZIONE: Controlla il nome della tabella e della colonna
+        String sql = "DELETE FROM IMMAGINE WHERE oggetto_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idOggetto);
+            stmt.executeUpdate();
+        }
+    }
 }

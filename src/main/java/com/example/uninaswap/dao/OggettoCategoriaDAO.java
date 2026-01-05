@@ -120,4 +120,17 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
     public void salvaListaCategorie(Connection conn, int idOggetto, ArrayList<Categoria> categorie) throws SQLException {
 
     }
+
+    public void eliminaCategoriePerOggetto(Connection conn, int idOggetto) throws SQLException {
+        // Assumo che la tabella di collegamento si chiami OGGETTO_CATEGORIA
+        // e abbia colonne 'oggetto_id' e 'categoria_nome' (o 'categoria_id').
+        // Adatta i nomi se nel tuo DB sono diversi!
+        String sql = "DELETE FROM OGGETTO_CATEGORIA WHERE oggetto_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idOggetto);
+            stmt.executeUpdate();
+        }
+    }
+
 }

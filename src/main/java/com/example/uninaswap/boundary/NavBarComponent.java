@@ -103,8 +103,8 @@ public class NavBarComponent {
             try {
                 Stage stage = (Stage) fotoProfilo.getScene().getWindow();
                 gestoreScene.CambiaScena(
-                        Costanti.pathAggiungiOggetto, // Assicurati di avere questa costante o metti la stringa del path
-                        Costanti.aggiungiOggetto,
+                        Costanti.pathInventario,
+                        Costanti.inventario,
                         stage
                 );
             } catch (Exception e) {
