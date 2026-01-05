@@ -81,7 +81,7 @@ public class SedeDAO implements GestoreSedeDAO {
 
             while (rs.next()) {
                 Sede sede = new Sede(
-                        rs.getString("nomeSede"),
+                        rs.getString("nome_sede"),
                         rs.getString("indirizzo")
                 );
                 sede.setId(rs.getInt("id"));

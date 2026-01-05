@@ -48,27 +48,53 @@ public class NavBarComponent {
             boolean caricato = false;
 
             if (utente != null && utente.getPathImmagineProfilo() != null) {
-                File fileImmagine = new File(utente.getPathImmagineProfilo());
-                if (fileImmagine.exists()) {
-                    Image image = new Image(fileImmagine.toURI().toString());
-                    fotoProfilo.setImage(image);
-                    centraImmagine(fotoProfilo, image);
-                    caricato = true;
+                String pathDalDb = utente.getPathImmagineProfilo();
+
+                // 1. Definiamo i percorsi di default
+                boolean isDefault = pathDalDb.trim().isEmpty() || pathDalDb.equals("default");
+
+                if (!isDefault) {
+                    // 2. Costruiamo il percorso corretto includendo "dati_utenti"
+                    String BASE_PATH = System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator;
+                    File fileImmagine;
+
+                    // Gestione caso percorso assoluto (se esiste) vs relativo
+                    if (pathDalDb.contains(File.separator) && (pathDalDb.contains(":") || pathDalDb.startsWith("/"))) {
+                        fileImmagine = new File(pathDalDb);
+                    } else {
+                        fileImmagine = new File(BASE_PATH + pathDalDb);
+                    }
+
+                    // 3. Verifica esistenza
+                    if (fileImmagine.exists()) {
+                        Image image = new Image(fileImmagine.toURI().toString());
+                        fotoProfilo.setImage(image);
+                        centraImmagine(fotoProfilo, image);
+                        caricato = true;
+                    } else {
+                        System.out.println("NavBar: Immagine non trovata a path: " + fileImmagine.getAbsolutePath());
+                    }
                 }
             }
 
+            // 4. Fallback se non abbiamo caricato nulla o è default
             if (!caricato) {
+                // Assicurati che questo path sia corretto per le tue risorse
                 Image defaultImg = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
-                fotoProfilo.setImage(defaultImg);
-                centraImmagine(fotoProfilo, defaultImg);
+                // Se l'immagine nel jar ha un nome diverso (es: immagine_di_profilo_default.jpg), correggi la riga sopra
+
+                if (defaultImg != null) {
+                    fotoProfilo.setImage(defaultImg);
+                    centraImmagine(fotoProfilo, defaultImg);
+                }
             }
+
             applicaCerchio();
 
         } catch (Exception e) {
             System.err.println("Errore caricamento foto profilo navbar: " + e.getMessage());
         }
-    }
-    private void centraImmagine(ImageView imageView, Image img) {
+    }    private void centraImmagine(ImageView imageView, Image img) {
         if (img == null) return;
         double width = img.getWidth();
         double height = img.getHeight();
@@ -103,8 +129,8 @@ public class NavBarComponent {
             try {
                 Stage stage = (Stage) fotoProfilo.getScene().getWindow();
                 gestoreScene.CambiaScena(
-                        Costanti.pathAggiungiOggetto, // Assicurati di avere questa costante o metti la stringa del path
-                        Costanti.aggiungiOggetto,
+                        Costanti.pathInventario,
+                        Costanti.inventario,
                         stage
                 );
             } catch (Exception e) {

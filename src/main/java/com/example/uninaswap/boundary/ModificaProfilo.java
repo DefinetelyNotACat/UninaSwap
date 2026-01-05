@@ -303,16 +303,39 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
 
     private void caricaImmagineProfilo() {
         try {
-            String p = profiloUtente.getPathImmagineProfilo();
+            String pathDalDb = profiloUtente.getPathImmagineProfilo();
             Image img = null;
-            if (p == null || p.contains("default") || p.isEmpty()) {
-                URL res = getClass().getResource("/com/example/uninaswap/images/immagineProfiloDefault.jpg");
+
+            // CORREZIONE QUI: Aggiungiamo "dati_utenti" al percorso base
+            String BASE_PATH = System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator;
+
+            // DEBUG: Vediamo cosa stiamo costruendo
+            System.out.println("Base Path impostato a: " + BASE_PATH);
+
+            boolean isDefault = pathDalDb == null || pathDalDb.trim().isEmpty() || pathDalDb.equals("default");
+
+            if (isDefault) {
+                URL res = getClass().getResource("/com/example/uninaswap/images/immagine_di_profilo_default.jpg");
                 if (res != null) img = new Image(res.toExternalForm());
             } else {
-                File f = new File(p);
-                if (f.exists()) img = new Image(f.toURI().toString());
+                // Costruiamo il file unendo Base + PathDB
+                File f = new File(BASE_PATH + pathDalDb);
+
+                System.out.println("Tento di caricare da: " + f.getAbsolutePath());
+
+                if (f.exists()) {
+                    img = new Image(f.toURI().toString());
+                } else {
+                    System.out.println("File non trovato! Carico default.");
+                    URL res = getClass().getResource("/com/example/uninaswap/images/immagine_di_profilo_default.jpg");
+                    if (res != null) img = new Image(res.toExternalForm());
+                }
             }
-            if (img != null) impostaImmagineCircolare(img);
+
+            if (img != null) {
+                impostaImmagineCircolare(img);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
