@@ -35,5 +35,41 @@
     -fx-background-color: #ffeef0;
 }
 
+/* Questo stile si applica alla ChoiceBox principale quando è chiusa */
+.choice-box {
+    -fx-cursor: hand;
+}
 
+/* Questo stile si applica al testo visualizzato dentro la box */
+.choice-box .label {
+    -fx-cursor: hand;
+}
 
+/* Questo stile è FONDAMENTALE per le voci del menu a tendina quando si apre */
+.choice-box .context-menu {
+    -fx-cursor: hand;
+}
+
+.choice-box .menu-item {
+    -fx-cursor: hand;
+}
+
+/* Opzionale: cambia colore quando passi sopra una voce */
+.choice-box .menu-item:focused {
+    -fx-background-color: #f0f0f0;
+}
+
+/* La manina quando passi sopra la scatola chiusa */
+.choice-box {
+    -fx-cursor: hand;
+}
+
+/* La manina sulle scritte interne */
+.choice-box .label {
+    -fx-cursor: hand;
+}
+
+/* La manina sulle voci del menu quando si apre */
+.context-menu .menu-item {
+    -fx-cursor: hand;
+}
