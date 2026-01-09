@@ -327,7 +327,7 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
                     img = new Image(f.toURI().toString());
                 } else {
                     System.out.println("File non trovato! Carico default.");
-                    URL res = getClass().getResource("/com/example/uninaswap/images/immagine_di_profilo_default.jpg");
+                    URL res = getClass().getResource("/com/example/uninaswap/images/ImmagineProfiloDefault.jpg");
                     if (res != null) img = new Image(res.toExternalForm());
                 }
             }

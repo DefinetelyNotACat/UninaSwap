@@ -113,13 +113,7 @@
                 @Override
                 public void initialize(URL url, ResourceBundle resourceBundle) {
                   this.controllerUninaSwap = ControllerUninaSwap.getInstance();
-                // try {
-                //     controllerUninaSwap.cancellaDB();
-                //     controllerUninaSwap.popolaDB();
-                // } catch (Exception e) {
-                //     throw new RuntimeException(e);
-                // }
-
+                  // eliminaecreaDB();
                     // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
                     if (profileImageView != null) {
                         javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(
@@ -358,5 +352,15 @@
                     if (notificaController != null) {
                         notificaController.mostraMessaggio(testo, tipo);
                     }
+                }
+                private void eliminaecreaDB(){
+
+                     try {
+                        controllerUninaSwap.cancellaDB();
+                        controllerUninaSwap.popolaDB();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
                 }
             }
