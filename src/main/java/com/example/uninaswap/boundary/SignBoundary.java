@@ -95,7 +95,7 @@
                     }
                 }
                 private void accediUtente() throws Exception {
-                    String email = emailField.getText();
+                    String email = emailField.getText().trim().toLowerCase();
                     String password = passwordField.getText();
                     controllerUninaSwap.accediUtente(email, password);
                 }
@@ -193,7 +193,7 @@
                     String username = usernameField.getText();
                     String password = passwordField.getText();
                     String matricola = matricolaField.getText();
-                    String email = emailField.getText();
+                    String email = emailField.getText().trim().toLowerCase();
                     // Ho fatto che la registrazione utente prevede nel costruttore come path di base per l'immagine quella di default
                     System.out.println("immagine profilo a path: " + pathImmagine);
                     try {
