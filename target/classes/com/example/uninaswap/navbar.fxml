@@ -19,7 +19,7 @@
 
             <ChoiceBox fx:id="filtroBarraDiRicerca" prefWidth="120" />
 
-            <TextField fx:id="barraDiRicerca"  promptText="Cerca..." HBox.hgrow="ALWAYS" />
+            <TextField fx:id="barraDiRicerca"  promptText="Cerca..." prefWidth="450" HBox.hgrow="ALWAYS" />
 
             <Button fx:id="bottonePubblicaAnnuncio" text="Cerca" />
 
