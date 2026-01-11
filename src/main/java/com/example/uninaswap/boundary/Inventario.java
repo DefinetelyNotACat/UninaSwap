@@ -131,6 +131,8 @@ public class Inventario implements Initializable, GestoreMessaggio {
         Text nome = new Text(obj.getNome());
         nome.getStyleClass().add("label");
         nome.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+        nome.setWrappingWidth(230); // Impedisce al testo di uscire dalla card (260px - padding)
+        nome.setTextAlignment(javafx.scene.text.TextAlignment.CENTER); // Mantiene il testo centrato se va a capo
 
         // --- 2. BADGES (FlowPane) ---
         FlowPane badgeBox = new FlowPane();
