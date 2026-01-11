@@ -14,8 +14,9 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.control.MenuButton?>
 <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.AggiungiOggetto"
-stylesheets="@inventario.css, @sign.css">
+            stylesheets="@inventario.css, @sign.css">
     <content>
         <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="myPadding">
 
@@ -55,9 +56,9 @@ stylesheets="@inventario.css, @sign.css">
                     </VBox>
                     <VBox spacing="5" alignment="CENTER">
                         <children>
-                            <Text styleClass="label" text="Categoria" />
-                            <ComboBox fx:id="categoriaBox" maxWidth="Infinity" promptText="Seleziona una categoria" styleClass="form-field" />
-                            <Text fx:id="erroreCategoria" managed="false" styleClass="error-text" text="Selezionare una categoria" visible="false" />
+                            <Text styleClass="label" text="Categorie (Selezione Multipla)" />
+                            <MenuButton fx:id="categorieMenuButton" maxWidth="Infinity" text="Seleziona categorie" styleClass="form-field" />
+                            <Text fx:id="erroreCategoria" managed="false" styleClass="error-text" text="Selezionare almeno una categoria" visible="false" />
                         </children>
                     </VBox>
 
