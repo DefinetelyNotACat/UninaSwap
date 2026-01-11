@@ -142,7 +142,7 @@ public class Inventario implements Initializable, GestoreMessaggio {
         // Spilla Condizione
         String testoCondizione = String.valueOf(obj.getCondizione());
         Label badgeCondizione = new Label(testoCondizione);
-        badgeCondizione.getStyleClass().addAll("badge", "badge-blue");
+        badgeCondizione.getStyleClass().addAll("badge", "badge-violet");
         badgeCondizione.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
 
         // Spilla Stato

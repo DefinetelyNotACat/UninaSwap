@@ -11,7 +11,7 @@
 
     <Label fx:id="bannerIcon" styleClass="banner-icon"/>
 
-    <Label fx:id="bannerLabel" text="Messaggio..." HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    <Label fx:id="bannerLabel" text="Messaggio..."/>
 
     <Button text="✕" onAction="#chiudiBanner" styleClass="banner-close-button"/>
 

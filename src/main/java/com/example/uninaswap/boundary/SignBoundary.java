@@ -95,7 +95,7 @@
                     }
                 }
                 private void accediUtente() throws Exception {
-                    String email = emailField.getText();
+                    String email = emailField.getText().trim().toLowerCase();
                     String password = passwordField.getText();
                     controllerUninaSwap.accediUtente(email, password);
                 }
@@ -113,8 +113,8 @@
                 @Override
                 public void initialize(URL url, ResourceBundle resourceBundle) {
                   this.controllerUninaSwap = ControllerUninaSwap.getInstance();
-                  //eliminaeRicreaDB();
-                   // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
+                  // eliminaecreaDB();
+                    // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
                     if (profileImageView != null) {
                         javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(
                                 profileImageView.getFitWidth() / 2,
@@ -193,7 +193,7 @@
                     String username = usernameField.getText();
                     String password = passwordField.getText();
                     String matricola = matricolaField.getText();
-                    String email = emailField.getText();
+                    String email = emailField.getText().trim().toLowerCase();
                     // Ho fatto che la registrazione utente prevede nel costruttore come path di base per l'immagine quella di default
                     System.out.println("immagine profilo a path: " + pathImmagine);
                     try {
@@ -353,12 +353,14 @@
                         notificaController.mostraMessaggio(testo, tipo);
                     }
                 }
-                private  void eliminaeRicreaDB(){
-                    try {
+                private void eliminaecreaDB(){
+
+                     try {
                         controllerUninaSwap.cancellaDB();
                         controllerUninaSwap.popolaDB();
                     } catch (Exception e) {
-                         throw new RuntimeException(e);
+                        throw new RuntimeException(e);
                     }
+
                 }
             }

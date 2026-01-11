@@ -5,6 +5,7 @@ import com.example.uninaswap.entity.Utente;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -28,8 +29,18 @@ public class NavBarComponent {
     private final GestoreScene gestoreScene = new GestoreScene();
     @FXML
     public void initialize() {
+
+        filtroBarraDiRicerca.setCursor(Cursor.HAND);
+
+        Label lblArticoli = new Label("Articoli");
+        lblArticoli.setCursor(Cursor.HAND); // Imposta la manina
+
+        Label lblUtenti = new Label("Utenti");
+        lblUtenti.setCursor(Cursor.HAND); // Imposta la manina
+        // Aggiungiamo le Label alla ChoiceBox
         filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
         filtroBarraDiRicerca.setValue("Articoli");
+
         try {
             Image logoImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png"));
             logo.setImage(logoImage);

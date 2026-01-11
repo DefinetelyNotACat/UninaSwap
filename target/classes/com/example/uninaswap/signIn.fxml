@@ -60,7 +60,7 @@
                                 <children>
                                     <Text text="Password" styleClass="label"/>
                                     <PasswordField fx:id="passwordField" promptText="Password" styleClass="form-field"/>
-                                    <Text text="Inserire una password corretta (almeno 8 caratteri massimo 20, almeno 1 maiuscola, almeno 1 minuscola, almeno 1 numero)"
+                                    <Text text="Inserire una password corretta (almeno 8 caratteri massimo 25, almeno 1 maiuscola, almeno 1 minuscola, almeno 1 numero)"
                                           fx:id="errorePassword" styleClass="error-text" visible="false" managed="false"/>
                                 </children>
                             </VBox>

@@ -117,6 +117,7 @@ public class ControllerUninaSwap {
             String username, String password, String matricola, String email
             ){
         try{
+            email = email.toLowerCase().trim();
             password = passwordEncoder.encode(password);
             this.utente = new Utente(username, password, matricola, email);
             utenteDAO.salvaUtente(utente);
@@ -132,6 +133,7 @@ public class ControllerUninaSwap {
 
     }
     public void accediUtente(String email, String password) throws Exception {
+        email = email.toLowerCase().trim();
         Utente utenteTrovato = utenteDAO.ottieniUtente(email);
         if (utenteTrovato == null) {
             throw new Exception("Credenziali Errate! Utente non trovato");

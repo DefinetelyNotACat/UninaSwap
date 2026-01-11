@@ -89,6 +89,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
 
         // 1. Decidiamo la query in base al contenuto della stringa
         if (campoRicerca.contains("@")) {
+            campoRicerca = campoRicerca.toLowerCase();
             sql = "SELECT * FROM utente WHERE email = ?";
         } else {
             sql = "SELECT * FROM utente WHERE matricola = ?";
@@ -139,7 +140,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
 
     public boolean verificaEsistenzaAltroUtente(String username, String emailDaEscludere, String matricola) {
         String sql = "SELECT COUNT(*) FROM utente WHERE (username = ? OR matricola = ?) AND email <> ?";
-
+        emailDaEscludere = emailDaEscludere.toLowerCase();
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
 
