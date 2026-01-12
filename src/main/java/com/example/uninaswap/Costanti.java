@@ -23,4 +23,6 @@ public class Costanti {
     public static final String PRICE_REGEX = "^[0-9]+([.,][0-9]{1,2})?$";
     public static final String TIME_REGEX = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
     public static final String inventario = "il mio inventario";
+    public static final String pathCreaAnnuncio = "/com/example/uninaswap/aggiungiAnnuncio.fxml";
+
 }

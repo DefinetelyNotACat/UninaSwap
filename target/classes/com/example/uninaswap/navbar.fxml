@@ -24,7 +24,7 @@
             <Button fx:id="bottonePubblicaAnnuncio" text="Cerca" />
 
             <ImageView fx:id="fotoProfilo" styleClass="profile-picture" fitHeight="36.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true" />
-
+            <Button fx:id="bottoneAggiungiAnnuncio" text="Pubblica Annuncio"/>
         </HBox>
     </top>
 </BorderPane>

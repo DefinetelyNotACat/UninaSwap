@@ -18,10 +18,10 @@ import javafx.stage.Stage;
 
 public class NavBarComponent {
 
+    @FXML private Button bottoneAggiungiAnnuncio;
     @FXML private ChoiceBox<String> filtroBarraDiRicerca;
     @FXML private TextField barraDiRicerca;
     @FXML private ImageView fotoProfilo;
-    @FXML private Button bottonePubblicaAnnuncio;
     @FXML private ImageView logo;
     private ContextMenu menuProfilo;
     private PauseTransition hideDelay;
@@ -29,6 +29,11 @@ public class NavBarComponent {
     private final GestoreScene gestoreScene = new GestoreScene();
     @FXML
     public void initialize() {
+        bottoneAggiungiAnnuncio.setOnAction(event ->{
+             GestoreScene gestoreScene = new GestoreScene();
+             gestoreScene.CambiaScena(Costanti.pathCreaAnnuncio, "prova", event);
+        });
+
 
         filtroBarraDiRicerca.setCursor(Cursor.HAND);
 
