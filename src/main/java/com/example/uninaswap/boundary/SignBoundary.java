@@ -1,5 +1,4 @@
             package com.example.uninaswap.boundary;
-
             import com.example.uninaswap.controller.ControllerUninaSwap;
             import com.example.uninaswap.Costanti;
             import com.example.uninaswap.interfaces.GestoreMessaggio;
@@ -354,13 +353,11 @@
                     }
                 }
                 private void eliminaecreaDB(){
-
                      try {
                         controllerUninaSwap.cancellaDB();
                         controllerUninaSwap.popolaDB();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-
                 }
             }
