@@ -1,10 +1,11 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.Costanti; // Import delle costanti
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Sede;
 import com.example.uninaswap.entity.Utente;
-import com.example.uninaswap.entity.Annuncio; // Assicurati di avere l'import per l'entity Annuncio
+import com.example.uninaswap.entity.Annuncio;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -67,9 +68,6 @@ public class AggiungiAnnuncio {
     private final BooleanProperty prezziValidiProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty orariValidiProperty = new SimpleBooleanProperty(false);
 
-    private static final String TIME_REGEX = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
-    private static final String PRICE_REGEX = "^[0-9]+([.,][0-9]{1,2})?$";
-
     // =================================================================================
     // INITIALIZATION
     // =================================================================================
@@ -92,13 +90,10 @@ public class AggiungiAnnuncio {
     }
 
     private void caricaInventarioUtente() {
-        // 1. Pulizia preventiva del contenitore
         contenitoreOggetti.getChildren().clear();
-
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         try {
             Utente utenteCorrente = controller.getUtente();
-            // Allineato al nome metodo del tuo Controller
             List<Oggetto> oggettiReali = controller.OttieniOggetti(utenteCorrente);
 
             if (oggettiReali == null || oggettiReali.isEmpty()) {
@@ -108,21 +103,17 @@ public class AggiungiAnnuncio {
                 return;
             }
 
-            // 2. Popolamento con dati reali
             for (Oggetto obj : oggettiReali) {
                 CheckBox cb = new CheckBox(obj.getNome());
-                cb.setUserData(obj); // Salva l'oggetto per recuperarlo in fase di pubblicazione
+                cb.setUserData(obj);
                 cb.setStyle("-fx-font-size: 14px; -fx-text-fill: #333;");
                 cb.selectedProperty().addListener((obs, oldVal, newVal) -> aggiornaStatoOggetti());
-
                 contenitoreOggetti.getChildren().add(cb);
             }
         } catch (Exception e) {
             System.err.println("Errore caricamento oggetti: " + e.getMessage());
             contenitoreOggetti.getChildren().add(new Text("Errore nel caricamento dell'inventario."));
         }
-
-        // RIMOSSA LA SEZIONE MOCK CHE SOVRASCRIVEVA TUTTO
     }
 
     /**
@@ -130,9 +121,10 @@ public class AggiungiAnnuncio {
      */
     private void setupValidazioneRealTime() {
 
+        // 1. Binding con validazione tramite FIELDS_REGEX
         BooleanBinding descrizioneValida = Bindings.createBooleanBinding(() -> {
             String txt = descrizioneAnnuncioArea.getText();
-            return txt != null && !txt.trim().isEmpty();
+            return txt != null && txt.matches(Costanti.FIELDS_REGEX); // Controllo Regex
         }, descrizioneAnnuncioArea.textProperty());
 
         BooleanBinding sedeValida = sedeBox.valueProperty().isNotNull();
@@ -146,10 +138,11 @@ public class AggiungiAnnuncio {
                 .or(radioScambio.selectedProperty())
                 .or(radioRegalo.selectedProperty());
 
-        // Listeners Real-Time
-        descrizioneAnnuncioArea.textProperty().addListener((obs, oldVal, newVal) ->
-                gestisciErroreGenerico(descrizioneAnnuncioArea, erroreDescrizione, !newVal.trim().isEmpty())
-        );
+        // 2. Listeners Real-Time aggiornato con FIELDS_REGEX
+        descrizioneAnnuncioArea.textProperty().addListener((obs, oldVal, newVal) -> {
+            // Se non rispetta la regex, mostra l'errore visivo
+            gestisciErroreGenerico(descrizioneAnnuncioArea, erroreDescrizione, newVal.matches(Costanti.FIELDS_REGEX));
+        });
 
         sedeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
@@ -180,7 +173,7 @@ public class AggiungiAnnuncio {
             if (radioScambio.isSelected()) gestisciErroreGenerico(desideriScambioArea, erroreScambio, !newVal.trim().isEmpty());
         });
 
-        // Logica finale pulsante
+        // 3. Logica finale pulsante
         BooleanBinding sezioneSpecificaValida = Bindings.createBooleanBinding(() -> {
             if (radioVendita.isSelected()) return prezziValidiProperty.get();
             if (radioScambio.isSelected()) return scambioValido.get();
@@ -199,7 +192,7 @@ public class AggiungiAnnuncio {
     }
 
     // =================================================================================
-    // VALIDATION METHODS
+    // VALIDATION METHODS (Utilizzano ora le Regex di Costanti.java)
     // =================================================================================
 
     private void validaOrari() {
@@ -211,13 +204,13 @@ public class AggiungiAnnuncio {
         boolean erroreRilevato = false;
 
         if (!inizioVuoto) {
-            impostaStile(orarioInizioField, inizio.matches(TIME_REGEX));
-            if (!inizio.matches(TIME_REGEX)) erroreRilevato = true;
+            impostaStile(orarioInizioField, inizio.matches(Costanti.TIME_REGEX));
+            if (!inizio.matches(Costanti.TIME_REGEX)) erroreRilevato = true;
         } else resetStiliCampo(orarioInizioField, null);
 
         if (!fineVuota) {
-            impostaStile(orarioFineField, fine.matches(TIME_REGEX));
-            if (!fine.matches(TIME_REGEX)) erroreRilevato = true;
+            impostaStile(orarioFineField, fine.matches(Costanti.TIME_REGEX));
+            if (!fine.matches(Costanti.TIME_REGEX)) erroreRilevato = true;
         } else resetStiliCampo(orarioFineField, null);
 
         if (!erroreRilevato && !inizioVuoto && !fineVuota) {
@@ -246,8 +239,8 @@ public class AggiungiAnnuncio {
     private void validaPrezzi() {
         String pRichiestoStr = prezzoField.getText();
         String pMinStr = prezzoMinField.getText();
-        boolean pRichiestoSintassiOk = pRichiestoStr != null && pRichiestoStr.matches(PRICE_REGEX);
-        boolean pMinSintassiOk = pMinStr == null || pMinStr.isEmpty() || pMinStr.matches(PRICE_REGEX);
+        boolean pRichiestoSintassiOk = pRichiestoStr != null && pRichiestoStr.matches(Costanti.PRICE_REGEX);
+        boolean pMinSintassiOk = pMinStr == null || pMinStr.isEmpty() || pMinStr.matches(Costanti.PRICE_REGEX);
 
         boolean logicaOk = true;
         String messaggioErrore = "Inserire un prezzo valido";
@@ -283,7 +276,7 @@ public class AggiungiAnnuncio {
     }
 
     // =================================================================================
-    // EVENT HANDLERS
+    // EVENT HANDLERS & HELPERS
     // =================================================================================
 
     @FXML
@@ -308,17 +301,12 @@ public class AggiungiAnnuncio {
     public void onPubblicaClick(ActionEvent actionEvent) {
         List<Oggetto> selezionati = ottieniOggettiSelezionati();
         System.out.println("Pubblicazione annuncio con " + selezionati.size() + " oggetti.");
-        // Qui invoca il metodo controller.PubblicaAnnuncio(...)
     }
 
     @FXML
     public void onAnnullaClick(ActionEvent actionEvent) {
         // Logica per tornare indietro
     }
-
-    // =================================================================================
-    // HELPER METHODS
-    // =================================================================================
 
     private void impostaStile(Control field, boolean isValido) {
         if (isValido) {
@@ -375,10 +363,8 @@ public class AggiungiAnnuncio {
         return selezionati;
     }
 
-    // Metodo per la modifica
     public void setAnnuncioDaModificare(Annuncio annuncio) {
         this.descrizioneAnnuncioArea.setText(annuncio.getDescrizione());
-        // Aggiungi qui la logica per settare gli altri campi (prezzi, oggetti, ecc.)
         this.pubblicaButton.setText("Salva Modifiche");
     }
 }
