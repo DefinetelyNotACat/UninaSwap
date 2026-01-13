@@ -9,10 +9,13 @@ import com.example.uninaswap.entity.Utente;
 import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -23,6 +26,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,53 +36,48 @@ public class AggiungiOggetto implements Initializable {
 
     @FXML private Text erroreNome;
     @FXML private TextField nomeOggettoField;
-    @FXML private ComboBox<String> categoriaBox;
+    @FXML private MenuButton categorieMenuButton; // Sostituisce la vecchia ComboBox
     @FXML private ComboBox<Oggetto.CONDIZIONE> condizioneBox;
 
     @FXML private HBox contenitoreImmagini;
     @FXML private Button caricaFotoButton;
     @FXML private Text erroreImmagini;
     @FXML private Button aggiungiButton;
-    @FXML private Text titoloPagina; // Opzionale: per cambiare titolo in "Modifica Oggetto"
 
     private ControllerUninaSwap controllerUninaSwap;
     private final OggettoDAO oggettoDAO = new OggettoDAO();
 
-    // Liste per gestire immagini nuove (File) e vecchie (String path)
     private final List<File> immaginiNuove = new ArrayList<>();
     private final List<String> immaginiEsistenti = new ArrayList<>();
 
-    private Oggetto oggettoDaModificare = null; // Se null, siamo in modalità CREAZIONE
+    private Oggetto oggettoDaModificare = null;
 
     // =================================================================================
     // SETUP PER MODIFICA
     // =================================================================================
 
-    /**
-     * Chiama questo metodo dall'Inventario per passare in modalità MODIFICA
-     */
     public void setOggettoDaModificare(Oggetto obj) {
         this.oggettoDaModificare = obj;
 
-        // 1. Cambia UI
         if(aggiungiButton != null) aggiungiButton.setText("Salva Modifiche");
-        // if(titoloPagina != null) titoloPagina.setText("Modifica Oggetto");
 
-        // 2. Popola i campi
         nomeOggettoField.setText(obj.getNome());
 
-        // Categoria
-        if (!obj.getCategorie().isEmpty()) {
-            categoriaBox.setValue(obj.getCategorie().get(0).getNome());
+        // Spunta le categorie già associate all'oggetto
+        for (MenuItem item : categorieMenuButton.getItems()) {
+            if (item instanceof CustomMenuItem customItem && customItem.getContent() instanceof CheckBox cb) {
+                Categoria catNelMenu = (Categoria) cb.getUserData();
+                boolean presente = obj.getCategorie().stream()
+                        .anyMatch(c -> c.getNome().equals(catNelMenu.getNome()));
+                cb.setSelected(presente);
+            }
         }
 
-        // Condizione
         condizioneBox.setValue(obj.getCondizione());
 
-        // 3. Carica immagini esistenti
         if (obj.getImmagini() != null) {
             immaginiEsistenti.addAll(obj.getImmagini());
-            aggiornaVisualizzazioneImmagini(); // Mostra quelle vecchie
+            aggiornaVisualizzazioneImmagini();
         }
 
         controllaCampiValidi();
@@ -98,10 +97,18 @@ public class AggiungiOggetto implements Initializable {
             }
         }
 
-        boolean categoriaOk = categoriaBox.getValue() != null;
-        boolean condizioneOk = condizioneBox.getValue() != null;
+        // Verifica che almeno una categoria sia spuntata
+        List<Categoria> selezionate = getCategorieSelezionate();
+        boolean categoriaOk = !selezionate.isEmpty();
 
-        // Ok se c'è almeno un'immagine nuova OPPURE una esistente
+        // Feedback visivo sul MenuButton
+        if (categoriaOk) {
+            categorieMenuButton.setText(selezionate.size() + " categorie selezionate");
+        } else {
+            categorieMenuButton.setText("Seleziona categorie");
+        }
+
+        boolean condizioneOk = condizioneBox.getValue() != null;
         boolean immaginiOk = !immaginiNuove.isEmpty() || !immaginiEsistenti.isEmpty();
 
         if (erroreImmagini != null) {
@@ -144,12 +151,10 @@ public class AggiungiOggetto implements Initializable {
             return;
         }
 
-        // Mostra immagini esistenti (da String path)
         for (String path : immaginiEsistenti) {
             creaMiniatura(path, true);
         }
 
-        // Mostra immagini nuove (da File)
         for (File file : immaginiNuove) {
             creaMiniatura(file.toURI().toString(), false);
         }
@@ -177,7 +182,6 @@ public class AggiungiOggetto implements Initializable {
                 if (isEsistente) {
                     immaginiEsistenti.remove(imagePath);
                 } else {
-                    // Cerca il file corrispondente nell'array e rimuovilo (logica semplificata)
                     immaginiNuove.removeIf(f -> f.toURI().toString().equals(imagePath));
                 }
                 aggiornaVisualizzazioneImmagini();
@@ -199,7 +203,7 @@ public class AggiungiOggetto implements Initializable {
     // =================================================================================
 
     public void onPubblicaClick(ActionEvent actionEvent) {
-        Utente utenteCorrente = null;
+        Utente utenteCorrente;
         try {
             utenteCorrente = controllerUninaSwap.getUtente();
         } catch (Exception e) {
@@ -207,30 +211,20 @@ public class AggiungiOggetto implements Initializable {
         }
 
         Oggetto oggettoToSave = new Oggetto();
-        // Se stiamo modificando, manteniamo l'ID fondamentale per la query SQL WHERE id=?
         if (oggettoDaModificare != null) {
             oggettoToSave.setId(oggettoDaModificare.getId());
-        }
-
-        oggettoToSave.setNome(nomeOggettoField.getText());
-        oggettoToSave.setCondizione(condizioneBox.getValue());
-
-        // Attenzione: se permetti di modificare la disponibilità, devi prenderla da una box.
-        // Se l'interfaccia non ha il campo disponibilità, mantieni quella vecchia o metti DISPONIBILE
-        if (oggettoDaModificare != null) {
             oggettoToSave.setDisponibilita(oggettoDaModificare.getDisponibilita());
         } else {
             oggettoToSave.setDisponibilita(Oggetto.DISPONIBILITA.DISPONIBILE);
         }
 
-        ArrayList<Categoria> listaCat = new ArrayList<>();
-        // Attenzione: Categoria deve essere valida (non null)
-        if (categoriaBox.getValue() != null) {
-            listaCat.add(new Categoria(categoriaBox.getValue()));
-        }
+        oggettoToSave.setNome(nomeOggettoField.getText());
+        oggettoToSave.setCondizione(condizioneBox.getValue());
+
+        // Recupero la lista di categorie selezionate tramite i CheckBox
+        ArrayList<Categoria> listaCat = new ArrayList<>(getCategorieSelezionate());
         oggettoToSave.setCategorie(listaCat);
 
-        // Uniamo i path: quelli vecchi rimasti + quelli nuovi convertiti in stringa
         ArrayList<String> pathsFinali = new ArrayList<>(immaginiEsistenti);
         for (File f : immaginiNuove) {
             pathsFinali.add(f.getAbsolutePath());
@@ -239,34 +233,25 @@ public class AggiungiOggetto implements Initializable {
 
         boolean esito;
         if (oggettoDaModificare == null) {
-            // --- CASO INSERIMENTO (Nuovo Oggetto) ---
             esito = oggettoDAO.salvaOggetto(oggettoToSave, utenteCorrente);
         } else {
-            // --- CASO MODIFICA (Update) ---
-            // PRIMA C'ERA SOLO LA SIMULAZIONE, ORA CHIAMIAMO IL DAO:
-            System.out.println("Eseguo Update Reale per Oggetto ID: " + oggettoToSave.getId());
-
-            // CHIAMA IL METODO CHE ABBIAMO CORRETTO NEL DAO
             esito = oggettoDAO.modificaOggetto(oggettoToSave);
         }
 
         if (esito) {
             GestoreScene gestoreScene = new GestoreScene();
-            // Torna all'inventario mostrando il messaggio di successo
             gestoreScene.CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent,
                     oggettoDaModificare == null ? "Oggetto aggiunto!" : "Oggetto modificato con successo!", Messaggio.TIPI.SUCCESS);
-        } else {
-            System.err.println("Errore salvataggio DB");
-            // Opzionale: Mostra un alert di errore all'utente qui
         }
     }
+
     public void onAnnullaClick(ActionEvent actionEvent) {
         GestoreScene gestoreScene = new GestoreScene();
         gestoreScene.CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent);
     }
 
     // =================================================================================
-    // INITIALIZE
+    // INITIALIZE E HELPER
     // =================================================================================
 
     @Override
@@ -274,30 +259,35 @@ public class AggiungiOggetto implements Initializable {
         controllerUninaSwap = ControllerUninaSwap.getInstance();
         if (aggiungiButton != null) aggiungiButton.setDisable(true);
 
-        // Popola Categorie
+        // Popola il MenuButton con CustomMenuItem e CheckBox
         for (Categoria c : controllerUninaSwap.getCategorie()) {
-            categoriaBox.getItems().add(c.getNome());
+            CheckBox cb = new CheckBox(c.getNome());
+            cb.setUserData(c);
+            cb.setPrefWidth(200);
+            cb.setCursor(Cursor.HAND);
+
+            cb.selectedProperty().addListener((obs, oldV, newV) -> controllaCampiValidi());
+
+            CustomMenuItem customItem = new CustomMenuItem(cb);
+            customItem.setHideOnClick(false);
+            categorieMenuButton.getItems().add(customItem);
         }
 
-        // Popola Condizioni
         condizioneBox.getItems().setAll(controllerUninaSwap.getCondizioni());
 
-        // Cell factories per visualizzazione pulita
         condizioneBox.setCellFactory(lv -> new ListCell<>() {
             @Override protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
                 super.updateItem(item, empty);
-                setText((empty || item == null) ? null : item.toString().replace("_", " "));
+                setText((empty || item == null) ? null : item.getEtichetta());
             }
         });
         condizioneBox.setButtonCell(new ListCell<>() {
             @Override protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
                 super.updateItem(item, empty);
-                setText((empty || item == null) ? null : item.toString().replace("_", " "));
+                setText((empty || item == null) ? null : item.getEtichetta());
             }
         });
 
-        // Listeners
-        categoriaBox.valueProperty().addListener((o,old,newV) -> controllaCampiValidi());
         condizioneBox.valueProperty().addListener((o,old,newV) -> controllaCampiValidi());
 
         nomeOggettoField.textProperty().addListener((obs, oldV, newV) -> {
@@ -308,5 +298,20 @@ public class AggiungiOggetto implements Initializable {
             }
             controllaCampiValidi();
         });
+    }
+
+    /**
+     * Helper per recuperare gli oggetti Categoria dai CheckBox selezionati
+     */
+    private List<Categoria> getCategorieSelezionate() {
+        List<Categoria> selezionate = new ArrayList<>();
+        for (MenuItem item : categorieMenuButton.getItems()) {
+            if (item instanceof CustomMenuItem customItem && customItem.getContent() instanceof CheckBox cb) {
+                if (cb.isSelected()) {
+                    selezionate.add((Categoria) cb.getUserData());
+                }
+            }
+        }
+        return selezionate;
     }
 }

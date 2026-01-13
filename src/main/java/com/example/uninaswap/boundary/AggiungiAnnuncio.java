@@ -1,7 +1,11 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.Costanti; // Import delle costanti
 import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Sede;
+import com.example.uninaswap.entity.Utente;
+import com.example.uninaswap.entity.Annuncio;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -16,6 +20,7 @@ import javafx.scene.text.Text;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AggiungiAnnuncio {
@@ -58,14 +63,10 @@ public class AggiungiAnnuncio {
     @FXML private Button annullaButton;
     @FXML private Button pubblicaButton;
 
-    // Proprietà
+    // Proprietà per la validazione
     private final BooleanProperty almenoUnOggettoSelezionato = new SimpleBooleanProperty(false);
     private final BooleanProperty prezziValidiProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty orariValidiProperty = new SimpleBooleanProperty(false);
-
-    // Regex rigorosa: Obbliga HH:mm (es. 09:00, 23:59). Niente "92284".
-    private static final String TIME_REGEX = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
-    private static final String PRICE_REGEX = "^[0-9]+([.,][0-9]{1,2})?$";
 
     // =================================================================================
     // INITIALIZATION
@@ -79,27 +80,39 @@ public class AggiungiAnnuncio {
     }
 
     private void caricaSedi() {
-        ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
-        List<Sede> sedi = controllerUninaSwap.getSedi();
-        for (Sede sede : sedi) {
-            sedeBox.getItems().add(sede.getNomeSede());
+        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+        List<Sede> sedi = controller.getSedi();
+        if (sedi != null) {
+            for (Sede sede : sedi) {
+                sedeBox.getItems().add(sede.getNomeSede());
+            }
         }
     }
 
     private void caricaInventarioUtente() {
-        List<String> oggettiMock = List.of("Libro Analisi 1", "Calcolatrice", "Appunti Fisica");
         contenitoreOggetti.getChildren().clear();
+        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+        try {
+            Utente utenteCorrente = controller.getUtente();
+            List<Oggetto> oggettiReali = controller.OttieniOggetti(utenteCorrente);
 
-        if (oggettiMock.isEmpty()) {
-            contenitoreOggetti.getChildren().add(new Text("Nessun oggetto nell'inventario."));
-            return;
-        }
+            if (oggettiReali == null || oggettiReali.isEmpty()) {
+                Text vuoto = new Text("Nessun oggetto disponibile nel tuo inventario.");
+                vuoto.getStyleClass().add("placeholder-text");
+                contenitoreOggetti.getChildren().add(vuoto);
+                return;
+            }
 
-        for (String nomeOggetto : oggettiMock) {
-            CheckBox cb = new CheckBox(nomeOggetto);
-            cb.setStyle("-fx-font-size: 14px; -fx-text-fill: #333;");
-            cb.selectedProperty().addListener((obs, oldVal, newVal) -> aggiornaStatoOggetti());
-            contenitoreOggetti.getChildren().add(cb);
+            for (Oggetto obj : oggettiReali) {
+                CheckBox cb = new CheckBox(obj.getNome());
+                cb.setUserData(obj);
+                cb.setStyle("-fx-font-size: 14px; -fx-text-fill: #333;");
+                cb.selectedProperty().addListener((obs, oldVal, newVal) -> aggiornaStatoOggetti());
+                contenitoreOggetti.getChildren().add(cb);
+            }
+        } catch (Exception e) {
+            System.err.println("Errore caricamento oggetti: " + e.getMessage());
+            contenitoreOggetti.getChildren().add(new Text("Errore nel caricamento dell'inventario."));
         }
     }
 
@@ -108,10 +121,10 @@ public class AggiungiAnnuncio {
      */
     private void setupValidazioneRealTime() {
 
-        // 1. Binding Semplici
+        // 1. Binding con validazione tramite FIELDS_REGEX
         BooleanBinding descrizioneValida = Bindings.createBooleanBinding(() -> {
             String txt = descrizioneAnnuncioArea.getText();
-            return txt != null && !txt.trim().isEmpty();
+            return txt != null && txt.matches(Costanti.FIELDS_REGEX); // Controllo Regex
         }, descrizioneAnnuncioArea.textProperty());
 
         BooleanBinding sedeValida = sedeBox.valueProperty().isNotNull();
@@ -125,14 +138,12 @@ public class AggiungiAnnuncio {
                 .or(radioScambio.selectedProperty())
                 .or(radioRegalo.selectedProperty());
 
-        // 2. LISTENERS REAL-TIME
+        // 2. Listeners Real-Time aggiornato con FIELDS_REGEX
+        descrizioneAnnuncioArea.textProperty().addListener((obs, oldVal, newVal) -> {
+            // Se non rispetta la regex, mostra l'errore visivo
+            gestisciErroreGenerico(descrizioneAnnuncioArea, erroreDescrizione, newVal.matches(Costanti.FIELDS_REGEX));
+        });
 
-        // Descrizione
-        descrizioneAnnuncioArea.textProperty().addListener((obs, oldVal, newVal) ->
-                gestisciErroreGenerico(descrizioneAnnuncioArea, erroreDescrizione, !newVal.trim().isEmpty())
-        );
-
-        // Sede
         sedeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 sedeBox.getStyleClass().remove("error");
@@ -143,20 +154,14 @@ public class AggiungiAnnuncio {
             }
         });
 
-        // --- VALIDAZIONE ORARI ---
         orarioInizioField.textProperty().addListener((obs, oldVal, newVal) -> validaOrari());
         orarioFineField.textProperty().addListener((obs, oldVal, newVal) -> validaOrari());
 
-        // Oggetti
         almenoUnOggettoSelezionato.addListener((obs, oldVal, newVal) -> {
-            if (!newVal) {
-                erroreOggetti.setVisible(true); erroreOggetti.setManaged(true);
-            } else {
-                erroreOggetti.setVisible(false); erroreOggetti.setManaged(false);
-            }
+            erroreOggetti.setVisible(!newVal);
+            erroreOggetti.setManaged(!newVal);
         });
 
-        // Prezzi
         prezzoField.textProperty().addListener((obs, oldVal, newVal) -> {
             if (radioVendita.isSelected()) validaPrezzi();
         });
@@ -164,12 +169,11 @@ public class AggiungiAnnuncio {
             if (radioVendita.isSelected()) validaPrezzi();
         });
 
-        // Scambio
         desideriScambioArea.textProperty().addListener((obs, oldVal, newVal) -> {
             if (radioScambio.isSelected()) gestisciErroreGenerico(desideriScambioArea, erroreScambio, !newVal.trim().isEmpty());
         });
 
-        // 3. LOGICA FINALE BOTTONE PUBBLICA
+        // 3. Logica finale pulsante
         BooleanBinding sezioneSpecificaValida = Bindings.createBooleanBinding(() -> {
             if (radioVendita.isSelected()) return prezziValidiProperty.get();
             if (radioScambio.isSelected()) return scambioValido.get();
@@ -180,51 +184,35 @@ public class AggiungiAnnuncio {
         pubblicaButton.disableProperty().bind(
                 descrizioneValida.not()
                         .or(sedeValida.not())
-                        .or(orariValidiProperty.not()) // Il bottone si disabilita se la validazione fallisce
+                        .or(orariValidiProperty.not())
                         .or(almenoUnOggettoSelezionato.not())
                         .or(tipologiaSelezionata.not())
                         .or(sezioneSpecificaValida.not())
         );
     }
 
-    /**
-     * Valida i campi orario carattere per carattere.
-     * Gestisce errori di Formato (es. 92284) e Logici (Start > End).
-     */
+    // =================================================================================
+    // VALIDATION METHODS (Utilizzano ora le Regex di Costanti.java)
+    // =================================================================================
+
     private void validaOrari() {
         String inizio = orarioInizioField.getText();
         String fine = orarioFineField.getText();
 
         boolean inizioVuoto = (inizio == null || inizio.trim().isEmpty());
         boolean fineVuota = (fine == null || fine.trim().isEmpty());
-
         boolean erroreRilevato = false;
 
-        // 1. Controllo Sintassi Inizio
         if (!inizioVuoto) {
-            if (!inizio.matches(TIME_REGEX)) {
-                impostaStile(orarioInizioField, false); // Rosso subito (es. "92284")
-                erroreRilevato = true;
-            } else {
-                impostaStile(orarioInizioField, true); // Verde
-            }
-        } else {
-            resetStiliCampo(orarioInizioField, null);
-        }
+            impostaStile(orarioInizioField, inizio.matches(Costanti.TIME_REGEX));
+            if (!inizio.matches(Costanti.TIME_REGEX)) erroreRilevato = true;
+        } else resetStiliCampo(orarioInizioField, null);
 
-        // 2. Controllo Sintassi Fine
         if (!fineVuota) {
-            if (!fine.matches(TIME_REGEX)) {
-                impostaStile(orarioFineField, false); // Rosso subito
-                erroreRilevato = true;
-            } else {
-                impostaStile(orarioFineField, true); // Verde
-            }
-        } else {
-            resetStiliCampo(orarioFineField, null);
-        }
+            impostaStile(orarioFineField, fine.matches(Costanti.TIME_REGEX));
+            if (!fine.matches(Costanti.TIME_REGEX)) erroreRilevato = true;
+        } else resetStiliCampo(orarioFineField, null);
 
-        // 3. Controllo Logico (Solo se entrambi sono sintatticamente validi e pieni)
         if (!erroreRilevato && !inizioVuoto && !fineVuota) {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -232,83 +220,63 @@ public class AggiungiAnnuncio {
                 LocalTime tFine = LocalTime.parse(fine, formatter);
 
                 if (tInizio.isAfter(tFine)) {
-                    // Errore logico: Inizio dopo Fine
                     impostaStile(orarioInizioField, false);
                     impostaStile(orarioFineField, false);
                     erroreRilevato = true;
                 } else {
-                    // Tutto perfetto
                     orariValidiProperty.set(true);
                 }
             } catch (DateTimeParseException e) {
-                // Caso limite non catturato dalla regex
                 erroreRilevato = true;
             }
         }
 
-        // 4. Aggiornamento UI Finale
-        if (erroreRilevato) {
-            erroreOrario.setVisible(true);
-            erroreOrario.setManaged(true);
-            orariValidiProperty.set(false);
-        } else if (inizioVuoto || fineVuota) {
-            // Se uno manca, non è errore ma non è nemmeno "valido" per pubblicare
-            erroreOrario.setVisible(false);
-            erroreOrario.setManaged(false);
-            orariValidiProperty.set(false);
-        } else {
-            // Tutto pieno e valido
-            erroreOrario.setVisible(false);
-            erroreOrario.setManaged(false);
-            orariValidiProperty.set(true);
-        }
+        erroreOrario.setVisible(erroreRilevato);
+        erroreOrario.setManaged(erroreRilevato);
+        orariValidiProperty.set(!erroreRilevato && !inizioVuoto && !fineVuota);
     }
 
     private void validaPrezzi() {
         String pRichiestoStr = prezzoField.getText();
         String pMinStr = prezzoMinField.getText();
-        boolean pRichiestoSintassiOk = pRichiestoStr != null && pRichiestoStr.matches(PRICE_REGEX);
-        boolean pMinSintassiOk = pMinStr == null || pMinStr.isEmpty() || pMinStr.matches(PRICE_REGEX);
+        boolean pRichiestoSintassiOk = pRichiestoStr != null && pRichiestoStr.matches(Costanti.PRICE_REGEX);
+        boolean pMinSintassiOk = pMinStr == null || pMinStr.isEmpty() || pMinStr.matches(Costanti.PRICE_REGEX);
 
         boolean logicaOk = true;
         String messaggioErrore = "Inserire un prezzo valido";
 
-        if (!pRichiestoSintassiOk) { logicaOk = false; impostaStile(prezzoField, false); }
-        else { impostaStile(prezzoField, true); }
+        impostaStile(prezzoField, pRichiestoSintassiOk);
+        if (!pRichiestoSintassiOk) logicaOk = false;
 
-        if (!pMinSintassiOk) { logicaOk = false; impostaStile(prezzoMinField, false); }
-        else {
-            if (pMinStr == null || pMinStr.isEmpty()) {
-                prezzoMinField.getStyleClass().remove("error"); prezzoMinField.getStyleClass().remove("right");
-            } else {
-                impostaStile(prezzoMinField, true);
-            }
+        if (pMinSintassiOk && (pMinStr != null && !pMinStr.isEmpty())) {
+            impostaStile(prezzoMinField, true);
+        } else if (pMinStr != null && !pMinStr.isEmpty()) {
+            impostaStile(prezzoMinField, false);
+            logicaOk = false;
+        } else {
+            resetStiliCampo(prezzoMinField, null);
         }
 
-        if (pRichiestoSintassiOk && pMinSintassiOk && pMinStr != null && !pMinStr.isEmpty()) {
+        if (logicaOk && pRichiestoSintassiOk && pMinSintassiOk && pMinStr != null && !pMinStr.isEmpty()) {
             try {
                 double valRichiesto = Double.parseDouble(pRichiestoStr.replace(",", "."));
                 double valMin = Double.parseDouble(pMinStr.replace(",", "."));
                 if (valMin > valRichiesto) {
                     logicaOk = false;
-                    messaggioErrore = "Il prezzo minimo non può essere superiore a quello richiesto";
-                    prezzoMinField.getStyleClass().remove("right");
-                    if (!prezzoMinField.getStyleClass().contains("error")) prezzoMinField.getStyleClass().add("error");
+                    messaggioErrore = "Il prezzo minimo non può superare quello richiesto";
+                    impostaStile(prezzoMinField, false);
                 }
             } catch (NumberFormatException e) { logicaOk = false; }
         }
 
-        if (logicaOk) {
-            errorePrezzo.setVisible(false); errorePrezzo.setManaged(false); prezziValidiProperty.set(true);
-        } else {
-            errorePrezzo.setText(messaggioErrore);
-            errorePrezzo.setVisible(true); errorePrezzo.setManaged(true);
-            prezziValidiProperty.set(false);
-        }
+        errorePrezzo.setText(messaggioErrore);
+        errorePrezzo.setVisible(!logicaOk);
+        errorePrezzo.setManaged(!logicaOk);
+        prezziValidiProperty.set(logicaOk);
     }
 
     // =================================================================================
-    // EVENT HANDLERS & HELPER METHODS
+    // EVENT HANDLERS & HELPERS
     // =================================================================================
 
     @FXML
@@ -329,11 +297,15 @@ public class AggiungiAnnuncio {
         erroreTipologia.setVisible(false); erroreTipologia.setManaged(false);
     }
 
-    @FXML public void onPubblicaClick(ActionEvent actionEvent) {
-        System.out.println("Annuncio pubblicato!");
+    @FXML
+    public void onPubblicaClick(ActionEvent actionEvent) {
+        List<Oggetto> selezionati = ottieniOggettiSelezionati();
+        System.out.println("Pubblicazione annuncio con " + selezionati.size() + " oggetti.");
     }
-    @FXML public void onAnnullaClick(ActionEvent actionEvent) {
-        System.out.println("Annulla");
+
+    @FXML
+    public void onAnnullaClick(ActionEvent actionEvent) {
+        // Logica per tornare indietro
     }
 
     private void impostaStile(Control field, boolean isValido) {
@@ -380,4 +352,19 @@ public class AggiungiAnnuncio {
 
     private void nascondiBox(VBox box) { box.setVisible(false); box.setManaged(false); }
     private void mostraBox(VBox box) { box.setVisible(true); box.setManaged(true); }
+
+    private List<Oggetto> ottieniOggettiSelezionati() {
+        List<Oggetto> selezionati = new ArrayList<>();
+        for (Node node : contenitoreOggetti.getChildren()) {
+            if (node instanceof CheckBox cb && cb.isSelected()) {
+                selezionati.add((Oggetto) cb.getUserData());
+            }
+        }
+        return selezionati;
+    }
+
+    public void setAnnuncioDaModificare(Annuncio annuncio) {
+        this.descrizioneAnnuncioArea.setText(annuncio.getDescrizione());
+        this.pubblicaButton.setText("Salva Modifiche");
+    }
 }
