@@ -102,6 +102,8 @@ public class ControllerUninaSwap {
     //TODO! QUERY PER LA PUBBLICAZIONE DELL'ANNUNCIO
     public boolean PubblicaAnnuncio(Annuncio annuncio){
         System.out.println("Annuncio pubblicato "  + annuncio.toString());
+        AnnuncioDAO annuncioDAO = new AnnuncioDAO();
+        annuncioDAO.inserisciAnnuncio(annuncio, this.utente.getId());
         return true;
     }
     public boolean EliminaAnnuncio(Annuncio annuncio){
