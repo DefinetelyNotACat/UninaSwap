@@ -124,7 +124,7 @@ public class AggiungiAnnuncio {
         // 1. Binding con validazione tramite FIELDS_REGEX
         BooleanBinding descrizioneValida = Bindings.createBooleanBinding(() -> {
             String txt = descrizioneAnnuncioArea.getText();
-            return txt != null && txt.matches(Costanti.FIELDS_REGEX); // Controllo Regex
+            return txt != null && txt.matches(Costanti.FIELDS_REGEX_SPAZIO); // Controllo Regex
         }, descrizioneAnnuncioArea.textProperty());
 
         BooleanBinding sedeValida = sedeBox.valueProperty().isNotNull();
@@ -141,7 +141,7 @@ public class AggiungiAnnuncio {
         // 2. Listeners Real-Time aggiornato con FIELDS_REGEX
         descrizioneAnnuncioArea.textProperty().addListener((obs, oldVal, newVal) -> {
             // Se non rispetta la regex, mostra l'errore visivo
-            gestisciErroreGenerico(descrizioneAnnuncioArea, erroreDescrizione, newVal.matches(Costanti.FIELDS_REGEX));
+            gestisciErroreGenerico(descrizioneAnnuncioArea, erroreDescrizione, newVal.matches(Costanti.FIELDS_REGEX_SPAZIO));
         });
 
         sedeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -305,7 +305,8 @@ public class AggiungiAnnuncio {
 
     @FXML
     public void onAnnullaClick(ActionEvent actionEvent) {
-        // Logica per tornare indietro
+        GestoreScene gestoreScene = new GestoreScene();
+        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Annuncio annullato", Messaggio.TIPI.INFO);
     }
 
     private void impostaStile(Control field, boolean isValido) {
