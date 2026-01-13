@@ -111,4 +111,15 @@ public abstract class Annuncio {
             throw new Exception("Offerta non esistente");
         }
     }
+    @Override
+    public String toString() {
+        return "Annuncio{" +
+                "descrizione='" + descrizione + '\'' +
+                ", sede=" + (sede != null ? sede.getNomeSede() : "N/A") +
+                ", orario=" + orarioInizio + "-" + orarioFine +
+                ", stato=" + stato +
+                ", num oggetti=" + oggetti.size() +
+                ", oggetti = " + oggetti +
+                '}';
+    }
 }

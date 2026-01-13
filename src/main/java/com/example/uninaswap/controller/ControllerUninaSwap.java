@@ -100,6 +100,7 @@ public class ControllerUninaSwap {
          return (ArrayList<Oggetto>) oggettoDAO.ottieniTuttiOggetti(utente.getId());
     }
     public boolean PubblicaAnnuncio(Annuncio annuncio){
+        System.out.println("Annuncio pubblicato "  + annuncio.toString());
         return true;
     }
     public boolean EliminaAnnuncio(Annuncio annuncio){

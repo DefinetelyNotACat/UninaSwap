@@ -1,11 +1,8 @@
 package com.example.uninaswap.boundary;
 
-import com.example.uninaswap.Costanti; // Import delle costanti
+import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
-import com.example.uninaswap.entity.Oggetto;
-import com.example.uninaswap.entity.Sede;
-import com.example.uninaswap.entity.Utente;
-import com.example.uninaswap.entity.Annuncio;
+import com.example.uninaswap.entity.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -17,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -94,6 +92,7 @@ public class AggiungiAnnuncio {
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         try {
             Utente utenteCorrente = controller.getUtente();
+            // Utilizzo del metodo corretto del controller
             List<Oggetto> oggettiReali = controller.OttieniOggetti(utenteCorrente);
 
             if (oggettiReali == null || oggettiReali.isEmpty()) {
@@ -121,10 +120,9 @@ public class AggiungiAnnuncio {
      */
     private void setupValidazioneRealTime() {
 
-        // 1. Binding con validazione tramite FIELDS_REGEX
         BooleanBinding descrizioneValida = Bindings.createBooleanBinding(() -> {
             String txt = descrizioneAnnuncioArea.getText();
-            return txt != null && txt.matches(Costanti.FIELDS_REGEX_SPAZIO); // Controllo Regex
+            return txt != null && txt.matches(Costanti.FIELDS_REGEX_SPAZIO);
         }, descrizioneAnnuncioArea.textProperty());
 
         BooleanBinding sedeValida = sedeBox.valueProperty().isNotNull();
@@ -138,11 +136,10 @@ public class AggiungiAnnuncio {
                 .or(radioScambio.selectedProperty())
                 .or(radioRegalo.selectedProperty());
 
-        // 2. Listeners Real-Time aggiornato con FIELDS_REGEX
-        descrizioneAnnuncioArea.textProperty().addListener((obs, oldVal, newVal) -> {
-            // Se non rispetta la regex, mostra l'errore visivo
-            gestisciErroreGenerico(descrizioneAnnuncioArea, erroreDescrizione, newVal.matches(Costanti.FIELDS_REGEX_SPAZIO));
-        });
+        // Listeners Real-Time
+        descrizioneAnnuncioArea.textProperty().addListener((obs, oldVal, newVal) ->
+                gestisciErroreGenerico(descrizioneAnnuncioArea, erroreDescrizione, newVal.matches(Costanti.FIELDS_REGEX_SPAZIO))
+        );
 
         sedeBox.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
@@ -173,7 +170,6 @@ public class AggiungiAnnuncio {
             if (radioScambio.isSelected()) gestisciErroreGenerico(desideriScambioArea, erroreScambio, !newVal.trim().isEmpty());
         });
 
-        // 3. Logica finale pulsante
         BooleanBinding sezioneSpecificaValida = Bindings.createBooleanBinding(() -> {
             if (radioVendita.isSelected()) return prezziValidiProperty.get();
             if (radioScambio.isSelected()) return scambioValido.get();
@@ -192,7 +188,7 @@ public class AggiungiAnnuncio {
     }
 
     // =================================================================================
-    // VALIDATION METHODS (Utilizzano ora le Regex di Costanti.java)
+    // VALIDATION METHODS
     // =================================================================================
 
     private void validaOrari() {
@@ -299,14 +295,63 @@ public class AggiungiAnnuncio {
 
     @FXML
     public void onPubblicaClick(ActionEvent actionEvent) {
-        List<Oggetto> selezionati = ottieniOggettiSelezionati();
-        System.out.println("Pubblicazione annuncio con " + selezionati.size() + " oggetti.");
+        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+        try {
+            // 1. Dati Comuni
+            String descrizione = descrizioneAnnuncioArea.getText();
+            Sede sede = trovaSedePerNome(sedeBox.getValue());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            LocalTime inizio = LocalTime.parse(orarioInizioField.getText(), formatter);
+            LocalTime fine = LocalTime.parse(orarioFineField.getText(), formatter);
+
+            List<Oggetto> selezionati = ottieniOggettiSelezionati();
+            Oggetto primoOggetto = selezionati.get(0); // Primo oggetto richiesto dai costruttori delle entity
+
+            Annuncio annuncioDaInviare = null;
+
+            // 2. Creazione istanza specifica
+            if (radioVendita.isSelected()) {
+                BigDecimal prezzoRichiesto = new BigDecimal(prezzoField.getText().replace(",", "."));
+                AnnuncioVendita av = new AnnuncioVendita(sede, descrizione, inizio, fine, primoOggetto, prezzoRichiesto);
+                if (!prezzoMinField.getText().isEmpty()) {
+                    av.setPrezzoMinimo(new BigDecimal(prezzoMinField.getText().replace(",", ".")));
+                }
+                annuncioDaInviare = av;
+
+            } else if (radioScambio.isSelected()) {
+                String cosaCerco = desideriScambioArea.getText();
+                annuncioDaInviare = new AnnuncioScambio(sede, descrizione, inizio, fine, primoOggetto, cosaCerco);
+
+            } else if (radioRegalo.isSelected()) {
+                annuncioDaInviare = new AnnuncioRegalo(sede, descrizione, inizio, fine, primoOggetto);
+                // Nota: Se AnnuncioRegalo avesse un campo per infoRitiroField, andrebbe settato qui.
+            }
+
+            // 3. Aggiunta oggetti supplementari
+            if (annuncioDaInviare != null && selezionati.size() > 1) {
+                for (int i = 1; i < selezionati.size(); i++) {
+                    annuncioDaInviare.aggiungiOggetto(selezionati.get(i));
+                }
+            }
+
+            // 4. Invio al Controller
+            if (annuncioDaInviare != null) {
+
+                //TODO! implementare logica di pubblicazione annuncio
+                boolean successo = controller.PubblicaAnnuncio(annuncioDaInviare);
+                if (successo) {
+                    new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Annuncio pubblicato!", Messaggio.TIPI.SUCCESS);
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Errore pubblicazione: " + e.getMessage());
+        }
     }
 
     @FXML
     public void onAnnullaClick(ActionEvent actionEvent) {
-        GestoreScene gestoreScene = new GestoreScene();
-        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Annuncio annullato", Messaggio.TIPI.INFO);
+        new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Annuncio annullato", Messaggio.TIPI.INFO);
     }
 
     private void impostaStile(Control field, boolean isValido) {
@@ -353,6 +398,14 @@ public class AggiungiAnnuncio {
 
     private void nascondiBox(VBox box) { box.setVisible(false); box.setManaged(false); }
     private void mostraBox(VBox box) { box.setVisible(true); box.setManaged(true); }
+
+    private Sede trovaSedePerNome(String nomeSede) {
+        List<Sede> sedi = ControllerUninaSwap.getInstance().getSedi();
+        for (Sede s : sedi) {
+            if (s.getNomeSede().equals(nomeSede)) return s;
+        }
+        return null;
+    }
 
     private List<Oggetto> ottieniOggettiSelezionati() {
         List<Oggetto> selezionati = new ArrayList<>();
