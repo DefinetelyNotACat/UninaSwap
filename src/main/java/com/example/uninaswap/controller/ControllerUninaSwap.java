@@ -11,6 +11,8 @@ public class ControllerUninaSwap {
     private UtenteDAO utenteDAO = new UtenteDAO();
     private OffertaDAO offertaDAO = new OffertaDAO();
     private AnnuncioDAO annuncioDAO = new AnnuncioDAO();
+    private OggettoDAO oggettoDAO = new OggettoDAO();
+
     private Utente utente;
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
     private ControllerUninaSwap(){
@@ -93,8 +95,9 @@ public class ControllerUninaSwap {
     public boolean EliminaOggetto(Oggetto oggetto, Utente utente){
         return true;
     }
-    public ArrayList<Oggetto> VediIMieiOggetti(Utente utente){
-        return null;
+    public ArrayList<Oggetto> OttieniOggetti(Utente utente){
+        if (utente == null) return new ArrayList<>();
+         return (ArrayList<Oggetto>) oggettoDAO.ottieniTuttiOggetti(utente.getId());
     }
     public boolean PubblicaAnnuncio(Annuncio annuncio){
         return true;
