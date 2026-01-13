@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 public class AnnuncioRegalo extends Annuncio {
 
+    public AnnuncioRegalo() {
+        super();
+    }
+
     public AnnuncioRegalo(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
         super(sede, descrizione, orarioInizio, orarioFine, oggetto);
     }
@@ -22,6 +26,11 @@ public class AnnuncioRegalo extends Annuncio {
 
     public void aggiungiOffertaRegalo(OffertaRegalo offertaRegalo) {
         super.offerte.add(offertaRegalo);
+    }
+
+    @Override
+    public String getTipoAnnuncio(){
+        return "Regalo";
     }
 
     @Override

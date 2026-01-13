@@ -6,8 +6,10 @@ import java.util.ArrayList;
 public abstract class Annuncio {
     protected enum STATO_ANNUNCIO {
         DISPONIBILE,
-        NONDISPONIBILE
+        NON_DISPONIBILE
     }
+    protected int id;
+    protected int utenteId;
     protected Sede sede;
     protected String descrizione;
     protected LocalTime orarioInizio;
@@ -15,6 +17,8 @@ public abstract class Annuncio {
     protected STATO_ANNUNCIO stato;
     protected ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
     protected ArrayList<Offerta> offerte = new ArrayList<Offerta>();
+
+    public Annuncio() {}
 
     public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
         this.sede = sede;
@@ -32,6 +36,22 @@ public abstract class Annuncio {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getUtenteId() {
+        return utenteId;
+    }
+
+    public void setUtenteId(int utenteId) {
+        this.utenteId = utenteId;
     }
 
     public Sede getSede() {
@@ -88,6 +108,7 @@ public abstract class Annuncio {
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
     }
+
     public void setOggetti(ArrayList<Oggetto> nuoviOggetti) {
         this.oggetti.clear();
         if (nuoviOggetti != null) {
@@ -98,11 +119,13 @@ public abstract class Annuncio {
             }
         }
     }
+
     public void aggiungiOggetto(Oggetto oggetto) {
         if (oggetto != null) {
             this.oggetti.add(oggetto);
         }
     }
+
     protected void ottieniOfferta(Offerta offerta) throws Exception{
         if (offerta != null) {
             this.offerte.add(offerta);
@@ -111,6 +134,9 @@ public abstract class Annuncio {
             throw new Exception("Offerta non esistente");
         }
     }
+
+    public abstract String getTipoAnnuncio();
+
     @Override
     public String toString() {
         return "Annuncio{" +

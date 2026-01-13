@@ -25,6 +25,9 @@ public class Utente {
 
     //Costruttori
     //
+
+    public Utente(){}
+
     public Utente(String username, String password, String matricola, String email) {
         this.username = username;
         this.password = password;

@@ -13,6 +13,9 @@ public class Sede {
 
     //Costruttori
     //
+
+    public Sede(){}
+
     public Sede(String nomeSede, String indirizzo) {
         this.nomeSede = nomeSede;
         this.indirizzo = indirizzo;

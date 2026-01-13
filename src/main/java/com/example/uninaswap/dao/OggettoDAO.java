@@ -246,7 +246,7 @@ public class OggettoDAO implements GestoreOggettoDAO {
 
             // C. GESTIONE IMMAGINI (Cancella vecchie -> Inserisci nuove)
             // 1. Cancella
-            immagineDAO.eliminaImmaginiPerOggetto(conn, oggetto.getId());
+            immagineDAO.rimuoviImmaginiPerOggetto(conn, oggetto.getId());
 
             // 2. Inserisci
             if (oggetto.getImmagini() != null && !oggetto.getImmagini().isEmpty()) {
@@ -280,17 +280,73 @@ public class OggettoDAO implements GestoreOggettoDAO {
 
     // --- METODO FONDAMENTALE DA AGGIUNGERE ---
     // Questo metodo trasforma "DISCRETE_CONDIZIONI" in "Discrete condizioni"
-// --- VERSIONE DEFINITIVA PER POSTGRESQL (MAIUSCOLO) ---
+    // --- VERSIONE DEFINITIVA PER POSTGRESQL (MAIUSCOLO) ---
     private String toDbEnum(String val) {
         if (val == null) return null;
 
         // Esempio: "DISCRETE_CONDIZIONI" (Java) diventa "DISCRETE CONDIZIONI" (DB)
         // NON usiamo .toLowerCase() perché il tuo DB vuole il MAIUSCOLO.
         return val.replace("_", " ");
-    }    public boolean associaUtente(int idUtente, int idOggetto) { return true; }
-    public boolean rimuoviDaUtente(int idUtente, int idOggetto) { return true; }
-    public boolean associaAnnuncio(int idUtente, int idAnnuncio) { return true; }
-    public boolean rimuoviDaAnnuncio(int idUtente, int idAannuncio) { return true; }
+    }
 
+    public boolean associaUtente(int idUtente, int idOggetto) { return true; }
+
+    public boolean rimuoviDaUtente(int idUtente, int idOggetto) { return true; }
+
+    public boolean associaAnnuncio(int idOggetto, int idAnnuncio) {
+        String sql = "UPDATE OGGETTO SET annuncio_id = ? WHERE id = ?";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idAnnuncio);
+            stmt.setInt(2, idOggetto);
+
+            int rows = stmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean associaOgettiAdAnnuncio(ArrayList<Oggetto> oggetti, int idAnnuncio) {
+        if (oggetti == null || oggetti.isEmpty()) return false;
+
+        boolean tuttoOk = true;
+
+        for (Oggetto obj : oggetti) {
+            // Se l'oggetto ha un ID valido, lo associamo
+            if (obj.getId() > 0) {
+                boolean esito = associaAnnuncio(obj.getId(), idAnnuncio);
+                if (!esito) tuttoOk = false;
+            }
+        }
+        return tuttoOk;
+    }
+
+    public void associaListaOggetti(ArrayList<Oggetto> listaOggetti, int idAnnuncio) {
+        if (listaOggetti == null) return;
+
+        for (Oggetto o : listaOggetti) {
+            if (o != null && o.getId() > 0) {
+                associaAnnuncio(o.getId(), idAnnuncio);
+            }
+        }
+    }
+
+    public boolean rimuoviDaAnnuncio(int idOggetto, int idAnnuncio) {
+        String sql = "UPDATE OGGETTO SET annuncio_id = NULL WHERE id = ? AND annuncio_id = ?";
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idOggetto);
+            stmt.setInt(2, idAnnuncio);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

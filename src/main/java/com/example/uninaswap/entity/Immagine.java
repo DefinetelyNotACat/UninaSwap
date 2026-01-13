@@ -1,5 +1,8 @@
 package com.example.uninaswap.entity;
 
+import com.example.uninaswap.interfaces.GestoreCondizioneDAO;
+import com.example.uninaswap.interfaces.GestoreImmagineDAO;
+
 import java.util.ArrayList;
 import java.util.Date;
 

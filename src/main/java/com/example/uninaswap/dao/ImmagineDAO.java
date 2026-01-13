@@ -1,9 +1,13 @@
 package com.example.uninaswap.dao;
 
+import com.example.uninaswap.entity.Immagine;
+import com.example.uninaswap.interfaces.GestoreCondizioneDAO;
+import com.example.uninaswap.interfaces.GestoreImmagineDAO;
+
 import java.sql.*;
 import java.util.ArrayList;
 
-public class ImmagineDAO {
+public class ImmagineDAO implements GestoreImmagineDAO {
 
     // Metodo standard per inserimento singolo (apre/chiude connessione)
     public boolean inserisciImmagine(String path, int idOggetto) {
@@ -14,6 +18,22 @@ public class ImmagineDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public boolean inserisciImmagine(Connection conn, String immagine, int idOggetto) throws SQLException{
+        return true;
+    }
+
+    public boolean rimuoviImmagine(Immagine immagine){
+        return true;
+    }
+
+    public ArrayList<Immagine> ottieniImmagini(int idOggetto){
+        return null;
+    }
+
+    public boolean rimuoviImmagine(Connection conn, int idOggetto) throws SQLException{
+        return true;
     }
 
     // Metodo per transazione: accetta Connection e lista di stringhe
@@ -30,6 +50,10 @@ public class ImmagineDAO {
             }
             stmt.executeBatch();
         }
+    }
+
+    public ArrayList<Immagine> ottieniTutteImmagini(){
+        return null;
     }
 
     // Metodo di lettura
@@ -51,7 +75,8 @@ public class ImmagineDAO {
         }
         return lista;
     }
-    public void eliminaImmaginiPerOggetto(Connection conn, int idOggetto) throws SQLException {
+
+    public void rimuoviImmaginiPerOggetto(Connection conn, int idOggetto) throws SQLException {
         // ATTENZIONE: Controlla il nome della tabella e della colonna
         String sql = "DELETE FROM IMMAGINE WHERE oggetto_id = ?";
 
