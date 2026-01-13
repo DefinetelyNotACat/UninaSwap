@@ -305,7 +305,8 @@ public class AggiungiAnnuncio {
 
     @FXML
     public void onAnnullaClick(ActionEvent actionEvent) {
-        // Logica per tornare indietro
+        GestoreScene gestoreScene = new GestoreScene();
+        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Annuncio annullato", Messaggio.TIPI.INFO);
     }
 
     private void impostaStile(Control field, boolean isValido) {
