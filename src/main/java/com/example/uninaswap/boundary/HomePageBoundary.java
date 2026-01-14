@@ -50,7 +50,12 @@ public class HomePageBoundary implements GestoreMessaggio {
             }
 
             if (annunci == null || annunci.isEmpty()) {
-                mostraMessaggioVuoto("Nessun annuncio trovato.", "La ricerca per '" + query + "' non ha prodotto risultati.");
+                if(query != null)
+                    mostraMessaggioVuoto("Nessun annuncio trovato.", "La ricerca per '" + query + "' non ha prodotto risultati.");
+                else{
+                    mostraMessaggioVuoto("Nessun annuncio trovato", "");
+
+                }
                 return;
             }
 
