@@ -106,4 +106,17 @@ public abstract class Offerta {
     public int getId() {
         return id;
     }
+
+    public Utente getUtente() {
+        return utente;
+    }
+    public void setUtente(Utente utente) {
+        this.utente = utente;
+    }
+    public Annuncio getAnnuncio() {
+        return annuncio;
+    }
+    public void setAnnuncio(Annuncio annuncio) {
+        this.annuncio = annuncio;
+    }
 }

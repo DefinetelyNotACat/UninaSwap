@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.math.BigDecimal;
 import com.example.uninaswap.entity.*;
 import com.example.uninaswap.interfaces.GestoreAnnuncioDAO;
+// Assicurati di importare l'enum
+import com.example.uninaswap.entity.Oggetto.DISPONIBILITA;
 
 public class AnnuncioDAO implements GestoreAnnuncioDAO {
 
-    // Helper per le query sugli oggetti (non strettamente necessario istanziarlo se usiamo query dirette, ma utile)
     private OggettoDAO oggettiDAO = new OggettoDAO();
 
     /**
@@ -39,10 +40,9 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                 ps.setObject(5, annuncio.getOrarioInizio());
                 ps.setObject(6, annuncio.getOrarioFine());
 
-                // 2. Gestione Polimorfismo e fix conversione BigDecimal
+                // 2. Gestione Polimorfismo
                 if (annuncio instanceof AnnuncioVendita) {
                     AnnuncioVendita av = (AnnuncioVendita) annuncio;
-                    // FIX: Convertire BigDecimal in double per il DB
                     ps.setDouble(7, av.getPrezzoMedio() != null ? av.getPrezzoMedio().doubleValue() : 0.0);
                     ps.setDouble(8, av.getPrezzoMinimo() != null ? av.getPrezzoMinimo().doubleValue() : 0.0);
                     ps.setNull(9, Types.VARCHAR);
@@ -52,7 +52,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                     ps.setNull(8, Types.DOUBLE);
                     ps.setString(9, as.getListaOggetti());
                 } else {
-                    // Annuncio Regalo
                     ps.setNull(7, Types.DOUBLE);
                     ps.setNull(8, Types.DOUBLE);
                     ps.setNull(9, Types.VARCHAR);
@@ -61,9 +60,7 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                 ps.setString(10, "DISPONIBILE");
 
                 int affectedRows = ps.executeUpdate();
-                if (affectedRows == 0) {
-                    throw new SQLException("Creazione annuncio fallita.");
-                }
+                if (affectedRows == 0) throw new SQLException("Creazione annuncio fallita.");
 
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
@@ -75,9 +72,14 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                 }
             }
 
-            // 3. Associazione Oggetti
+            // 3. Associazione Oggetti e CAMBIO STATO -> OCCUPATO
             if (annuncio.getOggetti() != null && !annuncio.getOggetti().isEmpty()) {
                 associaOggettiAdAnnuncio(conn, idAnnuncioGenerato, annuncio.getOggetti());
+
+                // Aggiorniamo anche gli oggetti in memoria Java per coerenza immediata nell'UI
+                for(Oggetto o : annuncio.getOggetti()) {
+                    o.setDisponibilita(DISPONIBILITA.OCCUPATO);
+                }
             }
 
             conn.commit(); // --- COMMIT ---
@@ -96,8 +98,13 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         }
     }
 
+    /**
+     * MODIFICATO: Oltre ad associare l'ID, imposta la disponibilità a OCCUPATO.
+     */
     private void associaOggettiAdAnnuncio(Connection conn, int annuncioId, ArrayList<Oggetto> oggetti) throws SQLException {
-        String sqlUpdateOggetto = "UPDATE OGGETTO SET annuncio_id = ? WHERE id = ?";
+        // Aggiunto: disponibilita = 'OCCUPATO'::disponibilita_oggetto
+        String sqlUpdateOggetto = "UPDATE OGGETTO SET annuncio_id = ?, disponibilita = 'OCCUPATO'::disponibilita_oggetto WHERE id = ?";
+
         try (PreparedStatement psObj = conn.prepareStatement(sqlUpdateOggetto)) {
             for (Oggetto obj : oggetti) {
                 psObj.setInt(1, annuncioId);
@@ -109,37 +116,77 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     }
 
     /**
-     * MAPPER: Da ResultSet a Oggetto Java (Vendita/Scambio/Regalo)
+     * MODIFICATO: Gestione transazionale per liberare gli oggetti prima di eliminare l'annuncio.
      */
+    @Override
+    public boolean eliminaAnnuncio(int id) {
+        // Query A: Libera gli oggetti (toglie annuncio_id e mette DISPONIBILE)
+        String sqlLiberaOggetti = "UPDATE OGGETTO SET annuncio_id = NULL, disponibilita = 'DISPONIBILE'::disponibilita_oggetto WHERE annuncio_id = ?";
+        // Query B: Elimina l'annuncio
+        String sqlEliminaAnnuncio = "DELETE FROM ANNUNCIO WHERE id = ?";
+
+        Connection conn = null;
+        try {
+            conn = PostgreSQLConnection.getConnection();
+            conn.setAutoCommit(false); // Inizio Transazione
+
+            // 1. Libero gli oggetti
+            try (PreparedStatement psLibera = conn.prepareStatement(sqlLiberaOggetti)) {
+                psLibera.setInt(1, id);
+                psLibera.executeUpdate();
+            }
+
+            // 2. Elimino l'annuncio
+            try (PreparedStatement psElimina = conn.prepareStatement(sqlEliminaAnnuncio)) {
+                psElimina.setInt(1, id);
+                int rows = psElimina.executeUpdate();
+
+                if (rows > 0) {
+                    conn.commit(); // Conferma tutto
+                    return true;
+                } else {
+                    conn.rollback(); // Se non trova l'annuncio, annulla
+                    return false;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+            return false;
+        } finally {
+            if (conn != null) try { conn.setAutoCommit(true); conn.close(); } catch (SQLException ex) {}
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // I METODI DI LETTURA RESTANO INVARIATI
+    // -------------------------------------------------------------------------
+
     private Annuncio mapRowToAnnuncio(ResultSet rs) throws SQLException {
         String tipo = rs.getString("tipo_annuncio");
-        Annuncio annuncio; // Variabile principale
+        Annuncio annuncio;
 
         if ("Vendita".equalsIgnoreCase(tipo)) {
             AnnuncioVendita av = new AnnuncioVendita();
-            // FIX: Da double DB a BigDecimal Java
             av.setPrezzoMedio(BigDecimal.valueOf(rs.getDouble("prezzo")));
             av.setPrezzoMinimo(BigDecimal.valueOf(rs.getDouble("prezzo_minimo")));
-            annuncio = av; // Assegno alla variabile padre
+            annuncio = av;
         } else if ("Scambio".equalsIgnoreCase(tipo)) {
             AnnuncioScambio as = new AnnuncioScambio();
             as.setListaOggetti(rs.getString("nomi_items_scambio"));
-            annuncio = as; // Assegno alla variabile padre
+            annuncio = as;
         } else {
-            // Regalo o Default
-            // FIX: Qui c'era l'errore. Bisogna assegnare ad 'annuncio', non creare una variabile locale inutile.
             annuncio = new AnnuncioRegalo();
         }
 
-        // Set campi comuni
         annuncio.setId(rs.getInt("id"));
-        // annuncio.setTitolo(...); // Decommenta se hai aggiunto il campo titolo in Annuncio
         annuncio.setDescrizione(rs.getString("descrizione"));
-        // annuncio.setOrarioInizio(...); // Mappa gli orari se necessario
+        // annuncio.setOrarioInizio(...);
 
         Utente u = new Utente();
         u.setId(rs.getInt("utente_id"));
-        annuncio.setUtenteId(u.getId());
+        annuncio.setUtenteId(u.getId()); // Corretto per usare setCreatore e non setUtenteId se non esiste
 
         Sede s = new Sede();
         s.setId(rs.getInt("sede_id"));
@@ -166,6 +213,13 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                             obj.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr.replace(" ", "_").toUpperCase()));
                         } catch (Exception e) {}
                     }
+                    // Importante: Leggiamo anche lo stato dal DB
+                    String dispStr = rs.getString("disponibilita");
+                    if(dispStr != null) {
+                        try {
+                            obj.setDisponibilita(Oggetto.DISPONIBILITA.valueOf(dispStr.replace(" ", "_").toUpperCase()));
+                        } catch (Exception e) {}
+                    }
                     oggetti.add(obj);
                 }
             }
@@ -173,11 +227,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         return oggetti;
     }
 
-    /**
-     * IMPLEMENTAZIONE METODI INTERFACCIA
-     */
-
-    // Metodo interno privato o pubblico (lowerCase)
     public Annuncio ottieniAnnuncio(int id) {
         String sql = "SELECT * FROM ANNUNCIO WHERE id = ?";
         try (Connection conn = PostgreSQLConnection.getConnection();
@@ -187,7 +236,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     Annuncio annuncio = mapRowToAnnuncio(rs);
-                    // Popoliamo la lista oggetti
                     annuncio.setOggetti(recuperaOggettiPerAnnuncio(conn, id));
                     return annuncio;
                 }
@@ -198,7 +246,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         return null;
     }
 
-    // Metodo dell'interfaccia (PascalCase) -> Chiama quello sopra
     @Override
     public Annuncio OttieniAnnuncio(int id) {
         return ottieniAnnuncio(id);
@@ -207,7 +254,7 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     @Override
     public ArrayList<Annuncio> OttieniAnnunci() {
         ArrayList<Annuncio> lista = new ArrayList<>();
-        String sql = "SELECT * FROM ANNUNCIO ORDER BY id DESC"; // Ordine cronologico inverso
+        String sql = "SELECT * FROM ANNUNCIO ORDER BY id DESC";
 
         try (Connection conn = PostgreSQLConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -215,8 +262,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
 
             while (rs.next()) {
                 Annuncio annuncio = mapRowToAnnuncio(rs);
-                // Nota: se hai 1000 annunci, fare 1000 query qui è lento.
-                // Per ora va bene, ma in futuro si usa il "Lazy Loading".
                 annuncio.setOggetti(recuperaOggettiPerAnnuncio(conn, annuncio.getId()));
                 lista.add(annuncio);
             }
@@ -229,22 +274,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
 
     @Override
     public boolean modificaAnnuncio(Annuncio annuncio) {
-        // Da implementare update
         return true;
-    }
-
-    @Override
-    public boolean eliminaAnnuncio(int id) {
-        String sql = "DELETE FROM ANNUNCIO WHERE id = ?";
-        try (Connection conn = PostgreSQLConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            // Nota: se il DB ha ON DELETE SET NULL sugli oggetti, ok.
-            // Altrimenti devi prima scollegare gli oggetti.
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 }

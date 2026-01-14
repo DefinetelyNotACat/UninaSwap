@@ -140,6 +140,16 @@ public class PopolaDBPostgreSQL {
             stmt.executeUpdate(queryOfferta);
             System.out.println("Tabella OFFERTA CREATA");
 
+            // --- MODIFICA AGGIUNTA QUI ---
+            // Modifichiamo OGGETTO dopo che OFFERTA è stata creata per evitare errori di dipendenza
+            String alterOggetto = "ALTER TABLE OGGETTO " +
+                    "ADD COLUMN offerta_id INTEGER, " +
+                    "ADD CONSTRAINT fk_offerta_oggetto " +
+                    "FOREIGN KEY (offerta_id) REFERENCES OFFERTA(id) ON DELETE SET NULL;";
+            stmt.executeUpdate(alterOggetto);
+            System.out.println("Tabella OGGETTO aggiornata con riferimento a OFFERTA");
+            // -----------------------------
+
             // 10. RECENSIONE
             String queryRecensione = "CREATE TABLE RECENSIONE (" +
                     "id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, " +
@@ -168,6 +178,7 @@ public class PopolaDBPostgreSQL {
 
             System.out.println("--- Inizio Pulizia Database ---");
 
+            // L'ordine di cancellazione è importante, ma usando CASCADE risolviamo le dipendenze
             stmt.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
             stmt.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");
