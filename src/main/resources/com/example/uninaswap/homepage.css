@@ -1,0 +1,61 @@
+.hero-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-fill: #003366;
+}
+
+.hero-subtitle {
+    -fx-font-size: 16px;
+    -fx-fill: #666666;
+}
+
+.main-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: #f8f9fa;
+}
+
+/* Card Annuncio */
+.ad-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-border-radius: 15;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s;
+}
+
+.ad-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 8);
+    -fx-translate-y: -5;
+}
+
+.ad-description {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-fill: #333;
+}
+
+.ad-location {
+    -fx-font-size: 13px;
+    -fx-fill: #777;
+}
+
+.ad-extra-info {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-fill: #0056b3;
+}
+
+/* Badges */
+.badge-base {
+    -fx-padding: 3 10;
+    -fx-background-radius: 10;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.badge-vendita { -fx-background-color: #28a745; }
+.badge-scambio { -fx-background-color: #007bff; }
+.badge-regalo  { -fx-background-color: #fd7e14; }

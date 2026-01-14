@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.uninaswap.Costanti;
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
 import com.example.uninaswap.entity.Categoria;

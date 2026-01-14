@@ -271,7 +271,33 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         }
         return lista;
     }
+    public ArrayList<Annuncio> OttieniAnnunciNonMiei(int idUtenteCorrente) {
+        ArrayList<Annuncio> lista = new ArrayList<>();
+        // Usiamo utente_id per escludere i propri annunci
+        String sql = "SELECT * FROM ANNUNCIO WHERE utente_id <> ? ORDER BY id DESC";
 
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // 1. Inserisci il parametro QUI prima di eseguire
+            ps.setInt(1, idUtenteCorrente);
+
+            // 2. Esegui la query dopo aver settato i parametri
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Annuncio annuncio = mapRowToAnnuncio(rs);
+                    // Recuperiamo gli oggetti associati usando la connessione esistente
+                    annuncio.setOggetti(recuperaOggettiPerAnnuncio(conn, annuncio.getId()));
+                    lista.add(annuncio);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Errore nel recupero annunci non miei: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return lista;
+    }
     @Override
     public boolean modificaAnnuncio(Annuncio annuncio) {
         return true;

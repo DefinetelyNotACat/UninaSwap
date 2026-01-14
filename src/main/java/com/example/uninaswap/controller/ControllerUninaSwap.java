@@ -79,8 +79,12 @@ public class ControllerUninaSwap {
         return true;
     }
     public ArrayList<Annuncio> OttieniAnnunci(){
-        return null;
+        return annuncioDAO.OttieniAnnunci();
     }
+    public ArrayList<Annuncio> OttieniAnnunciNonMiei(){
+        return annuncioDAO.OttieniAnnunciNonMiei(this.utente.getId());
+    }
+
     public ArrayList<Offerta> OttieniOfferte() {return null;}
     public ArrayList<Offerta> OttieniLeMieOfferte(){return null;}
     public boolean SalvaOggetto(Oggetto Oggetto){
