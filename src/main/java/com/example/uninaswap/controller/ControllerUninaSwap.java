@@ -99,6 +99,10 @@ public class ControllerUninaSwap {
         if (utente == null) return new ArrayList<>();
          return (ArrayList<Oggetto>) oggettoDAO.ottieniTuttiOggetti(utente.getId());
     }
+    public ArrayList<Oggetto> OttieniOggettiDisponibili(Utente utente){
+        if (utente == null) return new ArrayList<>();
+        return (ArrayList<Oggetto>) oggettoDAO.ottieniTuttiOggettiDisponibili(utente.getId());
+    }
     //TODO! QUERY PER LA PUBBLICAZIONE DELL'ANNUNCIO
     public boolean PubblicaAnnuncio(Annuncio annuncio){
         System.out.println("Annuncio pubblicato "  + annuncio.toString());

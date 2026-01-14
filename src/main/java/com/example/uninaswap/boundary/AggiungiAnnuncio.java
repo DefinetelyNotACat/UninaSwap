@@ -71,7 +71,7 @@ public class AggiungiAnnuncio {
         contenitoreOggetti.getChildren().clear();
         try {
             Utente u = ControllerUninaSwap.getInstance().getUtente();
-            List<Oggetto> list = ControllerUninaSwap.getInstance().OttieniOggetti(u);
+            List<Oggetto> list = ControllerUninaSwap.getInstance().OttieniOggettiDisponibili(u);
             if (list == null || list.isEmpty()) {
                 contenitoreOggetti.getChildren().add(new Text("Inventario vuoto."));
                 return;

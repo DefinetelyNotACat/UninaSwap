@@ -153,6 +153,31 @@ public class OggettoDAO implements GestoreOggettoDAO {
         }
         return lista;
     }
+    public ArrayList<Oggetto> ottieniTuttiOggettiDisponibili(int idUtente) {
+        ArrayList<Oggetto> lista = new ArrayList<>();
+        String sql = "SELECT * FROM OGGETTO WHERE utente_id = ? AND disponibilita = 'DISPONIBILE' ORDER BY id DESC";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idUtente);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Oggetto obj = mapResultSetToOggetto(rs);
+
+                    // Recupero immagini per visualizzazione anteprima
+                    obj.setImmagini(immagineDAO.ottieniImmaginiStringhe(obj.getId()));
+                    // Recupero categorie
+                    obj.setCategorie(oggettoCategoriaDAO.ottieniCategoriePerOggetto(obj.getId()));
+
+                    lista.add(obj);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
 
     public boolean eliminaOggetto(int idOggetto) {
         String sql = "DELETE FROM OGGETTO WHERE id = ?";
