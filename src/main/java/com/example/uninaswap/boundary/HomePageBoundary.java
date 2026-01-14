@@ -4,6 +4,7 @@ import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
 import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -20,28 +21,50 @@ public class HomePageBoundary implements GestoreMessaggio {
 
     @FXML private FlowPane containerAnnunci;
     @FXML private Messaggio notificaController;
+
+    // JavaFX inietta automaticamente il controller dell'include usando: [id] + "Controller"
     @FXML private NavBarComponent navBarComponentController;
 
     @FXML
     private void initialize() {
         if (navBarComponentController != null) {
-            navBarComponentController.initialize();
+            // Colleghiamo la navbar a questa istanza di HomePage
+            navBarComponentController.setHomePageBoundary(this);
         }
-        caricaCatalogoAnnunci();
+        // Caricamento iniziale
+        caricaCatalogoAnnunci(null);
     }
 
-    private void caricaCatalogoAnnunci() {
+    public void caricaCatalogoAnnunci(String query) {
         containerAnnunci.getChildren().clear();
-        List<Annuncio> annunci = controller.OttieniAnnunciNonMiei();
+        List<Annuncio> annunci;
 
+        if (query == null || query.trim().isEmpty()) {
+            annunci = controller.OttieniAnnunciNonMiei();
+        } else {
+            annunci = controller.OttieniAnnunciRicercaUtente(query.trim());
+        }
+
+        // GESTIONE RICERCA SENZA RISULTATI
         if (annunci == null || annunci.isEmpty()) {
-            containerAnnunci.getChildren().add(new Text("Nessun annuncio disponibile al momento."));
+            VBox boxVuoto = new VBox(15);
+            boxVuoto.setAlignment(Pos.CENTER);
+            boxVuoto.setMinWidth(800); // Assicura che sia centrato nella griglia
+            boxVuoto.setPadding(new Insets(50, 0, 0, 0));
+
+            Text t1 = new Text("Nessun annuncio trovato.");
+            t1.setStyle("-fx-font-size: 20px; -fx-fill: #888; -fx-font-weight: bold;");
+
+            Text t2 = new Text("La ricerca per '" + (query == null ? "" : query) + "' non ha prodotto risultati.");
+            t2.setStyle("-fx-font-size: 14px; -fx-fill: #aaa;");
+
+            boxVuoto.getChildren().addAll(t1, t2);
+            containerAnnunci.getChildren().add(boxVuoto);
             return;
         }
 
         for (Annuncio a : annunci) {
-            VBox card = creaCardAnnuncio(a);
-            containerAnnunci.getChildren().add(card);
+            containerAnnunci.getChildren().add(creaCardAnnuncio(a));
         }
     }
 
@@ -51,7 +74,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         card.setAlignment(Pos.TOP_CENTER);
         card.setPrefWidth(250);
 
-        // --- IMMAGINE (Prende la prima dell'oggetto principale) ---
         ImageView imgView = new ImageView();
         imgView.setFitWidth(230);
         imgView.setFitHeight(160);
@@ -68,7 +90,6 @@ public class HomePageBoundary implements GestoreMessaggio {
             imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
         }
 
-        // --- BADGE TIPOLOGIA ---
         Label badge = new Label();
         badge.getStyleClass().add("badge-base");
         String infoExtra = "";
@@ -87,12 +108,11 @@ public class HomePageBoundary implements GestoreMessaggio {
             infoExtra = "Gratis";
         }
 
-        // --- TESTI ---
         Text desc = new Text(a.getDescrizione());
         desc.setWrappingWidth(220);
         desc.getStyleClass().add("ad-description");
 
-        Text sede = new Text("📍 " + (a.getSede() != null ? a.getSede().getNomeSede() : "Sede non specificata"));
+        Text sede = new Text("📍 " + (a.getSede() != null ? a.getSede().getNomeSede() : "N/A"));
         sede.getStyleClass().add("ad-location");
 
         HBox footer = new HBox();
@@ -102,10 +122,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         footer.getChildren().add(extra);
 
         card.getChildren().addAll(imgView, badge, desc, sede, footer);
-
-        // Effetto click
-        card.setOnMouseClicked(e -> System.out.println("Hai cliccato l'annuncio ID: " + a.getId()));
-
         return card;
     }
 

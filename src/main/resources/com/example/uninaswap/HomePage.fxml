@@ -13,7 +13,7 @@
 
     <VBox alignment="TOP_CENTER" spacing="10">
         <HBox alignment="CENTER" styleClass="navbar-container">
-            <fx:include source="navbar.fxml" />
+            <fx:include fx:id="navBarComponent" source="navbar.fxml" />
         </HBox>
 
         <VBox alignment="CENTER" spacing="5">

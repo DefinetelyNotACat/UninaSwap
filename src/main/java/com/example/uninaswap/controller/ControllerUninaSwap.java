@@ -81,7 +81,15 @@ public class ControllerUninaSwap {
     public ArrayList<Annuncio> OttieniAnnunci(){
         return annuncioDAO.OttieniAnnunci();
     }
-    public ArrayList<Annuncio> OttieniAnnunciNonMiei(){
+    public ArrayList<Annuncio> OttieniAnnunciRicercaUtente(String ricerca) {
+        try {
+            // Passiamo l'ID dell'utente loggato per escludere i suoi annunci dai risultati
+            return annuncioDAO.OttieniAnnunciRicercaUtente(ricerca, this.utente.getId());
+        } catch (Exception e) {
+            // Se non c'è un utente loggato (caso raro), cerchiamo tra tutti
+            return annuncioDAO.OttieniAnnunciRicercaUtente(ricerca, -1);
+        }
+    }    public ArrayList<Annuncio> OttieniAnnunciNonMiei(){
         return annuncioDAO.OttieniAnnunciNonMiei(this.utente.getId());
     }
 

@@ -271,7 +271,30 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         }
         return lista;
     }
-    public ArrayList<Annuncio> OttieniAnnunciNonMiei(int idUtenteCorrente) {
+    public ArrayList<Annuncio> OttieniAnnunciRicercaUtente(String ricerca, int mioId) {
+        ArrayList<Annuncio> lista = new ArrayList<>();
+        // Filtriamo per descrizione (ILIKE) ed escludiamo i propri annunci (utente_id <>)
+        String sql = "SELECT * FROM ANNUNCIO WHERE DESCRIZIONE ILIKE ? AND utente_id <> ? ORDER BY id DESC";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Impostiamo il testo della ricerca con i simboli di percentuale %
+            ps.setString(1, "%" + ricerca + "%");
+            ps.setInt(2, mioId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Annuncio annuncio = mapRowToAnnuncio(rs);
+                    annuncio.setOggetti(recuperaOggettiPerAnnuncio(conn, annuncio.getId()));
+                    lista.add(annuncio);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }    public ArrayList<Annuncio> OttieniAnnunciNonMiei(int idUtenteCorrente) {
         ArrayList<Annuncio> lista = new ArrayList<>();
         // Usiamo utente_id per escludere i propri annunci
         String sql = "SELECT * FROM ANNUNCIO WHERE utente_id <> ? ORDER BY id DESC";
