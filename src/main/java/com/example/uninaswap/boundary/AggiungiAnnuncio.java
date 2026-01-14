@@ -178,8 +178,59 @@ public class AggiungiAnnuncio {
 
     @FXML
     public void onPubblicaClick(ActionEvent actionEvent) {
-        // Logica di invio al controller...
-        System.out.println("Invio in corso...");
+
+        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+        try {
+            // 1. Dati Comuni
+            String descrizione = descrizioneAnnuncioArea.getText();
+            Sede sede = trovaSedePerNome(sedeBox.getValue());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            LocalTime inizio = LocalTime.parse(orarioInizioField.getText(), formatter);
+            LocalTime fine = LocalTime.parse(orarioFineField.getText(), formatter);
+
+            List<Oggetto> selezionati = ottieniOggettiSelezionati();
+            Oggetto primoOggetto = selezionati.get(0); // Primo oggetto richiesto dai costruttori delle entity
+
+            Annuncio annuncioDaInviare = null;
+
+            // 2. Creazione istanza specifica
+            if (radioVendita.isSelected()) {
+                BigDecimal prezzoRichiesto = new BigDecimal(prezzoField.getText().replace(",", "."));
+                AnnuncioVendita av = new AnnuncioVendita(sede, descrizione, inizio, fine, primoOggetto, prezzoRichiesto);
+                if (!prezzoMinField.getText().isEmpty()) {
+                    av.setPrezzoMinimo(new BigDecimal(prezzoMinField.getText().replace(",", ".")));
+                }
+                annuncioDaInviare = av;
+
+            } else if (radioScambio.isSelected()) {
+                String cosaCerco = desideriScambioArea.getText();
+                annuncioDaInviare = new AnnuncioScambio(sede, descrizione, inizio, fine, primoOggetto, cosaCerco);
+
+            } else if (radioRegalo.isSelected()) {
+                annuncioDaInviare = new AnnuncioRegalo(sede, descrizione, inizio, fine, primoOggetto);
+                // Nota: Se AnnuncioRegalo avesse un campo per infoRitiroField, andrebbe settato qui.
+            }
+
+            // 3. Aggiunta oggetti supplementari
+            if (annuncioDaInviare != null && selezionati.size() > 1) {
+                for (int i = 1; i < selezionati.size(); i++) {
+                    annuncioDaInviare.aggiungiOggetto(selezionati.get(i));
+                }
+            }
+
+            // 4. Invio al Controller
+            if (annuncioDaInviare != null) {
+
+                boolean successo = controller.PubblicaAnnuncio(annuncioDaInviare);
+                if (successo) {
+                    new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Annuncio pubblicato!", Messaggio.TIPI.SUCCESS);
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.println("Errore pubblicazione: " + e.getMessage());
+        }
+
     }
 
     @FXML
@@ -200,5 +251,7 @@ public class AggiungiAnnuncio {
         return s;
     }
 
-    @FXML void onAnnullaClick(ActionEvent e) { new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, e); }
+    @FXML void onAnnullaClick(ActionEvent e) {
+        new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, e, "Pubblicazione annuncio annullata", Messaggio.TIPI.INFO);
+    }
 }
