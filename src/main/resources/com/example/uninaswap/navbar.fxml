@@ -21,7 +21,7 @@
 
             <TextField fx:id="barraDiRicerca"  promptText="Cerca..." prefWidth="450" HBox.hgrow="ALWAYS" />
 
-            <Button fx:id="bottonePubblicaAnnuncio" text="Cerca" />
+            <Button fx:id="bottoneRicerca" text="Cerca" />
 
             <ImageView fx:id="fotoProfilo" styleClass="profile-picture" fitHeight="36.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true" />
             <Button fx:id="bottoneAggiungiAnnuncio" text="Pubblica Annuncio" styleClass="button"/>
