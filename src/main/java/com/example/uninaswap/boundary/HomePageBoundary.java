@@ -80,47 +80,65 @@ public class HomePageBoundary implements GestoreMessaggio {
 
     private VBox creaCardUtente(Utente u) {
         VBox card = new VBox(15);
-        card.getStyleClass().add("ad-card"); // Usiamo lo stesso stile delle card annunci per coerenza
+        card.getStyleClass().add("ad-card"); // Utilizza lo stile CSS delle card per coerenza
         card.setAlignment(Pos.CENTER);
         card.setPrefWidth(280);
         card.setPadding(new Insets(20));
 
-        // --- IMMAGINE PROFILO ---
+        // --- 1. IMMAGINE PROFILO (PFP) ---
         ImageView imgView = new ImageView();
         imgView.setFitWidth(100);
         imgView.setFitHeight(100);
 
         try {
             String path = u.getPathImmagineProfilo();
+            // Se l'immagine non è quella di default, caricala dal file system locale
             if (path != null && !path.equals("default") && !path.isEmpty()) {
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
-                imgView.setImage(new Image(file.toURI().toString()));
+                if (file.exists()) {
+                    imgView.setImage(new Image(file.toURI().toString()));
+                } else {
+                    imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
+                }
             } else {
+                // Immagine di fallback dai resources
                 imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
             }
         } catch (Exception e) {
+            // Fallback estremo in caso di errore nel caricamento
             imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
         }
 
-        // Clip circolare per la foto
+        // Rende l'immagine perfettamente circolare
         Circle clip = new Circle(50, 50, 50);
         imgView.setClip(clip);
 
-        // --- TESTI ---
+        // --- 2. USERNAME ---
         Text username = new Text(u.getUsername());
-        username.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #003366;");
+        username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-fill: #003366;");
 
+        // --- 3. MATRICOLA ---
         Text matricola = new Text("Matricola: " + u.getMatricola());
         matricola.setStyle("-fx-font-size: 14px; -fx-fill: #666;");
 
+        // --- 4. EMAIL ---
+        Text email = new Text(u.getEmail());
+        email.setStyle("-fx-font-size: 13px; -fx-fill: #888; -fx-font-style: italic;");
+
+        // --- 5. BOTTONE AZIONE ---
         Button btnProfilo = new Button("Vedi Profilo");
         btnProfilo.getStyleClass().add("button");
-        btnProfilo.setOnAction(e -> System.out.println("Apertura profilo di: " + u.getUsername()));
+        // Al click, puoi gestire l'apertura del profilo dell'utente specifico
+        btnProfilo.setOnAction(e -> {
+            System.out.println("Navigazione al profilo di: " + u.getUsername() + " (ID: " + u.getId() + ")");
+            // Qui potresti chiamare: gestoreScene.mostraProfiloUtente(u.getId());
+        });
 
-        card.getChildren().addAll(imgView, username, matricola, btnProfilo);
+        // Aggiunta di tutti gli elementi alla card
+        card.getChildren().addAll(imgView, username, matricola, email, btnProfilo);
+
         return card;
     }
-
     private VBox creaCardAnnuncio(Annuncio a) {
         VBox card = new VBox(10);
         card.getStyleClass().add("ad-card");
