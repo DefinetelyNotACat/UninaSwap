@@ -22,7 +22,7 @@ public class AggiungiRecensione {
     @FXML private TextArea commentoArea;
     @FXML private Button inviaButton;
 
-    private Utente utenteDaRecensire;
+    private Utente utenteDaRecensire, utenteRecensore;
     private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
 
     private final IntegerProperty votoSelezionato = new SimpleIntegerProperty(0);
@@ -30,12 +30,20 @@ public class AggiungiRecensione {
 
     @FXML
     public void initialize() {
+
+        setUtenteDaRecensire();
         setupValidazione();
     }
 
-    public void setUtenteDaRecensire(Utente u) {
-        this.utenteDaRecensire = u;
-        testoRecensito.setText("Stai recensendo: " + u.getUsername());
+    public void setUtenteDaRecensire() {
+        try {
+            //TODO! IMPLEMENTARE MODO CHE UTENTEDARECENSIRE NON SIA NULL CON PASSAGGIO DI BOUNDARY ECC
+            this.utenteDaRecensire = null;
+            this.utenteRecensore = controller.getUtente();
+            testoRecensito.setText("Tu, " + this.utenteRecensore.getUsername() + " Stai recensendo: " + this.utenteDaRecensire.getUsername());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     private void setupValidazione() {
@@ -95,6 +103,7 @@ public class AggiungiRecensione {
                 return;
             }
 
+            // TODO! implementare la logica di pubblicazione recensione
             boolean successo = controller.pubblicaRecensione(
                     utenteDaRecensire,
                     recensore,
