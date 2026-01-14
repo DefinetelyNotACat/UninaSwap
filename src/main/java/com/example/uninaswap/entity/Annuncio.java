@@ -4,6 +4,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 public abstract class Annuncio {
+    //enum per evitare che piu' utenti possano fare offerte allo stesso annuncio
+    //uso di protected per poter dare l'accesso alle sottoclassi
     protected enum STATO_ANNUNCIO {
         DISPONIBILE,
         NON_DISPONIBILE
@@ -15,6 +17,7 @@ public abstract class Annuncio {
     protected LocalTime orarioInizio;
     protected LocalTime orarioFine;
     protected STATO_ANNUNCIO stato;
+    //liste per gestire la relazione tra oggetti e annunci
     protected ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
     protected ArrayList<Offerta> offerte = new ArrayList<Offerta>();
 
@@ -22,12 +25,15 @@ public abstract class Annuncio {
 
     public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
         this.sede = sede;
+        //gestione relazione tra annuncio e sede: una volta creato l'annuncio, viene aggiunto a sede
         this.sede.aggiungiAnnuncio(this);
         this.descrizione = descrizione;
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
         this.stato = STATO_ANNUNCIO.DISPONIBILE;
         this.sede.aggiungiAnnuncio(this);
+        //gestione relazione tra annuncio e oggetto: una volta creato l'annuncio viene aggiunto fa un check per vedere
+        //se l'oggetto inserito esiste, se si' l'annuncio viene aggiunto all'oggetto altrimenti da' un messaggio di errore
         if (oggetto != null) {
             try {
                 this.oggetti.add(oggetto);
@@ -102,8 +108,9 @@ public abstract class Annuncio {
         if (orarioInizio == null || orarioFine == null) {
             throw new Exception("Entrambi gli orari devono essere specificati");
         }
+        //check per controllare che l'orario di inizio non superi quello di fine
         if (orarioInizio.isAfter(orarioFine)) {
-            throw new Exception("L'orario d'inizio non può essere successivo all'orario di fine!");
+            throw new Exception("L'orario d'inizio non può essere successivo a quello di fine!");
         }
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
@@ -126,15 +133,17 @@ public abstract class Annuncio {
         }
     }
 
+    //metodo necessario per la relazione tra annuncio e offerta: check che controlla che l'offerta esista prima di aggiungerla
     protected void ottieniOfferta(Offerta offerta) throws Exception{
         if (offerta != null) {
             this.offerte.add(offerta);
         }
         else{
-            throw new Exception("Offerta non esistente");
+            throw new Exception("Offerta inesistente");
         }
     }
 
+    //metodo per distinguere tra le sottoclassi dell'annuncio
     public abstract String getTipoAnnuncio();
 
     @Override
