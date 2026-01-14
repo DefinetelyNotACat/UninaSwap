@@ -31,7 +31,6 @@ public abstract class Annuncio {
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
         this.stato = STATO_ANNUNCIO.DISPONIBILE;
-        this.sede.aggiungiAnnuncio(this);
         //gestione relazione tra annuncio e oggetto: una volta creato l'annuncio viene aggiunto fa un check per vedere
         //se l'oggetto inserito esiste, se si' l'annuncio viene aggiunto all'oggetto altrimenti da' un messaggio di errore
         if (oggetto != null) {
@@ -139,7 +138,7 @@ public abstract class Annuncio {
             this.offerte.add(offerta);
         }
         else{
-            throw new Exception("Offerta inesistente");
+            throw new Exception("L'Offerta non esiste");
         }
     }
 
@@ -150,7 +149,7 @@ public abstract class Annuncio {
     public String toString() {
         return "Annuncio{" +
                 "descrizione='" + descrizione + '\'' +
-                ", sede=" + (sede != null ? sede.getNomeSede() : "N/A") +
+                ", sede=" + (sede != null ? sede.getNomeSede() : "sede non impostata") +
                 ", orario=" + orarioInizio + "-" + orarioFine +
                 ", stato=" + stato +
                 ", num oggetti=" + oggetti.size() +
