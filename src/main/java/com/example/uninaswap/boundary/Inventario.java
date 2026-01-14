@@ -1,4 +1,5 @@
 package com.example.uninaswap.boundary;
+
 import javafx.scene.layout.FlowPane;
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
@@ -19,7 +20,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -47,10 +47,8 @@ public class Inventario implements Initializable, GestoreMessaggio {
     }
 
     private void caricaOggetti() {
-        // 1. Pulizia della griglia esistente
         gridInventario.getChildren().clear();
 
-        // 2. Recupero Utente
         Utente utente = null;
         try {
             utente = controller.getUtente();
@@ -59,20 +57,17 @@ public class Inventario implements Initializable, GestoreMessaggio {
             return;
         }
 
-        // 3. Recupero Oggetti dal DB
         List<Oggetto> oggetti = oggettoDAO.ottieniTuttiOggetti(utente.getId());
 
-        // --- FIX HERE: Check for NULL before checking isEmpty() ---
         if (oggetti == null || oggetti.isEmpty()) {
             testoVuoto.setVisible(true);
             testoVuoto.setManaged(true);
-            return; // Important: Return here so the loop below doesn't run on null
+            return;
         }
 
         testoVuoto.setVisible(false);
         testoVuoto.setManaged(false);
 
-        // 5. Popolamento Griglia
         int colonna = 0;
         int riga = 0;
 
@@ -87,17 +82,16 @@ public class Inventario implements Initializable, GestoreMessaggio {
             }
         }
     }
+
     private VBox creaCardOggetto(Oggetto obj) {
         VBox card = new VBox();
         card.setAlignment(Pos.CENTER);
         card.setSpacing(10);
         card.getStyleClass().add("inventory-card");
 
-        // --- 1. DIMENSIONI DINAMICHE ---
         card.setPrefWidth(260);
         card.setMinWidth(260);
         card.setMaxWidth(260);
-
         card.setMinHeight(340);
         card.setPrefHeight(javafx.scene.layout.Region.USE_COMPUTED_SIZE);
         card.setMaxHeight(Double.MAX_VALUE);
@@ -108,46 +102,49 @@ public class Inventario implements Initializable, GestoreMessaggio {
         imgView.setPreserveRatio(true);
 
         try {
-            // Prende la prima immagine se esiste, altrimenti null
-            String path = (obj.getImmagini() != null && !obj.getImmagini().isEmpty()) ? obj.getImmagini().get(0) : null;
+            // Recupero del path relativo dal DB (es: "oggetti/file.jpg")
+            String pathRelativo = (obj.getImmagini() != null && !obj.getImmagini().isEmpty()) ? obj.getImmagini().get(0) : null;
 
-            if (path != null) {
-                // Gestione file locali o URL web
-                if (path.startsWith("file:") || path.startsWith("http")) {
-                    imgView.setImage(new Image(path));
+            if (pathRelativo != null) {
+                if (pathRelativo.startsWith("file:") || pathRelativo.startsWith("http")) {
+                    imgView.setImage(new Image(pathRelativo));
                 } else {
-                    imgView.setImage(new Image(new File(path).toURI().toString()));
+                    // Costruzione del percorso assoluto puntando alla cartella dati_utenti
+                    File fileImmagine = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + pathRelativo);
+
+                    if (fileImmagine.exists()) {
+                        imgView.setImage(new Image(fileImmagine.toURI().toString()));
+                    } else {
+                        System.err.println("Immagine non trovata: " + fileImmagine.getAbsolutePath());
+                        // Fallback uniforme con HomePageBoundary
+                        imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+                    }
                 }
             } else {
-                // Immagine di default se non ce ne sono
-                imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
+                imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
             }
         } catch (Exception e) {
-            // Fallback in caso di errore nel caricamento
-            imgView.setImage(new Image(getClass().getResourceAsStream("/images/uninaLogo.png")));
+            System.err.println("Errore caricamento immagine: " + e.getMessage());
+            imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
         }
 
-        // --- NOME ---
         Text nome = new Text(obj.getNome());
         nome.getStyleClass().add("label");
         nome.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
-        nome.setWrappingWidth(230); // Impedisce al testo di uscire dalla card (260px - padding)
-        nome.setTextAlignment(javafx.scene.text.TextAlignment.CENTER); // Mantiene il testo centrato se va a capo
+        nome.setWrappingWidth(230);
+        nome.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        // --- 2. BADGES (FlowPane) ---
         FlowPane badgeBox = new FlowPane();
         badgeBox.setAlignment(Pos.CENTER);
         badgeBox.setHgap(5);
         badgeBox.setVgap(5);
         badgeBox.setPrefWrapLength(230);
 
-        // Spilla Condizione
         String testoCondizione = String.valueOf(obj.getCondizione());
         Label badgeCondizione = new Label(testoCondizione);
         badgeCondizione.getStyleClass().addAll("badge", "badge-violet");
         badgeCondizione.setMinWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
 
-        // Spilla Stato
         String testoStato = String.valueOf(obj.getDisponibilita());
         Label badgeStato = new Label(testoStato);
         badgeStato.getStyleClass().add("badge");
@@ -163,7 +160,6 @@ public class Inventario implements Initializable, GestoreMessaggio {
 
         badgeBox.getChildren().addAll(badgeCondizione, badgeStato);
 
-        // --- BOTTONI ---
         HBox btnBox = new HBox(10);
         btnBox.setAlignment(Pos.CENTER);
 
@@ -180,29 +176,20 @@ public class Inventario implements Initializable, GestoreMessaggio {
         card.getChildren().addAll(imgView, nome, badgeBox, btnBox);
         return card;
     }
+
     private void onModificaOggetto(Oggetto obj, ActionEvent event) {
         try {
-            // Caricamento manuale per passare i dati al controller
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathAggiungiOggetto));
             Parent root = loader.load();
 
-            // Otteniamo il controller e passiamo l'oggetto
             AggiungiOggetto controllerAggiungi = loader.getController();
             controllerAggiungi.setOggettoDaModificare(obj);
 
-            // 1. Recupero lo stage attuale
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-
-            // 2. Salvo le dimensioni attuali della scena (larghezza e altezza)
             double larghezzaAttuale = stage.getScene().getWidth();
             double altezzaAttuale = stage.getScene().getHeight();
 
-            // 3. Creo la nuova scena IMPONENDO le dimensioni vecchie
             Scene scene = new Scene(root, larghezzaAttuale, altezzaAttuale);
-
-            // 4. Se usi CSS globali, ricordati di riaggiungerli (opzionale ma consigliato)
-            // scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
             stage.setScene(scene);
             stage.setTitle("Modifica Oggetto");
             stage.show();
@@ -224,7 +211,6 @@ public class Inventario implements Initializable, GestoreMessaggio {
 
     @FXML
     public void onAggiungiNuovoClick(ActionEvent event) {
-        // Qui usiamo GestoreScene normale perché non dobbiamo passare dati
         gestoreScene.CambiaScena(Costanti.pathAggiungiOggetto, "Aggiungi Oggetto", event);
     }
 

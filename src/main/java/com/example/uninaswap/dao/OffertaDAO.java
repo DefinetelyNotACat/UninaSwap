@@ -181,7 +181,7 @@ public class OffertaDAO {
 
         // Recuperiamo le entità correlate (o Proxy)
         Utente utente = utenteDAO.ottieniUtente(utenteId);
-        Annuncio annuncio = annuncioDAO.ottieniAnnuncio(annuncioId); // Attenzione: questo potrebbe essere pesante se fatto in loop
+        Annuncio annuncio = annuncioDAO.OttieniAnnuncio(    annuncioId); // Attenzione: questo potrebbe essere pesante se fatto in loop
 
         // Parametri base
         String messaggio = rs.getString("messaggio");
