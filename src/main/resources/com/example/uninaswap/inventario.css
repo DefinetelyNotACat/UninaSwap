@@ -2,6 +2,10 @@
     -fx-background-color: #ffffff;
 }
 
+.form-field{
+    -fx-cursor: hand;
+}
+
 .form-field .list-view .list-cell {
     -fx-text-fill: #333333;
     -fx-padding: 8px 10px;
