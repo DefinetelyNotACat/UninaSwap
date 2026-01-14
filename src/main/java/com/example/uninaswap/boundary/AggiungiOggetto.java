@@ -6,16 +6,12 @@ import com.example.uninaswap.dao.OggettoDAO;
 import com.example.uninaswap.entity.Categoria;
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
-import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,7 +22,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +31,7 @@ public class AggiungiOggetto implements Initializable {
 
     @FXML private Text erroreNome;
     @FXML private TextField nomeOggettoField;
-    @FXML private MenuButton categorieMenuButton; // Sostituisce la vecchia ComboBox
+    @FXML private MenuButton categorieMenuButton;
     @FXML private ComboBox<Oggetto.CONDIZIONE> condizioneBox;
 
     @FXML private HBox contenitoreImmagini;
@@ -58,12 +53,11 @@ public class AggiungiOggetto implements Initializable {
 
     public void setOggettoDaModificare(Oggetto obj) {
         this.oggettoDaModificare = obj;
-
         if(aggiungiButton != null) aggiungiButton.setText("Salva Modifiche");
 
         nomeOggettoField.setText(obj.getNome());
 
-        // Spunta le categorie già associate all'oggetto
+        // Pre-selezione categorie
         for (MenuItem item : categorieMenuButton.getItems()) {
             if (item instanceof CustomMenuItem customItem && customItem.getContent() instanceof CheckBox cb) {
                 Categoria catNelMenu = (Categoria) cb.getUserData();
@@ -84,24 +78,20 @@ public class AggiungiOggetto implements Initializable {
     }
 
     // =================================================================================
-    // LOGICA DI VALIDAZIONE
+    // LOGICA DI VALIDAZIONE (FIELDS_REGEX_SPAZIO)
     // =================================================================================
 
     private void controllaCampiValidi() {
         String testoNome = nomeOggettoField.getText();
-        boolean nomeOk = false;
-        if (testoNome != null) {
-            String nomePulito = testoNome.replace(" ", "");
-            if (nomePulito.length() >= 5 && testoNome.matches(Costanti.OGGETTO_FIELD_REGEX)) {
-                nomeOk = true;
-            }
-        }
 
-        // Verifica che almeno una categoria sia spuntata
+        // Validazione Nome con Regex di Costanti e lunghezza minima
+        boolean nomeOk = (testoNome != null &&
+                testoNome.trim().length() >= 5 &&
+                testoNome.matches(Costanti.FIELDS_REGEX_SPAZIO));
+
         List<Categoria> selezionate = getCategorieSelezionate();
         boolean categoriaOk = !selezionate.isEmpty();
 
-        // Feedback visivo sul MenuButton
         if (categoriaOk) {
             categorieMenuButton.setText(selezionate.size() + " categorie selezionate");
         } else {
@@ -151,23 +141,15 @@ public class AggiungiOggetto implements Initializable {
             return;
         }
 
-        for (String path : immaginiEsistenti) {
-            creaMiniatura(path, true);
-        }
-
-        for (File file : immaginiNuove) {
-            creaMiniatura(file.toURI().toString(), false);
-        }
+        for (String path : immaginiEsistenti) creaMiniatura(path, true);
+        for (File file : immaginiNuove) creaMiniatura(file.toURI().toString(), false);
     }
 
     private void creaMiniatura(String imagePath, boolean isEsistente) {
         try {
-            Image image;
-            if(imagePath.startsWith("file:") || imagePath.startsWith("http")) {
-                image = new Image(imagePath);
-            } else {
-                image = new Image(new File(imagePath).toURI().toString());
-            }
+            Image image = (imagePath.startsWith("file:") || imagePath.startsWith("http"))
+                    ? new Image(imagePath)
+                    : new Image(new File(imagePath).toURI().toString());
 
             ImageView imageView = new ImageView(image);
             imageView.setFitHeight(150);
@@ -176,14 +158,10 @@ public class AggiungiOggetto implements Initializable {
 
             Button rimuoviBtn = new Button("X");
             rimuoviBtn.getStyleClass().add("button-remove");
-            rimuoviBtn.setPrefSize(20, 20);
 
             rimuoviBtn.setOnAction(e -> {
-                if (isEsistente) {
-                    immaginiEsistenti.remove(imagePath);
-                } else {
-                    immaginiNuove.removeIf(f -> f.toURI().toString().equals(imagePath));
-                }
+                if (isEsistente) immaginiEsistenti.remove(imagePath);
+                else immaginiNuove.removeIf(f -> f.toURI().toString().equals(imagePath));
                 aggiornaVisualizzazioneImmagini();
                 controllaCampiValidi();
             });
@@ -191,7 +169,6 @@ public class AggiungiOggetto implements Initializable {
             VBox box = new VBox(5, imageView, rimuoviBtn);
             box.setAlignment(Pos.CENTER);
             box.getStyleClass().add("image-card");
-
             contenitoreImmagini.getChildren().add(box);
         } catch (Exception e) {
             System.err.println("Errore miniatura: " + e.getMessage());
@@ -203,51 +180,34 @@ public class AggiungiOggetto implements Initializable {
     // =================================================================================
 
     public void onPubblicaClick(ActionEvent actionEvent) {
-        Utente utenteCorrente;
         try {
-            utenteCorrente = controllerUninaSwap.getUtente();
+            Utente utenteCorrente = controllerUninaSwap.getUtente();
+            Oggetto oggettoToSave = (oggettoDaModificare != null) ? oggettoDaModificare : new Oggetto();
+
+            oggettoToSave.setNome(nomeOggettoField.getText());
+            oggettoToSave.setCondizione(condizioneBox.getValue());
+            oggettoToSave.setCategorie(new ArrayList<>(getCategorieSelezionate()));
+
+            ArrayList<String> pathsFinali = new ArrayList<>(immaginiEsistenti);
+            for (File f : immaginiNuove) pathsFinali.add(f.getAbsolutePath());
+            oggettoToSave.setImmagini(pathsFinali);
+
+            boolean esito = (oggettoDaModificare == null)
+                    ? oggettoDAO.salvaOggetto(oggettoToSave, utenteCorrente)
+                    : oggettoDAO.modificaOggetto(oggettoToSave);
+
+            if (esito) {
+                new GestoreScene().CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent,
+                        oggettoDaModificare == null ? "Oggetto aggiunto!" : "Oggetto modificato!", Messaggio.TIPI.SUCCESS);
+            }
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        Oggetto oggettoToSave = new Oggetto();
-        if (oggettoDaModificare != null) {
-            oggettoToSave.setId(oggettoDaModificare.getId());
-            oggettoToSave.setDisponibilita(oggettoDaModificare.getDisponibilita());
-        } else {
-            oggettoToSave.setDisponibilita(Oggetto.DISPONIBILITA.DISPONIBILE);
-        }
-
-        oggettoToSave.setNome(nomeOggettoField.getText());
-        oggettoToSave.setCondizione(condizioneBox.getValue());
-
-        // Recupero la lista di categorie selezionate tramite i CheckBox
-        ArrayList<Categoria> listaCat = new ArrayList<>(getCategorieSelezionate());
-        oggettoToSave.setCategorie(listaCat);
-
-        ArrayList<String> pathsFinali = new ArrayList<>(immaginiEsistenti);
-        for (File f : immaginiNuove) {
-            pathsFinali.add(f.getAbsolutePath());
-        }
-        oggettoToSave.setImmagini(pathsFinali);
-
-        boolean esito;
-        if (oggettoDaModificare == null) {
-            esito = oggettoDAO.salvaOggetto(oggettoToSave, utenteCorrente);
-        } else {
-            esito = oggettoDAO.modificaOggetto(oggettoToSave);
-        }
-
-        if (esito) {
-            GestoreScene gestoreScene = new GestoreScene();
-            gestoreScene.CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent,
-                    oggettoDaModificare == null ? "Oggetto aggiunto!" : "Oggetto modificato con successo!", Messaggio.TIPI.SUCCESS);
+            e.printStackTrace();
         }
     }
 
+    @FXML
     public void onAnnullaClick(ActionEvent actionEvent) {
-        GestoreScene gestoreScene = new GestoreScene();
-        gestoreScene.CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent);
+        new GestoreScene().CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent);
     }
 
     // =================================================================================
@@ -257,59 +217,40 @@ public class AggiungiOggetto implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         controllerUninaSwap = ControllerUninaSwap.getInstance();
-        if (aggiungiButton != null) aggiungiButton.setDisable(true);
 
-        // Popola il MenuButton con CustomMenuItem e CheckBox
+        // Popola categorie
         for (Categoria c : controllerUninaSwap.getCategorie()) {
             CheckBox cb = new CheckBox(c.getNome());
             cb.setUserData(c);
-            cb.setPrefWidth(200);
-            cb.setCursor(Cursor.HAND);
-
             cb.selectedProperty().addListener((obs, oldV, newV) -> controllaCampiValidi());
-
-            CustomMenuItem customItem = new CustomMenuItem(cb);
-            customItem.setHideOnClick(false);
-            categorieMenuButton.getItems().add(customItem);
+            categorieMenuButton.getItems().add(new CustomMenuItem(cb, false));
         }
 
         condizioneBox.getItems().setAll(controllerUninaSwap.getCondizioni());
 
-        condizioneBox.setCellFactory(lv -> new ListCell<>() {
-            @Override protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
-                super.updateItem(item, empty);
-                setText((empty || item == null) ? null : item.getEtichetta());
-            }
-        });
-        condizioneBox.setButtonCell(new ListCell<>() {
-            @Override protected void updateItem(Oggetto.CONDIZIONE item, boolean empty) {
-                super.updateItem(item, empty);
-                setText((empty || item == null) ? null : item.getEtichetta());
-            }
-        });
-
-        condizioneBox.valueProperty().addListener((o,old,newV) -> controllaCampiValidi());
-
+        // Listener Nome con FIELDS_REGEX_SPAZIO
         nomeOggettoField.textProperty().addListener((obs, oldV, newV) -> {
-            boolean ok = newV.trim().length() >= 5 && newV.matches(Costanti.OGGETTO_FIELD_REGEX);
+            boolean matchesRegex = newV.matches(Costanti.FIELDS_REGEX_SPAZIO);
+            boolean isLongEnough = newV.trim().length() >= 5;
+            boolean ok = matchesRegex && isLongEnough;
+
             if(erroreNome != null) {
-                erroreNome.setVisible(!ok); erroreNome.setManaged(!ok);
-                if(!ok) erroreNome.setText("Nome non valido (min 5 caratteri)");
+                erroreNome.setVisible(!ok);
+                erroreNome.setManaged(!ok);
+                if (!matchesRegex) erroreNome.setText("Caratteri speciali non ammessi");
+                else if (!isLongEnough) erroreNome.setText("Minimo 5 caratteri");
             }
             controllaCampiValidi();
         });
+
+        condizioneBox.valueProperty().addListener((o,old,newV) -> controllaCampiValidi());
     }
 
-    /**
-     * Helper per recuperare gli oggetti Categoria dai CheckBox selezionati
-     */
     private List<Categoria> getCategorieSelezionate() {
         List<Categoria> selezionate = new ArrayList<>();
         for (MenuItem item : categorieMenuButton.getItems()) {
             if (item instanceof CustomMenuItem customItem && customItem.getContent() instanceof CheckBox cb) {
-                if (cb.isSelected()) {
-                    selezionate.add((Categoria) cb.getUserData());
-                }
+                if (cb.isSelected()) selezionate.add((Categoria) cb.getUserData());
             }
         }
         return selezionate;

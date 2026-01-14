@@ -52,7 +52,7 @@
                         <children>
                             <Text styleClass="label" text="Testo dell'Annuncio"/>
                             <TextArea fx:id="descrizioneAnnuncioArea" promptText="Descrivi il tuo annuncio..." wrapText="true" prefRowCount="3" styleClass="form-field" />
-                            <Text fx:id="erroreDescrizione" managed="false" styleClass="error-text" text="Inserire una descrizione valida" visible="false" />
+                            <Text fx:id="erroreDescrizione" managed="false" styleClass="error-text" text="Il testo contiene caratteri non validi o è vuoto" visible="false" />
                         </children>
                     </VBox>
 
@@ -74,7 +74,7 @@
                                     <TextField fx:id="orarioFineField" promptText="Alle (es. 18:00)" styleClass="form-field" HBox.hgrow="ALWAYS"/>
                                 </children>
                             </HBox>
-                            <Text fx:id="erroreOrario" managed="false" styleClass="error-text" text="Formato, o, orari non validi" visible="false" textAlignment="CENTER" />
+                            <Text fx:id="erroreOrario" managed="false" styleClass="error-text" text="Formato non valido o orario inizio dopo fine" visible="false" textAlignment="CENTER" />
                         </children>
                     </VBox>
 
@@ -109,7 +109,6 @@
                                     <RadioButton fx:id="radioRegalo" text="Regalo" toggleGroup="$tipoAnnuncioGroup" onAction="#onTipologiaChange"/>
                                 </children>
                             </HBox>
-                            <Text fx:id="erroreTipologia" managed="false" styleClass="error-text" text="Selezionare una tipologia" visible="false" />
                         </children>
                     </VBox>
 
@@ -123,45 +122,25 @@
                                 <Text styleClass="label" text="Prezzo Minimo Accettato (Opzionale)" />
                                 <TextField fx:id="prezzoMinField" promptText="Es. 20.00" styleClass="form-field" />
                             </VBox>
-                            <Text fx:id="errorePrezzo" managed="false" styleClass="error-text" text="Inserire un prezzo valido" visible="false" />
+                            <Text fx:id="errorePrezzo" managed="false" styleClass="error-text" text="Inserire un prezzo numerico valido" visible="false" />
                         </children>
-                        <padding>
-                            <Insets top="10" bottom="10" />
-                        </padding>
-                        <style>
-                            -fx-background-color: rgba(0,0,0,0.03);
-                            -fx-background-radius: 10;
-                        </style>
                     </VBox>
 
                     <VBox fx:id="vboxScambio" spacing="5" alignment="CENTER" visible="false" managed="false">
                         <children>
                             <Text styleClass="label" text="Cosa cerchi in cambio?" />
-                            <TextArea fx:id="desideriScambioArea" promptText="Es. Cerco libri di Fisica o calcolatrice grafica..." wrapText="true" prefRowCount="3" styleClass="form-field" />
-                            <Text fx:id="erroreScambio" managed="false" styleClass="error-text" text="Specificare cosa si cerca" visible="false" />
+                            <TextArea fx:id="desideriScambioArea" promptText="Es. Cerco libri di Fisica..." wrapText="true" prefRowCount="3" styleClass="form-field" />
+                            <Text fx:id="erroreScambio" managed="false" styleClass="error-text" text="Testo non valido (solo lettere, numeri e spazi)" visible="false" />
                         </children>
-                        <padding>
-                            <Insets top="10" bottom="10" />
-                        </padding>
-                        <style>
-                            -fx-background-color: rgba(0,0,0,0.03);
-                            -fx-background-radius: 10;
-                        </style>
                     </VBox>
 
                     <VBox fx:id="vboxRegalo" spacing="5" alignment="CENTER" visible="false" managed="false">
                         <children>
                             <Text styleClass="description" text="L'oggetto sarà pubblicato come GRATUITO." textAlignment="CENTER"/>
                             <Text styleClass="label" text="Informazioni Ritiro (Opzionale)" />
-                            <TextField fx:id="infoRitiroField" promptText="Es. Ritiro solo a mano zona mensa..." styleClass="form-field" />
+                            <TextField fx:id="infoRitiroField" promptText="Es. Mensa ore 14" styleClass="form-field" />
+                            <Text fx:id="erroreRitiro" managed="false" styleClass="error-text" text="Il campo ritiro contiene caratteri non validi" visible="false" />
                         </children>
-                        <padding>
-                            <Insets top="10" bottom="10" />
-                        </padding>
-                        <style>
-                            -fx-background-color: rgba(0,255,0,0.05);
-                            -fx-background-radius: 10;
-                        </style>
                     </VBox>
 
                 </children>
