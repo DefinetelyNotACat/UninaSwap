@@ -6,12 +6,14 @@ import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import java.io.File;
 import java.util.List;
@@ -26,46 +28,92 @@ public class HomePageBoundary implements GestoreMessaggio {
     @FXML private NavBarComponent navBarComponentController;
 
     @FXML
-    private void initialize() {
+    private void initialize() throws Exception {
         if (navBarComponentController != null) {
             // Colleghiamo la navbar a questa istanza di HomePage
             navBarComponentController.setHomePageBoundary(this);
         }
-        // Caricamento iniziale
-        caricaCatalogoAnnunci(null);
+        // Caricamento iniziale degli annunci
+        caricaCatalogoAnnunci(null, true);
     }
 
-    public void caricaCatalogoAnnunci(String query) {
+    public void caricaCatalogoAnnunci(String query, boolean ricercaAnnuncio) throws Exception {
         containerAnnunci.getChildren().clear();
-        List<Annuncio> annunci;
 
-        if (query == null || query.trim().isEmpty()) {
-            annunci = controller.OttieniAnnunciNonMiei();
+        if (ricercaAnnuncio) {
+            // --- LOGICA RICERCA ANNUNCI ---
+            List<Annuncio> annunci;
+            if (query == null || query.trim().isEmpty()) {
+                annunci = controller.OttieniAnnunciNonMiei();
+            } else {
+                annunci = controller.OttieniAnnunciRicercaUtente(query.trim());
+            }
+
+            if (annunci == null || annunci.isEmpty()) {
+                mostraMessaggioVuoto("Nessun annuncio trovato.", "La ricerca per '" + query + "' non ha prodotto risultati.");
+                return;
+            }
+
+            for (Annuncio a : annunci) {
+                containerAnnunci.getChildren().add(creaCardAnnuncio(a));
+            }
         } else {
-            annunci = controller.OttieniAnnunciRicercaUtente(query.trim());
+            // --- LOGICA RICERCA UTENTE ---
+            if (query == null || query.trim().isEmpty()) return;
+
+            Utente utenteTrovato = controller.trovaUtente(query.trim());
+
+            if (utenteTrovato == null) {
+                mostraMessaggioVuoto("Utente non trovato.", "Nessun utente con nickname '" + query + "' (Case Sensitive).");
+                return;
+            }
+
+            // Aggiungiamo la card dell'utente trovato
+            containerAnnunci.getChildren().add(creaCardUtente(utenteTrovato));
+        }
+    }
+
+    private VBox creaCardUtente(Utente u) {
+        VBox card = new VBox(15);
+        card.getStyleClass().add("ad-card"); // Usiamo lo stesso stile delle card annunci per coerenza
+        card.setAlignment(Pos.CENTER);
+        card.setPrefWidth(280);
+        card.setPadding(new Insets(20));
+
+        // --- IMMAGINE PROFILO ---
+        ImageView imgView = new ImageView();
+        imgView.setFitWidth(100);
+        imgView.setFitHeight(100);
+
+        try {
+            String path = u.getPathImmagineProfilo();
+            if (path != null && !path.equals("default") && !path.isEmpty()) {
+                File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
+                imgView.setImage(new Image(file.toURI().toString()));
+            } else {
+                imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
+            }
+        } catch (Exception e) {
+            imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
         }
 
-        // GESTIONE RICERCA SENZA RISULTATI
-        if (annunci == null || annunci.isEmpty()) {
-            VBox boxVuoto = new VBox(15);
-            boxVuoto.setAlignment(Pos.CENTER);
-            boxVuoto.setMinWidth(800); // Assicura che sia centrato nella griglia
-            boxVuoto.setPadding(new Insets(50, 0, 0, 0));
+        // Clip circolare per la foto
+        Circle clip = new Circle(50, 50, 50);
+        imgView.setClip(clip);
 
-            Text t1 = new Text("Nessun annuncio trovato.");
-            t1.setStyle("-fx-font-size: 20px; -fx-fill: #888; -fx-font-weight: bold;");
+        // --- TESTI ---
+        Text username = new Text(u.getUsername());
+        username.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #003366;");
 
-            Text t2 = new Text("La ricerca per '" + (query == null ? "" : query) + "' non ha prodotto risultati.");
-            t2.setStyle("-fx-font-size: 14px; -fx-fill: #aaa;");
+        Text matricola = new Text("Matricola: " + u.getMatricola());
+        matricola.setStyle("-fx-font-size: 14px; -fx-fill: #666;");
 
-            boxVuoto.getChildren().addAll(t1, t2);
-            containerAnnunci.getChildren().add(boxVuoto);
-            return;
-        }
+        Button btnProfilo = new Button("Vedi Profilo");
+        btnProfilo.getStyleClass().add("button");
+        btnProfilo.setOnAction(e -> System.out.println("Apertura profilo di: " + u.getUsername()));
 
-        for (Annuncio a : annunci) {
-            containerAnnunci.getChildren().add(creaCardAnnuncio(a));
-        }
+        card.getChildren().addAll(imgView, username, matricola, btnProfilo);
+        return card;
     }
 
     private VBox creaCardAnnuncio(Annuncio a) {
@@ -125,8 +173,28 @@ public class HomePageBoundary implements GestoreMessaggio {
         return card;
     }
 
+    private void mostraMessaggioVuoto(String titolo, String sottotitolo) {
+        VBox boxVuoto = new VBox(15);
+        boxVuoto.setAlignment(Pos.CENTER);
+        boxVuoto.setMinWidth(800);
+        boxVuoto.setPadding(new Insets(50, 0, 0, 0));
+
+        Text t1 = new Text(titolo);
+        t1.setStyle("-fx-font-size: 20px; -fx-fill: #888; -fx-font-weight: bold;");
+
+        Text t2 = new Text(sottotitolo);
+        t2.setStyle("-fx-font-size: 14px; -fx-fill: #aaa;");
+
+        boxVuoto.getChildren().addAll(t1, t2);
+        containerAnnunci.getChildren().add(boxVuoto);
+    }
+
     @Override
     public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
         if(notificaController != null) notificaController.mostraMessaggio(testo, tipo);
+    }
+
+    public void svuotaCatalogo(){
+        containerAnnunci.getChildren().clear();
     }
 }

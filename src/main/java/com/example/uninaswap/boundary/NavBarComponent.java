@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.io.File;
 
@@ -21,6 +22,7 @@ public class NavBarComponent {
     @FXML private Button bottoneAggiungiAnnuncio;
     @FXML private ChoiceBox<String> filtroBarraDiRicerca;
     @FXML private TextField barraDiRicerca;
+    @FXML private Text erroreRicerca;
     @FXML private ImageView fotoProfilo;
     @FXML private ImageView logo;
 
@@ -30,55 +32,97 @@ public class NavBarComponent {
 
     private HomePageBoundary homePageBoundary;
 
-    // Fondamentale per far parlare Navbar e Homepage
+    /**
+     * Collega la Navbar alla HomePage per permettere l'aggiornamento dinamico della griglia.
+     */
     public void setHomePageBoundary(HomePageBoundary home) {
         this.homePageBoundary = home;
     }
 
     @FXML
     public void initialize() {
-        // --- FEEDBACK VISIVO (MANINA) ---
+        // --- CONFIGURAZIONE CURSORI ---
         bottoneAggiungiAnnuncio.setCursor(Cursor.HAND);
         bottoneRicerca.setCursor(Cursor.HAND);
         logo.setCursor(Cursor.HAND);
         fotoProfilo.setCursor(Cursor.HAND);
 
-        // --- AZIONE AGGIUNGI ANNUNCIO ---
+        // --- NAVIGAZIONE: CREA ANNUNCIO ---
         bottoneAggiungiAnnuncio.setOnAction(event -> {
             gestoreScene.CambiaScena(Costanti.pathCreaAnnuncio, "Crea Annuncio", event);
         });
 
-        // --- AZIONE RICERCA ---
+        // --- LOGICA VALIDAZIONE REGEX ---
+        barraDiRicerca.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null || newVal.trim().isEmpty()) {
+                setStatoErrore(false);
+            } else {
+                // Controllo caratteri speciali proibiti tramite Regex
+                boolean isValido = newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
+                setStatoErrore(!isValido);
+            }
+        });
+
+        // --- LOGICA DI RICERCA ---
         bottoneRicerca.setOnAction(event -> {
             String selezione = filtroBarraDiRicerca.getValue();
             String testo = barraDiRicerca.getText();
 
-            if ("Articoli".equals(selezione)) {
-                if (homePageBoundary != null) {
-                    System.out.println("Ricerca articoli per: " + testo);
-                    homePageBoundary.caricaCatalogoAnnunci(testo);
+            // Protezione: non inviare query se il regex è violato
+            if (testo != null && !testo.trim().isEmpty() && !testo.matches(Costanti.FIELDS_REGEX_SPAZIO)) {
+                return;
+            }
+
+            if (homePageBoundary != null) {
+                try {
+                    if ("Articoli".equals(selezione)) {
+                        // Cerca annunci (non case-sensitive nel DB con ILIKE)
+                        homePageBoundary.caricaCatalogoAnnunci(testo, true);
+                    } else {
+                        // Cerca utente specifico (Case-Sensitive)
+                        homePageBoundary.caricaCatalogoAnnunci(testo, false);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Errore durante la ricerca dalla NavBar: " + e.getMessage());
                 }
-            } else {
-                System.out.println("Ricerca utenti non ancora implementata.");
             }
         });
 
-        // --- CONFIGURAZIONE CHOICEBOX ---
+        // --- SETUP CHOICEBOX ---
         if (filtroBarraDiRicerca.getItems().isEmpty()) {
             filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
             filtroBarraDiRicerca.setValue("Articoli");
         }
         filtroBarraDiRicerca.setCursor(Cursor.HAND);
 
-        // --- LOGO ---
+        // --- CARICAMENTO LOGO ---
         try {
             logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
         } catch (Exception e) {
-            System.err.println("Errore caricamento logo: " + e.getMessage());
+            System.err.println("Logo non caricato.");
         }
 
         aggiornaFotoProfilo();
         setupMenuProfilo();
+    }
+
+    /**
+     * Gestisce il feedback visivo (bordo rosso, testo errore e disabilitazione pulsante).
+     */
+    private void setStatoErrore(boolean erroreAttivo) {
+        if (erroreAttivo) {
+            if (!barraDiRicerca.getStyleClass().contains("error")) {
+                barraDiRicerca.getStyleClass().add("error");
+            }
+            erroreRicerca.setVisible(true);
+            erroreRicerca.setManaged(true);
+            bottoneRicerca.setDisable(true);
+        } else {
+            barraDiRicerca.getStyleClass().remove("error");
+            erroreRicerca.setVisible(false);
+            erroreRicerca.setManaged(false);
+            bottoneRicerca.setDisable(false);
+        }
     }
 
     public void aggiornaFotoProfilo() {
@@ -89,7 +133,6 @@ public class NavBarComponent {
             if (u != null && u.getPathImmagineProfilo() != null) {
                 String path = u.getPathImmagineProfilo();
                 if (!path.isEmpty() && !path.equals("default")) {
-                    // Percorso nella cartella dati_utenti
                     String fullPath = System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path;
                     File f = new File(fullPath);
                     if (f.exists()) {
@@ -101,14 +144,15 @@ public class NavBarComponent {
                 }
             }
 
-            // Fallback immagine default
             if (!caricato) {
                 Image def = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
                 fotoProfilo.setImage(def);
                 centraImmagine(fotoProfilo, def);
             }
             applicaCerchio();
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            System.err.println("Errore caricamento foto Navbar: " + e.getMessage());
+        }
     }
 
     private void centraImmagine(ImageView iv, Image img) {
@@ -130,26 +174,24 @@ public class NavBarComponent {
         menuProfilo = new ContextMenu();
         menuProfilo.getStyleClass().add("profilo-context-menu");
 
-        // CREAZIONE UNIFORME PER ALLINEAMENTO PERFETTO
-        MenuItem mieOfferte = creaVoceMenu("Le mie offerte", null);
-        MenuItem mieiAnnunci = creaVoceMenu("I miei annunci", null);
-
         MenuItem inv = creaVoceMenu("Mostra il mio inventario", null);
         inv.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathInventario, Costanti.inventario, (Stage) fotoProfilo.getScene().getWindow()));
 
         MenuItem mod = creaVoceMenu("Modifica Profilo", null);
         mod.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathModificaProfilo, "Modifica Profilo", (Stage) fotoProfilo.getScene().getWindow()));
 
-        MenuItem log = creaVoceMenu("Logout", "menu-item-logout");
-        log.setOnAction(e -> {
+        MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
+        logout.setOnAction(e -> {
             controllerUninaSwap.setUtente(null);
             gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, (Stage) fotoProfilo.getScene().getWindow());
         });
 
-        // Composizione Menu
-        menuProfilo.getItems().addAll(mieOfferte, mieiAnnunci, inv, mod, new SeparatorMenuItem(), log);
+        menuProfilo.getItems().addAll(
+                creaVoceMenu("Le mie offerte", null),
+                creaVoceMenu("I miei annunci", null),
+                inv, mod, new SeparatorMenuItem(), logout
+        );
 
-        // Gestione apertura menu al click sulla foto
         fotoProfilo.setOnMouseClicked(e -> {
             if (menuProfilo.isShowing()) menuProfilo.hide();
             else showmenuProfilo(e);
@@ -161,16 +203,11 @@ public class NavBarComponent {
         if (p != null) menuProfilo.show(fotoProfilo, p.getX(), p.getY());
     }
 
-    /**
-     * Helper che garantisce manina e allineamento per ogni voce del menu
-     */
     private MenuItem creaVoceMenu(String testo, String customClass) {
         Label label = new Label(testo);
         label.setCursor(Cursor.HAND);
-
         MenuItem item = new MenuItem();
         item.setGraphic(label);
-
         if (customClass != null) {
             item.getStyleClass().add(customClass);
             label.getStyleClass().add(customClass);
