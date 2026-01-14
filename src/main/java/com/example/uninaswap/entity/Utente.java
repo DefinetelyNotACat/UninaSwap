@@ -42,7 +42,7 @@ public class Utente {
         System.out.println("Sono nella modifica e l'id e': " + this.id);
         //Genera il path di destinazione dell'immagine: dati_utenti/{id}/immagini
         //
-        Path cartellaUtente = Paths.get(pathUtenti, String.valueOf(this.id), "immagini_utente");
+        Path cartellaUtente = Paths.get(pathUtenti, String.valueOf(this.id), "immagini");
 
         System.out.println("La cartella per le immagini e': " + Paths.get(cartellaUtente.toString()));
 
