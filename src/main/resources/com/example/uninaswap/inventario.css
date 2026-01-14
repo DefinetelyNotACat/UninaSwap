@@ -5,6 +5,9 @@
 .form-field{
     -fx-cursor: hand;
 }
+.text-field{
+    -fx-cursor: text;
+}
 
 .form-field .list-view .list-cell {
     -fx-text-fill: #333333;

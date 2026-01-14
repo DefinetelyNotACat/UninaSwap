@@ -50,7 +50,7 @@
                     <VBox spacing="5" alignment="CENTER">
                         <children>
                             <Text styleClass="label" text="Nome Oggetto"/>
-                            <TextField fx:id="nomeOggettoField" promptText="Es. Libro di Analisi 1" styleClass="form-field" />
+                            <TextField fx:id="nomeOggettoField" promptText="Es. Libro di Analisi 1" styleClass="form-field, text-field" />
                             <Text fx:id="erroreNome" managed="false" styleClass="error-text" text="Nome non valido" visible="false" />
                         </children>
                     </VBox>
