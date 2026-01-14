@@ -10,7 +10,7 @@
             xmlns="http://javafx.com/javafx/17.0.2-ea"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.uninaswap.boundary.ModificaProfilo"
-            stylesheets="@sign.css, @banners.css">
+            stylesheets="@form.css, @banners.css">
     <content>
         <VBox alignment="TOP_CENTER" spacing="30.0" styleClass="myPadding" fillWidth="false">
             <padding>
