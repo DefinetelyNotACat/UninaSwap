@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class AnnuncioRegalo extends Annuncio {
 
-    //richiamo del costruttore della classe madre
+
     public AnnuncioRegalo() {
         super();
     }
