@@ -1,0 +1,32 @@
+.star {
+    -fx-font-size: 45px;
+    -fx-text-fill: #cccccc; /* Grigio quando spenta */
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s;
+}
+
+.star:hover {
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+    -fx-text-fill: #ffcc00;
+}
+
+.star-filled {
+    -fx-text-fill: #ffcc00; /* Giallo oro quando accesa */
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 204, 0, 0.4), 10, 0, 0, 0);
+}
+
+.comment-area {
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.star {
+    -fx-font-size: 45px;
+    -fx-text-fill: #cccccc; /* Grigio (Spenta) */
+    -fx-cursor: hand;
+}
+
+.star-filled {
+    -fx-text-fill: #ffcc00 !important; /* Giallo Oro (Accesa) */
+}

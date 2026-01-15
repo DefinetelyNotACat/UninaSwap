@@ -18,12 +18,14 @@ public class Costanti {
     public static final String EMAIL_REGEX_UNINA = "^[a-zA-Z0-9.]{6,64}@studenti\\.unina\\.it$";
     public static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,25}$";
     public static final String FIELDS_REGEX = "^[a-zA-Z0-9]+$";
-    public static final String FIELDS_REGEX_SPAZIO = "^[a-zA-Z0-9 ]+$";
+    public static final String FIELDS_REGEX_SPAZIO = "^[a-zA-Z0-9 ?!\\\"'€]+$";
     public static final String ALMENO_UN_NUMERO_REGEX = ".*\\d.*";
     public static final String OGGETTO_FIELD_REGEX = "^[a-zA-Z0-9 ]+$";
     public static final String PRICE_REGEX = "^[0-9]+([.,][0-9]{1,2})?$";
     public static final String TIME_REGEX = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
     public static final String inventario = "il mio inventario";
     public static final String pathCreaAnnuncio = "/com/example/uninaswap/aggiungiAnnuncio.fxml";
+    public static final String NOME_CARTELLA_IMMAGINI_PFP = "immagini_utente";
+    public static final String pathMieiAnnunci = "/com/example/uninaswap/mieiAnnunci.fxml";
 
 }

@@ -1,22 +1,17 @@
 package com.example.uninaswap.controller;
-
 import java.util.ArrayList;
-
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.example.uninaswap.dao.*;
 import com.example.uninaswap.entity.*;
-
 public class ControllerUninaSwap {
     private static ControllerUninaSwap istanziato = null;
     private UtenteDAO utenteDAO = new UtenteDAO();
     private OffertaDAO offertaDAO = new OffertaDAO();
     private AnnuncioDAO annuncioDAO = new AnnuncioDAO();
     private OggettoDAO oggettoDAO = new OggettoDAO();
-
     private Utente utente;
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-    private ControllerUninaSwap(){
-    }
+    private ControllerUninaSwap(){}
     public static ControllerUninaSwap getInstance() {
         if (istanziato == null) {
             istanziato = new ControllerUninaSwap();
@@ -41,69 +36,76 @@ public class ControllerUninaSwap {
     public boolean ModificaUtente(Utente utenteModificato) throws Exception {
         try {
             Utente utenteNelDB = utenteDAO.ottieniUtente(utenteModificato.getEmail());
-            // se non esiste nel DB allora usciamo
             if (utenteNelDB == null) return false;
-
             String passwordAttuale = utenteModificato.getPassword();
-            System.out.println("Password attuale vale " + passwordAttuale);
             String passwordNelDB = utenteNelDB.getPassword();
-
-            // Se la passwordattuale è uguale a quella nel DB (nel caso in cui il metodo setPassword non è stato chiamato)
             if (passwordAttuale.equals(passwordNelDB)) {
                 System.out.println("La password non è stata modificata (Hash identici). Non faccio nulla.");
-            }
-            /*Se la passwordattuale è diversa a quella nel DB (il setPassword è stato chiamato, quindi abbiamo la password
-            * plain inserita*/
-            else {
-                // se la password nuova inserita è uguale a quella vecchia che si aveva già
+            } else {
                 if (passwordEncoder.matches(passwordAttuale, passwordNelDB)) {
                     throw new Exception("Inserire una password diversa da quella attuale.");
                 }
-                // altrimenti la password è cambiata
                 System.out.println("Nuova password rilevata. Eseguo l'hashing.");
                 String nuovoHash = passwordEncoder.encode(passwordAttuale);
                 utenteModificato.setPassword(nuovoHash);
             }
-
             this.utente = utenteModificato;
             return utenteDAO.modificaUtente(utenteModificato);
-
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
-    }    public ArrayList<Utente> OttieniUtenti(){
+    }
+    public ArrayList<Utente> OttieniUtenti(){
         return null;
+    }
+    public Utente trovaUtente(String username) throws Exception{
+        return utenteDAO.trovaUtenteUsername(username);
     }
     public boolean VerificaPrezzoAnnuncio(Offerta Offerta, Annuncio Annuncio) {
         return true;
     }
     public ArrayList<Annuncio> OttieniAnnunci(){
-        return null;
+        return annuncioDAO.OttieniAnnunci();
+    }
+    public ArrayList<Annuncio> OttieniAnnunciRicercaUtente(String ricerca) {
+        try {
+            return annuncioDAO.OttieniAnnunciRicercaUtente(ricerca, this.utente.getId());
+        } catch (Exception e) {
+            return annuncioDAO.OttieniAnnunciRicercaUtente(ricerca, -1);
+        }
+    }
+    public ArrayList<Annuncio> OttieniAnnunciNonMiei(){
+        return annuncioDAO.OttieniAnnunciNonMiei(this.utente.getId());
     }
     public ArrayList<Offerta> OttieniOfferte() {return null;}
     public ArrayList<Offerta> OttieniLeMieOfferte(){return null;}
-    public boolean SalvaOggetto(Oggetto Oggetto){
-        return true;
+    public boolean SalvaOggetto(Oggetto oggetto){
+        return oggettoDAO.salvaOggetto(oggetto, utente);
+    }
+    public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
+        return annuncioDAO.OttieniAnnunciDiUtente(this.utente.getId());
+    }
+        public boolean ModificaOggetto(Oggetto oggetto) {
+        return oggettoDAO.modificaOggetto(oggetto); //
     }
     public boolean Recensire (Utente utenteRecensore, Utente utenteRecensito){
         return true;
     }
     public boolean SalvaOggetto(Oggetto oggetto, Utente utente){
-        return true;
+        return oggettoDAO.salvaOggetto(oggetto, utente);
     }
-    public boolean EliminaOggetto(Oggetto oggetto, Utente utente){
-        return true;
+    public boolean EliminaOggetto(Oggetto oggetto, Utente utente) {
+        return oggettoDAO.eliminaOggetto(oggetto.getId()); //
     }
     public ArrayList<Oggetto> OttieniOggetti(Utente utente){
         if (utente == null) return new ArrayList<>();
-         return (ArrayList<Oggetto>) oggettoDAO.ottieniTuttiOggetti(utente.getId());
+        return (ArrayList<Oggetto>) oggettoDAO.ottieniTuttiOggetti(utente.getId());
     }
     public ArrayList<Oggetto> OttieniOggettiDisponibili(Utente utente){
         if (utente == null) return new ArrayList<>();
         return (ArrayList<Oggetto>) oggettoDAO.ottieniTuttiOggettiDisponibili(utente.getId());
     }
-    //TODO! QUERY PER LA PUBBLICAZIONE DELL'ANNUNCIO
     public boolean PubblicaAnnuncio(Annuncio annuncio){
         System.out.println("Annuncio pubblicato "  + annuncio.toString());
         AnnuncioDAO annuncioDAO = new AnnuncioDAO();
@@ -124,24 +126,17 @@ public class ControllerUninaSwap {
     }
     public ArrayList<Offerta> LeMieOfferte(Utente utente){return null;}
     public ArrayList<Offerta> OfferteRicevuteAnnuncio(){return null;}
-    public void creaUtente(
-            String username, String password, String matricola, String email
-            ){
+    public void creaUtente(String username, String password, String matricola, String email){
         try{
             email = email.toLowerCase().trim();
             password = passwordEncoder.encode(password);
             this.utente = new Utente(username, password, matricola, email);
             utenteDAO.salvaUtente(utente);
             System.out.println("Utente Salvato");
-            String dati = utente.toString();
-            System.out.println(dati);
             setUtente(utente);
-        }
-        catch(Exception e){
+        } catch(Exception e){
             System.out.println("Errore! Utente non salvato " + e.getMessage());
-
         }
-
     }
     public void accediUtente(String email, String password) throws Exception {
         email = email.toLowerCase().trim();
@@ -152,8 +147,7 @@ public class ControllerUninaSwap {
         String passwordHashataNelDB = utenteTrovato.getPassword();
         if (checkPassword(password, passwordHashataNelDB)) {
             System.out.println("Utente accesso con successo");
-            utente = utenteDAO.ottieniUtente(email);
-            setUtente(utente);
+            this.utente = utenteTrovato;
         } else {
             throw new Exception("Credenziali Errate! Password non combaciano");
         }
@@ -162,17 +156,15 @@ public class ControllerUninaSwap {
         try{
             utenteDAO.salvaUtente(utente);
             System.out.println("Utente registrato");
-        }
-        catch(Exception e){
+        } catch(Exception e){
             throw new Exception("Errore! Utente non salvato " + e.getMessage());
         }
-
     }
     public String hashPassword(String password){
         return passwordEncoder.encode(password);
     }
     public boolean checkPassword(String password, String passwordHashata) {
-       return passwordEncoder.matches(password, passwordHashata);
+        return passwordEncoder.matches(password, passwordHashata);
     }
     public void popolaDB() throws Exception {
         PopolaDBPostgreSQL.creaDB();
@@ -189,20 +181,18 @@ public class ControllerUninaSwap {
         if (recensioneDAO.SalvaRecensione(recensione)) {
             recensito.addRecensioneRicevuta(recensione);
             recensore.addRecensioneInviata(recensione);
-            System.out.println("Recensione salvato");
+            System.out.println("Recensione salvata");
             return true;
         } else {
-            System.out.println("Recensione non salvato");
+            System.out.println("Recensione non salvata");
             return false;
         }
     }
-    //Metodo per quando si modifica l'utente
     public boolean verificaCredenzialiDuplicate(String nuovoUsername, String nuovaMatricola, String emailAttuale) {
         return utenteDAO.verificaEsistenzaAltroUtente(nuovoUsername, nuovaMatricola, emailAttuale);
     }
-    //Metodo per quando si crea l'utente
     public void verificaUtenteUnico(String username, String email, String matricola) throws Exception {
-            utenteDAO.verificaEsistenzaUtenteRegistrazione(username, email, matricola);
+        utenteDAO.verificaEsistenzaUtenteRegistrazione(username, email, matricola);
     }
     public ArrayList<Categoria> getCategorie() {
         CategoriaDAO categoriaDAO = new CategoriaDAO();
@@ -216,7 +206,4 @@ public class ControllerUninaSwap {
         SedeDAO sediDAO = new SedeDAO();
         return sediDAO.OttieniSedi();
     }
-
 }
-
-

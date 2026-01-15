@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.NavBarComponent" stylesheets="@navbar.css">
+    <?import javafx.geometry.Insets?>
+    <?import javafx.scene.control.Button?>
+    <?import javafx.scene.control.ChoiceBox?>
+    <?import javafx.scene.control.TextField?>
+    <?import javafx.scene.image.ImageView?>
+    <?import javafx.scene.layout.BorderPane?>
+    <?import javafx.scene.layout.HBox?>
+    <?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.VBox?>
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.NavBarComponent" stylesheets="@navbar.css">
     <top>
         <HBox alignment="CENTER" spacing="10">
             <padding>
@@ -19,9 +20,14 @@
 
             <ChoiceBox fx:id="filtroBarraDiRicerca" prefWidth="120" />
 
-            <TextField fx:id="barraDiRicerca"  promptText="Cerca..." prefWidth="450" HBox.hgrow="ALWAYS" />
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                <children>
+                    <TextField fx:id="barraDiRicerca" promptText="Cerca..." prefWidth="450" />
+                    <Text fx:id="erroreRicerca" managed="false" visible="false" text="Caratteri non validi!" styleClass="error-text-small" />
+                </children>
+            </VBox>
 
-            <Button fx:id="bottonePubblicaAnnuncio" text="Cerca" />
+            <Button fx:id="bottoneRicerca" text="Cerca"/>
 
             <ImageView fx:id="fotoProfilo" styleClass="profile-picture" fitHeight="36.0" fitWidth="41.0" pickOnBounds="true" preserveRatio="true" />
             <Button fx:id="bottoneAggiungiAnnuncio" text="Pubblica Annuncio" styleClass="button"/>

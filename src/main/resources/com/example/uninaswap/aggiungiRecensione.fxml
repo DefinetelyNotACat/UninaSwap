@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox alignment="TOP_CENTER" spacing="20.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.AggiungiRecensione"
+      stylesheets="@form.css, @recensione.css">
+
+    <padding><Insets top="30" right="40" bottom="30" left="40"/></padding>
+
+    <VBox alignment="CENTER" spacing="10">
+        <Text styleClass="bold,title" text="Lascia una Recensione" />
+        <Text fx:id="testoRecensito" styleClass="description" text="Stai recensendo: Nome Utente" />
+    </VBox>
+
+    <VBox alignment="CENTER" spacing="5">
+        <children>
+            <Text styleClass="label" text="Valutazione" />
+            <HBox fx:id="boxStelle" alignment="CENTER" spacing="10">
+                <children>
+                    <Label fx:id="star1" onMouseClicked="#onStarClick" styleClass="star" text="★" />
+                    <Label fx:id="star2" onMouseClicked="#onStarClick" styleClass="star" text="★" />
+                    <Label fx:id="star3" onMouseClicked="#onStarClick" styleClass="star" text="★" />
+                    <Label fx:id="star4" onMouseClicked="#onStarClick" styleClass="star" text="★" />
+                    <Label fx:id="star5" onMouseClicked="#onStarClick" styleClass="star" text="★" />
+                </children>
+            </HBox>
+            <Text fx:id="erroreVoto" managed="false" styleClass="error-text" text="Seleziona almeno una stella" visible="false" />
+        </children>
+    </VBox>
+
+    <VBox spacing="5" alignment="CENTER">
+        <children>
+            <Text styleClass="label" text="Il tuo commento (Opzionale)"/>
+            <TextArea fx:id="commentoArea" promptText="Come è andata l'esperienza?" wrapText="true" prefRowCount="3" styleClass="form-field" />
+            <Text fx:id="erroreCommento" managed="false" styleClass="error-text" text="Il testo contiene caratteri non validi" visible="false" />
+        </children>
+    </VBox>
+
+    <HBox alignment="CENTER" spacing="20.0">
+        <children>
+            <Button onAction="#onAnnullaClick" text="Annulla" styleClass="button, button-secondary" />
+            <Button fx:id="inviaButton" onAction="#onInviaClick" text="Invia Recensione" styleClass="button" />
+        </children>
+        <padding><Insets top="20" /></padding>
+    </HBox>
+
+</VBox>
