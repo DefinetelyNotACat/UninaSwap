@@ -11,4 +11,8 @@ public interface GestoreUtenteDAO {
     public Utente ottieniUtente(int id);
     public Utente ottieniUtente(String matricola);
     public ArrayList<Utente> ottieniTuttiUtenti();
+    public Utente trovaUtenteUsername(String username);
+    public boolean verificaEsistenzaAltroUtente(String username, String matricola, String emailDaEscludere);
+    public void verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) throws Exception;
+
 }

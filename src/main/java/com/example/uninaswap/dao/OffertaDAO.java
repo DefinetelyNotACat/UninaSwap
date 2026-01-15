@@ -1,10 +1,12 @@
 package com.example.uninaswap.dao;
 
 import com.example.uninaswap.entity.*;
+import com.example.uninaswap.interfaces.GestoreOffertaDAO;
+
 import java.sql.*;
 import java.util.ArrayList;
 
-public class OffertaDAO {
+public class OffertaDAO implements GestoreOffertaDAO {
 
     // DAO di supporto per caricare oggetti e utenti se necessario
     private OggettoDAO oggettoDAO = new OggettoDAO();
