@@ -116,7 +116,7 @@ public class HomePageBoundary implements GestoreMessaggio {
         Text email = new Text(u.getEmail());
         email.setStyle("-fx-font-size: 13px; -fx-fill: #888; -fx-font-style: italic;");
 
-        Button btnProfilo = new Button("Vedi Profilo");
+        Button btnProfilo = new Button("Vedi Annunci");
         btnProfilo.getStyleClass().add("button");
         btnProfilo.setOnAction(e -> System.out.println("Navigazione al profilo di: " + u.getUsername()));
 

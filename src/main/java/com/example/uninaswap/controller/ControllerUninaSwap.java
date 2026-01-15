@@ -84,7 +84,7 @@ public class ControllerUninaSwap {
         return oggettoDAO.salvaOggetto(oggetto, utente);
     }
     public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
-        return annuncioDAO.OttieniAnnunciDiUtente(this.utente.getId());
+        return annuncioDAO.OttieniAnnunciDiUtente(idUtente);
     }
         public boolean ModificaOggetto(Oggetto oggetto) {
         return oggettoDAO.modificaOggetto(oggetto); //
