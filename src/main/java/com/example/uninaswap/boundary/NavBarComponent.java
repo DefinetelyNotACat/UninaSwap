@@ -2,6 +2,8 @@ package com.example.uninaswap.boundary;
 
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.entity.Categoria;
+import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -25,6 +27,10 @@ public class NavBarComponent {
     @FXML private Text erroreRicerca;
     @FXML private ImageView fotoProfilo;
     @FXML private ImageView logo;
+
+    // Nuovi filtri iniettati dall'FXML
+    @FXML private ChoiceBox<Oggetto.CONDIZIONE> filtroCondizione;
+    @FXML private ChoiceBox<Categoria> filtroCategoria;
 
     private ContextMenu menuProfilo;
     private final ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
@@ -52,50 +58,68 @@ public class NavBarComponent {
             gestoreScene.CambiaScena(Costanti.pathCreaAnnuncio, "Crea Annuncio", event);
         });
 
+        // --- POPOLAMENTO FILTRI DINAMICI ---
+        popolaFiltri();
+
+        // --- LOGICA VISIBILITÀ FILTRI ---
+        filtroBarraDiRicerca.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            boolean isArticoli = "Articoli".equals(newVal);
+            filtroCondizione.setVisible(isArticoli);
+            filtroCondizione.setManaged(isArticoli);
+            filtroCategoria.setVisible(isArticoli);
+            filtroCategoria.setManaged(isArticoli);
+        });
+
         // --- LOGICA VALIDAZIONE REGEX ---
         barraDiRicerca.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null || newVal.trim().isEmpty()) {
                 setStatoErrore(false);
             } else {
-                // Controllo caratteri speciali proibiti tramite Regex
                 boolean isValido = newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
                 setStatoErrore(!isValido);
             }
         });
 
-        // --- LOGICA DI RICERCA ---
+        // --- LOGICA DI RICERCA (MODIFICATA PER PASSARE I FILTRI) ---
         bottoneRicerca.setOnAction(event -> {
             String selezione = filtroBarraDiRicerca.getValue();
             String testo = barraDiRicerca.getText();
+
+            // Richiesta: stampa se vuoto e resetta catalogo
             if (testo == null || testo.trim().isEmpty()) {
+                System.out.println("Ricerca generale - Reset catalogo");
                 try {
-                    homePageBoundary.caricaCatalogoAnnunci(null, true);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            // Protezione: non inviare query se il regex è violato
-            if (testo != null && !testo.trim().isEmpty() && !testo.matches(Costanti.FIELDS_REGEX_SPAZIO)) {
+                    if (homePageBoundary != null) {
+                        // Passiamo null ai filtri per mostrare tutto
+                        homePageBoundary.caricaCatalogoAnnunci(null, null, null, true);
+                    }
+                } catch (Exception e) { e.printStackTrace(); }
                 return;
             }
+
+            // Protezione Regex
+            if (!testo.matches(Costanti.FIELDS_REGEX_SPAZIO)) return;
 
             if (homePageBoundary != null) {
                 try {
                     if ("Articoli".equals(selezione)) {
-                        // Cerca annunci (non case-sensitive nel DB con ILIKE)
-                        homePageBoundary.caricaCatalogoAnnunci(testo, true);
+                        // RECUPERO VALORI DAI CHOICEBOX FILTRI
+                        Oggetto.CONDIZIONE cond = filtroCondizione.getValue();
+                        Categoria cat = filtroCategoria.getValue();
+
+                        // CHIAMATA AL METODO FILTRATO DELLA HOMEPAGE
+                        homePageBoundary.caricaCatalogoAnnunci(testo.trim(), cond, cat, true);
                     } else {
-                        // a utente specifico (Case-Sensitive)
-                        homePageBoundary.caricaCatalogoAnnunci(testo, false);
+                        // Cerca utente (la ricerca utenti ignora cond e cat)
+                        homePageBoundary.caricaCatalogoAnnunci(testo.trim(), false);
                     }
                 } catch (Exception e) {
                     System.err.println("Errore durante la ricerca dalla NavBar: " + e.getMessage());
                 }
-
             }
         });
 
-        // --- SETUP CHOICEBOX ---
+        // --- SETUP CHOICEBOX PRINCIPALE ---
         if (filtroBarraDiRicerca.getItems().isEmpty()) {
             filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
             filtroBarraDiRicerca.setValue("Articoli");
@@ -113,9 +137,18 @@ public class NavBarComponent {
         setupMenuProfilo();
     }
 
-    /**
-     * Gestisce il feedback visivo (bordo rosso, testo errore e disabilitazione pulsante).
-     */
+    private void popolaFiltri() {
+        // Recupero Condizioni e Categorie dal Controller
+        filtroCondizione.getItems().setAll(controllerUninaSwap.getCondizioni());
+        filtroCategoria.getItems().setAll(controllerUninaSwap.getCategorie());
+
+        // Setup iniziale visibilità (default Articoli è selezionato)
+        filtroCondizione.setVisible(true);
+        filtroCondizione.setManaged(true);
+        filtroCategoria.setVisible(true);
+        filtroCategoria.setManaged(true);
+    }
+
     private void setStatoErrore(boolean erroreAttivo) {
         if (erroreAttivo) {
             if (!barraDiRicerca.getStyleClass().contains("error")) {
@@ -181,33 +214,25 @@ public class NavBarComponent {
         menuProfilo = new ContextMenu();
         menuProfilo.getStyleClass().add("profilo-context-menu");
 
-        // --- VOCE: INVENTARIO ---
         MenuItem inv = creaVoceMenu("Mostra il mio inventario", null);
         inv.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathInventario, Costanti.inventario, (Stage) fotoProfilo.getScene().getWindow()));
 
-        // --- VOCE: I MIEI ANNUNCI (COLLEGAMENTO AGGIUNTO) ---
         MenuItem annunci = creaVoceMenu("I miei annunci", null);
         annunci.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", (Stage) fotoProfilo.getScene().getWindow()));
 
-        // --- VOCE: MODIFICA PROFILO ---
         MenuItem mod = creaVoceMenu("Modifica Profilo", null);
         mod.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathModificaProfilo, "Modifica Profilo", (Stage) fotoProfilo.getScene().getWindow()));
 
-        // --- VOCE: LOGOUT ---
         MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
         logout.setOnAction(e -> {
             controllerUninaSwap.setUtente(null);
             gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, (Stage) fotoProfilo.getScene().getWindow());
         });
 
-        // Aggiungi tutto al menu (Rimuovi la stringa statica "I miei annunci" se l'avevi messa prima)
         menuProfilo.getItems().addAll(
                 creaVoceMenu("Le mie offerte", null),
-                annunci, // Usiamo la variabile con l'azione associata
-                inv,
-                mod,
-                new SeparatorMenuItem(),
-                logout
+                annunci,
+                inv, mod, new SeparatorMenuItem(), logout
         );
 
         fotoProfilo.setOnMouseClicked(e -> {
@@ -215,6 +240,7 @@ public class NavBarComponent {
             else showmenuProfilo(e);
         });
     }
+
     private void showmenuProfilo(MouseEvent e) {
         Point2D p = fotoProfilo.localToScreen(0, fotoProfilo.getBoundsInLocal().getHeight());
         if (p != null) menuProfilo.show(fotoProfilo, p.getX(), p.getY());

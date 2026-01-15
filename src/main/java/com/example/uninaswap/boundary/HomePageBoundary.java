@@ -33,25 +33,47 @@ public class HomePageBoundary implements GestoreMessaggio {
             // Colleghiamo la navbar a questa istanza di HomePage
             navBarComponentController.setHomePageBoundary(this);
         }
-        // Caricamento iniziale degli annunci
+        // Caricamento iniziale degli annunci (senza filtri)
         caricaCatalogoAnnunci(null, true);
     }
 
+    /**
+     * Versione semplificata per ricerca rapida o caricamento iniziale.
+     * Chiama internamente la versione filtrata passando parametri null.
+     */
     public void caricaCatalogoAnnunci(String query, boolean ricercaAnnuncio) throws Exception {
+        // Se è ricerca annunci, usiamo il metodo filtrato con filtri null
+        if (ricercaAnnuncio) {
+            caricaCatalogoAnnunci(query, null, null, true);
+        } else {
+            // Logica ricerca utente (testo semplice)
+            containerAnnunci.getChildren().clear();
+            if (query == null || query.trim().isEmpty()) return;
+
+            Utente utenteTrovato = controller.trovaUtente(query.trim());
+
+            if (utenteTrovato == null) {
+                mostraMessaggioVuoto("Utente non trovato.", "Nessun utente con nickname '" + query + "' (Case Sensitive).");
+                return;
+            }
+            containerAnnunci.getChildren().add(creaCardUtente(utenteTrovato));
+        }
+    }
+
+    /**
+     * Versione COMPLETA con FILTRI (Condizione e Categoria).
+     * Viene chiamata dalla NavBar quando l'utente preme il tasto ricerca.
+     */
+    public void caricaCatalogoAnnunci(String query, Oggetto.CONDIZIONE cond, Categoria cat, boolean ricercaAnnuncio) throws Exception {
         containerAnnunci.getChildren().clear();
 
         if (ricercaAnnuncio) {
-            // --- LOGICA RICERCA ANNUNCI ---
-            List<Annuncio> annunci;
-            if (query == null || query.trim().isEmpty()) {
-                annunci = controller.OttieniAnnunciNonMiei();
-            } else {
-                annunci = controller.OttieniAnnunciRicercaUtente(query.trim());
-            }
+            // Chiamata al metodo del controller che gestisce la query complessa al DAO
+            List<Annuncio> annunci = controller.FiltraAnnunciCatalogo(query, cond, cat);
 
             if (annunci == null || annunci.isEmpty()) {
                 if(query != null && !query.isEmpty())
-                    mostraMessaggioVuoto("Nessun annuncio trovato.", "La ricerca per '" + query + "' non ha prodotto risultati.");
+                    mostraMessaggioVuoto("Nessun risultato.", "La ricerca con questi filtri non ha prodotto risultati.");
                 else
                     mostraMessaggioVuoto("Nessun annuncio trovato", "Non ci sono ancora annunci disponibili.");
                 return;
@@ -61,18 +83,8 @@ public class HomePageBoundary implements GestoreMessaggio {
                 containerAnnunci.getChildren().add(creaCardAnnuncio(a));
             }
         } else {
-            // --- LOGICA RICERCA UTENTE ---
-            if (query == null || query.trim().isEmpty()) return;
-
-            Utente utenteTrovato = controller.trovaUtente(query.trim());
-
-            if (utenteTrovato == null) {
-                mostraMessaggioVuoto("Utente non trovato.", "Nessun utente con nickname '" + query + "' (Case Sensitive).");
-                return;
-            }
-
-            // Aggiungiamo la card dell'utente trovato
-            containerAnnunci.getChildren().add(creaCardUtente(utenteTrovato));
+            // Se per errore viene passato qui un comando di ricerca utente, deleghiamo al metodo semplice
+            caricaCatalogoAnnunci(query, false);
         }
     }
 
@@ -143,6 +155,7 @@ public class HomePageBoundary implements GestoreMessaggio {
         card.getChildren().addAll(imgView, username, matricola, email, btnProfilo);
         return card;
     }
+
     private VBox creaCardAnnuncio(Annuncio a) {
         VBox card = new VBox(10);
         card.getStyleClass().add("ad-card");
@@ -154,30 +167,24 @@ public class HomePageBoundary implements GestoreMessaggio {
         imgView.setFitHeight(160);
         imgView.setPreserveRatio(true);
         imgView.setSmooth(true); // Fondamentale per la qualità
+
         // --- LOGICA CARICAMENTO FOTO OGGETTO ---
         try {
-            // Verifichiamo che la gerarchia non sia nulla (Annuncio -> Oggetti -> Immagini)
             if (a.getOggetti() != null && !a.getOggetti().isEmpty() &&
                     a.getOggetti().get(0).getImmagini() != null && !a.getOggetti().get(0).getImmagini().isEmpty()) {
 
                 String pathRelativo = a.getOggetti().get(0).getImmagini().get(0);
-
-                // Ricostruiamo il path assoluto puntando alla cartella dati_utenti
-                // Il path nel DB è tipo: "1/immagini_utente/immagine_123.jpg"
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + pathRelativo);
 
                 if (file.exists()) {
-                    // Carichiamo l'immagine con dimensioni fisse per ottimizzare la memoria
                     imgView.setImage(new Image(file.toURI().toString(), 0, 0, true, true, true));
                 } else {
-                    System.err.println("File non trovato: " + file.getAbsolutePath());
                     imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
                 }
             } else {
                 imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
             }
         } catch (Exception e) {
-            System.err.println("Errore caricamento immagine annuncio: " + e.getMessage());
             imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
         }
 
@@ -203,7 +210,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         desc.setWrappingWidth(220);
         desc.getStyleClass().add("ad-description");
 
-        // Nome sede (caricato dalla JOIN)
         String nomeSede = (a.getSede() != null && a.getSede().getNomeSede() != null) ? a.getSede().getNomeSede() : "N/A";
         Text sede = new Text("📍 " + nomeSede);
         sede.getStyleClass().add("ad-location");
@@ -216,7 +222,6 @@ public class HomePageBoundary implements GestoreMessaggio {
 
         card.getChildren().addAll(imgView, badge, desc, sede, footer);
 
-        // Effetto click sull'annuncio
         card.setOnMouseClicked(e -> System.out.println("Hai cliccato l'annuncio ID: " + a.getId()));
 
         return card;

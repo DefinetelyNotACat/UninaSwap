@@ -3,6 +3,8 @@ package com.example.uninaswap.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import com.example.uninaswap.entity.Utente;
+import com.example.uninaswap.entity.Annuncio;
+
 import com.example.uninaswap.interfaces.GestoreUtenteDAO;
 
 public class UtenteDAO implements GestoreUtenteDAO {
