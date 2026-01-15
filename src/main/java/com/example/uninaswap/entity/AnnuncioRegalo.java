@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class AnnuncioRegalo extends Annuncio {
 
+    //richiamo del costruttore della classe madre
     public AnnuncioRegalo() {
         super();
     }
@@ -14,30 +15,30 @@ public class AnnuncioRegalo extends Annuncio {
     }
 
     public ArrayList<OffertaRegalo> getOfferteRegalo() {
-        ArrayList<OffertaRegalo> listaTipizzata = new ArrayList<>();
+        ArrayList<OffertaRegalo> listaRegali= new ArrayList<>();
 
-        for (Offerta o : super.offerte) {
-            if (o instanceof OffertaRegalo) {
-                listaTipizzata.add((OffertaRegalo) o);
+        for (Offerta offerta : super.offerte) {
+            //controllo che si tratti di un Offertaregalo
+            if (offerta instanceof OffertaRegalo) {
+                listaRegali.add((OffertaRegalo) offerta);
             }
         }
-        return listaTipizzata;
+        return listaRegali;
     }
 
-    public void aggiungiOffertaRegalo(OffertaRegalo offertaRegalo) {
-        super.offerte.add(offertaRegalo);
-    }
-
+    //override del metodo della classe Annuncio per specificare che è un Annuncioregalo
     @Override
     public String getTipoAnnuncio(){
         return "Regalo";
     }
 
+    //override per evitare che venga passata una specializzazione sbagliata di offerta
     @Override
     public void ottieniOfferta(Offerta offerta) {
         if (offerta instanceof OffertaRegalo) {
             super.offerte.add(offerta);
         } else {
+            //illegalArgumentException per gestire piu' facilmente la coerenza del tipo di offerta
             throw new IllegalArgumentException("Si possono aggiungere solo offerte di regalo a un AnnuncioRegalo");
         }
     }
