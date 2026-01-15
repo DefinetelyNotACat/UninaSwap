@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.uninaswap.boundary.GestioneOfferteBoundary"
+            stylesheets="@homepage.css, @banners.css" prefHeight="600.0" prefWidth="900.0">
+
+    <top>
+        <HBox alignment="CENTER" styleClass="navbar-container">
+            <fx:include source="navbar.fxml" fx:id="navBarComponent"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE" styleClass="main-scroll-pane">
+            <tabs>
+                <Tab text="Offerte Ricevute">
+                    <content>
+                        <ScrollPane fitToWidth="true">
+                            <VBox fx:id="boxRicevute" spacing="15" alignment="TOP_CENTER">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                            </VBox>
+                        </ScrollPane>
+                    </content>
+                </Tab>
+                <Tab text="Offerte Inviate">
+                    <content>
+                        <ScrollPane fitToWidth="true">
+                            <VBox fx:id="boxInviate" spacing="15" alignment="TOP_CENTER">
+                                <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+                            </VBox>
+                        </ScrollPane>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>
