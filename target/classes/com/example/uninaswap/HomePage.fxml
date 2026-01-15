@@ -2,25 +2,39 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.text.Text?>
 
-<StackPane prefHeight="400.0" prefWidth="800.0"
+<StackPane prefHeight="600.0" prefWidth="900.0"
            xmlns="http://javafx.com/javafx/24.0.1"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.uninaswap.boundary.HomePageBoundary"
-           stylesheets="@banners.css">
+           stylesheets="@banners.css, @homepage.css">
 
-    <VBox alignment="TOP_CENTER">
-        <HBox alignment="CENTER">
-            <fx:include source="navbar.fxml" />
+    <VBox alignment="TOP_CENTER" spacing="10">
+        <HBox alignment="CENTER" styleClass="navbar-container">
+            <fx:include fx:id="navBarComponent" source="navbar.fxml" />
         </HBox>
 
+        <VBox alignment="CENTER" spacing="5">
+            <padding><Insets top="20" bottom="10"/></padding>
+            <Text styleClass="hero-title" text="Esplora gli Annunci" />
+            <Text styleClass="hero-subtitle" text="Trova quello che ti serve nella comunità Unina" />
+        </VBox>
+
+        <ScrollPane fitToWidth="true" styleClass="main-scroll-pane" VBox.vgrow="ALWAYS">
+            <content>
+                <FlowPane fx:id="containerAnnunci" alignment="TOP_CENTER" hgap="25" vgap="25">
+                    <padding>
+                        <Insets top="20" right="20" bottom="40" left="20" />
+                    </padding>
+                </FlowPane>
+            </content>
+        </ScrollPane>
     </VBox>
 
     <VBox alignment="TOP_CENTER" pickOnBounds="false">
-        <StackPane.margin>
-            <Insets top="15.0" />
-        </StackPane.margin>
-
+        <StackPane.margin><Insets top="15.0" /></StackPane.margin>
         <HBox alignment="CENTER" pickOnBounds="false">
             <fx:include source="banners.fxml" fx:id="notifica" maxWidth="-Infinity" />
         </HBox>

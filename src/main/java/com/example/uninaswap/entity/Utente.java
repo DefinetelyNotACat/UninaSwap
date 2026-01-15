@@ -1,4 +1,6 @@
 package com.example.uninaswap.entity;
+import com.example.uninaswap.Costanti;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -85,7 +87,7 @@ public class Utente {
 
         //Ritorna come stringa il path relativo dell'immagine
         //
-        return pathImmagineProfilo = Paths.get(String.valueOf(id), "immagini", nomeFileFinale).toString();
+        return pathImmagineProfilo = Paths.get(String.valueOf(id), Costanti.NOME_CARTELLA_IMMAGINI_PFP, nomeFileFinale).toString();
 
     }
 
