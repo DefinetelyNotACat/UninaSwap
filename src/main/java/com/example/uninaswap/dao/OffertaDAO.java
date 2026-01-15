@@ -225,7 +225,6 @@ public class OffertaDAO {
                     Oggetto o = new Oggetto();
                     o.setId(rs.getInt("id"));
                     o.setNome(rs.getString("nome"));
-                    // ... set altri campi oggetto ...
                     oggetti.add(o);
                 }
             }

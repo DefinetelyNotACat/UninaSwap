@@ -47,7 +47,7 @@ public class MieiAnnunci implements Initializable {
         }
 
         // Chiamata al metodo che abbiamo aggiunto nel ControllerUninaSwap
-        ArrayList<Annuncio> mieiAnnunci = controller.OttieniAnnunciDiUtente(utente.getId());
+        ArrayList<Annuncio> mieiAnnunci = controller.OttieniAnnunciRicercaUtente(utente.getUsername());
 
         if (mieiAnnunci == null || mieiAnnunci.isEmpty()) {
             testoVuoto.setVisible(true);
