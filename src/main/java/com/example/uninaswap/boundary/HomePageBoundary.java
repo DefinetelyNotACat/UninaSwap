@@ -1,11 +1,15 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
 import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -15,6 +19,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
 import java.io.File;
 import java.util.List;
 
@@ -223,8 +229,30 @@ public class HomePageBoundary implements GestoreMessaggio {
         card.getChildren().addAll(imgView, badge, desc, sede, footer);
 
         card.setOnMouseClicked(e -> System.out.println("Hai cliccato l'annuncio ID: " + a.getId()));
+        // Effetto click sull'annuncio
+        card.setOnMouseClicked(e -> apriDettaglioAnnuncio(a));
 
         return card;
+    }
+
+    private void apriDettaglioAnnuncio(Annuncio annuncio) {
+        try {
+            // CORREZIONE: Usa Costanti.pathDettaglioAnnuncio invece della stringa manuale
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathDettaglioAnnuncio));
+            Parent root = loader.load();
+
+            DettaglioAnnuncioBoundary controllerDettaglio = loader.getController();
+            controllerDettaglio.initData(annuncio);
+
+            Stage stage = (Stage) containerAnnunci.getScene().getWindow();
+            // Reimposta le dimensioni se necessario, o usa quelle correnti
+            Scene scene = new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight());
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+            System.err.println("Errore apertura dettaglio annuncio: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void mostraMessaggioVuoto(String titolo, String sottotitolo) {

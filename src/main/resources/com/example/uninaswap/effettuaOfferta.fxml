@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.uninaswap.boundary.EffettuaOffertaBoundary"
+            stylesheets="@homepage.css, @banners.css" prefHeight="600.0" prefWidth="900.0">
+
+    <top>
+        <HBox alignment="CENTER" styleClass="navbar-container">
+            <fx:include source="navbar.fxml"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="20" maxWidth="600">
+            <padding><Insets top="20" bottom="20"/></padding>
+
+            <Text text="Fai la tua offerta" styleClass="hero-title"/>
+            <Text fx:id="txtInfoAnnuncio" text="Stai facendo un'offerta per..." styleClass="hero-subtitle"/>
+
+            <VBox fx:id="containerSpecifico" spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
+            </VBox>
+
+            <TextArea fx:id="txtMessaggio" promptText="Scrivi un messaggio al venditore..." prefRowCount="3" wrapText="true"/>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Annulla" onAction="#annulla" styleClass="button-secondary"/>
+                <Button text="INVIA OFFERTA" onAction="#confermaOfferta" styleClass="button" style="-fx-background-color: #28a745;"/>
+            </HBox>
+
+            <Label fx:id="lblErrore" text="" textFill="red"/>
+        </VBox>
+    </center>
+</BorderPane>
