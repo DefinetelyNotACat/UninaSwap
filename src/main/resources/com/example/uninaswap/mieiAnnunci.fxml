@@ -13,13 +13,15 @@
            xmlns="http://javafx.com/javafx/21"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.uninaswap.boundary.MieiAnnunci"
-           stylesheets="@homepage.css">
+           stylesheets="@homepage.css, @banners.css">
 
     <VBox alignment="TOP_CENTER" spacing="10">
 
         <HBox alignment="CENTER" styleClass="navbar-container">
             <fx:include source="navbar.fxml" />
         </HBox>
+
+        <fx:include fx:id="notifica" source="banners.fxml" />
 
         <VBox alignment="CENTER" spacing="5">
             <padding><Insets bottom="10" top="20" /></padding>
