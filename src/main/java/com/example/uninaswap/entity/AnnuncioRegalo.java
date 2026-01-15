@@ -26,7 +26,7 @@ public class AnnuncioRegalo extends Annuncio {
         return listaRegali;
     }
 
-    //override del metodo della classe Annuncio per specificare che è un AnnuncioRegalo
+    //override di getTipoAnnuncio per specificare che è un AnnuncioRegalo
     @Override
     public String getTipoAnnuncio(){
         return "Regalo";

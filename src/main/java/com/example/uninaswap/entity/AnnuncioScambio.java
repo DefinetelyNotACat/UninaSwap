@@ -21,7 +21,7 @@ public class AnnuncioScambio extends Annuncio{
         this.listaOggetti = listaOggetti;
     }
 
-    //override del metodo della classe Annuncio per specificare che è un AnnuncioScambio
+    //override di getTipoAnnuncio per specificare che è un AnnuncioScambio
     @Override
     public String getTipoAnnuncio(){
         return "Scambio";
