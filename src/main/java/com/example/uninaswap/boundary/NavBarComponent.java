@@ -174,22 +174,33 @@ public class NavBarComponent {
         menuProfilo = new ContextMenu();
         menuProfilo.getStyleClass().add("profilo-context-menu");
 
+        // --- VOCE: INVENTARIO ---
         MenuItem inv = creaVoceMenu("Mostra il mio inventario", null);
         inv.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathInventario, Costanti.inventario, (Stage) fotoProfilo.getScene().getWindow()));
 
+        // --- VOCE: I MIEI ANNUNCI (COLLEGAMENTO AGGIUNTO) ---
+        MenuItem annunci = creaVoceMenu("I miei annunci", null);
+        annunci.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", (Stage) fotoProfilo.getScene().getWindow()));
+
+        // --- VOCE: MODIFICA PROFILO ---
         MenuItem mod = creaVoceMenu("Modifica Profilo", null);
         mod.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathModificaProfilo, "Modifica Profilo", (Stage) fotoProfilo.getScene().getWindow()));
 
+        // --- VOCE: LOGOUT ---
         MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
         logout.setOnAction(e -> {
             controllerUninaSwap.setUtente(null);
             gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, (Stage) fotoProfilo.getScene().getWindow());
         });
 
+        // Aggiungi tutto al menu (Rimuovi la stringa statica "I miei annunci" se l'avevi messa prima)
         menuProfilo.getItems().addAll(
                 creaVoceMenu("Le mie offerte", null),
-                creaVoceMenu("I miei annunci", null),
-                inv, mod, new SeparatorMenuItem(), logout
+                annunci, // Usiamo la variabile con l'azione associata
+                inv,
+                mod,
+                new SeparatorMenuItem(),
+                logout
         );
 
         fotoProfilo.setOnMouseClicked(e -> {
@@ -197,7 +208,6 @@ public class NavBarComponent {
             else showmenuProfilo(e);
         });
     }
-
     private void showmenuProfilo(MouseEvent e) {
         Point2D p = fotoProfilo.localToScreen(0, fotoProfilo.getBoundsInLocal().getHeight());
         if (p != null) menuProfilo.show(fotoProfilo, p.getX(), p.getY());
