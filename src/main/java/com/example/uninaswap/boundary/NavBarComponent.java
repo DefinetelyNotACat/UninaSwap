@@ -67,7 +67,13 @@ public class NavBarComponent {
         bottoneRicerca.setOnAction(event -> {
             String selezione = filtroBarraDiRicerca.getValue();
             String testo = barraDiRicerca.getText();
-
+            if (testo == null || testo.trim().isEmpty()) {
+                try {
+                    homePageBoundary.caricaCatalogoAnnunci(null, true);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
             // Protezione: non inviare query se il regex è violato
             if (testo != null && !testo.trim().isEmpty() && !testo.matches(Costanti.FIELDS_REGEX_SPAZIO)) {
                 return;
@@ -79,12 +85,13 @@ public class NavBarComponent {
                         // Cerca annunci (non case-sensitive nel DB con ILIKE)
                         homePageBoundary.caricaCatalogoAnnunci(testo, true);
                     } else {
-                        // Cerca utente specifico (Case-Sensitive)
+                        // a utente specifico (Case-Sensitive)
                         homePageBoundary.caricaCatalogoAnnunci(testo, false);
                     }
                 } catch (Exception e) {
                     System.err.println("Errore durante la ricerca dalla NavBar: " + e.getMessage());
                 }
+
             }
         });
 
