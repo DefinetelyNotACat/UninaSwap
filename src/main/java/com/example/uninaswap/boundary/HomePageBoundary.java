@@ -149,7 +149,8 @@ public class HomePageBoundary implements GestoreMessaggio {
 
                 if (file.exists()) {
                     // Carichiamo l'immagine con dimensioni fisse per ottimizzare la memoria
-                    imgView.setImage(new Image(file.toURI().toString(), 0, 0, true, true, true));                } else {
+                    imgView.setImage(new Image(file.toURI().toString(), 0, 0, true, true, true));
+                } else {
                     System.err.println("File non trovato: " + file.getAbsolutePath());
                     imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
                 }
