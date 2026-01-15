@@ -90,7 +90,7 @@ public class ControllerUninaSwap {
         return true;
     }
     public boolean SalvaOggetto(Oggetto oggetto, Utente utente){
-        return true;
+        return oggettoDAO.salvaOggetto(oggetto, utente);
     }
     public boolean EliminaOggetto(Oggetto oggetto, Utente utente) {
         return oggettoDAO.eliminaOggetto(oggetto.getId()); //
