@@ -17,4 +17,5 @@ public interface GestoreOggettoDAO {
     public ArrayList<Oggetto> ottieniTuttiOggetti(int idUtente);
     public boolean associaOgettiAdAnnuncio(ArrayList<Oggetto> oggetti, int idAnnuncio);
     public void associaListaOggetti(ArrayList<Oggetto> listaOggetti, int idAnnuncio);
+    public ArrayList<Oggetto> ottieniTuttiOggettiDisponibili(int idUtente);
 }
