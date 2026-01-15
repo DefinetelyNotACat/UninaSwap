@@ -129,31 +129,46 @@ public class MieiAnnunci implements Initializable {
     }
 
     private void caricaImmagine(Annuncio annuncio, ImageView imgView) {
-        // Logica per prendere l'immagine del primo oggetto associato all'annuncio
+        System.out.println("--- DEBUG ANNUNCIO ID: " + annuncio.getId() + " ---");
+
         try {
             String pathRelativo = null;
-            if (annuncio.getOggetti() != null && !annuncio.getOggetti().isEmpty()) {
-                // Prende la prima immagine del primo oggetto
-                if (annuncio.getOggetti().get(0).getImmagini() != null && !annuncio.getOggetti().get(0).getImmagini().isEmpty()) {
+
+            // Controllo 1: L'annuncio ha oggetti?
+            if (annuncio.getOggetti() == null || annuncio.getOggetti().isEmpty()) {
+                System.out.println("ATTENZIONE: L'annuncio " + annuncio.getId() + " non ha oggetti associati.");
+            } else {
+                System.out.println("L'annuncio ha " + annuncio.getOggetti().size() + " oggetti.");
+
+                // Controllo 2: Il primo oggetto ha immagini?
+                if (annuncio.getOggetti().get(0).getImmagini() == null || annuncio.getOggetti().get(0).getImmagini().isEmpty()) {
+                    System.out.println("ATTENZIONE: L'oggetto " + annuncio.getOggetti().get(0).getId() + " non ha immagini.");
+                } else {
                     pathRelativo = annuncio.getOggetti().get(0).getImmagini().get(0);
+                    System.out.println("Path trovato nel DB: " + pathRelativo);
                 }
             }
 
             if (pathRelativo != null) {
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + pathRelativo);
+                System.out.println("Percorso finale calcolato: " + file.getAbsolutePath());
+
                 if (file.exists()) {
                     imgView.setImage(new Image(file.toURI().toString(), 240, 180, true, true, true));
+                    System.out.println("Immagine caricata con successo!");
                 } else {
+                    System.out.println("ERRORE: Il file non esiste sul disco a quel percorso.");
                     setDefaultImage(imgView);
                 }
             } else {
+                System.out.println("Path relativo nullo: imposto logo default.");
                 setDefaultImage(imgView);
             }
         } catch (Exception e) {
+            System.err.println("Eccezione nel caricamento: " + e.getMessage());
             setDefaultImage(imgView);
         }
     }
-
     private void setDefaultImage(ImageView iv) {
         iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
     }
