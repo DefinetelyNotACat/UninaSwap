@@ -120,6 +120,7 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
             Stage stage = (Stage) containerAnnunci.getScene().getWindow();
 
             // Ricarico la scena passando il messaggio di successo
+            //TODO! FAR SI CHE IL BANNER NON OCCUPI TUTTO LO SPAZIO CAZZO
             gestoreScene.CambiaScena(
                     Costanti.pathMieiAnnunci,
                     "I Miei Annunci",

@@ -13,7 +13,7 @@
            xmlns="http://javafx.com/javafx/21"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.example.uninaswap.boundary.MieiAnnunci"
-           stylesheets="@homepage.css, @banners.css">
+           stylesheets="@homepage.css">
 
     <VBox alignment="TOP_CENTER" spacing="10">
 
@@ -21,10 +21,15 @@
             <fx:include source="navbar.fxml" />
         </HBox>
 
-        <fx:include fx:id="notifica" source="banners.fxml" />
+        <HBox alignment="CENTER" fillHeight="false">
+            <padding>
+                <Insets top="10" bottom="5" />
+            </padding>
+            <fx:include fx:id="notifica" source="banners.fxml" />
+        </HBox>
 
         <VBox alignment="CENTER" spacing="5">
-            <padding><Insets bottom="10" top="20" /></padding>
+            <padding><Insets bottom="10" top="10" /></padding>
             <Text styleClass="hero-title" text="I Tuoi Annunci Pubblicati" />
             <Text styleClass="hero-subtitle" text="Gestisci le tue inserzioni di vendita e scambio" />
         </VBox>
