@@ -99,6 +99,9 @@ public class Inventario implements Initializable, GestoreMessaggio {
         ImageView imgView = new ImageView();
         imgView.setFitWidth(220);
         imgView.setFitHeight(180);
+        imgView.setSmooth(true); // Attiva l'anti-aliasing di alta qualità
+        imgView.setCache(true);  // Memorizza la versione renderizzata
+        imgView.setCacheHint(javafx.scene.CacheHint.QUALITY); // Forza la GPU a dare priorità alla qualità
         imgView.setPreserveRatio(true);
 
         try {
@@ -107,14 +110,14 @@ public class Inventario implements Initializable, GestoreMessaggio {
 
             if (pathRelativo != null) {
                 if (pathRelativo.startsWith("file:") || pathRelativo.startsWith("http")) {
-                    imgView.setImage(new Image(pathRelativo));
-                } else {
+                    imgView.setImage(new Image(pathRelativo, 0, 0, true, true, true));
+                }
+                else {
                     // Costruzione del percorso assoluto puntando alla cartella dati_utenti
                     File fileImmagine = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + pathRelativo);
 
                     if (fileImmagine.exists()) {
-                        imgView.setImage(new Image(fileImmagine.toURI().toString()));
-                    } else {
+                        imgView.setImage(new Image(fileImmagine.toURI().toString(), 0, 0, true, true, false));                    } else {
                         System.err.println("Immagine non trovata: " + fileImmagine.getAbsolutePath());
                         // Fallback uniforme con HomePageBoundary
                         imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
