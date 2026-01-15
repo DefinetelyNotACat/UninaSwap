@@ -83,6 +83,7 @@ public class HomePageBoundary implements GestoreMessaggio {
         card.setPrefWidth(280);
         card.setPadding(new Insets(20));
 
+        // Gestione Immagine Profilo
         ImageView imgView = new ImageView();
         imgView.setFitWidth(100);
         imgView.setFitHeight(100);
@@ -91,7 +92,6 @@ public class HomePageBoundary implements GestoreMessaggio {
             String path = u.getPathImmagineProfilo();
             if (path != null && !path.equals("default") && !path.isEmpty()) {
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
-                System.out.println("DEBUG: Cerco l'immagine qui -> " + file.getAbsolutePath());
                 if (file.exists()) {
                     imgView.setImage(new Image(file.toURI().toString()));
                 } else {
@@ -107,6 +107,7 @@ public class HomePageBoundary implements GestoreMessaggio {
         Circle clip = new Circle(50, 50, 50);
         imgView.setClip(clip);
 
+        // Dati Utente
         Text username = new Text(u.getUsername());
         username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-fill: #003366;");
 
@@ -116,14 +117,32 @@ public class HomePageBoundary implements GestoreMessaggio {
         Text email = new Text(u.getEmail());
         email.setStyle("-fx-font-size: 13px; -fx-fill: #888; -fx-font-style: italic;");
 
+        // Pulsante di Azione
         Button btnProfilo = new Button("Vedi Annunci");
         btnProfilo.getStyleClass().add("button");
-        btnProfilo.setOnAction(e -> System.out.println("Navigazione al profilo di: " + u.getUsername()));
+
+        // LOGICA DI RICERCA AGGIORNATA
+        btnProfilo.setOnAction(e -> {
+            containerAnnunci.getChildren().clear(); // Svuota il catalogo
+
+            // Recupera gli annunci filtrati tramite il controller
+            List<Annuncio> annunciUtente = controller.OttieniAnnunciDiUtente(u.getId());
+
+            if (annunciUtente == null || annunciUtente.isEmpty()) {
+                // Feedback se l'utente non ha annunci
+                mostraMessaggioVuoto("Nessun annuncio trovato.",
+                        u.getUsername() + " non ha ancora pubblicato annunci.");
+            } else {
+                // Cicla e crea le card per ogni annuncio trovato
+                for (Annuncio a : annunciUtente) {
+                    containerAnnunci.getChildren().add(creaCardAnnuncio(a));
+                }
+            }
+        });
 
         card.getChildren().addAll(imgView, username, matricola, email, btnProfilo);
         return card;
     }
-
     private VBox creaCardAnnuncio(Annuncio a) {
         VBox card = new VBox(10);
         card.getStyleClass().add("ad-card");
