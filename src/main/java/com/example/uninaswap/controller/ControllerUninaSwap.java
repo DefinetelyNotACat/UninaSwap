@@ -113,7 +113,7 @@ public class ControllerUninaSwap {
         return true;
     }
     public boolean EliminaAnnuncio(Annuncio annuncio){
-        return true;
+        return annuncioDAO.eliminaAnnuncio(annuncio.getId());
     }
     public boolean EseguiOfferta(Utente utente, Offerta offerta){
         return true;
