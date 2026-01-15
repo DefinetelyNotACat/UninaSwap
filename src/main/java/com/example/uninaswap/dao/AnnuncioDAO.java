@@ -211,4 +211,7 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     public boolean modificaAnnuncio(Annuncio annuncio) {
         return true; // Placeholder richiesto
     }
+    public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
+        return caricaAnnunciConJoin("WHERE a.utente_id = ? ORDER BY a.id DESC", idUtente);
+    }
 }
