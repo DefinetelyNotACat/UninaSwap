@@ -80,8 +80,11 @@ public class ControllerUninaSwap {
     }
     public ArrayList<Offerta> OttieniOfferte() {return null;}
     public ArrayList<Offerta> OttieniLeMieOfferte(){return null;}
-    public boolean SalvaOggetto(Oggetto Oggetto){
-        return true;
+    public boolean SalvaOggetto(Oggetto oggetto){
+        return oggettoDAO.salvaOggetto(oggetto, utente);
+    }
+    public boolean ModificaOggetto(Oggetto oggetto) {
+        return oggettoDAO.modificaOggetto(oggetto); //
     }
     public boolean Recensire (Utente utenteRecensore, Utente utenteRecensito){
         return true;
@@ -89,8 +92,8 @@ public class ControllerUninaSwap {
     public boolean SalvaOggetto(Oggetto oggetto, Utente utente){
         return true;
     }
-    public boolean EliminaOggetto(Oggetto oggetto, Utente utente){
-        return true;
+    public boolean EliminaOggetto(Oggetto oggetto, Utente utente) {
+        return oggettoDAO.eliminaOggetto(oggetto.getId()); //
     }
     public ArrayList<Oggetto> OttieniOggetti(Utente utente){
         if (utente == null) return new ArrayList<>();

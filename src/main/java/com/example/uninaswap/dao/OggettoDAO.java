@@ -3,6 +3,7 @@ package com.example.uninaswap.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException; // NECESSARIO PER LA COPIA FISICA DEI FILE
 
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.entity.Oggetto;
@@ -253,10 +254,31 @@ public class OggettoDAO implements GestoreOggettoDAO {
             // 1. Cancella
             immagineDAO.rimuoviImmaginiPerOggetto(conn, oggetto.getId());
 
-            // 2. Inserisci
+            // 2. Inserisci (MODIFICATO: LOGICA DI COPIA PER NUOVE IMMAGINI)
             if (oggetto.getImmagini() != null && !oggetto.getImmagini().isEmpty()) {
-                // Assicurati che inserisciImmaginiBatch accetti la Connection 'conn' aperta!
-                immagineDAO.inserisciImmaginiBatch(conn, oggetto.getId(), oggetto.getImmagini());
+                ArrayList<String> percorsiDefinitiviPerDB = new ArrayList<>();
+
+                for (String path : oggetto.getImmagini()) {
+                    // Se il path NON inizia con "oggetti/", significa che è un path assoluto (NUOVA FOTO)
+                    if (path != null && !path.startsWith("oggetti/")) {
+                        try {
+                            // Copiamo fisicamente la nuova foto e otteniamo il path relativo
+                            String nuovoPathRelativo = oggetto.copiaImmagineInLocale(path);
+                            if (nuovoPathRelativo != null) {
+                                percorsiDefinitiviPerDB.add(nuovoPathRelativo);
+                            }
+                        } catch (IOException e) {
+                            System.err.println("Errore copia file in modifica: " + e.getMessage());
+                        }
+                    } else {
+                        // È una foto vecchia, manteniamo il path relativo così com'è
+                        percorsiDefinitiviPerDB.add(path);
+                    }
+                }
+
+                if (!percorsiDefinitiviPerDB.isEmpty()) {
+                    immagineDAO.inserisciImmaginiBatch(conn, oggetto.getId(), percorsiDefinitiviPerDB);
+                }
             }
 
             conn.commit(); // --- CONFERMA TUTTO ---

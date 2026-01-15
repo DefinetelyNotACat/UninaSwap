@@ -3,7 +3,6 @@ package com.example.uninaswap.boundary;
 import javafx.scene.layout.FlowPane;
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
-import com.example.uninaswap.dao.OggettoDAO;
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
 import com.example.uninaswap.interfaces.GestoreMessaggio;
@@ -37,8 +36,8 @@ public class Inventario implements Initializable, GestoreMessaggio {
     @FXML private Text testoVuoto;
     @FXML private Messaggio notificaController;
 
+    // Interazione delegata esclusivamente al Controller
     private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
-    private final OggettoDAO oggettoDAO = new OggettoDAO();
     private final GestoreScene gestoreScene = new GestoreScene();
 
     @Override
@@ -51,13 +50,14 @@ public class Inventario implements Initializable, GestoreMessaggio {
 
         Utente utente = null;
         try {
-            utente = controller.getUtente();
+            utente = controller.getUtente(); // Recupero utente dal controller
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
 
-        List<Oggetto> oggetti = oggettoDAO.ottieniTuttiOggetti(utente.getId());
+        // Chiamata al Controller invece del DAO
+        List<Oggetto> oggetti = controller.OttieniOggetti(utente);
 
         if (oggetti == null || oggetti.isEmpty()) {
             testoVuoto.setVisible(true);
@@ -99,27 +99,27 @@ public class Inventario implements Initializable, GestoreMessaggio {
         ImageView imgView = new ImageView();
         imgView.setFitWidth(220);
         imgView.setFitHeight(180);
-        imgView.setSmooth(true); // Attiva l'anti-aliasing di alta qualità
-        imgView.setCache(true);  // Memorizza la versione renderizzata
-        imgView.setCacheHint(javafx.scene.CacheHint.QUALITY); // Forza la GPU a dare priorità alla qualità
         imgView.setPreserveRatio(true);
 
+        // --- OTTIMIZZAZIONE QUALITÀ ---
+        imgView.setSmooth(true);
+        imgView.setCache(true);
+        imgView.setCacheHint(javafx.scene.CacheHint.QUALITY);
+
         try {
-            // Recupero del path relativo dal DB (es: "oggetti/file.jpg")
             String pathRelativo = (obj.getImmagini() != null && !obj.getImmagini().isEmpty()) ? obj.getImmagini().get(0) : null;
 
             if (pathRelativo != null) {
                 if (pathRelativo.startsWith("file:") || pathRelativo.startsWith("http")) {
                     imgView.setImage(new Image(pathRelativo, 0, 0, true, true, true));
-                }
-                else {
-                    // Costruzione del percorso assoluto puntando alla cartella dati_utenti
+                } else {
+                    // Percorso corretto verso dati_utenti
                     File fileImmagine = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + pathRelativo);
 
                     if (fileImmagine.exists()) {
-                        imgView.setImage(new Image(fileImmagine.toURI().toString(), 0, 0, true, true, false));                    } else {
-                        System.err.println("Immagine non trovata: " + fileImmagine.getAbsolutePath());
-                        // Fallback uniforme con HomePageBoundary
+                        // Caricamento ad alta qualità
+                        imgView.setImage(new Image(fileImmagine.toURI().toString(), 0, 0, true, true, true));
+                    } else {
                         imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
                     }
                 }
@@ -127,7 +127,6 @@ public class Inventario implements Initializable, GestoreMessaggio {
                 imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
             }
         } catch (Exception e) {
-            System.err.println("Errore caricamento immagine: " + e.getMessage());
             imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
         }
 
@@ -204,11 +203,17 @@ public class Inventario implements Initializable, GestoreMessaggio {
     }
 
     private void onEliminaOggetto(Oggetto obj) {
-        if (oggettoDAO.eliminaOggetto(obj.getId())) {
-            mostraMessaggioEsterno("Oggetto eliminato!", Messaggio.TIPI.SUCCESS);
-            caricaOggetti();
-        } else {
-            mostraMessaggioEsterno("Errore eliminazione.", Messaggio.TIPI.ERROR);
+        try {
+            Utente utente = controller.getUtente();
+            // Chiamata al Controller per l'eliminazione
+            if (controller.EliminaOggetto(obj, utente)) {
+                mostraMessaggioEsterno("Oggetto eliminato!", Messaggio.TIPI.SUCCESS);
+                caricaOggetti();
+            } else {
+                mostraMessaggioEsterno("Errore eliminazione.", Messaggio.TIPI.ERROR);
+            }
+        } catch (Exception e) {
+            mostraMessaggioEsterno("Sessione scaduta o errore utente.", Messaggio.TIPI.ERROR);
         }
     }
 
