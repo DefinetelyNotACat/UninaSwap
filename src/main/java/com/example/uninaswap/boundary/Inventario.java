@@ -56,7 +56,6 @@ public class Inventario implements Initializable, GestoreMessaggio {
             return;
         }
 
-        // Chiamata al Controller invece del DAO
         List<Oggetto> oggetti = controller.OttieniOggetti(utente);
 
         if (oggetti == null || oggetti.isEmpty()) {
