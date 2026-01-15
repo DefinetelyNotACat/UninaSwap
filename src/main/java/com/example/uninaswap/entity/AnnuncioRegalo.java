@@ -26,7 +26,7 @@ public class AnnuncioRegalo extends Annuncio {
         return listaRegali;
     }
 
-    //override del metodo della classe Annuncio per specificare che è un Annuncioregalo
+    //override del metodo della classe Annuncio per specificare che è un AnnuncioRegalo
     @Override
     public String getTipoAnnuncio(){
         return "Regalo";
@@ -34,12 +34,11 @@ public class AnnuncioRegalo extends Annuncio {
 
     //override per evitare che venga passata una specializzazione sbagliata di offerta
     @Override
-    public void ottieniOfferta(Offerta offerta) {
+    public void ottieniOfferta(Offerta offerta) throws Exception {
         if (offerta instanceof OffertaRegalo) {
             super.offerte.add(offerta);
         } else {
-            //illegalArgumentException per gestire piu' facilmente la coerenza del tipo di offerta
-            throw new IllegalArgumentException("Si possono aggiungere solo offerte di regalo a un AnnuncioRegalo");
+            throw new Exception("Offerta di tipo sbagliato");
         }
     }
 }
