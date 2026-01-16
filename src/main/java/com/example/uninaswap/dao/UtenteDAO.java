@@ -92,11 +92,15 @@ public class UtenteDAO implements GestoreUtenteDAO {
      * Ricerca ESATTA per username (Case-Sensitive).
      */
     public Utente trovaUtenteUsername(String username) {
-        String sql = "SELECT * FROM utente WHERE username = ?";
+        // MODIFICA QUI: Usiamo LOWER() su entrambi i lati del confronto
+        String sql = "SELECT * FROM utente WHERE LOWER(username) = LOWER(?)";
+
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
 
-            query.setString(1, username);
+            // Passiamo lo username così com'è, SQL si occuperà di renderlo minuscolo per il confronto
+            query.setString(1, username.trim());
+
             try (ResultSet rs = query.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSetToUtente(rs);
@@ -106,6 +110,33 @@ public class UtenteDAO implements GestoreUtenteDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public ArrayList<Utente> cercaUtentiByUsername(String parteUsername, int idDaEscludere) {
+        ArrayList<Utente> risultati = new ArrayList<>();
+
+        // Aggiungiamo "AND id != ?" alla query
+        String sql = "SELECT * FROM utente WHERE LOWER(username) LIKE LOWER(?) AND id != ?";
+
+        try (Connection connessione = PostgreSQLConnection.getConnection();
+             PreparedStatement query = connessione.prepareStatement(sql)) {
+
+            // Parametro 1: Il testo da cercare con i caratteri jolly
+            query.setString(1, "%" + parteUsername.trim() + "%");
+
+            // Parametro 2: Il tuo ID, per escluderti dai risultati
+            query.setInt(2, idDaEscludere);
+
+            try (ResultSet rs = query.executeQuery()) {
+                while (rs.next()) {
+                    risultati.add(mapResultSetToUtente(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return risultati;
     }
 
     /**
