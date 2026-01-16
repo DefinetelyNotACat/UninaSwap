@@ -29,59 +29,54 @@ public class HomePageBoundary implements GestoreMessaggio {
 
     @FXML private FlowPane containerAnnunci;
     @FXML private Messaggio notificaController;
-
-    // JavaFX inietta automaticamente il controller dell'include usando: [id] + "Controller"
     @FXML private NavBarComponent navBarComponentController;
 
     @FXML
     private void initialize() throws Exception {
         if (navBarComponentController != null) {
-            // Colleghiamo la navbar a questa istanza di HomePage
             navBarComponentController.setHomePageBoundary(this);
         }
-        // Caricamento iniziale degli annunci (senza filtri)
+        // Caricamento iniziale
         caricaCatalogoAnnunci(null, true);
     }
 
     /**
-     * Versione semplificata per ricerca rapida o caricamento iniziale.
-     * Chiama internamente la versione filtrata passando parametri null.
+     * Versione per ricerca rapida o caricamento iniziale (Annunci o Utenti).
      */
     public void caricaCatalogoAnnunci(String query, boolean ricercaAnnuncio) throws Exception {
-        // Se è ricerca annunci, usiamo il metodo filtrato con filtri null
+        containerAnnunci.getChildren().clear();
+
         if (ricercaAnnuncio) {
+            // Richiama la versione completa con filtri null
             caricaCatalogoAnnunci(query, null, null, true);
         } else {
-            // Logica ricerca utente (testo semplice)
-            containerAnnunci.getChildren().clear();
+            // --- LOGICA RICERCA MULTI-UTENTE ---
             if (query == null || query.trim().isEmpty()) return;
 
-            Utente utenteTrovato = controller.trovaUtente(query.trim());
+            List<Utente> utentiTrovati = controller.cercaUtenti(query.trim());
 
-            if (utenteTrovato == null) {
-                mostraMessaggioVuoto("Utente non trovato.", "Nessun utente con nickname '" + query + "' (Case Sensitive).");
+            if (utentiTrovati == null || utentiTrovati.isEmpty()) {
+                mostraMessaggioVuoto("Utente non trovato.", "Nessun utente corrisponde a '" + query + "'.");
                 return;
             }
-            containerAnnunci.getChildren().add(creaCardUtente(utenteTrovato));
+
+            for (Utente u : utentiTrovati) {
+                containerAnnunci.getChildren().add(creaCardUtente(u));
+            }
         }
     }
 
     /**
-     * Versione COMPLETA con FILTRI (Condizione e Categoria).
-     * Viene chiamata dalla NavBar quando l'utente preme il tasto ricerca.
+     * Versione COMPLETA con FILTRI.
      */
     public void caricaCatalogoAnnunci(String query, Oggetto.CONDIZIONE cond, Categoria cat, boolean ricercaAnnuncio) throws Exception {
         containerAnnunci.getChildren().clear();
 
         if (ricercaAnnuncio) {
-            // Chiamata al metodo del controller che gestisce la query complessa al DAO
             List<Annuncio> annunci = controller.FiltraAnnunciCatalogo(query, cond, cat);
 
             if (annunci == null || annunci.isEmpty()) {
-                if(query != null && !query.isEmpty())
-                    mostraMessaggioVuoto("Nessun risultato.", "La ricerca con questi filtri non ha prodotto risultati.");
-                else
-                    mostraMessaggioVuoto("Nessun annuncio trovato", "Non ci sono ancora annunci disponibili.");
+                mostraMessaggioVuoto("Nessun risultato.", "La ricerca non ha prodotto risultati.");
                 return;
             }
 
@@ -89,7 +84,7 @@ public class HomePageBoundary implements GestoreMessaggio {
                 containerAnnunci.getChildren().add(creaCardAnnuncio(a));
             }
         } else {
-            // Se per errore viene passato qui un comando di ricerca utente, deleghiamo al metodo semplice
+            // Se ricerca utente, delega al metodo semplificato
             caricaCatalogoAnnunci(query, false);
         }
     }
@@ -101,64 +96,30 @@ public class HomePageBoundary implements GestoreMessaggio {
         card.setPrefWidth(280);
         card.setPadding(new Insets(20));
 
-        // Gestione Immagine Profilo
         ImageView imgView = new ImageView();
         imgView.setFitWidth(100);
         imgView.setFitHeight(100);
-
-        try {
-            String path = u.getPathImmagineProfilo();
-            if (path != null && !path.equals("default") && !path.isEmpty()) {
-                File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
-                if (file.exists()) {
-                    imgView.setImage(new Image(file.toURI().toString()));
-                } else {
-                    imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
-                }
-            } else {
-                imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
-            }
-        } catch (Exception e) {
-            imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
-        }
+        caricaFotoProfilo(u, imgView);
 
         Circle clip = new Circle(50, 50, 50);
         imgView.setClip(clip);
 
-        // Dati Utente
         Text username = new Text(u.getUsername());
         username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-fill: #003366;");
 
-        Text matricola = new Text("Matricola: " + u.getMatricola());
-        matricola.setStyle("-fx-font-size: 14px; -fx-fill: #666;");
-
-        Text email = new Text(u.getEmail());
-        email.setStyle("-fx-font-size: 13px; -fx-fill: #888; -fx-font-style: italic;");
-
-        // Pulsante di Azione
         Button btnProfilo = new Button("Vedi Annunci");
         btnProfilo.getStyleClass().add("button");
-
-        // LOGICA DI RICERCA AGGIORNATA
         btnProfilo.setOnAction(e -> {
-            containerAnnunci.getChildren().clear(); // Svuota il catalogo
-
-            // Recupera gli annunci filtrati tramite il controller
+            containerAnnunci.getChildren().clear();
             List<Annuncio> annunciUtente = controller.OttieniAnnunciDiUtente(u.getId());
-
             if (annunciUtente == null || annunciUtente.isEmpty()) {
-                // Feedback se l'utente non ha annunci
-                mostraMessaggioVuoto("Nessun annuncio trovato.",
-                        u.getUsername() + " non ha ancora pubblicato annunci.");
+                mostraMessaggioVuoto("Nessun annuncio.", u.getUsername() + " non ha annunci.");
             } else {
-                // Cicla e crea le card per ogni annuncio trovato
-                for (Annuncio a : annunciUtente) {
-                    containerAnnunci.getChildren().add(creaCardAnnuncio(a));
-                }
+                for (Annuncio a : annunciUtente) containerAnnunci.getChildren().add(creaCardAnnuncio(a));
             }
         });
 
-        card.getChildren().addAll(imgView, username, matricola, email, btnProfilo);
+        card.getChildren().addAll(imgView, username, btnProfilo);
         return card;
     }
 
@@ -172,86 +133,77 @@ public class HomePageBoundary implements GestoreMessaggio {
         imgView.setFitWidth(230);
         imgView.setFitHeight(160);
         imgView.setPreserveRatio(true);
-        imgView.setSmooth(true); // Fondamentale per la qualità
+        imgView.setSmooth(true);
+        caricaFotoOggetto(a, imgView);
 
-        // --- LOGICA CARICAMENTO FOTO OGGETTO ---
-        try {
-            if (a.getOggetti() != null && !a.getOggetti().isEmpty() &&
-                    a.getOggetti().get(0).getImmagini() != null && !a.getOggetti().get(0).getImmagini().isEmpty()) {
-
-                String pathRelativo = a.getOggetti().get(0).getImmagini().get(0);
-                File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + pathRelativo);
-
-                if (file.exists()) {
-                    imgView.setImage(new Image(file.toURI().toString(), 0, 0, true, true, true));
-                } else {
-                    imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-                }
-            } else {
-                imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-            }
-        } catch (Exception e) {
-            imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-        }
-
-        Label badge = new Label();
-        badge.getStyleClass().add("badge-base");
-        String infoExtra = "";
-
-        if (a instanceof AnnuncioVendita av) {
-            badge.setText("VENDITA");
-            badge.getStyleClass().add("badge-vendita");
-            infoExtra = av.getPrezzoMedio() + " €";
-        } else if (a instanceof AnnuncioScambio as) {
-            badge.setText("SCAMBIO");
-            badge.getStyleClass().add("badge-scambio");
-            infoExtra = "Cerco: " + as.getListaOggetti();
-        } else {
-            badge.setText("REGALO");
-            badge.getStyleClass().add("badge-regalo");
-            infoExtra = "Gratis";
-        }
+        Label badge = new Label(determinaTipo(a));
+        badge.getStyleClass().addAll("badge-base", determinaClasseBadge(a));
 
         Text desc = new Text(a.getDescrizione());
         desc.setWrappingWidth(220);
         desc.getStyleClass().add("ad-description");
 
-        String nomeSede = (a.getSede() != null && a.getSede().getNomeSede() != null) ? a.getSede().getNomeSede() : "N/A";
-        Text sede = new Text("📍 " + nomeSede);
-        sede.getStyleClass().add("ad-location");
-
-        HBox footer = new HBox();
-        footer.setAlignment(Pos.CENTER_RIGHT);
-        Text extra = new Text(infoExtra);
-        extra.getStyleClass().add("ad-extra-info");
-        footer.getChildren().add(extra);
-
-        card.getChildren().addAll(imgView, badge, desc, sede, footer);
-
-        card.setOnMouseClicked(e -> System.out.println("Hai cliccato l'annuncio ID: " + a.getId()));
-        // Effetto click sull'annuncio
+        card.getChildren().addAll(imgView, badge, desc);
         card.setOnMouseClicked(e -> apriDettaglioAnnuncio(a));
 
         return card;
     }
 
-    private void apriDettaglioAnnuncio(Annuncio annuncio) {
-        //todo! potremmo usare il metodo di GestoreScene
+    // --- METODI DI SUPPORTO ---
+
+    private void caricaFotoProfilo(Utente u, ImageView iv) {
         try {
-            // CORREZIONE: Usa Costanti.pathDettaglioAnnuncio invece della stringa manuale
+            String path = u.getPathImmagineProfilo();
+            if (path != null && !path.equals("default") && !path.isEmpty()) {
+                File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
+                if (file.exists()) {
+                    iv.setImage(new Image(file.toURI().toString()));
+                    return;
+                }
+            }
+            iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
+        } catch (Exception e) {
+            iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
+        }
+    }
+
+    private void caricaFotoOggetto(Annuncio a, ImageView iv) {
+        try {
+            if (a.getOggetti() != null && !a.getOggetti().isEmpty() && !a.getOggetti().get(0).getImmagini().isEmpty()) {
+                String path = a.getOggetti().get(0).getImmagini().get(0);
+                File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
+                if (file.exists()) {
+                    iv.setImage(new Image(file.toURI().toString(), 0, 0, true, true, true));
+                    return;
+                }
+            }
+            iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+        } catch (Exception e) {
+            iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+        }
+    }
+
+    private String determinaTipo(Annuncio a) {
+        if (a instanceof AnnuncioVendita) return "VENDITA";
+        if (a instanceof AnnuncioScambio) return "SCAMBIO";
+        return "REGALO";
+    }
+
+    private String determinaClasseBadge(Annuncio a) {
+        if (a instanceof AnnuncioVendita) return "badge-vendita";
+        if (a instanceof AnnuncioScambio) return "badge-scambio";
+        return "badge-regalo";
+    }
+
+    private void apriDettaglioAnnuncio(Annuncio annuncio) {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathDettaglioAnnuncio));
             Parent root = loader.load();
-
             DettaglioAnnuncioBoundary controllerDettaglio = loader.getController();
             controllerDettaglio.initData(annuncio);
-
             Stage stage = (Stage) containerAnnunci.getScene().getWindow();
-            // Reimposta le dimensioni se necessario, o usa quelle correnti
-            Scene scene = new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight());
-            stage.setScene(scene);
-            stage.show();
+            stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
         } catch (Exception e) {
-            System.err.println("Errore apertura dettaglio annuncio: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -261,26 +213,18 @@ public class HomePageBoundary implements GestoreMessaggio {
         boxVuoto.setAlignment(Pos.CENTER);
         boxVuoto.setMinWidth(800);
         boxVuoto.setPadding(new Insets(50, 0, 0, 0));
-
         Text t1 = new Text(titolo);
         t1.setStyle("-fx-font-size: 20px; -fx-fill: #888; -fx-font-weight: bold;");
-
         Text t2 = new Text(sottotitolo);
         t2.setStyle("-fx-font-size: 14px; -fx-fill: #aaa;");
-
         boxVuoto.getChildren().addAll(t1, t2);
         containerAnnunci.getChildren().add(boxVuoto);
     }
 
-    @Override
-    public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
+    @Override public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
         if(notificaController != null) notificaController.mostraMessaggio(testo, tipo);
     }
 
-    public void svuotaCatalogo(){
-        containerAnnunci.getChildren().clear();
-    }
-    public javafx.scene.Scene getScene() {
-        return containerAnnunci.getScene();
-    }
+    public void svuotaCatalogo(){ containerAnnunci.getChildren().clear(); }
+    public javafx.scene.Scene getScene() { return containerAnnunci.getScene(); }
 }

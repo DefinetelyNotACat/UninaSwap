@@ -56,12 +56,24 @@
                 throw e;
             }
         }
-        public ArrayList<Utente> OttieniUtenti(){
-            return null;
+        public ArrayList<Utente> cercaUtenti(String query) {
+            if (query == null || query.trim().isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            // Controlliamo se c'è un utente loggato
+            int mioId = -1;
+            if (this.utente != null) {
+                mioId = this.utente.getId();
+            }
+
+            // Passiamo la query e il MIO id al DAO
+            return utenteDAO.cercaUtentiByUsername(query, mioId);
         }
-        public Utente trovaUtente(String username) throws Exception{
+            public Utente trovaUtente(String username) throws Exception{
             return utenteDAO.trovaUtenteUsername(username);
         }
+
         public boolean VerificaPrezzoAnnuncio(Offerta Offerta, Annuncio Annuncio) {
             return true;
         }
