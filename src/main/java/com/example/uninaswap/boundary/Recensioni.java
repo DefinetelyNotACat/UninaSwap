@@ -10,7 +10,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -27,19 +26,54 @@ public class Recensioni {
     @FXML private Text txtTitolo;
     @FXML private Text txtMedia;
 
+    private Utente utenteTarget; // Memorizziamo l'utente per passarlo alla prossima scena
+
     public void initData(Utente utente) {
+        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         if (utente == null) return;
+        this.utenteTarget = utente;
 
         txtTitolo.setText("Recensioni di " + utente.getUsername());
-        List<Recensione> recensioni = utente.getRecensioniRicevute();
+
+        // FIX: Non usare utente.getRecensioniRicevute() perché è una lista vuota in memoria!
+        // Chiedi al controller di recuperarle dal DB
+        List<Recensione> recensioni = controller.OttieniRecensioniRicevuteUtente(utente);
 
         if (recensioni == null || recensioni.isEmpty()) {
             mostraMessaggioVuoto();
         } else {
             calcolaEMostraMedia(recensioni);
+            containerRecensioni.getChildren().clear(); // Pulisci prima di aggiungere
             for (Recensione r : recensioni) {
                 containerRecensioni.getChildren().add(creaCardRecensione(r));
             }
+        }
+    }
+    @FXML
+    private void apriAggiungiRecensione() {
+        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+        try {
+            // Carichiamo il loader per accedere al controller
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathAggiungiRecensione));
+            Parent root = loader.load();
+
+            // Passiamo l'utente target al controller di "AggiungiRecensione"
+            // Assicurati che il controller di aggiungiRecensione abbia un metodo initData(Utente u)
+            Object controllerAggiungi = loader.getController();
+            if (controllerAggiungi instanceof AggiungiRecensione arb) {
+                arb.initData(utenteTarget);
+            }
+
+            // Manteniamo le dimensioni correnti della finestra
+            Stage stage = (Stage) containerRecensioni.getScene().getWindow();
+            double width = stage.getScene().getWidth();
+            double height = stage.getScene().getHeight();
+
+            stage.setScene(new Scene(root, width, height));
+
+        } catch (Exception e) {
+            System.err.println("Errore nel caricamento di aggiungiRecensione: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -52,7 +86,6 @@ public class Recensioni {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        // Ora il metodo getEmailRecensore() viene riconosciuto
         Label autore = new Label("Da: " + r.getEmailRecensore());
         autore.setStyle("-fx-font-weight: bold; -fx-text-fill: #003366;");
 
@@ -75,8 +108,6 @@ public class Recensioni {
     }
 
     private void calcolaEMostraMedia(List<Recensione> list) {
-        // Calcolo della media matematica
-        // $$media = \frac{\sum_{i=1}^{n} voto_i}{n}$$
         double somma = 0;
         for (Recensione r : list) {
             somma += r.getVoto();
@@ -96,16 +127,12 @@ public class Recensioni {
     private void tornaHome() {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(Costanti.pathHomePage));
-
-            // Prendiamo lo stage e le dimensioni attuali prima di cambiare
-            Stage stage = (Stage) txtTitolo.getScene().getWindow();
+            Stage stage = (Stage) containerRecensioni.getScene().getWindow();
             double currentWidth = stage.getScene().getWidth();
             double currentHeight = stage.getScene().getHeight();
-
-            // Settiamo la nuova scena mantenendo le misure
             stage.setScene(new Scene(root, currentWidth, currentHeight));
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }}
+    }
+}

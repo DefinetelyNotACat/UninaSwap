@@ -34,7 +34,10 @@
                 </content>
             </ScrollPane>
 
-            <Button text="Torna alla Home" onAction="#tornaHome" styleClass="button-secondary" />
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="Torna alla Home" onAction="#tornaHome" styleClass="button-secondary" />
+                <Button text="Lascia una Recensione" onAction="#apriAggiungiRecensione" styleClass="button-primary" />
+            </HBox>
         </VBox>
     </center>
 </BorderPane>

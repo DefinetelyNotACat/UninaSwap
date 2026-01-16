@@ -30,19 +30,25 @@ public class AggiungiRecensione {
 
     @FXML
     public void initialize() {
-
-        setUtenteDaRecensire();
+        // initialize viene chiamato al caricamento dell'FXML
+        // Non settiamo l'utente qui perché arriverà dopo tramite initData
         setupValidazione();
     }
 
-    public void setUtenteDaRecensire() {
+    /**
+     * METODO MANCANTE: Riceve l'utente da recensire dalla Boundary precedente
+     */
+    public void initData(Utente target) {
+        this.utenteDaRecensire = target;
         try {
-            //TODO! IMPLEMENTARE MODO CHE UTENTEDARECENSIRE NON SIA NULL CON PASSAGGIO DI BOUNDARY ECC
-            this.utenteDaRecensire = null;
             this.utenteRecensore = controller.getUtente();
-            testoRecensito.setText("Tu, " + this.utenteRecensore.getUsername() + " Stai recensendo: " + this.utenteDaRecensire.getUsername());
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        if (this.utenteDaRecensire != null && this.utenteRecensore != null) {
+            testoRecensito.setText("Tu, " + this.utenteRecensore.getUsername() +
+                    " stai recensendo: " + this.utenteDaRecensire.getUsername());
         }
     }
 
@@ -53,7 +59,7 @@ public class AggiungiRecensione {
             gestisciErroreVisivo(commentoArea, erroreCommento, ok);
         });
 
-        // Binding rigoroso: il voto deve essere almeno 1
+        // Il pulsante invia si abilita solo se c'è un voto (>=1) e il commento è valido
         inviaButton.disableProperty().bind(
                 votoSelezionato.lessThan(1)
                         .or(commentoRegexOk.not())
@@ -63,27 +69,22 @@ public class AggiungiRecensione {
     @FXML
     private void onStarClick(MouseEvent event) {
         Label starCliccata = (Label) event.getSource();
-        // Estraiamo il numero ID (star1 -> 1, star2 -> 2...)
         String id = starCliccata.getId();
+        // star1, star2... estraiamo l'ultimo carattere come intero
         int voto = Character.getNumericValue(id.charAt(id.length() - 1));
 
         votoSelezionato.set(voto);
         aggiornaStelle(voto);
 
-        // Nascondi errore voto se presente
         erroreVoto.setVisible(false);
         erroreVoto.setManaged(false);
     }
 
     private void aggiornaStelle(int voto) {
-        // Cicliamo su tutti i figli del contenitore stelle
         for (int i = 0; i < boxStelle.getChildren().size(); i++) {
             Node node = boxStelle.getChildren().get(i);
             if (node instanceof Label star) {
-                // Rimuoviamo TUTTE le istanze precedenti per evitare bug di rendering
                 star.getStyleClass().removeAll("star-filled");
-
-                // Se l'indice i è minore del voto (es: i=0 per voto 1), accendiamo
                 if (i < voto) {
                     star.getStyleClass().add("star-filled");
                 }
@@ -94,7 +95,6 @@ public class AggiungiRecensione {
     @FXML
     public void onInviaClick(ActionEvent event) {
         try {
-            Utente recensore = controller.getUtente();
             int voto = votoSelezionato.get();
 
             if (voto < 1) {
@@ -103,10 +103,10 @@ public class AggiungiRecensione {
                 return;
             }
 
-            // TODO! implementare la logica di pubblicazione recensione
+            // Chiamata al controller per salvare la recensione
             boolean successo = controller.pubblicaRecensione(
-                    utenteDaRecensire,
-                    recensore,
+                    utenteDaRecensire, // Ricevuto da initData
+                    utenteRecensore,   // Preso dal controller
                     voto,
                     commentoArea.getText()
             );

@@ -248,4 +248,9 @@
                 return new ArrayList<>();
             }
         }
+        public ArrayList<Recensione> OttieniRecensioniRicevuteUtente(Utente u) {
+            if (u == null) return new ArrayList<>();
+            RecensioneDAO dao = new RecensioneDAO();
+            return dao.ottieniRecensioniPerUtente(u.getEmail());
+        }
     }
