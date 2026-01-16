@@ -279,4 +279,7 @@ public class HomePageBoundary implements GestoreMessaggio {
     public void svuotaCatalogo(){
         containerAnnunci.getChildren().clear();
     }
+    public javafx.scene.Scene getScene() {
+        return containerAnnunci.getScene();
+    }
 }

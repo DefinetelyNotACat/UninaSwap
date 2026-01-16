@@ -22,7 +22,7 @@ public class NavBarComponent {
 
     @FXML private Button bottoneRicerca;
     @FXML private Button bottoneAggiungiAnnuncio;
-    @FXML private ComboBox<String> filtroBarraDiRicerca; // Cambiato in ComboBox
+    @FXML private ComboBox<String> filtroBarraDiRicerca;
     @FXML private TextField barraDiRicerca;
     @FXML private Text erroreRicerca;
     @FXML private ImageView fotoProfilo;
@@ -54,17 +54,19 @@ public class NavBarComponent {
 
         // --- NAVIGAZIONE: CREA ANNUNCIO ---
         bottoneAggiungiAnnuncio.setOnAction(event -> {
+            homePageBoundary = null;
             gestoreScene.CambiaScena(Costanti.pathCreaAnnuncio, "Crea Annuncio", event);
         });
 
         // --- NAVIGAZIONE: HOME (LOGO) ---
         logo.setOnMouseClicked(event -> {
+            homePageBoundary = null;
             gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
         });
 
-        // --- POPOLAMENTO E LOGICA FILTRI ---
         popolaFiltri();
 
+        // Switch filtri Articoli/Utenti
         filtroBarraDiRicerca.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             boolean isArticoli = "Articoli".equals(newVal);
             filtroCondizione.setVisible(isArticoli);
@@ -73,45 +75,18 @@ public class NavBarComponent {
             filtroCategoria.setManaged(isArticoli);
         });
 
-        // --- VALIDAZIONE REGEX ---
+        // Validazione Regex
         barraDiRicerca.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null || newVal.trim().isEmpty()) {
                 setStatoErrore(false);
             } else {
-                boolean isValido = newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
-                setStatoErrore(!isValido);
+                setStatoErrore(!newVal.matches(Costanti.FIELDS_REGEX_SPAZIO));
             }
         });
 
-        // --- LOGICA DI RICERCA ---
+        // LOGICA DI RICERCA
         bottoneRicerca.setOnAction(event -> {
-            String selezione = filtroBarraDiRicerca.getValue();
-            String testo = barraDiRicerca.getText();
-
-            if (testo == null || testo.trim().isEmpty()) {
-                if (homePageBoundary != null) {
-                    try {
-                        homePageBoundary.caricaCatalogoAnnunci(null, null, null, true);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                return;
-            }
-
-            if (!testo.matches(Costanti.FIELDS_REGEX_SPAZIO)) return;
-
-            if (homePageBoundary != null) {
-                try {
-                    if ("Articoli".equals(selezione)) {
-                        homePageBoundary.caricaCatalogoAnnunci(testo.trim(), filtroCondizione.getValue(), filtroCategoria.getValue(), true);
-                    } else {
-                        homePageBoundary.caricaCatalogoAnnunci(testo.trim(), false);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Errore ricerca: " + e.getMessage());
-                }
-            }
+            eseguiRicerca();
         });
 
         if (filtroBarraDiRicerca.getItems().isEmpty()) {
@@ -123,11 +98,34 @@ public class NavBarComponent {
         setupMenuProfilo();
     }
 
+    private void eseguiRicerca() {
+        String selezione = filtroBarraDiRicerca.getValue();
+        String testo = barraDiRicerca.getText();
+
+        // Se siamo fuori dalla Home, la ricerca deve riportarci in Home
+        if (homePageBoundary == null || logo.getScene() == null || !logo.getScene().equals(homePageBoundary.getScene())) {
+            gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
+            return;
+        }
+
+        try {
+            if (testo == null || testo.trim().isEmpty()) {
+                homePageBoundary.caricaCatalogoAnnunci(null, null, null, true);
+                return;
+            }
+            if ("Articoli".equals(selezione)) {
+                homePageBoundary.caricaCatalogoAnnunci(testo.trim(), filtroCondizione.getValue(), filtroCategoria.getValue(), true);
+            } else {
+                homePageBoundary.caricaCatalogoAnnunci(testo.trim(), false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void popolaFiltri() {
         filtroCondizione.getItems().setAll(controllerUninaSwap.getCondizioni());
         filtroCategoria.getItems().setAll(controllerUninaSwap.getCategorie());
-
-        // Impostazione Prompt Text (Scompaiono alla selezione)
         filtroCondizione.setPromptText("Condizione");
         filtroCategoria.setPromptText("Categoria");
     }
@@ -136,39 +134,52 @@ public class NavBarComponent {
         menuProfilo = new ContextMenu();
         menuProfilo.getStyleClass().add("profilo-context-menu");
 
-        // 1. ESPLORA TUTTI (LA TUA RICHIESTA)
+        // 1. ESPLORA TUTTI (FIX PER PAGINA OFFERTE/ALTRO)
         MenuItem esploraTutti = creaVoceMenu("Esplora tutti gli annunci", null);
         esploraTutti.setOnAction(e -> {
-            if (homePageBoundary != null) {
+            // Controllo se la Home è quella attiva
+            if (homePageBoundary != null && logo.getScene() != null && logo.getScene().equals(homePageBoundary.getScene())) {
                 try {
                     homePageBoundary.caricaCatalogoAnnunci(null, null, null, true);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+                } catch (Exception ex) { ex.printStackTrace(); }
             } else {
-                gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) fotoProfilo.getScene().getWindow());
+                homePageBoundary = null;
+                gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
             }
         });
 
         // 2. Offerte
         MenuItem offerte = creaVoceMenu("Le mie offerte", null);
-        offerte.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathGestioneOfferte, "Gestione Offerte", (Stage) fotoProfilo.getScene().getWindow()));
+        offerte.setOnAction(e -> {
+            homePageBoundary = null;
+            gestoreScene.CambiaScena(Costanti.pathGestioneOfferte, "Gestione Offerte", (Stage) fotoProfilo.getScene().getWindow());
+        });
 
         // 3. I Miei Annunci
         MenuItem annunci = creaVoceMenu("I miei annunci", null);
-        annunci.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", (Stage) fotoProfilo.getScene().getWindow()));
+        annunci.setOnAction(e -> {
+            homePageBoundary = null;
+            gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", (Stage) fotoProfilo.getScene().getWindow());
+        });
 
         // 4. Inventario
         MenuItem inv = creaVoceMenu("Mostra il mio inventario", null);
-        inv.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathInventario, Costanti.inventario, (Stage) fotoProfilo.getScene().getWindow()));
+        inv.setOnAction(e -> {
+            homePageBoundary = null;
+            gestoreScene.CambiaScena(Costanti.pathInventario, Costanti.inventario, (Stage) fotoProfilo.getScene().getWindow());
+        });
 
         // 5. Modifica Profilo
         MenuItem mod = creaVoceMenu("Modifica Profilo", null);
-        mod.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathModificaProfilo, "Modifica Profilo", (Stage) fotoProfilo.getScene().getWindow()));
+        mod.setOnAction(e -> {
+            homePageBoundary = null;
+            gestoreScene.CambiaScena(Costanti.pathModificaProfilo, "Modifica Profilo", (Stage) fotoProfilo.getScene().getWindow());
+        });
 
         // 6. Logout
         MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
         logout.setOnAction(e -> {
+            homePageBoundary = null;
             controllerUninaSwap.setUtente(null);
             gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, (Stage) fotoProfilo.getScene().getWindow());
         });
@@ -181,6 +192,7 @@ public class NavBarComponent {
         });
     }
 
+    // --- METODI DI UTILITÀ ---
     private void setStatoErrore(boolean erroreAttivo) {
         if (erroreAttivo) {
             if (!barraDiRicerca.getStyleClass().contains("error")) barraDiRicerca.getStyleClass().add("error");
@@ -199,8 +211,7 @@ public class NavBarComponent {
         try {
             Utente u = controllerUninaSwap.getUtente();
             boolean caricato = false;
-
-            if (u != null && u.getPathImmagineProfilo() != null && !u.getPathImmagineProfilo().isEmpty() && !u.getPathImmagineProfilo().equals("default")) {
+            if (u != null && u.getPathImmagineProfilo() != null && !u.getPathImmagineProfilo().equals("default")) {
                 File f = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
                 if (f.exists()) {
                     Image img = new Image(f.toURI().toString());
@@ -216,9 +227,7 @@ public class NavBarComponent {
             }
             applicaCerchio();
             logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-        } catch (Exception e) {
-            System.err.println("Errore immagini NavBar");
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void centraImmagine(ImageView iv, Image img) {
