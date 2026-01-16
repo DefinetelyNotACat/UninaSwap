@@ -13,13 +13,15 @@ import java.util.ArrayList;
 
 public class GestioneOfferteBoundary {
 
-    @FXML private VBox containerOfferte; // Singolo container dinamico
+    @FXML private VBox containerOfferte;
     @FXML private Button btnNavRicevute;
     @FXML private Button btnNavInviate;
-    @FXML private NavBarComponent navBarComponentController;
 
     private ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
     private boolean visualizzandoRicevute = true;
+
+    // Costante per evitare errori di battitura nel CSS
+    private static final String CLASS_ACTIVE = "nav-btn-active";
 
     @FXML
     public void initialize() {
@@ -29,17 +31,27 @@ public class GestioneOfferteBoundary {
     @FXML
     public void mostraRicevute() {
         visualizzandoRicevute = true;
-        btnNavRicevute.getStyleClass().add("nav-btn-active");
-        btnNavInviate.getStyleClass().remove("nav-btn-active");
+        aggiornaStatoGrafico(btnNavRicevute, btnNavInviate);
         caricaOfferte();
     }
 
     @FXML
     public void mostraInviate() {
         visualizzandoRicevute = false;
-        btnNavInviate.getStyleClass().add("nav-btn-active");
-        btnNavRicevute.getStyleClass().remove("nav-btn-active");
+        aggiornaStatoGrafico(btnNavInviate, btnNavRicevute);
         caricaOfferte();
+    }
+
+    /**
+     * Gestisce lo scambio della classe CSS tra i bottoni in modo pulito.
+     */
+    private void aggiornaStatoGrafico(Button daAttivare, Button daDisattivare) {
+        // Rimuoviamo tutte le istanze della classe attiva da entrambi per sicurezza
+        daAttivare.getStyleClass().removeAll(CLASS_ACTIVE);
+        daDisattivare.getStyleClass().removeAll(CLASS_ACTIVE);
+
+        // Aggiungiamo la classe solo a quello cliccato
+        daAttivare.getStyleClass().add(CLASS_ACTIVE);
     }
 
     private void caricaOfferte() {
@@ -59,7 +71,7 @@ public class GestioneOfferteBoundary {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            containerOfferte.getChildren().add(new Label("Errore nel caricamento."));
+            containerOfferte.getChildren().add(new Label("Errore nel caricamento delle offerte."));
         }
     }
 
@@ -67,14 +79,14 @@ public class GestioneOfferteBoundary {
         VBox card = new VBox(12);
         card.getStyleClass().add("offer-card");
 
-        // Header
+        // Header (Titolo e Stato)
         String headerText = isRicevuta ? "Da: " + o.getUtente().getUsername() : "Annuncio #" + o.getAnnuncio().getId();
         Text titolo = new Text(headerText);
         titolo.getStyleClass().add("offer-card-title");
 
-        // Stato con fix "IN ATTESA"
         Label statoLabel = new Label(o.getStato().toString().replace("_", " "));
         statoLabel.getStyleClass().add("status-badge");
+
         switch (o.getStato()) {
             case ACCETTATA: statoLabel.getStyleClass().add("status-accepted"); break;
             case RIFIUTATA: statoLabel.getStyleClass().add("status-rejected"); break;
@@ -86,10 +98,13 @@ public class GestioneOfferteBoundary {
         HBox.setHgrow(titolo, javafx.scene.layout.Priority.ALWAYS);
         topRow.getChildren().addAll(titolo, statoLabel);
 
-        // Dettagli Proposta
+        // Dettagli Annuncio e Proposta
+        Text descAnnuncio = new Text(o.getAnnuncio().getDescrizione());
+        descAnnuncio.getStyleClass().add("offer-card-subtitle");
+
         String dettagliExtra = "";
-        if (o instanceof OffertaVendita) dettagliExtra = "Prezzo: " + ((OffertaVendita) o).getPrezzoOffertaVendita() + " €";
-        else if (o instanceof OffertaScambio) dettagliExtra = "Tipo: Scambio";
+        if (o instanceof OffertaVendita ov) dettagliExtra = "Prezzo offerto: " + ov.getPrezzoOffertaVendita() + " €";
+        else if (o instanceof OffertaScambio) dettagliExtra = "Tipo: Scambio Oggetti";
         else dettagliExtra = "Tipo: Regalo";
 
         Label details = new Label(dettagliExtra);
@@ -99,9 +114,9 @@ public class GestioneOfferteBoundary {
         msg.getStyleClass().add("offer-message-text");
         msg.setWrappingWidth(600);
 
-        card.getChildren().addAll(topRow, details, msg);
+        card.getChildren().addAll(topRow, descAnnuncio, details, msg);
 
-        // Azioni
+        // Azioni (Solo per Ricevute in Attesa)
         if (isRicevuta && o.getStato() == Offerta.STATO_OFFERTA.IN_ATTESA) {
             HBox azioni = new HBox(15);
             azioni.setAlignment(Pos.CENTER_RIGHT);
@@ -109,8 +124,10 @@ public class GestioneOfferteBoundary {
             btnAccetta.getStyleClass().add("btn-accept");
             Button btnRifiuta = new Button("Rifiuta");
             btnRifiuta.getStyleClass().add("btn-reject");
+
             btnAccetta.setOnAction(e -> cambiaStato(o, Offerta.STATO_OFFERTA.ACCETTATA));
             btnRifiuta.setOnAction(e -> cambiaStato(o, Offerta.STATO_OFFERTA.RIFIUTATA));
+
             azioni.getChildren().addAll(btnRifiuta, btnAccetta);
             card.getChildren().add(azioni);
         }
