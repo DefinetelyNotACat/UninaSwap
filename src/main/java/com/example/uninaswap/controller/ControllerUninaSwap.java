@@ -253,4 +253,13 @@
             RecensioneDAO dao = new RecensioneDAO();
             return dao.ottieniRecensioniPerUtente(u.getEmail());
         }
+        // Aggiungi questo metodo nel tuo ControllerUninaSwap
+        public Utente ottieniUtenteDaEmail(String email) {
+            try {
+                return utenteDAO.ottieniUtente(email);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
     }

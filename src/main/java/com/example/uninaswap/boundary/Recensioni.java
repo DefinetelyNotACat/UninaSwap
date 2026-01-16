@@ -78,6 +78,7 @@ public class Recensioni {
     }
 
     private VBox creaCardRecensione(Recensione r) {
+        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         VBox card = new VBox(10);
         card.getStyleClass().add("ad-card");
         card.setPadding(new Insets(15));
@@ -86,8 +87,17 @@ public class Recensioni {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        Label autore = new Label("Da: " + r.getEmailRecensore());
+        // --- RECUPERO USERNAME TRAMITE CONTROLLER ---
+        String nomeDaVisualizzare = "Utente Anonimo";
+        Utente recensore = controller.ottieniUtenteDaEmail(r.getEmailRecensore());
+
+        if (recensore != null) {
+            nomeDaVisualizzare = recensore.getUsername();
+        }
+
+        Label autore = new Label("Da: " + nomeDaVisualizzare);
         autore.setStyle("-fx-font-weight: bold; -fx-text-fill: #003366;");
+        // --------------------------------------------
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -106,7 +116,6 @@ public class Recensioni {
         card.getChildren().addAll(header, commento);
         return card;
     }
-
     private void calcolaEMostraMedia(List<Recensione> list) {
         double somma = 0;
         for (Recensione r : list) {
