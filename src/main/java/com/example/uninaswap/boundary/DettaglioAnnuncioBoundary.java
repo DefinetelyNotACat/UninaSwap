@@ -26,16 +26,7 @@ public class DettaglioAnnuncioBoundary {
     @FXML private Text txtVenditore;
     @FXML private Button btnFaiOfferta;
 
-    // Inject del controller della navbar inclusa
-    @FXML private NavBarComponent navBarComponentController;
-
     private Annuncio annuncioCorrente;
-
-    @FXML
-    public void initialize() {
-        // Garantiamo i cursori a mano
-        if (btnFaiOfferta != null) btnFaiOfferta.setCursor(Cursor.HAND);
-    }
 
     public void initData(Annuncio annuncio) {
         this.annuncioCorrente = annuncio;
@@ -50,10 +41,10 @@ public class DettaglioAnnuncioBoundary {
 
         caricaImmagineAltaQualita();
 
-        // Recupero info venditore (Nome utente se disponibile, altrimenti ID)
+        // Recupero info venditore
         txtVenditore.setText("Utente #" + annuncioCorrente.getUtenteId());
 
-        // Reset classi CSS badge per evitare sovrapposizioni
+        // Pulizia e impostazione badge polimorfico
         badgeTipo.getStyleClass().removeAll("badge-vendita", "badge-scambio", "badge-regalo");
 
         if (annuncioCorrente instanceof AnnuncioVendita av) {
@@ -70,7 +61,7 @@ public class DettaglioAnnuncioBoundary {
             txtDettagliSpecifici.setText("Gratuito");
         }
 
-        // Nascondi pulsante se l'utente è il proprietario
+        // Controllo proprietario per nascondere il tasto offerta
         try {
             Utente loggato = ControllerUninaSwap.getInstance().getUtente();
             if (loggato != null && annuncioCorrente.getUtenteId() == loggato.getId()) {
@@ -89,7 +80,6 @@ public class DettaglioAnnuncioBoundary {
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
 
                 if (file.exists()) {
-                    // Caricamento con smoothing e risoluzione corretta
                     immagineAnnuncio.setImage(new Image(file.toURI().toString(), 800, 800, true, true, true));
                 } else {
                     setDefaultImage();
