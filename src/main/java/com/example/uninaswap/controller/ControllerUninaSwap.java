@@ -59,8 +59,23 @@ public class ControllerUninaSwap {
     public ArrayList<Utente> OttieniUtenti(){
         return null;
     }
+    public ArrayList<Utente> cercaUtenti(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Controlliamo se c'è un utente loggato
+        int mioId = -1;
+        if (this.utente != null) {
+            mioId = this.utente.getId();
+        }
+
+        // Passiamo la query e il MIO id al DAO
+        return utenteDAO.cercaUtentiByUsername(query, mioId);
+    }
     public Utente trovaUtente(String username) throws Exception{
-        return utenteDAO.trovaUtenteUsername(username);
+        if (username == null) return null;
+        return utenteDAO.trovaUtenteUsername(username.trim());
     }
     public boolean VerificaPrezzoAnnuncio(Offerta Offerta, Annuncio Annuncio) {
         return true;

@@ -70,15 +70,18 @@ public class HomePageBoundary implements GestoreMessaggio {
             // --- LOGICA RICERCA UTENTE ---
             if (query == null || query.trim().isEmpty()) return;
 
-            Utente utenteTrovato = controller.trovaUtente(query.trim());
+            // Ora otteniamo una LISTA, non un singolo utente
+            List<Utente> utentiTrovati = controller.cercaUtenti(query.trim());
 
-            if (utenteTrovato == null) {
-                mostraMessaggioVuoto("Utente non trovato.", "Nessun utente con nickname '" + query + "' (Case Sensitive).");
+            if (utentiTrovati == null || utentiTrovati.isEmpty()) {
+                mostraMessaggioVuoto("Nessun utente trovato.", "Nessun risultato per '" + query + "'.");
                 return;
             }
 
-            // Aggiungiamo la card dell'utente trovato
-            containerAnnunci.getChildren().add(creaCardUtente(utenteTrovato));
+            // Cicliamo su tutti gli utenti trovati e creiamo una card per ognuno
+            for (Utente u : utentiTrovati) {
+                containerAnnunci.getChildren().add(creaCardUtente(u));
+            }
         }
     }
 
