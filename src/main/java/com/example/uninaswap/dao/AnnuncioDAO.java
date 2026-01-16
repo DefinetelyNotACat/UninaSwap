@@ -10,25 +10,24 @@ import com.example.uninaswap.entity.Oggetto.DISPONIBILITA;
 
 public class AnnuncioDAO implements GestoreAnnuncioDAO {
 
-    /**
-     * MOTORE DI RICERCA INTERNO (JOIN)
-     * Recupera Annunci, Sede, Oggetti e Immagini in un'unica query per massime prestazioni.
-     * Questa logica raggruppa correttamente le righe multiple restituite dalla JOIN.
-     */
+    // =================================================================================
+    // MOTORE DI RICERCA INTERNO (JOIN E MAPPING)
+    // =================================================================================
+
     private ArrayList<Annuncio> caricaAnnunciConJoin(String condizioneSql, Object... params) {
         LinkedHashMap<Integer, Annuncio> mappaAnnunci = new LinkedHashMap<>();
 
-        String sql = "SELECT a.*, s.nome_sede, o.id as o_id, o.nome as o_nome, i.path as i_path " +
-                "FROM ANNUNCIO a " +
-                "LEFT JOIN SEDE s ON a.sede_id = s.id " +
-                "LEFT JOIN OGGETTO o ON a.id = o.annuncio_id " +
-                "LEFT JOIN IMMAGINE i ON o.id = i.oggetto_id " +
+        // Query base: nomi tabelle e colonne allineati al tuo dump SQL
+        String sql = "SELECT a.*, s.nome_sede, o.id as o_id, o.nome as o_nome, o.condizione as o_condizione, i.path as i_path " +
+                "FROM annuncio a " +
+                "LEFT JOIN sede s ON a.sede_id = s.id " +
+                "LEFT JOIN oggetto o ON a.id = o.annuncio_id " +
+                "LEFT JOIN immagine i ON o.id = i.oggetto_id " +
                 condizioneSql;
 
         try (Connection conn = PostgreSQLConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            // Binding dinamico dei parametri
             for (int i = 0; i < params.length; i++) {
                 ps.setObject(i + 1, params[i]);
             }
@@ -37,7 +36,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                 while (rs.next()) {
                     int idAnnuncio = rs.getInt("id");
 
-                    // 1. Raggruppamento Annuncio: se non esiste nella mappa, lo creiamo
                     Annuncio annuncio = mappaAnnunci.get(idAnnuncio);
                     if (annuncio == null) {
                         annuncio = mapRowToAnnuncio(rs);
@@ -47,7 +45,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                         mappaAnnunci.put(idAnnuncio, annuncio);
                     }
 
-                    // 2. Raggruppamento Oggetti: verifichiamo se l'oggetto è già presente nella lista dell'annuncio
                     int idOggetto = rs.getInt("o_id");
                     if (idOggetto > 0) {
                         final int currentObjId = idOggetto;
@@ -59,10 +56,15 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                             oggetto = new Oggetto();
                             oggetto.setId(idOggetto);
                             oggetto.setNome(rs.getString("o_nome"));
+
+                            String condStr = rs.getString("o_condizione");
+                            if(condStr != null) {
+                                // Converte il formato DB (es. "COME NUOVO") in Enum (es. "COME_NUOVO")
+                                oggetto.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr.replace(" ", "_").toUpperCase()));
+                            }
                             annuncio.getOggetti().add(oggetto);
                         }
 
-                        // 3. Raggruppamento Immagini: aggiungiamo il path alla lista immagini dell'oggetto
                         String pathImmagine = rs.getString("i_path");
                         if (pathImmagine != null && !oggetto.getImmagini().contains(pathImmagine)) {
                             oggetto.getImmagini().add(pathImmagine);
@@ -71,25 +73,56 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Errore caricamento annunci: " + e.getMessage());
+            System.err.println("Errore caricamento annunci con JOIN: " + e.getMessage());
+            e.printStackTrace();
         }
         return new ArrayList<>(mappaAnnunci.values());
     }
 
-    // --- METODI DI INTERFACCIA (Implementazione tramite caricaAnnunciConJoin) ---
+    // =================================================================================
+    // LOGICA DI RICERCA E FILTRAGGIO
+    // =================================================================================
 
-    public ArrayList<Annuncio> OttieniAnnunciNonMiei(int idUtenteCorrente) {
-        return caricaAnnunciConJoin("WHERE a.utente_id <> ? ORDER BY a.id DESC", idUtenteCorrente);
-    }
+    public ArrayList<Annuncio> OttieniAnnunciFiltrati(String ricerca, String condizione, String nomeCategoria, int mioId) {
+        StringBuilder sqlFiltro = new StringBuilder("WHERE a.utente_id <> ? AND a.stato = 'DISPONIBILE'::stato_annuncio ");
+        ArrayList<Object> params = new ArrayList<>();
+        params.add(mioId);
 
-    public ArrayList<Annuncio> OttieniAnnunciRicercaUtente(String ricerca, int mioId) {
-        return caricaAnnunciConJoin("WHERE a.descrizione ILIKE ? AND a.utente_id <> ? ORDER BY a.id DESC",
-                "%" + ricerca + "%", mioId);
+        if (ricerca != null && !ricerca.trim().isEmpty()) {
+            sqlFiltro.append("AND a.descrizione ILIKE ? ");
+            params.add("%" + ricerca.trim() + "%");
+        }
+
+        if (condizione != null && !condizione.isEmpty()) {
+            sqlFiltro.append("AND o.condizione = ?::condizione_oggetto ");
+            params.add(condizione.replace("_", " "));
+        }
+
+        // QUERY CORRETTA: Secondo il tuo dump, le colonne sono 'oggetto_id' e 'categoria_nome'
+        if (nomeCategoria != null && !nomeCategoria.isEmpty()) {
+            sqlFiltro.append("AND EXISTS (")
+                    .append("  SELECT 1 FROM oggetto_categoria oc ")
+                    .append("  WHERE oc.oggetto_id = o.id AND oc.categoria_nome = ?")
+                    .append(") ");
+            params.add(nomeCategoria);
+        }
+
+        sqlFiltro.append("ORDER BY a.id DESC");
+        return caricaAnnunciConJoin(sqlFiltro.toString(), params.toArray());
     }
 
     @Override
-    public ArrayList<Annuncio> OttieniAnnunci() {
-        return caricaAnnunciConJoin("ORDER BY a.id DESC");
+    public ArrayList<Annuncio> OttieniAnnunciNonMiei(int idUtenteCorrente) {
+        return caricaAnnunciConJoin("WHERE a.utente_id <> ? AND a.stato = 'DISPONIBILE'::stato_annuncio ORDER BY a.id DESC", idUtenteCorrente);
+    }
+
+    @Override
+    public ArrayList<Annuncio> OttieniAnnunciRicercaUtente(String ricerca, int mioId) {
+        return null; // Da implementare se necessario
+    }
+
+    public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
+        return caricaAnnunciConJoin("WHERE a.utente_id = ? ORDER BY a.id DESC", idUtente);
     }
 
     @Override
@@ -98,10 +131,18 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         return res.isEmpty() ? null : res.get(0);
     }
 
-    // --- LOGICA DI SCRITTURA (TRANSAZIONALE) ---
+    @Override
+    public ArrayList<Annuncio> OttieniAnnunci() {
+        return caricaAnnunciConJoin("ORDER BY a.id DESC");
+    }
 
+    // =================================================================================
+    // OPERAZIONI DI SCRITTURA (TRANSAZIONALI)
+    // =================================================================================
+
+    @Override
     public boolean inserisciAnnuncio(Annuncio annuncio, int utenteId) {
-        String sql = "INSERT INTO ANNUNCIO (utente_id, sede_id, tipo_annuncio, descrizione, orario_inizio, orario_fine, prezzo, prezzo_minimo, nomi_items_scambio, stato) " +
+        String sql = "INSERT INTO annuncio (utente_id, sede_id, tipo_annuncio, descrizione, orario_inizio, orario_fine, prezzo, prezzo_minimo, nomi_items_scambio, stato) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::stato_annuncio)";
 
         try (Connection conn = PostgreSQLConnection.getConnection()) {
@@ -136,12 +177,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                         associaOggettiAdAnnuncio(conn, id, annuncio.getOggetti());
                     }
                 }
-
-                // Aggiorniamo la disponibilità in memoria
-                if (annuncio.getOggetti() != null) {
-                    for(Oggetto o : annuncio.getOggetti()) o.setDisponibilita(DISPONIBILITA.OCCUPATO);
-                }
-
                 conn.commit();
                 return true;
             } catch (SQLException e) {
@@ -152,13 +187,14 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     }
 
     private void associaOggettiAdAnnuncio(Connection conn, int annuncioId, ArrayList<Oggetto> oggetti) throws SQLException {
-        String sql = "UPDATE OGGETTO SET annuncio_id = ?, disponibilita = 'OCCUPATO'::disponibilita_oggetto WHERE id = ?";
+        String sql = "UPDATE oggetto SET annuncio_id = ?, disponibilita = 'OCCUPATO'::disponibilita_oggetto WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             if (oggetti != null) {
                 for (Oggetto o : oggetti) {
                     ps.setInt(1, annuncioId);
                     ps.setInt(2, o.getId());
                     ps.addBatch();
+                    o.setDisponibilita(DISPONIBILITA.OCCUPATO);
                 }
                 ps.executeBatch();
             }
@@ -167,8 +203,8 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
 
     @Override
     public boolean eliminaAnnuncio(int id) {
-        String sqlLibera = "UPDATE OGGETTO SET annuncio_id = NULL, disponibilita = 'DISPONIBILE'::disponibilita_oggetto WHERE annuncio_id = ?";
-        String sqlDel = "DELETE FROM ANNUNCIO WHERE id = ?";
+        String sqlLibera = "UPDATE oggetto SET annuncio_id = NULL, disponibilita = 'DISPONIBILE'::disponibilita_oggetto WHERE annuncio_id = ?";
+        String sqlDel = "DELETE FROM annuncio WHERE id = ?";
         try (Connection conn = PostgreSQLConnection.getConnection()) {
             conn.setAutoCommit(false);
             try (PreparedStatement ps1 = conn.prepareStatement(sqlLibera);
@@ -180,8 +216,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
             } catch (SQLException e) { conn.rollback(); throw e; }
         } catch (SQLException e) { e.printStackTrace(); return false; }
     }
-
-    // --- HELPER DI MAPPATURA ---
 
     private Annuncio mapRowToAnnuncio(ResultSet rs) throws SQLException {
         String tipo = rs.getString("tipo_annuncio");
@@ -203,15 +237,11 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         annuncio.setId(rs.getInt("id"));
         annuncio.setDescrizione(rs.getString("descrizione"));
         annuncio.setUtenteId(rs.getInt("utente_id"));
-
         return annuncio;
     }
 
     @Override
     public boolean modificaAnnuncio(Annuncio annuncio) {
-        return true; // Placeholder richiesto
-    }
-    public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
-        return caricaAnnunciConJoin("WHERE a.utente_id = ? ORDER BY a.id DESC", idUtente);
+        return true;
     }
 }

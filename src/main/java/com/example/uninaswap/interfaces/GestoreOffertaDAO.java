@@ -6,9 +6,8 @@ import com.example.uninaswap.entity.OffertaVendita;
 import java.util.ArrayList;
 
 public interface GestoreOffertaDAO {
-    public boolean salvaOffertaVendita(OffertaVendita offertaVendita );
-    public boolean modficaOfferta(OffertaVendita offertaVendita);
-    public boolean eliminaOfferta(OffertaVendita offertaVendita);
-    public Offerta ottieniOfferta(OffertaVendita offertaVendita);
-    public ArrayList<Offerta> OttieniTutteOfferte();
+    public boolean salvaOfferta(Offerta offerta);
+    public boolean modificaStatoOfferta(int idOfferta, Offerta.STATO_OFFERTA nuovoStato);
+    public ArrayList<Offerta> ottieniOffertePerAnnuncio(int idAnnuncio);
+    public boolean eliminaOfferta(int idOfferta);
 }

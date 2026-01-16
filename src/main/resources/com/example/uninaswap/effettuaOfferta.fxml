@@ -4,34 +4,42 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.uninaswap.boundary.EffettuaOffertaBoundary"
-            stylesheets="@homepage.css, @banners.css" prefHeight="600.0" prefWidth="900.0">
+            stylesheets="@homepage.css, @banners.css, @offerta.css"
+            styleClass="offerta-root">
 
     <top>
-        <HBox alignment="CENTER" styleClass="navbar-container">
-            <fx:include source="navbar.fxml"/>
-        </HBox>
+        <fx:include source="navbar.fxml"/>
     </top>
 
     <center>
-        <VBox alignment="CENTER" spacing="20" maxWidth="600">
-            <padding><Insets top="20" bottom="20"/></padding>
+        <VBox alignment="CENTER" spacing="0">
+            <padding><Insets top="40" bottom="40"/></padding>
 
-            <Text text="Fai la tua offerta" styleClass="hero-title"/>
-            <Text fx:id="txtInfoAnnuncio" text="Stai facendo un'offerta per..." styleClass="hero-subtitle"/>
+            <VBox alignment="CENTER" spacing="25" maxWidth="650" styleClass="form-container-premium">
 
-            <VBox fx:id="containerSpecifico" spacing="10" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);">
+                <VBox alignment="CENTER" spacing="8">
+                    <Text text="Fai la tua offerta" styleClass="offer-title-premium"/>
+                    <Text fx:id="txtInfoAnnuncio" text="Stai facendo un'offerta per..." styleClass="offer-subtitle-premium"/>
+                </VBox>
+
+                <Separator maxWidth="300"/>
+
+                <VBox fx:id="containerSpecifico" spacing="15" alignment="CENTER_LEFT" />
+
+                <VBox spacing="10">
+                    <Label text="Aggiungi un messaggio personale:" style="-fx-font-weight: bold; -fx-text-fill: #2d3436;"/>
+                    <TextArea fx:id="txtMessaggio" promptText="Ciao! Scrivo per..." prefRowCount="3" wrapText="true" styleClass="text-area-premium"/>
+                </VBox>
+
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="ANNULLA" onAction="#annulla" styleClass="btn-back-premium"/>
+                    <Button text="INVIA OFFERTA" onAction="#confermaOfferta" styleClass="btn-send-premium"/>
+                </HBox>
+
+                <Label fx:id="lblErrore" text="" style="-fx-text-fill: #d63031; -fx-font-weight: bold;"/>
             </VBox>
-
-            <TextArea fx:id="txtMessaggio" promptText="Scrivi un messaggio al venditore..." prefRowCount="3" wrapText="true"/>
-
-            <HBox spacing="10" alignment="CENTER">
-                <Button text="Annulla" onAction="#annulla" styleClass="button-secondary"/>
-                <Button text="INVIA OFFERTA" onAction="#confermaOfferta" styleClass="button" style="-fx-background-color: #28a745;"/>
-            </HBox>
-
-            <Label fx:id="lblErrore" text="" textFill="red"/>
         </VBox>
     </center>
 </BorderPane>

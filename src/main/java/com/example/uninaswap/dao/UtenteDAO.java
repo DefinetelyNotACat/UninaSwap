@@ -3,6 +3,8 @@ package com.example.uninaswap.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import com.example.uninaswap.entity.Utente;
+import com.example.uninaswap.entity.Annuncio;
+
 import com.example.uninaswap.interfaces.GestoreUtenteDAO;
 
 public class UtenteDAO implements GestoreUtenteDAO {
@@ -238,5 +240,32 @@ public class UtenteDAO implements GestoreUtenteDAO {
         u.setPathImmagineProfilo(rs.getString("immagine_profilo"));
         u.setId(rs.getInt("id"));
         return u;
+    }
+
+    public ArrayList<Utente> cercaUtentiByUsername(String parteUsername, int idDaEscludere) {
+        ArrayList<Utente> risultati = new ArrayList<>();
+
+        // Aggiungiamo "AND id != ?" alla query
+        String sql = "SELECT * FROM utente WHERE LOWER(username) LIKE LOWER(?) AND id != ?";
+
+        try (Connection connessione = PostgreSQLConnection.getConnection();
+             PreparedStatement query = connessione.prepareStatement(sql)) {
+
+            // Parametro 1: Il testo da cercare con i caratteri jolly
+            query.setString(1, "%" + parteUsername.trim() + "%");
+
+            // Parametro 2: Il tuo ID, per escluderti dai risultati
+            query.setInt(2, idDaEscludere);
+
+            try (ResultSet rs = query.executeQuery()) {
+                while (rs.next()) {
+                    risultati.add(mapResultSetToUtente(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return risultati;
     }
 }
