@@ -359,19 +359,21 @@ public class OffertaDAO implements GestoreOffertaDAO {
     }
 
     // Sostituisci il metodo recuperaOggettiOfferta nel tuo OffertaDAO.java
+// Sostituisci questo metodo nel tuo OffertaDAO.java
     private ArrayList<Oggetto> recuperaOggettiOfferta(Connection conn, int idOfferta) throws SQLException {
-        // Usiamo una mappa per evitare duplicati se un oggetto ha più immagini (prendiamo la prima)
         java.util.LinkedHashMap<Integer, Oggetto> mappaOggetti = new java.util.LinkedHashMap<>();
 
-        String sql = "SELECT o.*, i.path as img_path " +
+        // JOIN con IMMAGINE e OGGETTO_CATEGORIA
+        String sql = "SELECT o.*, i.path as img_path, oc.categoria_nome " +
                 "FROM OGGETTO o " +
                 "LEFT JOIN IMMAGINE i ON o.id = i.oggetto_id " +
+                "LEFT JOIN oggetto_categoria oc ON o.id = oc.oggetto_id " +
                 "WHERE o.offerta_id = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idOfferta);
             try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
+                while(rs.next()){
                     int idObj = rs.getInt("id");
                     Oggetto o = mappaOggetti.get(idObj);
 
@@ -386,14 +388,23 @@ public class OffertaDAO implements GestoreOffertaDAO {
                         mappaOggetti.put(idObj, o);
                     }
 
-                    // Aggiungiamo il path dell'immagine se esiste e non è già presente
+                    // Aggiungiamo l'immagine se non c'è già
                     String path = rs.getString("img_path");
                     if (path != null && !o.getImmagini().contains(path)) {
                         o.getImmagini().add(path);
+                    }
+
+                    // RECUPERO CATEGORIE
+                    String nomeCat = rs.getString("categoria_nome");
+                    if (nomeCat != null) {
+                        final String catCorrente = nomeCat;
+                        // Evitiamo duplicati nella lista categorie dell'oggetto
+                        if (o.getCategorie().stream().noneMatch(c -> c.getNome().equals(catCorrente))) {
+                            o.getCategorie().add(new Categoria(nomeCat));
+                        }
                     }
                 }
             }
         }
         return new ArrayList<>(mappaOggetti.values());
-    }
-}
+    }}

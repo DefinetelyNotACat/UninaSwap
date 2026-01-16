@@ -155,48 +155,53 @@ public class GestioneOfferteBoundary {
     /**
      * MINI CARD OGGETTO: Testo nero, a capo e foto reale
      */
+    /**
+     * MINI CARD OGGETTO COMPLETA: Immagine, Nome, Categorie e Condizione
+     */
     private VBox creaMiniCardOggetto(Oggetto obj) {
         VBox miniCard = new VBox(5);
         miniCard.setAlignment(Pos.CENTER);
         miniCard.setStyle("-fx-background-color: #ffffff; -fx-padding: 10; -fx-background-radius: 10; " +
                 "-fx-border-color: #bdc3c7; -fx-border-width: 1; -fx-border-radius: 10;");
-        miniCard.setPrefWidth(130);
+        miniCard.setPrefWidth(140); // Leggermente più larga per far stare le categorie
 
-        // Immagine Oggetto
+        // 1. Immagine
         ImageView imgObj = new ImageView();
-        imgObj.setFitWidth(100);
-        imgObj.setFitHeight(80);
+        imgObj.setFitWidth(110); imgObj.setFitHeight(80);
         imgObj.setPreserveRatio(true);
-
         if (obj.getImmagini() != null && !obj.getImmagini().isEmpty()) {
             File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + obj.getImmagini().get(0));
-            if (file.exists()) {
-                imgObj.setImage(new Image(file.toURI().toString(), 200, 160, true, true));
-            } else {
-                setDefaultItemImage(imgObj);
-            }
-        } else {
-            setDefaultItemImage(imgObj);
-        }
+            if (file.exists()) imgObj.setImage(new Image(file.toURI().toString(), 200, 160, true, true));
+            else setDefaultItemImage(imgObj);
+        } else { setDefaultItemImage(imgObj); }
 
-        // Nome (NERO, GRASSETTO, A CAPO)
+        // 2. Nome (Nero e Grassetto)
         Label nome = new Label(obj.getNome());
         nome.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #000000;");
         nome.setWrapText(true);
         nome.setTextAlignment(TextAlignment.CENTER);
-        nome.setMaxWidth(110);
+        nome.setMaxWidth(120);
 
-        // Condizione (NERO su badge chiaro)
+        // 3. SEZIONE CATEGORIE (I nuovi "Chip" colorati)
+        FlowPane containerCategorie = new FlowPane(4, 4);
+        containerCategorie.setAlignment(Pos.CENTER);
+        for (Categoria c : obj.getCategorie()) {
+            Label chip = new Label(c.getNome());
+            chip.setStyle("-fx-font-size: 9px; -fx-text-fill: #003366; -fx-background-color: #e1f5fe; " +
+                    "-fx-padding: 2 5; -fx-background-radius: 10; -fx-border-color: #b3e5fc; -fx-border-radius: 10;");
+            containerCategorie.getChildren().add(chip);
+        }
+
+        // 4. Condizione (Badge scuro)
         Label cond = new Label(obj.getCondizione().toString().replace("_", " "));
         cond.setStyle("-fx-font-size: 10px; -fx-text-fill: #000000; -fx-background-color: #f1f2f6; " +
                 "-fx-padding: 3 6; -fx-background-radius: 5; -fx-border-color: #dfe4ea; -fx-border-radius: 5;");
         cond.setWrapText(true);
         cond.setTextAlignment(TextAlignment.CENTER);
 
-        miniCard.getChildren().addAll(imgObj, nome, cond);
+        miniCard.getChildren().addAll(imgObj, nome, containerCategorie, cond);
         return miniCard;
     }
-
     private void caricaFotoProfilo(Utente u, ImageView iv) {
         try {
             if (u != null && u.getPathImmagineProfilo() != null && !u.getPathImmagineProfilo().isEmpty()) {
