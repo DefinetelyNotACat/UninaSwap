@@ -3,6 +3,9 @@ package com.example.uninaswap.boundary;
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -25,13 +28,49 @@ public class EffettuaOffertaBoundary {
     @FXML private VBox containerSpecifico;
     @FXML private TextArea txtMessaggio;
     @FXML private Label lblErrore;
+    @FXML private Text erroreRegexMessaggio;
+    @FXML private Button btnInvia;
 
     private Annuncio annuncioTarget;
     private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
 
-    // Controlli dinamici
+    // Proprietà per monitorare la validità del Regex
+    private final BooleanProperty messaggioRegexOk = new SimpleBooleanProperty(true);
+
+    // Controlli dinamici generati a runtime
     private TextField inputPrezzo;
     private ListView<Oggetto> listaMieiOggetti;
+
+    @FXML
+    public void initialize() {
+        setupValidazioneRegex();
+    }
+
+    /**
+     * Monitora il campo messaggio in tempo reale usando il Regex di Costanti.
+     */
+    private void setupValidazioneRegex() {
+        txtMessaggio.textProperty().addListener((obs, old, newVal) -> {
+            // Il messaggio può essere vuoto (opzionale), ma se scritto deve rispettare il Regex
+            boolean ok = newVal == null || newVal.isEmpty() || newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
+            messaggioRegexOk.set(ok);
+
+            // Applica stile errore e mostra il testo di avviso
+            gestisciErroreVisivo(txtMessaggio, erroreRegexMessaggio, ok);
+        });
+
+        // Disabilita il pulsante di invio se il Regex non è soddisfatto
+        btnInvia.disableProperty().bind(messaggioRegexOk.not());
+    }
+
+    private void gestisciErroreVisivo(Control f, Text e, boolean ok) {
+        f.getStyleClass().removeAll("error", "right");
+        f.getStyleClass().add(ok ? "right" : "error");
+        if (e != null) {
+            e.setVisible(!ok);
+            e.setManaged(!ok);
+        }
+    }
 
     public void initData(Annuncio annuncio) {
         this.annuncioTarget = annuncio;
@@ -39,11 +78,13 @@ public class EffettuaOffertaBoundary {
         costruisciInterfaccia();
     }
 
+    /**
+     * Genera dinamicamente i campi in base al tipo di annuncio (Vendita, Scambio, Regalo).
+     */
     private void costruisciInterfaccia() {
         containerSpecifico.getChildren().clear();
 
         if (annuncioTarget instanceof AnnuncioVendita) {
-            // --- CASO VENDITA ---
             Label l = new Label("Inserisci la tua offerta in €:");
             l.setStyle("-fx-font-weight: bold; -fx-font-size: 15px;");
 
@@ -55,25 +96,20 @@ public class EffettuaOffertaBoundary {
             containerSpecifico.getChildren().addAll(l, inputPrezzo);
 
         } else if (annuncioTarget instanceof AnnuncioScambio) {
-            // --- CASO SCAMBIO (CHECKLIST STICKY) ---
-            Label l = new Label("Seleziona gli oggetti da offrire (clicca per aggiungere/rimuovere):");
+            Label l = new Label("Seleziona gli oggetti da offrire:");
             l.setStyle("-fx-font-weight: bold; -fx-text-fill: #2d3436; -fx-font-size: 15px;");
 
             listaMieiOggetti = new ListView<>();
             listaMieiOggetti.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             listaMieiOggetti.setPrefHeight(250);
 
-            // --- TRUCCO PERFETTO: EVENT FILTER ---
-            // Intercettiamo il click prima che la ListView esegua la deselezione automatica
+            // Filtro eventi per gestire la selezione multipla con click singolo (Sticky Selection)
             listaMieiOggetti.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                event.consume(); // Blocchiamo il comportamento nativo di JavaFX
-
-                // Troviamo manualmente quale cella è stata cliccata
+                event.consume();
                 javafx.scene.Node node = event.getPickResult().getIntersectedNode();
                 while (node != null && !(node instanceof ListCell)) {
                     node = node.getParent();
                 }
-
                 if (node instanceof ListCell) {
                     ListCell<?> cell = (ListCell<?>) node;
                     if (!cell.isEmpty()) {
@@ -94,22 +130,13 @@ public class EffettuaOffertaBoundary {
                 listaMieiOggetti.setCellFactory(param -> new ListCell<>() {
                     private final CheckBox cb = new CheckBox();
                     private final HBox cellBox = new HBox(15);
-                    private final VBox textContainer = new VBox(2);
                     private final Label nome = new Label();
-                    private final Label info = new Label();
-
                     {
-                        nome.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-                        info.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
-                        textContainer.getChildren().addAll(nome, info);
-                        cellBox.setAlignment(Pos.CENTER_LEFT);
-                        cellBox.getChildren().addAll(cb, textContainer);
-
-                        // La CheckBox deve ignorare il mouse perché gestiamo tutto tramite l'EventFilter sopra
                         cb.setMouseTransparent(true);
                         cb.setFocusTraversable(false);
+                        cellBox.setAlignment(Pos.CENTER_LEFT);
+                        cellBox.getChildren().addAll(cb, nome);
                     }
-
                     @Override
                     protected void updateItem(Oggetto item, boolean empty) {
                         super.updateItem(item, empty);
@@ -117,33 +144,34 @@ public class EffettuaOffertaBoundary {
                             setGraphic(null);
                         } else {
                             nome.setText(item.getNome());
-                            info.setText("Condizione: " + item.getCondizione());
-                            // Sincronizza lo stato della checkbox con il modello di selezione
                             cb.setSelected(listaMieiOggetti.getSelectionModel().isSelected(getIndex()));
                             setGraphic(cellBox);
                         }
                     }
                 });
             } catch (Exception e) {
-                lblErrore.setText("Errore caricamento oggetti: " + e.getMessage());
+                lblErrore.setText("Errore caricamento oggetti.");
             }
             containerSpecifico.getChildren().addAll(l, listaMieiOggetti);
 
         } else {
-            // --- CASO REGALO ---
             VBox boxRegalo = new VBox(10);
             boxRegalo.setAlignment(Pos.CENTER);
             Label l = new Label("🎁 Questo annuncio è un REGALO!");
             l.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #fd7e14;");
-            Text t = new Text("Invierai una richiesta di interesse. Il venditore sceglierà a chi regalarlo.");
-            t.setStyle("-fx-fill: #636e72;");
-            boxRegalo.getChildren().addAll(l, t);
+            boxRegalo.getChildren().add(l);
             containerSpecifico.getChildren().add(boxRegalo);
         }
     }
 
     @FXML
     public void confermaOfferta() {
+        // Controllo finale Regex
+        if (!messaggioRegexOk.get()) {
+            lblErrore.setText("Correggi il messaggio prima di inviare.");
+            return;
+        }
+
         try {
             Utente me = controller.getUtente();
             String msg = txtMessaggio.getText();
@@ -153,52 +181,35 @@ public class EffettuaOffertaBoundary {
                 if (inputPrezzo.getText().isEmpty()) throw new Exception("Inserisci un prezzo.");
                 double prezzoOfferto = Double.parseDouble(inputPrezzo.getText().replace(",", "."));
 
-                // Validazione Prezzo
                 if (av.getPrezzoMinimo() != null && prezzoOfferto < av.getPrezzoMinimo().doubleValue()) {
-                    throw new Exception("Offerta troppo bassa! Il minimo è " + av.getPrezzoMinimo() + "€.");
-                } else if (prezzoOfferto < av.getPrezzoMedio().doubleValue()) {
-                    throw new Exception("L'offerta deve essere almeno " + av.getPrezzoMedio() + "€.");
+                    throw new Exception("Offerta troppo bassa!");
                 }
 
-                nuovaOfferta = new OffertaVendita(
-                        annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
+                nuovaOfferta = new OffertaVendita(annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
                         LocalTime.now(), LocalTime.now().plusHours(1), null, me,
-                        BigDecimal.valueOf(prezzoOfferto), av
-                );
+                        BigDecimal.valueOf(prezzoOfferto), av);
 
             } else if (annuncioTarget instanceof AnnuncioScambio) {
-                // Recuperiamo la lista corretta dal SelectionModel
                 var selezionati = new ArrayList<>(listaMieiOggetti.getSelectionModel().getSelectedItems());
+                if (selezionati.isEmpty()) throw new Exception("Seleziona un oggetto.");
 
-                if (selezionati.isEmpty()) {
-                    throw new Exception("Seleziona almeno un oggetto per lo scambio.");
-                }
-
-                OffertaScambio os = new OffertaScambio(
-                        (AnnuncioScambio) annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
-                        LocalTime.now(), LocalTime.now().plusHours(1), selezionati.get(0), me
-                );
+                OffertaScambio os = new OffertaScambio((AnnuncioScambio) annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
+                        LocalTime.now(), LocalTime.now().plusHours(1), selezionati.get(0), me);
                 os.setOggetti(selezionati);
                 nuovaOfferta = os;
 
             } else {
-                nuovaOfferta = new OffertaRegalo(
-                        annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
-                        LocalTime.now(), LocalTime.now().plusHours(1), null, me,
-                        (AnnuncioRegalo) annuncioTarget
-                );
+                nuovaOfferta = new OffertaRegalo(annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
+                        LocalTime.now(), LocalTime.now().plusHours(1), null, me, (AnnuncioRegalo) annuncioTarget);
             }
 
             com.example.uninaswap.dao.OffertaDAO dao = new com.example.uninaswap.dao.OffertaDAO();
             if (dao.salvaOfferta(nuovaOfferta)) {
-                System.out.println("Offerta inviata correttamente!");
                 tornaHome();
             } else {
-                lblErrore.setText("Errore di connessione al database.");
+                lblErrore.setText("Errore salvataggio database.");
             }
 
-        } catch (NumberFormatException e) {
-            lblErrore.setText("Errore: il prezzo deve essere un numero (es: 10.50)");
         } catch (Exception e) {
             lblErrore.setText(e.getMessage());
         }
@@ -215,7 +226,6 @@ public class EffettuaOffertaBoundary {
             Parent root = loader.load();
             Stage stage = (Stage) containerSpecifico.getScene().getWindow();
             stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
-            stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }

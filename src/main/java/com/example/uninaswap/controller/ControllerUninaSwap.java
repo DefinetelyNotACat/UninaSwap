@@ -101,16 +101,6 @@
             // Offerte che ALTRI hanno inviato ai MIEI annunci
             return offertaDAO.ottieniOfferteRicevute(this.utente.getId());
         }
-        public boolean GestisciStatoOfferta(Offerta offerta, Offerta.STATO_OFFERTA nuovoStato) {
-            boolean esito = offertaDAO.modificaStatoOfferta(offerta.getId(), nuovoStato);
-
-            // Se accettiamo uno scambio, potremmo voler settare l'annuncio come NON_DISPONIBILE
-            // o fare altre logiche di business qui, ma per ora basta aggiornare lo stato.
-            if(esito) {
-                offerta.setStato(nuovoStato);
-            }
-            return esito;
-        }
         public boolean SalvaOggetto(Oggetto oggetto){
             return oggettoDAO.salvaOggetto(oggetto, utente);
         }
@@ -270,5 +260,24 @@
         public Recensione trovaRecensioneEsistente(Utente recensore, Utente recensito) {
             return new RecensioneDAO().OttieniRecensioneTraUtenti(recensore.getEmail(), recensito.getEmail());
         }
+        public boolean GestisciStatoOfferta(Offerta offerta, Offerta.STATO_OFFERTA nuovoStato) {
+            // 1. Aggiorniamo lo stato dell'offerta nel DB
+            boolean esito = offertaDAO.modificaStatoOfferta(offerta.getId(), nuovoStato);
 
+            if (esito) {
+                offerta.setStato(nuovoStato);
+
+                // 2. Se l'offerta viene ACCETTATA, l'annuncio deve diventare NON_DISPONIBILE
+                if (nuovoStato == Offerta.STATO_OFFERTA.ACCETTATA) {
+                    // FIX: Prendi l'ID dell'ANNUNCIO, non dell'offerta!
+                    int idAnnuncioReal = offerta.getAnnuncio().getId();
+                    boolean annuncioChiuso = annuncioDAO.aggiornaStatoAnnuncio(idAnnuncioReal, "NON_DISPONIBILE");
+
+                    if (annuncioChiuso) {
+                        System.out.println("Annuncio ID " + idAnnuncioReal + " marcato come NON_DISPONIBILE.");
+                    }
+                }
+            }
+            return esito;
+        }
     }

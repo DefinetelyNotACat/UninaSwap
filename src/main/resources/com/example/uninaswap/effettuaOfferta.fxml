@@ -31,11 +31,13 @@
                 <VBox spacing="10">
                     <Label text="Aggiungi un messaggio personale:" style="-fx-font-weight: bold; -fx-text-fill: #2d3436;"/>
                     <TextArea fx:id="txtMessaggio" promptText="Ciao! Scrivo per..." prefRowCount="3" wrapText="true" styleClass="text-area-premium"/>
+                    <Text fx:id="erroreRegexMessaggio" managed="false" styleClass="error-text"
+                          text="Caratteri non validi (usare solo lettere, numeri, ? ! ' € e spazi)" visible="false" />
                 </VBox>
 
                 <HBox spacing="20" alignment="CENTER">
                     <Button text="ANNULLA" onAction="#annulla" styleClass="btn-back-premium"/>
-                    <Button text="INVIA OFFERTA" onAction="#confermaOfferta" styleClass="btn-send-premium"/>
+                    <Button fx:id="btnInvia" text="INVIA OFFERTA" onAction="#confermaOfferta" styleClass="btn-send-premium"/>
                 </HBox>
 
                 <Label fx:id="lblErrore" text="" style="-fx-text-fill: #d63031; -fx-font-weight: bold;"/>

@@ -256,4 +256,22 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     public boolean modificaAnnuncio(Annuncio annuncio) {
         return true;
     }
+
+    public boolean aggiornaStatoAnnuncio(int idAnnuncio, String nuovoStato) {
+        String sql = "UPDATE annuncio SET stato = ?::stato_annuncio WHERE id = ?";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, nuovoStato);
+            ps.setInt(2, idAnnuncio);
+
+            int rows = ps.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
