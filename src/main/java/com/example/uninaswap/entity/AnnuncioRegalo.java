@@ -14,18 +14,6 @@ public class AnnuncioRegalo extends Annuncio {
         super(sede, descrizione, orarioInizio, orarioFine, oggetto);
     }
 
-    public ArrayList<OffertaRegalo> getOfferteRegalo() {
-        ArrayList<OffertaRegalo> listaRegali= new ArrayList<>();
-
-        for (Offerta offerta : super.offerte) {
-            //controllo che si tratti di un Offertaregalo
-            if (offerta instanceof OffertaRegalo) {
-                listaRegali.add((OffertaRegalo) offerta);
-            }
-        }
-        return listaRegali;
-    }
-
     //override di getTipoAnnuncio per specificare che è un AnnuncioRegalo
     @Override
     public String getTipoAnnuncio(){

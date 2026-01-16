@@ -2,7 +2,6 @@ package com.example.uninaswap.entity;
 
 import java.time.LocalTime;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 public class AnnuncioVendita extends Annuncio{
     private BigDecimal prezzoMedio;

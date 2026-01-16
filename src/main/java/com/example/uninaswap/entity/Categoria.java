@@ -1,12 +1,9 @@
 package com.example.uninaswap.entity;
-import java.util.ArrayList;
+
 
 public class Categoria {
 
     private String nome;
-    // Eviterei di mantenere la lista degli oggetti qui dentro per evitare loop infiniti
-    // o caricamenti pesanti non necessari, a meno che non serva specificamente.
-    // private ArrayList<Oggetto> oggetti = new ArrayList<>();
 
     public Categoria(String nome) {
         this.nome = nome;

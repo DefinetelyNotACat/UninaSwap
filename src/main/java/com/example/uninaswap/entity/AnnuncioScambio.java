@@ -1,7 +1,8 @@
 package com.example.uninaswap.entity;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
+
+
 public class AnnuncioScambio extends Annuncio{
     private String listaOggetti;
 
