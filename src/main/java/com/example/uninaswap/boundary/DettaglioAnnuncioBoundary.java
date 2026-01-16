@@ -5,7 +5,6 @@ import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,7 +22,10 @@ public class DettaglioAnnuncioBoundary {
     @FXML private Text txtSede;
     @FXML private Text txtTitoloDescrizione;
     @FXML private Text txtDettagliSpecifici;
+    @FXML private Text txtPrezzoMinimo;
+    @FXML private Text txtCondizioni;
     @FXML private Text txtVenditore;
+    @FXML private Text txtEmailVenditore;
     @FXML private Button btnFaiOfferta;
 
     private Annuncio annuncioCorrente;
@@ -36,21 +38,40 @@ public class DettaglioAnnuncioBoundary {
     private void popolaCampi() {
         if (annuncioCorrente == null) return;
 
+        // 1. Dati Annuncio base
         txtTitoloDescrizione.setText(annuncioCorrente.getDescrizione());
-        txtSede.setText("📍 " + (annuncioCorrente.getSede() != null ? annuncioCorrente.getSede().getNomeSede() : "N/A"));
+        txtSede.setText("📍 " + (annuncioCorrente.getSede() != null ? annuncioCorrente.getSede().getNomeSede() : "Sede non specificata"));
 
+        // 2. Immagine HD
         caricaImmagineAltaQualita();
 
-        // Recupero info venditore
-        txtVenditore.setText("Utente #" + annuncioCorrente.getUtenteId());
+        // 3. Dati VENDITORE (Presi dalla JOIN con Utente)
+        if (annuncioCorrente.getUtente() != null) {
+            txtVenditore.setText(annuncioCorrente.getUtente().getUsername());
+            txtEmailVenditore.setText(annuncioCorrente.getUtente().getEmail());
+        } else {
+            txtVenditore.setText("Utente #" + annuncioCorrente.getUtenteId());
+            txtEmailVenditore.setText("Email non disponibile");
+        }
 
-        // Pulizia e impostazione badge polimorfico
+        // 4. Dati OGGETTO (Presi dalla JOIN con Oggetto)
+        if (annuncioCorrente.getOggetti() != null && !annuncioCorrente.getOggetti().isEmpty()) {
+            Oggetto obj = annuncioCorrente.getOggetti().get(0);
+            txtCondizioni.setText(obj.getCondizione().toString().replace("_", " "));
+        }
+
+        // 5. Logica Polimorfica Prezzi e Badge
         badgeTipo.getStyleClass().removeAll("badge-vendita", "badge-scambio", "badge-regalo");
+        txtPrezzoMinimo.setText(""); // Reset di default
 
         if (annuncioCorrente instanceof AnnuncioVendita av) {
             badgeTipo.setText("VENDITA");
             badgeTipo.getStyleClass().add("badge-vendita");
             txtDettagliSpecifici.setText(av.getPrezzoMedio() + " €");
+
+            if (av.getPrezzoMinimo() != null && av.getPrezzoMinimo().doubleValue() > 0) {
+                txtPrezzoMinimo.setText("Si accettano offerte fino a: " + av.getPrezzoMinimo() + " €");
+            }
         } else if (annuncioCorrente instanceof AnnuncioScambio as) {
             badgeTipo.setText("SCAMBIO");
             badgeTipo.getStyleClass().add("badge-scambio");
@@ -58,15 +79,14 @@ public class DettaglioAnnuncioBoundary {
         } else {
             badgeTipo.setText("REGALO");
             badgeTipo.getStyleClass().add("badge-regalo");
-            txtDettagliSpecifici.setText("Gratuito");
+            txtDettagliSpecifici.setText("Disponibile gratuitamente");
         }
 
-        // Controllo proprietario per nascondere il tasto offerta
+        // 6. Nascondi bottone se sono io il proprietario
         try {
             Utente loggato = ControllerUninaSwap.getInstance().getUtente();
             if (loggato != null && annuncioCorrente.getUtenteId() == loggato.getId()) {
                 btnFaiOfferta.setVisible(false);
-                btnFaiOfferta.setManaged(false);
             }
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -96,21 +116,18 @@ public class DettaglioAnnuncioBoundary {
         immagineAnnuncio.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
     }
 
-    @FXML
-    public void apriSchermataOfferta() {
+    @FXML public void apriSchermataOfferta() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathEffettuaOfferta));
             Parent root = loader.load();
             EffettuaOffertaBoundary controller = loader.getController();
             controller.initData(annuncioCorrente);
-
             Stage stage = (Stage) btnFaiOfferta.getScene().getWindow();
             stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    @FXML
-    public void tornaIndietro() {
+    @FXML public void tornaIndietro() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathHomePage));
             Parent root = loader.load();

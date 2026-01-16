@@ -17,10 +17,13 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     private ArrayList<Annuncio> caricaAnnunciConJoin(String condizioneSql, Object... params) {
         LinkedHashMap<Integer, Annuncio> mappaAnnunci = new LinkedHashMap<>();
 
-        // Query base: nomi tabelle e colonne allineati al tuo dump SQL
-        String sql = "SELECT a.*, s.nome_sede, o.id as o_id, o.nome as o_nome, o.condizione as o_condizione, i.path as i_path " +
+        // Query aggiornata con JOIN su UTENTE
+        String sql = "SELECT a.*, s.nome_sede, " +
+                "u.username as u_username, u.matricola as u_matricola, u.email as u_email, u.immagine_profilo as u_img, " + // Dati Utente
+                "o.id as o_id, o.nome as o_nome, o.condizione as o_condizione, i.path as i_path " +
                 "FROM annuncio a " +
                 "LEFT JOIN sede s ON a.sede_id = s.id " +
+                "LEFT JOIN utente u ON a.utente_id = u.id " + // JOIN CON UTENTE
                 "LEFT JOIN oggetto o ON a.id = o.annuncio_id " +
                 "LEFT JOIN immagine i ON o.id = i.oggetto_id " +
                 condizioneSql;
@@ -39,12 +42,25 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                     Annuncio annuncio = mappaAnnunci.get(idAnnuncio);
                     if (annuncio == null) {
                         annuncio = mapRowToAnnuncio(rs);
+
+                        // Popolamento SEDE
                         Sede sede = new Sede();
                         sede.setNomeSede(rs.getString("nome_sede"));
                         annuncio.setSede(sede);
+
+                        // NUOVO: Popolamento UTENTE (Venditore)
+                        Utente venditore = new Utente();
+                        venditore.setId(rs.getInt("utente_id"));
+                        venditore.setUsername(rs.getString("u_username"));
+                        venditore.setMatricola(rs.getString("u_matricola"));
+                        venditore.setEmail(rs.getString("u_email"));
+                        venditore.setPathImmagineProfilo(rs.getString("u_img"));
+                        annuncio.setUtente(venditore); // Assicurati che l'entity Annuncio abbia questo campo
+
                         mappaAnnunci.put(idAnnuncio, annuncio);
                     }
 
+                    // Logica Oggetti e Immagini (rimane invariata)
                     int idOggetto = rs.getInt("o_id");
                     if (idOggetto > 0) {
                         final int currentObjId = idOggetto;
@@ -56,10 +72,8 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                             oggetto = new Oggetto();
                             oggetto.setId(idOggetto);
                             oggetto.setNome(rs.getString("o_nome"));
-
                             String condStr = rs.getString("o_condizione");
                             if(condStr != null) {
-                                // Converte il formato DB (es. "COME NUOVO") in Enum (es. "COME_NUOVO")
                                 oggetto.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr.replace(" ", "_").toUpperCase()));
                             }
                             annuncio.getOggetti().add(oggetto);
@@ -73,12 +87,10 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Errore caricamento annunci con JOIN: " + e.getMessage());
             e.printStackTrace();
         }
         return new ArrayList<>(mappaAnnunci.values());
     }
-
     // =================================================================================
     // LOGICA DI RICERCA E FILTRAGGIO
     // =================================================================================
