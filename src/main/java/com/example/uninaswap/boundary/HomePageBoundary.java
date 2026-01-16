@@ -79,11 +79,10 @@ public class HomePageBoundary implements GestoreMessaggio {
     private VBox creaCardUtente(Utente u) {
         VBox card = new VBox(15);
         card.getStyleClass().add("ad-card");
-        card.setAlignment(Pos.CENTER); // Centra i nodi nel VBox
+        card.setAlignment(Pos.CENTER);
         card.setPrefWidth(280);
         card.setPadding(new Insets(25));
 
-        // Gestione Immagine Profilo
         ImageView imgView = new ImageView();
         imgView.setFitWidth(100);
         imgView.setFitHeight(100);
@@ -92,25 +91,21 @@ public class HomePageBoundary implements GestoreMessaggio {
         Circle clip = new Circle(50, 50, 50);
         imgView.setClip(clip);
 
-        // Username - Centrato esplicitamente
         Text username = new Text(u.getUsername());
         username.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-fill: #003366;");
 
-        // Email - Centrata esplicitamente
         Text email = new Text(u.getEmail());
         email.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         email.setStyle("-fx-font-size: 14px; -fx-fill: #666; -fx-font-style: italic;");
 
-        // Container Bottoni
         VBox containerBottoni = new VBox(12);
         containerBottoni.setAlignment(Pos.CENTER);
         containerBottoni.setMaxWidth(200);
 
-        // Pulsante Vedi Annunci
         Button btnProfilo = new Button("Vedi Annunci");
         btnProfilo.getStyleClass().setAll("button-primary");
-        btnProfilo.setAlignment(Pos.CENTER); // Centra il testo nel bottone
+        btnProfilo.setAlignment(Pos.CENTER);
         btnProfilo.setMaxWidth(Double.MAX_VALUE);
         btnProfilo.setOnAction(e -> {
             containerAnnunci.getChildren().clear();
@@ -122,10 +117,9 @@ public class HomePageBoundary implements GestoreMessaggio {
             }
         });
 
-        // Pulsante Vedi Recensioni
         Button btnRecensioni = new Button("Vedi Recensioni");
         btnRecensioni.getStyleClass().setAll("button-outline");
-        btnRecensioni.setAlignment(Pos.CENTER); // Centra il testo nel bottone
+        btnRecensioni.setAlignment(Pos.CENTER);
         btnRecensioni.setMaxWidth(Double.MAX_VALUE);
         btnRecensioni.setOnAction(e -> {
             try {
@@ -141,13 +135,13 @@ public class HomePageBoundary implements GestoreMessaggio {
         });
 
         containerBottoni.getChildren().addAll(btnProfilo, btnRecensioni);
-
-        // Aggiunta finale dei componenti
         card.getChildren().addAll(imgView, username, email, containerBottoni);
 
         return card;
-    }    /**
-     * Card Annuncio Aggiornata con Sede, Badge e Prezzo/Info Scambio.
+    }
+
+    /**
+     * Card Annuncio con Emoji 💰, 🔄, 🎁 integrate!
      */
     private VBox creaCardAnnuncio(Annuncio a) {
         VBox card = new VBox(12);
@@ -164,36 +158,35 @@ public class HomePageBoundary implements GestoreMessaggio {
         imgView.setSmooth(true);
         caricaFotoOggetto(a, imgView);
 
-        // 2. Header: Badge del tipo + Sede (📍 Nome Sede)
+        // 2. Header: Badge + Sede
         HBox headerInfo = new HBox(10);
         headerInfo.setAlignment(Pos.CENTER_LEFT);
 
         Label badge = new Label(determinaTipo(a));
         badge.getStyleClass().addAll("badge-base", determinaClasseBadge(a));
 
-        Text location = new Text("📍 " + a.getSede().getNomeSede());
+        Text location = new Text("📍 " + (a.getSede() != null ? a.getSede().getNomeSede() : "N/A"));
         location.getStyleClass().add("ad-location");
 
         headerInfo.getChildren().addAll(badge, location);
 
-        // 3. Descrizione Annuncio
+        // 3. Descrizione
         Text desc = new Text(a.getDescrizione());
         desc.setWrappingWidth(230);
         desc.getStyleClass().add("ad-description");
 
-        // 4. Info Extra (Prezzo per Vendita, Proposta per Scambio)
+        // 4. Info Extra con EMOJI (Recuperate dalle colonne prezzo/nomi_items_scambio)
         Text extraInfo = new Text();
         extraInfo.getStyleClass().add("ad-extra-info");
 
         if (a instanceof AnnuncioVendita av) {
-            extraInfo.setText(av.getPrezzoMedio() + " €");
+            extraInfo.setText("💰 " + av.getPrezzoMedio() + " €");
         } else if (a instanceof AnnuncioScambio as) {
-            extraInfo.setText("🔄 " + as.getListaOggetti());
+            extraInfo.setText("🔄 Cerco: " + as.getListaOggetti());
         } else {
-            extraInfo.setText("OMAGGIO");
+            extraInfo.setText("🎁 REGALO");
         }
 
-        // Spacer per allineare l'info extra in fondo alla card
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
@@ -225,7 +218,7 @@ public class HomePageBoundary implements GestoreMessaggio {
                 String path = a.getOggetti().get(0).getImmagini().get(0);
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
                 if (file.exists()) {
-                    iv.setImage(new Image(file.toURI().toString(), 0, 0, true, true, true));
+                    iv.setImage(new Image(file.toURI().toString(), 400, 300, true, true));
                     return;
                 }
             }
