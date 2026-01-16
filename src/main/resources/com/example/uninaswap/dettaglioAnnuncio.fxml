@@ -39,18 +39,18 @@
                         <VBox spacing="5">
                             <Text text="PROPOSTA" styleClass="info-label"/>
                             <Text fx:id="txtDettagliSpecifici" text="..." styleClass="info-value"/>
-                            <Text fx:id="txtPrezzoMinimo" text="" style="-fx-fill: #e74c3c; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                            <Text fx:id="txtPrezzoMinimo" text="" styleClass="label-alert"/>
                         </VBox>
 
                         <VBox spacing="5">
                             <Text text="CONDIZIONE OGGETTO" styleClass="info-label"/>
-                            <Text fx:id="txtCondizioni" text="N/A" style="-fx-font-weight: bold; -fx-fill: #2d3436;"/>
+                            <Text fx:id="txtCondizioni" text="N/A" styleClass="label-dark-bold"/>
                         </VBox>
 
                         <VBox spacing="5">
                             <Text text="VENDITORE" styleClass="info-label"/>
-                            <Text fx:id="txtVenditore" text="..." style="-fx-font-weight: bold; -fx-fill: #343a40;"/>
-                            <Text fx:id="txtEmailVenditore" text="..." style="-fx-fill: #7f8c8d; -fx-font-size: 13px;"/>
+                            <Text fx:id="txtVenditore" text="..." styleClass="label-dark-bold"/>
+                            <Text fx:id="txtEmailVenditore" text="..." styleClass="label-italic-small"/>
                         </VBox>
                     </VBox>
 
