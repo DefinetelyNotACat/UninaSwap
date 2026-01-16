@@ -24,8 +24,8 @@
 
             <ComboBox fx:id="filtroBarraDiRicerca" prefWidth="120" />
 
-            <ComboBox fx:id="filtroCondizione" prefWidth="130" managed="false" visible="false" promptText="Condizione" />
-            <ComboBox fx:id="filtroCategoria" prefWidth="130" managed="false" visible="false" promptText="Categoria" />
+            <ComboBox fx:id="filtroCondizione" prefWidth="160" managed="false" visible="false" promptText="Condizione" />
+            <ComboBox fx:id="filtroCategoria" prefWidth="160" managed="false" visible="false" promptText="Categoria" />
 
             <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                 <children>

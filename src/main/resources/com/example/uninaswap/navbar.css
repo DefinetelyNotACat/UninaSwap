@@ -1,122 +1,116 @@
-/* --- CURSORE HAND UNIVERSALE --- */
-/* Applica la manina a tutti gli elementi cliccabili della navbar */
-.button,
-.profile-picture,
-#logo,
-.combo-box,
-.combo-box .arrow-button,
-.combo-box .list-cell,
-.menu-item,
-.menu-item .label {
+/* --- 1. CURSORE HAND UNIVERSALE (NUOVO) --- */
+.button, .profile-picture, #logo,
+.combo-box, .combo-box .arrow-button, .combo-box .list-cell,
+.menu-item, .menu-item .label, .context-menu {
     -fx-cursor: hand;
 }
 
-/* --- STILE NAVBAR CONTAINER --- */
+/* --- 2. NAVBAR CONTAINER (NUOVO - Moderno) --- */
 .navbar-container {
-    -fx-background-color: #ffffff;
+    -fx-background-color: white;
+    -fx-padding: 10 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
     -fx-border-color: #e0e0e0;
-    -fx-border-width: 0 0 1 0; /* Sottile linea sotto la navbar */
+    -fx-border-width: 0 0 1 0;
 }
 
-/* --- COMBOBOX (Filtri) --- */
+/* --- 3. COMBOBOX: Look Neutro ma con Highlight Blu (VECCHIO + NUOVO) --- */
 .combo-box {
     -fx-background-color: #f8f9fa;
-    -fx-border-color: #ced4da;
-    -fx-border-radius: 5px;
-    -fx-background-radius: 5px;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 2 5;
 }
 
-.combo-box:hover {
-    -fx-border-color: #0d6efd; /* Colore blu al passaggio */
+/* Effetto Focus/Open: Diventa Azzurro (Richiesta precedente integrata) */
+.combo-box:focused, .combo-box:showing, .combo-box.filter-active {
+    -fx-background-color: #e7f1ff;
+    -fx-border-color: #0d6efd;
+    -fx-border-width: 1.5;
 }
 
-/* Testo dentro la ComboBox e nelle voci del menu */
-.combo-box .list-cell {
-    -fx-padding: 5px 10px;
-    -fx-text-fill: #333333;
+/* Gestione delle Opzioni nel Menu (Dal VECCHIO CSS) */
+.combo-box .context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 4);
 }
 
-/* Colore quando passi sopra le voci nel menu a tendina */
-.combo-box .list-cell:hover,
-.combo-box .list-cell:focused {
-    -fx-background-color: #e9ecef;
+.combo-box .menu-item:focused {
+    /* Il blu intenso che ti piaceva del vecchio CSS */
+    -fx-background-color: #0665e3;
 }
 
-/* --- BARRA DI RICERCA (TextField) --- */
+.combo-box .menu-item:focused .label {
+    -fx-text-fill: white;
+}
+
+/* --- 4. BARRA DI RICERCA (NUOVO) --- */
 .text-field {
-    -fx-background-radius: 5px;
-    -fx-border-radius: 5px;
-    -fx-border-color: #ced4da;
-    -fx-padding: 8px;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #dee2e6;
+    -fx-padding: 8 15;
 }
 
 .text-field:focused {
     -fx-border-color: #0d6efd;
-    -fx-border-width: 1.5px;
+    -fx-border-width: 1.5;
 }
 
-.text-field.error {
-    -fx-border-color: #dc3545;
+/* --- 5. PULSANTI (NUOVO - Premium) --- */
+.button-search {
+    -fx-background-color: #212529;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
 }
 
-.error-text-small {
-    -fx-fill: #dc3545;
-    -fx-font-size: 11px;
+.button-primary {
+    -fx-background-color: linear-gradient(to bottom right, #0d6efd, #0056b3);
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-padding: 10 25;
+    -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.3), 10, 0, 0, 4);
 }
 
-/* --- MENU PROFILO (ContextMenu) --- */
+.button-primary:hover {
+    -fx-translate-y: -1;
+    -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.4), 12, 0, 0, 6);
+}
+
+/* --- 6. MENU PROFILO (Unione VECCHIO + NUOVO) --- */
 .profilo-context-menu {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 8px;
+    -fx-background-color: white;
+    -fx-background-radius: 8;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 4);
-    -fx-padding: 5px;
+    -fx-padding: 5;
 }
 
 .profilo-context-menu .menu-item {
-    -fx-padding: 10px 20px;
-    -fx-background-radius: 4px;
+    -fx-padding: 8px 15px; /* Padding dal vecchio */
+    -fx-background-radius: 4;
 }
 
 .profilo-context-menu .menu-item .label {
-    -fx-text-fill: #212529;
+    -fx-text-fill: #333333;
+    -fx-font-family: "Arial"; /* Font dal vecchio */
     -fx-font-size: 14px;
 }
 
 .profilo-context-menu .menu-item:focused {
-    -fx-background-color: #f8f9fa;
+    -fx-background-color: #f0f0f0; /* Grigio chiaro dal vecchio */
 }
 
-/* Stile speciale Logout */
+/* Logout speciale */
 .menu-item-logout .label {
     -fx-text-fill: #dc3545 !important;
     -fx-font-weight: bold;
 }
 
 .menu-item-logout:focused {
-    -fx-background-color: #fff5f5;
-}
-
-/* --- PULSANTI --- */
-.button {
-    -fx-background-radius: 5px;
-    -fx-font-weight: bold;
-    -fx-transition: 0.2s;
-}
-
-.button-search {
-    -fx-background-color: #212529;
-    -fx-text-fill: white;
-}
-
-.button-search:hover {
-    -fx-background-color: #343a40;
-}
-
-.button-primary {
-    -fx-background-color: #0d6efd;
-    -fx-text-fill: white;
-}
-
-.button-primary:hover {
-    -fx-background-color: #0b5ed7;
+    -fx-background-color: #ffeef0; /* Rosa dal vecchio */
 }

@@ -5,9 +5,12 @@ import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -24,7 +27,7 @@ public class EffettuaOffertaBoundary {
     @FXML private Label lblErrore;
 
     private Annuncio annuncioTarget;
-    private ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+    private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
 
     // Controlli dinamici
     private TextField inputPrezzo;
@@ -41,26 +44,50 @@ public class EffettuaOffertaBoundary {
 
         if (annuncioTarget instanceof AnnuncioVendita) {
             Label l = new Label("Inserisci la tua offerta in €:");
+            l.setStyle("-fx-font-weight: bold;");
+
             inputPrezzo = new TextField();
             inputPrezzo.setPromptText("Es. 50.00");
+            inputPrezzo.setMaxWidth(200);
+
             containerSpecifico.getChildren().addAll(l, inputPrezzo);
 
         } else if (annuncioTarget instanceof AnnuncioScambio) {
-            Label l = new Label("Seleziona uno o più oggetti dal tuo inventario da scambiare:");
+            Label l = new Label("Seleziona gli oggetti dal tuo inventario:");
+            l.setStyle("-fx-font-weight: bold;");
+
             listaMieiOggetti = new ListView<>();
             listaMieiOggetti.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            listaMieiOggetti.setPrefHeight(200);
+            listaMieiOggetti.setCursor(Cursor.HAND);
 
             try {
-                // Recupera gli oggetti disponibili dell'utente loggato
                 ArrayList<Oggetto> mieiOggetti = controller.OttieniOggettiDisponibili(controller.getUtente());
                 listaMieiOggetti.getItems().addAll(mieiOggetti);
-                // Per visualizzare bene l'oggetto nella lista
+
+                // --- MIGLIORAMENTO GRAFICO CELLA ---
                 listaMieiOggetti.setCellFactory(param -> new ListCell<>() {
                     @Override
                     protected void updateItem(Oggetto item, boolean empty) {
                         super.updateItem(item, empty);
-                        if (empty || item == null) setText(null);
-                        else setText(item.getNome() + " (" + item.getCondizione() + ")");
+                        if (empty || item == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            HBox cellBox = new HBox(10);
+                            cellBox.setAlignment(Pos.CENTER_LEFT);
+
+                            VBox textContainer = new VBox(2);
+                            Label nome = new Label(item.getNome());
+                            nome.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+
+                            Label info = new Label("Condizione: " + item.getCondizione());
+                            info.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
+
+                            textContainer.getChildren().addAll(nome, info);
+                            cellBox.getChildren().add(textContainer);
+                            setGraphic(cellBox);
+                        }
                     }
                 });
             } catch (Exception e) {
@@ -70,8 +97,11 @@ public class EffettuaOffertaBoundary {
 
         } else {
             // Regalo
-            Label l = new Label("Questo annuncio è un REGALO! Conferma il tuo interesse.");
-            containerSpecifico.getChildren().add(l);
+            Label l = new Label("🎁 Questo annuncio è un REGALO!");
+            l.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #fd7e14;");
+            Text t = new Text("Confermando l'offerta, il venditore riceverà la tua richiesta di interesse.");
+            t.setWrappingWidth(400);
+            containerSpecifico.getChildren().addAll(l, t);
         }
     }
 
@@ -83,36 +113,46 @@ public class EffettuaOffertaBoundary {
             Offerta nuovaOfferta = null;
 
             if (annuncioTarget instanceof AnnuncioVendita) {
+                if (inputPrezzo.getText().isEmpty()) throw new Exception("Inserisci un prezzo.");
                 double prezzo = Double.parseDouble(inputPrezzo.getText().replace(",", "."));
-                nuovaOfferta = new OffertaVendita(annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
-                        LocalTime.now(), LocalTime.now().plusHours(1), null, me, BigDecimal.valueOf(prezzo), (AnnuncioVendita) annuncioTarget);
+
+                nuovaOfferta = new OffertaVendita(
+                        annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
+                        LocalTime.now(), LocalTime.now().plusHours(1), null, me,
+                        BigDecimal.valueOf(prezzo), (AnnuncioVendita) annuncioTarget
+                );
 
             } else if (annuncioTarget instanceof AnnuncioScambio) {
                 var selezionati = new ArrayList<>(listaMieiOggetti.getSelectionModel().getSelectedItems());
                 if (selezionati.isEmpty()) throw new Exception("Seleziona almeno un oggetto per lo scambio.");
 
-                OffertaScambio os = new OffertaScambio((AnnuncioScambio) annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
-                        LocalTime.now(), LocalTime.now().plusHours(1), selezionati.get(0), me);
-                os.setOggetti(selezionati); // Imposta la lista completa
+                OffertaScambio os = new OffertaScambio(
+                        (AnnuncioScambio) annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
+                        LocalTime.now(), LocalTime.now().plusHours(1), selezionati.get(0), me
+                );
+                os.setOggetti(selezionati);
                 nuovaOfferta = os;
 
             } else {
                 // Regalo
-                nuovaOfferta = new OffertaRegalo(annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
-                        LocalTime.now(), LocalTime.now().plusHours(1), null, me, (AnnuncioRegalo) annuncioTarget);
+                nuovaOfferta = new OffertaRegalo(
+                        annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
+                        LocalTime.now(), LocalTime.now().plusHours(1), null, me,
+                        (AnnuncioRegalo) annuncioTarget
+                );
             }
 
-            // Salvataggio tramite DAO (o Controller se esposto)
+            // Salvataggio tramite DAO
             com.example.uninaswap.dao.OffertaDAO dao = new com.example.uninaswap.dao.OffertaDAO();
             if (dao.salvaOfferta(nuovaOfferta)) {
-                System.out.println("Offerta Inviata!");
+                System.out.println("Offerta Inviata con successo!");
                 tornaHome();
             } else {
-                lblErrore.setText("Errore durante il salvataggio dell'offerta.");
+                lblErrore.setText("Errore durante il salvataggio dell'offerta nel database.");
             }
 
         } catch (NumberFormatException e) {
-            lblErrore.setText("Formato prezzo non valido.");
+            lblErrore.setText("Inserisci un numero valido per il prezzo.");
         } catch (Exception e) {
             lblErrore.setText(e.getMessage());
             e.printStackTrace();
@@ -126,11 +166,19 @@ public class EffettuaOffertaBoundary {
 
     private void tornaHome() {
         try {
-            // CORREZIONE: Usa Costanti.pathHomePage
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathHomePage));
             Parent root = loader.load();
             Stage stage = (Stage) containerSpecifico.getScene().getWindow();
-            stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
-        } catch (Exception e) { e.printStackTrace(); }
+
+            // Manteniamo le dimensioni correnti della finestra
+            double width = stage.getScene().getWidth();
+            double height = stage.getScene().getHeight();
+
+            stage.setScene(new Scene(root, width, height));
+            stage.show();
+        } catch (Exception e) {
+            System.err.println("Errore nel ritorno alla Home: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
