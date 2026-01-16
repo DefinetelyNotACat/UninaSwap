@@ -31,20 +31,20 @@ public class GestioneOfferteBoundary {
         boxInviate.getChildren().clear();
 
         try {
-            // 1. Carica Offerte RICEVUTE (da altri utenti sui miei annunci)
+            // 1. Offerte RICEVUTE
             ArrayList<Offerta> ricevute = controller.OttieniOfferteRicevute();
             if (ricevute.isEmpty()) {
-                boxRicevute.getChildren().add(new Label("Nessuna offerta ricevuta."));
+                boxRicevute.getChildren().add(creaLabelVuota("Nessuna offerta ricevuta."));
             } else {
                 for (Offerta o : ricevute) {
                     boxRicevute.getChildren().add(creaCardOfferta(o, true));
                 }
             }
 
-            // 2. Carica Offerte INVIATE (fatte da me su annunci di altri)
+            // 2. Offerte INVIATE
             ArrayList<Offerta> inviate = controller.OttieniLeMieOfferte();
             if (inviate.isEmpty()) {
-                boxInviate.getChildren().add(new Label("Non hai inviato nessuna offerta."));
+                boxInviate.getChildren().add(creaLabelVuota("Non hai inviato nessuna offerta."));
             } else {
                 for (Offerta o : inviate) {
                     boxInviate.getChildren().add(creaCardOfferta(o, false));
@@ -58,78 +58,81 @@ public class GestioneOfferteBoundary {
     }
 
     private VBox creaCardOfferta(Offerta o, boolean isRicevuta) {
-        VBox card = new VBox(8);
-        card.setStyle("-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0); -fx-border-color: #e0e0e0; -fx-border-radius: 8;");
+        VBox card = new VBox(12);
+        card.getStyleClass().add("offer-card");
 
         // Intestazione
-        String headerText;
-        if (isRicevuta) {
-            headerText = "Offerta da: " + o.getUtente().getUsername() + " | Annuncio: " + o.getAnnuncio().getDescrizione();
-        } else {
-            headerText = "Inviata a: " + o.getAnnuncio().getId() + " (Annuncio) | Status";
-        }
-        Text titolo = new Text(headerText);
-        titolo.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        String headerText = isRicevuta
+                ? "Da: " + o.getUtente().getUsername()
+                : "Annuncio #" + o.getAnnuncio().getId();
 
-        // Dettagli specifici per tipo (Mostra Prezzo se vendita)
-        String dettagliExtra = "";
-        if (o instanceof OffertaVendita) {
-            dettagliExtra = "Prezzo offerto: €" + ((OffertaVendita) o).getPrezzoOffertaVendita();
-        } else {
-            dettagliExtra = "Tipo: " + o.getClass().getSimpleName().replace("Offerta", "");
-        }
+        Text titolo = new Text(headerText);
+        titolo.getStyleClass().add("offer-card-title");
+
+        Text descAnnuncio = new Text(o.getAnnuncio().getDescrizione());
+        descAnnuncio.getStyleClass().add("offer-card-subtitle");
+
+        // Dettagli Prezzo/Tipo
+        String dettagliExtra = (o instanceof OffertaVendita)
+                ? "Offerta: " + ((OffertaVendita) o).getPrezzoOffertaVendita() + " €"
+                : "Tipo: Scambio/Regalo";
         Label details = new Label(dettagliExtra);
+        details.getStyleClass().add("offer-details-label");
 
         // Messaggio
-        Text msg = new Text("Messaggio: \"" + o.getMessaggio() + "\"");
-        msg.setStyle("-fx-font-style: italic;");
+        Text msg = new Text("\"" + o.getMessaggio() + "\"");
+        msg.getStyleClass().add("offer-message-text");
+        msg.setWrappingWidth(500);
 
-        // Stato Colorato
-        Label statoLabel = new Label("Stato: " + o.getStato().toString());
-        statoLabel.setStyle("-fx-font-weight: bold;");
+        // --- FIX STATO: Rimosso Underscore ---
+        String statoTesto = o.getStato().toString().replace("_", " ");
+        Label statoLabel = new Label(statoTesto);
+        statoLabel.getStyleClass().add("status-badge");
 
+        // Colore dinamico dello stato
         switch (o.getStato()) {
-            case ACCETTATA:
-                statoLabel.setStyle(statoLabel.getStyle() + " -fx-text-fill: green;");
-                break;
-            case RIFIUTATA:
-                statoLabel.setStyle(statoLabel.getStyle() + " -fx-text-fill: red;");
-                break;
-            default:
-                statoLabel.setStyle(statoLabel.getStyle() + " -fx-text-fill: orange;");
-                break;
+            case ACCETTATA: statoLabel.getStyleClass().add("status-accepted"); break;
+            case RIFIUTATA: statoLabel.getStyleClass().add("status-rejected"); break;
+            default: statoLabel.getStyleClass().add("status-pending"); break;
         }
 
-        card.getChildren().addAll(titolo, details, msg, statoLabel);
+        HBox topRow = new HBox();
+        topRow.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(titolo, javafx.scene.layout.Priority.ALWAYS);
+        topRow.getChildren().addAll(titolo, statoLabel);
 
-        // Pulsanti (Solo se RICEVUTA e IN_ATTESA)
+        card.getChildren().addAll(topRow, descAnnuncio, details, msg);
+
+        // Pulsanti Azione
         if (isRicevuta && o.getStato() == Offerta.STATO_OFFERTA.IN_ATTESA) {
             HBox azioni = new HBox(15);
             azioni.setAlignment(Pos.CENTER_RIGHT);
 
             Button btnAccetta = new Button("Accetta");
-            btnAccetta.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-cursor: hand;");
+            btnAccetta.getStyleClass().add("btn-accept");
 
             Button btnRifiuta = new Button("Rifiuta");
-            btnRifiuta.setStyle("-fx-background-color: #F44336; -fx-text-fill: white; -fx-cursor: hand;");
+            btnRifiuta.getStyleClass().add("btn-reject");
 
             btnAccetta.setOnAction(e -> cambiaStato(o, Offerta.STATO_OFFERTA.ACCETTATA));
             btnRifiuta.setOnAction(e -> cambiaStato(o, Offerta.STATO_OFFERTA.RIFIUTATA));
 
-            azioni.getChildren().addAll(btnAccetta, btnRifiuta);
+            azioni.getChildren().addAll(btnRifiuta, btnAccetta);
             card.getChildren().add(azioni);
         }
 
         return card;
     }
 
+    private Label creaLabelVuota(String testo) {
+        Label l = new Label(testo);
+        l.setStyle("-fx-text-fill: #95a5a6; -fx-font-size: 16px; -fx-padding: 50 0 0 0;");
+        return l;
+    }
+
     private void cambiaStato(Offerta o, Offerta.STATO_OFFERTA nuovoStato) {
-        boolean successo = controller.GestisciStatoOfferta(o, nuovoStato);
-        if (successo) {
-            System.out.println("Stato offerta aggiornato: " + nuovoStato);
-            caricaOfferte(); // Ricarica la UI per mostrare il nuovo stato e rimuovere i pulsanti
-        } else {
-            System.out.println("Errore nell'aggiornamento stato");
+        if (controller.GestisciStatoOfferta(o, nuovoStato)) {
+            caricaOfferte();
         }
     }
 }

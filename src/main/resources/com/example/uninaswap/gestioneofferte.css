@@ -1,0 +1,82 @@
+/* Container principale */
+.main-scroll-pane {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Card Offerta */
+.offer-card {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);
+    -fx-border-color: #f1f1f1;
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+    -fx-max-width: 700;
+}
+
+.offer-card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.offer-card-subtitle {
+    -fx-font-size: 14px;
+    -fx-fill: #7f8c8d;
+}
+
+.offer-details-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #3498db;
+    -fx-font-size: 14px;
+}
+
+.offer-message-text {
+    -fx-font-style: italic;
+    -fx-fill: #34495e;
+    -fx-background-color: #fdfdfd;
+}
+
+/* Badges di Stato */
+.status-badge {
+    -fx-padding: 5 12;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+}
+
+.status-pending { -fx-background-color: #f39c12; }
+.status-accepted { -fx-background-color: #27ae60; }
+.status-rejected { -fx-background-color: #e74c3c; }
+
+/* Pulsanti */
+.btn-accept, .btn-reject {
+    -fx-cursor: hand;
+    -fx-padding: 8 20;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.btn-accept {
+    -fx-background-color: #2ecc71;
+}
+.btn-accept:hover { -fx-background-color: #27ae60; }
+
+.btn-reject {
+    -fx-background-color: #ecf0f1;
+    -fx-text-fill: #c0392b;
+}
+.btn-reject:hover { -fx-background-color: #e74c3c; -fx-text-fill: white; }
+
+/* TabPane Styling */
+.tab-pane .tab-header-area .tab {
+    -fx-background-color: transparent;
+    -fx-padding: 10 20;
+}
+.tab-pane .tab:selected {
+    -fx-background-color: white;
+    -fx-background-radius: 10 10 0 0;
+}
