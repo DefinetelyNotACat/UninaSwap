@@ -3,12 +3,18 @@ package com.example.uninaswap.boundary;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import java.io.File;
 import java.util.ArrayList;
 
 public class GestioneOfferteBoundary {
@@ -19,13 +25,11 @@ public class GestioneOfferteBoundary {
 
     private ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
     private boolean visualizzandoRicevute = true;
-
-    // Costante per evitare errori di battitura nel CSS
     private static final String CLASS_ACTIVE = "nav-btn-active";
 
     @FXML
     public void initialize() {
-        mostraRicevute(); // Caricamento iniziale
+        mostraRicevute();
     }
 
     @FXML
@@ -42,15 +46,9 @@ public class GestioneOfferteBoundary {
         caricaOfferte();
     }
 
-    /**
-     * Gestisce lo scambio della classe CSS tra i bottoni in modo pulito.
-     */
     private void aggiornaStatoGrafico(Button daAttivare, Button daDisattivare) {
-        // Rimuoviamo tutte le istanze della classe attiva da entrambi per sicurezza
         daAttivare.getStyleClass().removeAll(CLASS_ACTIVE);
         daDisattivare.getStyleClass().removeAll(CLASS_ACTIVE);
-
-        // Aggiungiamo la classe solo a quello cliccato
         daAttivare.getStyleClass().add(CLASS_ACTIVE);
     }
 
@@ -62,61 +60,67 @@ public class GestioneOfferteBoundary {
                     : controller.OttieniLeMieOfferte();
 
             if (lista == null || lista.isEmpty()) {
-                String msg = visualizzandoRicevute ? "Nessuna offerta ricevuta." : "Non hai inviato offerte.";
-                containerOfferte.getChildren().add(creaLabelVuota(msg));
+                containerOfferte.getChildren().add(creaLabelVuota(visualizzandoRicevute ? "Nessuna offerta ricevuta." : "Non hai inviato offerte."));
             } else {
                 for (Offerta o : lista) {
                     containerOfferte.getChildren().add(creaCardOfferta(o, visualizzandoRicevute));
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            containerOfferte.getChildren().add(new Label("Errore nel caricamento delle offerte."));
+            containerOfferte.getChildren().add(new Label("Errore nel caricamento."));
         }
     }
 
     private VBox creaCardOfferta(Offerta o, boolean isRicevuta) {
-        VBox card = new VBox(12);
+        VBox card = new VBox(15);
         card.getStyleClass().add("offer-card");
 
-        // Header (Titolo e Stato)
-        String headerText = isRicevuta ? "Da: " + o.getUtente().getUsername() : "Annuncio #" + o.getAnnuncio().getId();
-        Text titolo = new Text(headerText);
-        titolo.getStyleClass().add("offer-card-title");
+        // Identifichiamo l'utente da mostrare (L'offerente o il Venditore)
+        Utente utenteDaMostrare = isRicevuta ? o.getUtente() : o.getAnnuncio().getUtente();
 
-        Label statoLabel = new Label(o.getStato().toString().replace("_", " "));
-        statoLabel.getStyleClass().add("status-badge");
+        // --- HEADER CON IMMAGINE E TESTO ---
+        HBox header = new HBox(15);
+        header.setAlignment(Pos.CENTER_LEFT);
 
-        switch (o.getStato()) {
-            case ACCETTATA: statoLabel.getStyleClass().add("status-accepted"); break;
-            case RIFIUTATA: statoLabel.getStyleClass().add("status-rejected"); break;
-            default: statoLabel.getStyleClass().add("status-pending"); break;
-        }
+        ImageView imgProfilo = new ImageView();
+        imgProfilo.setFitWidth(50);
+        imgProfilo.setFitHeight(50);
+        Circle clip = new Circle(25, 25, 25);
+        imgProfilo.setClip(clip);
+        caricaFotoProfilo(utenteDaMostrare, imgProfilo);
 
-        HBox topRow = new HBox();
-        topRow.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(titolo, javafx.scene.layout.Priority.ALWAYS);
-        topRow.getChildren().addAll(titolo, statoLabel);
+        VBox infoUtente = new VBox(2);
+        Text nomeUtente = new Text(utenteDaMostrare != null ? utenteDaMostrare.getUsername() : "Utente sconosciuto");
+        nomeUtente.getStyleClass().add("offer-card-title");
 
-        // Dettagli Annuncio e Proposta
+        Text infoContesto = new Text(isRicevuta ? "Ti ha fatto un'offerta per:" : "Hai fatto un'offerta a:");
+        infoContesto.setStyle("-fx-fill: #95a5a6; -fx-font-size: 11px;");
+
         Text descAnnuncio = new Text(o.getAnnuncio().getDescrizione());
         descAnnuncio.getStyleClass().add("offer-card-subtitle");
 
-        String dettagliExtra = "";
-        if (o instanceof OffertaVendita ov) dettagliExtra = "Prezzo offerto: " + ov.getPrezzoOffertaVendita() + " €";
-        else if (o instanceof OffertaScambio) dettagliExtra = "Tipo: Scambio Oggetti";
-        else dettagliExtra = "Tipo: Regalo";
+        infoUtente.getChildren().addAll(infoContesto, nomeUtente, descAnnuncio);
+        HBox.setHgrow(infoUtente, Priority.ALWAYS);
 
-        Label details = new Label(dettagliExtra);
+        // Badge Stato
+        Label statoLabel = new Label(o.getStato().toString().replace("_", " "));
+        statoLabel.getStyleClass().add("status-badge");
+        impostaColoreStato(statoLabel, o.getStato());
+
+        header.getChildren().addAll(imgProfilo, infoUtente, statoLabel);
+
+        // --- DETTAGLI ---
+        String dettagliStr = (o instanceof OffertaVendita ov) ? "Proposta economica: " + ov.getPrezzoOffertaVendita() + " €" : "Tipo: " + (o instanceof OffertaScambio ? "Scambio" : "Regalo");
+        Label details = new Label(dettagliStr);
         details.getStyleClass().add("offer-details-label");
 
         Text msg = new Text("\"" + o.getMessaggio() + "\"");
         msg.getStyleClass().add("offer-message-text");
         msg.setWrappingWidth(600);
 
-        card.getChildren().addAll(topRow, descAnnuncio, details, msg);
+        card.getChildren().addAll(header, details, msg);
 
-        // Azioni (Solo per Ricevute in Attesa)
+        // Pulsanti Azione
         if (isRicevuta && o.getStato() == Offerta.STATO_OFFERTA.IN_ATTESA) {
             HBox azioni = new HBox(15);
             azioni.setAlignment(Pos.CENTER_RIGHT);
@@ -124,14 +128,36 @@ public class GestioneOfferteBoundary {
             btnAccetta.getStyleClass().add("btn-accept");
             Button btnRifiuta = new Button("Rifiuta");
             btnRifiuta.getStyleClass().add("btn-reject");
-
             btnAccetta.setOnAction(e -> cambiaStato(o, Offerta.STATO_OFFERTA.ACCETTATA));
             btnRifiuta.setOnAction(e -> cambiaStato(o, Offerta.STATO_OFFERTA.RIFIUTATA));
-
             azioni.getChildren().addAll(btnRifiuta, btnAccetta);
             card.getChildren().add(azioni);
         }
+
         return card;
+    }
+
+    private void caricaFotoProfilo(Utente u, ImageView iv) {
+        try {
+            if (u != null && u.getPathImmagineProfilo() != null && !u.getPathImmagineProfilo().isEmpty()) {
+                File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
+                if (file.exists()) {
+                    iv.setImage(new Image(file.toURI().toString()));
+                    return;
+                }
+            }
+            iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
+        } catch (Exception e) {
+            iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
+        }
+    }
+
+    private void impostaColoreStato(Label l, Offerta.STATO_OFFERTA s) {
+        switch (s) {
+            case ACCETTATA: l.getStyleClass().add("status-accepted"); break;
+            case RIFIUTATA: l.getStyleClass().add("status-rejected"); break;
+            default: l.getStyleClass().add("status-pending"); break;
+        }
     }
 
     private Label creaLabelVuota(String testo) {

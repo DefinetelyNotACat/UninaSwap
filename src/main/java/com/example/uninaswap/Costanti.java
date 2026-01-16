@@ -25,7 +25,8 @@ public class Costanti {
     public static final String TIME_REGEX = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
     public static final String inventario = "il mio inventario";
     public static final String pathCreaAnnuncio = "/com/example/uninaswap/aggiungiAnnuncio.fxml";
-    public static final String NOME_CARTELLA_IMMAGINI_PFP = "immagini_utente";
+    //TODO! ATTENZIONE CHE IN ALCUNI BRANCH E' IMMAGINI_UTENTE
+    public static final String NOME_CARTELLA_IMMAGINI_PFP = "immagini";
     public static final String BASE_PATH = "/com/example/uninaswap/";
     public static final String pathGestioneOfferte = "/com/example/uninaswap/gestioneOfferte.fxml";
     public static final String pathMieiAnnunci = "/com/example/uninaswap/mieiAnnunci.fxml";
