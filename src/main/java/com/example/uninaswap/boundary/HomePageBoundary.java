@@ -109,14 +109,18 @@ public class HomePageBoundary implements GestoreMessaggio {
         Text username = new Text(u.getUsername());
         username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-fill: #003366;");
 
-        // --- AGGIUNTA EMAIL ---
+        // Email
         Text email = new Text(u.getEmail());
         email.setStyle("-fx-font-size: 14px; -fx-fill: #666; -fx-font-style: italic;");
-        // ----------------------
 
-        // Pulsante di Azione
+        // Container per i bottoni per gestirne la spaziatura
+        VBox containerBottoni = new VBox(10);
+        containerBottoni.setAlignment(Pos.CENTER);
+
+        // Pulsante Vedi Annunci
         Button btnProfilo = new Button("Vedi Annunci");
         btnProfilo.getStyleClass().add("button");
+        btnProfilo.setMinWidth(180); // Larghezza fissa per uniformità
         btnProfilo.setOnAction(e -> {
             containerAnnunci.getChildren().clear();
             List<Annuncio> annunciUtente = controller.OttieniAnnunciDiUtente(u.getId());
@@ -127,8 +131,24 @@ public class HomePageBoundary implements GestoreMessaggio {
             }
         });
 
-        // Aggiungi l'email alla lista dei figli (posizionata tra username e bottone)
-        card.getChildren().addAll(imgView, username, email, btnProfilo);
+        // --- NUOVO PULSANTE VEDI RECENSIONI ---
+        Button btnRecensioni = new Button("Vedi Recensioni");
+        btnRecensioni.getStyleClass().add("button");
+        // Se vuoi differenziarlo graficamente puoi usare uno stile inline o una classe CSS diversa
+        // btnRecensioni.setStyle("-fx-background-color: #28a745;");
+        btnRecensioni.setMinWidth(180);
+        btnRecensioni.setOnAction(e -> {
+            // Qui andrà la logica per aprire la schermata delle recensioni dell'utente u
+            System.out.println("Apertura recensioni per: " + u.getUsername());
+
+            // Esempio di cambio scena se hai già il path:
+            // gestoreScene.CambiaScena(Costanti.pathVediRecensioni, "Recensioni Utente", e);
+        });
+
+        containerBottoni.getChildren().addAll(btnProfilo, btnRecensioni);
+
+        // Aggiungi tutto alla card
+        card.getChildren().addAll(imgView, username, email, containerBottoni);
         return card;
     }
     private VBox creaCardAnnuncio(Annuncio a) {
