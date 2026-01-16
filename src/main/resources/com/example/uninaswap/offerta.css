@@ -1,80 +1,112 @@
-/* Sfondo della pagina */
+/* --- 1. SFONDO E ROOT --- */
 .offerta-root {
-    -fx-background-color: #f4f7f6;
+    -fx-background-color: linear-gradient(to bottom, #f4f7f6, #e9ecef);
 }
 
-/* Card principale */
-.form-container {
+/* --- 2. CARD PRINCIPALE (PREMIUM) --- */
+.form-container-premium {
     -fx-background-color: white;
-    -fx-background-radius: 20;
+    -fx-background-radius: 25;
     -fx-padding: 40;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 15, 0, 0, 10);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 20, 0, 0, 10);
+    -fx-border-color: #ffffff;
+    -fx-border-radius: 25;
+    -fx-border-width: 2;
 }
 
-/* Titoli */
-.offer-title {
-    -fx-font-size: 28px;
+/* --- 3. TITOLI E TESTI --- */
+.offer-title-premium {
+    -fx-font-size: 30px;
     -fx-font-weight: bold;
     -fx-fill: #2d3436;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
 }
 
-.offer-subtitle {
-    -fx-font-size: 14px;
+.offer-subtitle-premium {
+    -fx-font-size: 15px;
     -fx-fill: #636e72;
+    -fx-font-style: italic;
 }
 
-/* Input e Messaggio */
-.text-area, .text-field {
+/* --- 4. INPUT E TEXTAREA (PULIZIA ASSOLUTA) --- */
+.text-area-premium, .text-field-premium {
     -fx-background-color: #f8f9fa;
-    -fx-background-radius: 10;
-    -fx-border-color: #dfe6e9;
-    -fx-border-radius: 10;
-    -fx-padding: 12;
-}
-
-.text-area:focused, .text-field:focused {
-    /*-fx-border-color: #28a745; !* Verde solo per l'azione di offerta *!*/
-    -fx-background-color: white;
-}
-
-/* ListView Scambio */
-.list-view {
-    -fx-background-radius: 10;
-    -fx-border-radius: 10;
-    -fx-background-color: #f8f9fa;
-}
-
-.list-cell:filled:selected {
-    -fx-background-color: #e8f5e9;
-    -fx-text-fill: #28a745;
-    -fx-font-weight: bold;
-}
-
-/* Pulsanti Offerta */
-.btn-send {
-    -fx-background-color: linear-gradient(to bottom right, #28a745, #218838);
-    -fx-text-fill: white;
     -fx-background-radius: 12;
+    -fx-border-color: #dfe6e9; /* Colore grigio chiaro originale */
+    -fx-border-radius: 12;
+    -fx-padding: 12;
+    -fx-font-size: 14px;
+}
+
+/* RIMOSSO IL COLORE AL FOCUS: Il bordo resta grigio */
+.text-area-premium:focused, .text-field-premium:focused {
+    -fx-border-color: #dfe6e9; /* Mantiene lo stesso colore di quando non è cliccato */
+    -fx-background-color: white; /* Cambia solo lo sfondo per dare un minimo di feedback */
+    -fx-effect: none; /* Rimosso ogni alone blu o verde */
+}
+
+/* --- 5. LISTVIEW (PER SCAMBIO) --- */
+.list-view {
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dfe6e9;
+}
+
+.list-cell {
+    -fx-padding: 10;
+    -fx-background-color: transparent;
+}
+
+/* Qui l'azzurro serve per far capire cosa hai selezionato nella lista */
+.list-cell:filled:selected {
+    -fx-background-color: #e7f1ff;
+    -fx-text-fill: #0d6efd;
     -fx-font-weight: bold;
-    -fx-padding: 12 35;
+}
+
+/* --- 6. BOTTONE INVIA (VERDE PREMIUM) --- */
+.btn-send-premium {
+    -fx-background-color: linear-gradient(to bottom right, #2ecc71, #27ae60);
+    -fx-text-fill: white;
+    -fx-background-radius: 30;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-padding: 14 45;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(three-pass-box, rgba(40, 167, 69, 0.3), 8, 0, 0, 3);
+    -fx-effect: dropshadow(three-pass-box, rgba(46, 204, 113, 0.4), 15, 0, 0, 5);
 }
 
-.btn-send:hover {
-    -fx-translate-y: -1;
-    -fx-background-color: #218838;
+.btn-send-premium:hover {
+    -fx-background-color: linear-gradient(to bottom right, #27ae60, #1e8449);
+    -fx-translate-y: -2;
 }
 
-.btn-back {
+.btn-send-premium:pressed {
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
+}
+
+/* --- 7. BOTTONE ANNULLA --- */
+.btn-back-premium {
     -fx-background-color: transparent;
     -fx-text-fill: #636e72;
     -fx-border-color: #b2bec3;
-    -fx-border-radius: 12;
-    -fx-padding: 12 35;
+    -fx-border-radius: 30;
+    -fx-padding: 14 45;
     -fx-cursor: hand;
+    -fx-font-weight: bold;
 }
 
-.btn-back:hover {
+.btn-back-premium:hover {
     -fx-background-color: #f8f9fa;
+    -fx-border-color: #2d3436;
+    -fx-text-fill: #2d3436;
+}
+
+/* --- 8. ETICHETTE ERRORE --- */
+.error-label {
+    -fx-text-fill: #d63031;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
 }
