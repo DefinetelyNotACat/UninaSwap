@@ -3,6 +3,8 @@ package com.example.uninaswap.boundary;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.Offerta;
 import com.example.uninaswap.entity.OffertaVendita;
+import com.example.uninaswap.entity.OffertaScambio;
+import com.example.uninaswap.entity.OffertaRegalo;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -33,7 +35,7 @@ public class GestioneOfferteBoundary {
         try {
             // 1. Offerte RICEVUTE
             ArrayList<Offerta> ricevute = controller.OttieniOfferteRicevute();
-            if (ricevute.isEmpty()) {
+            if (ricevute == null || ricevute.isEmpty()) {
                 boxRicevute.getChildren().add(creaLabelVuota("Nessuna offerta ricevuta."));
             } else {
                 for (Offerta o : ricevute) {
@@ -43,7 +45,7 @@ public class GestioneOfferteBoundary {
 
             // 2. Offerte INVIATE
             ArrayList<Offerta> inviate = controller.OttieniLeMieOfferte();
-            if (inviate.isEmpty()) {
+            if (inviate == null || inviate.isEmpty()) {
                 boxInviate.getChildren().add(creaLabelVuota("Non hai inviato nessuna offerta."));
             } else {
                 for (Offerta o : inviate) {
@@ -72,10 +74,16 @@ public class GestioneOfferteBoundary {
         Text descAnnuncio = new Text(o.getAnnuncio().getDescrizione());
         descAnnuncio.getStyleClass().add("offer-card-subtitle");
 
-        // Dettagli Prezzo/Tipo
-        String dettagliExtra = (o instanceof OffertaVendita)
-                ? "Offerta: " + ((OffertaVendita) o).getPrezzoOffertaVendita() + " €"
-                : "Tipo: Scambio/Regalo";
+        // --- LOGICA DETERMINAZIONE TIPO CORRETTA ---
+        String dettagliExtra = "";
+        if (o instanceof OffertaVendita) {
+            dettagliExtra = "Offerta: " + ((OffertaVendita) o).getPrezzoOffertaVendita() + " €";
+        } else if (o instanceof OffertaScambio) {
+            dettagliExtra = "Tipo: Scambio";
+        } else if (o instanceof OffertaRegalo) {
+            dettagliExtra = "Tipo: Regalo";
+        }
+
         Label details = new Label(dettagliExtra);
         details.getStyleClass().add("offer-details-label");
 
@@ -84,7 +92,7 @@ public class GestioneOfferteBoundary {
         msg.getStyleClass().add("offer-message-text");
         msg.setWrappingWidth(500);
 
-        // --- FIX STATO: Rimosso Underscore ---
+        // FIX STATO: Rimosso Underscore
         String statoTesto = o.getStato().toString().replace("_", " ");
         Label statoLabel = new Label(statoTesto);
         statoLabel.getStyleClass().add("status-badge");
@@ -103,7 +111,7 @@ public class GestioneOfferteBoundary {
 
         card.getChildren().addAll(topRow, descAnnuncio, details, msg);
 
-        // Pulsanti Azione
+        // Pulsanti Azione (Solo se RICEVUTA e IN ATTESA)
         if (isRicevuta && o.getStato() == Offerta.STATO_OFFERTA.IN_ATTESA) {
             HBox azioni = new HBox(15);
             azioni.setAlignment(Pos.CENTER_RIGHT);
