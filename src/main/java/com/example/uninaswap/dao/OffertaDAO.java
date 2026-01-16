@@ -55,6 +55,7 @@ public class OffertaDAO implements GestoreOffertaDAO {
         }
         return lista;
     }
+
     /**
      * SALVA OFFERTA (Gestisce Vendita, Scambio e Regalo)
      */
@@ -127,10 +128,19 @@ public class OffertaDAO implements GestoreOffertaDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            if (conn != null) try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            if (conn != null) try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             return false;
         } finally {
-            if (conn != null) try { conn.setAutoCommit(true); conn.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            if (conn != null) try {
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -220,10 +230,17 @@ public class OffertaDAO implements GestoreOffertaDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+            if (conn != null) try {
+                conn.rollback();
+            } catch (SQLException ex) {
+            }
             return false;
         } finally {
-            if (conn != null) try { conn.setAutoCommit(true); conn.close(); } catch (SQLException ex) {}
+            if (conn != null) try {
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException ex) {
+            }
         }
     }
 
@@ -260,10 +277,17 @@ public class OffertaDAO implements GestoreOffertaDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            if (conn != null) try { conn.rollback(); } catch (SQLException ex) {}
+            if (conn != null) try {
+                conn.rollback();
+            } catch (SQLException ex) {
+            }
             return false;
         } finally {
-            if (conn != null) try { conn.setAutoCommit(true); conn.close(); } catch (SQLException ex) {}
+            if (conn != null) try {
+                conn.setAutoCommit(true);
+                conn.close();
+            } catch (SQLException ex) {
+            }
         }
     }
 
@@ -300,7 +324,7 @@ public class OffertaDAO implements GestoreOffertaDAO {
 
         // Recuperiamo le entità correlate (o Proxy)
         Utente utente = utenteDAO.ottieniUtente(utenteId);
-        Annuncio annuncio = annuncioDAO.OttieniAnnuncio(    annuncioId); // Attenzione: questo potrebbe essere pesante se fatto in loop
+        Annuncio annuncio = annuncioDAO.OttieniAnnuncio(annuncioId); // Attenzione: questo potrebbe essere pesante se fatto in loop
 
         // Parametri base
         String messaggio = rs.getString("messaggio");
@@ -327,27 +351,49 @@ public class OffertaDAO implements GestoreOffertaDAO {
         } else {
             // Regalo
             offerta = new OffertaRegalo(annuncio, messaggio, stato,
-                    tStart.toLocalTime(), tEnd.toLocalTime(), null, utente, (AnnuncioRegalo)annuncio);
+                    tStart.toLocalTime(), tEnd.toLocalTime(), null, utente, (AnnuncioRegalo) annuncio);
         }
 
         offerta.setId(idOfferta);
         return offerta;
     }
 
+    // Sostituisci il metodo recuperaOggettiOfferta nel tuo OffertaDAO.java
     private ArrayList<Oggetto> recuperaOggettiOfferta(Connection conn, int idOfferta) throws SQLException {
-        ArrayList<Oggetto> oggetti = new ArrayList<>();
-        String sql = "SELECT * FROM OGGETTO WHERE offerta_id = ?";
+        // Usiamo una mappa per evitare duplicati se un oggetto ha più immagini (prendiamo la prima)
+        java.util.LinkedHashMap<Integer, Oggetto> mappaOggetti = new java.util.LinkedHashMap<>();
+
+        String sql = "SELECT o.*, i.path as img_path " +
+                "FROM OGGETTO o " +
+                "LEFT JOIN IMMAGINE i ON o.id = i.oggetto_id " +
+                "WHERE o.offerta_id = ?";
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idOfferta);
             try (ResultSet rs = ps.executeQuery()) {
-                while(rs.next()){
-                    Oggetto o = new Oggetto();
-                    o.setId(rs.getInt("id"));
-                    o.setNome(rs.getString("nome"));
-                    oggetti.add(o);
+                while (rs.next()) {
+                    int idObj = rs.getInt("id");
+                    Oggetto o = mappaOggetti.get(idObj);
+
+                    if (o == null) {
+                        o = new Oggetto();
+                        o.setId(idObj);
+                        o.setNome(rs.getString("nome"));
+                        String condStr = rs.getString("condizione");
+                        if (condStr != null) {
+                            o.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr.replace(" ", "_").toUpperCase()));
+                        }
+                        mappaOggetti.put(idObj, o);
+                    }
+
+                    // Aggiungiamo il path dell'immagine se esiste e non è già presente
+                    String path = rs.getString("img_path");
+                    if (path != null && !o.getImmagini().contains(path)) {
+                        o.getImmagini().add(path);
+                    }
                 }
             }
         }
-        return oggetti;
+        return new ArrayList<>(mappaOggetti.values());
     }
 }

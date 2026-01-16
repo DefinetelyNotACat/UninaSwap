@@ -136,8 +136,9 @@
         public boolean EliminaAnnuncio(Annuncio annuncio){
             return annuncioDAO.eliminaAnnuncio(annuncio.getId());
         }
-        public boolean EseguiOfferta(Utente utente, Offerta offerta){
-            return true;
+        public boolean EseguiOfferta(Utente utente, Offerta offerta) {
+            System.out.println("Controller: Salvataggio offerta per l'annuncio " + offerta.getAnnuncio().getId());
+            return offertaDAO.salvaOfferta(offerta);
         }
         public boolean ModificaOfferta(Offerta offerta){
             return true;

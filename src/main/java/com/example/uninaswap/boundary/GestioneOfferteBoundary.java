@@ -9,11 +9,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -23,7 +22,7 @@ public class GestioneOfferteBoundary {
     @FXML private Button btnNavRicevute;
     @FXML private Button btnNavInviate;
 
-    private ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+    private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
     private boolean visualizzandoRicevute = true;
     private static final String CLASS_ACTIVE = "nav-btn-active";
 
@@ -67,60 +66,74 @@ public class GestioneOfferteBoundary {
                 }
             }
         } catch (Exception e) {
-            containerOfferte.getChildren().add(new Label("Errore nel caricamento."));
+            e.printStackTrace();
+            containerOfferte.getChildren().add(new Label("Errore nel caricamento delle offerte."));
         }
     }
 
+    /**
+     * Crea la card principale dell'offerta (Header, Oggetti proposti, Messaggio, Azioni)
+     */
     private VBox creaCardOfferta(Offerta o, boolean isRicevuta) {
         VBox card = new VBox(15);
         card.getStyleClass().add("offer-card");
 
-        // Identifichiamo l'utente da mostrare (L'offerente o il Venditore)
-        Utente utenteDaMostrare = isRicevuta ? o.getUtente() : o.getAnnuncio().getUtente();
+        // Determiniamo chi mostrare nella card
+        Utente utenteControparte = isRicevuta ? o.getUtente() : o.getAnnuncio().getUtente();
 
-        // --- HEADER CON IMMAGINE E TESTO ---
+        // --- 1. HEADER (Foto Profilo + Testi + Badge Stato) ---
         HBox header = new HBox(15);
         header.setAlignment(Pos.CENTER_LEFT);
 
         ImageView imgProfilo = new ImageView();
-        imgProfilo.setFitWidth(50);
-        imgProfilo.setFitHeight(50);
-        Circle clip = new Circle(25, 25, 25);
-        imgProfilo.setClip(clip);
-        caricaFotoProfilo(utenteDaMostrare, imgProfilo);
+        imgProfilo.setFitWidth(50); imgProfilo.setFitHeight(50);
+        imgProfilo.setClip(new Circle(25, 25, 25));
+        caricaFotoProfilo(utenteControparte, imgProfilo);
 
         VBox infoUtente = new VBox(2);
-        Text nomeUtente = new Text(utenteDaMostrare != null ? utenteDaMostrare.getUsername() : "Utente sconosciuto");
+        Text nomeUtente = new Text(utenteControparte != null ? utenteControparte.getUsername() : "Utente");
         nomeUtente.getStyleClass().add("offer-card-title");
-
-        Text infoContesto = new Text(isRicevuta ? "Ti ha fatto un'offerta per:" : "Hai fatto un'offerta a:");
-        infoContesto.setStyle("-fx-fill: #95a5a6; -fx-font-size: 11px;");
-
         Text descAnnuncio = new Text(o.getAnnuncio().getDescrizione());
         descAnnuncio.getStyleClass().add("offer-card-subtitle");
-
-        infoUtente.getChildren().addAll(infoContesto, nomeUtente, descAnnuncio);
+        infoUtente.getChildren().addAll(nomeUtente, descAnnuncio);
         HBox.setHgrow(infoUtente, Priority.ALWAYS);
 
-        // Badge Stato
         Label statoLabel = new Label(o.getStato().toString().replace("_", " "));
         statoLabel.getStyleClass().add("status-badge");
         impostaColoreStato(statoLabel, o.getStato());
-
         header.getChildren().addAll(imgProfilo, infoUtente, statoLabel);
 
-        // --- DETTAGLI ---
-        String dettagliStr = (o instanceof OffertaVendita ov) ? "Proposta economica: " + ov.getPrezzoOffertaVendita() + " €" : "Tipo: " + (o instanceof OffertaScambio ? "Scambio" : "Regalo");
-        Label details = new Label(dettagliStr);
-        details.getStyleClass().add("offer-details-label");
+        // --- 2. CORPO DETTAGLI (Prezzo o Oggetti Scambio) ---
+        VBox corpoDettagli = new VBox(10);
+        if (o instanceof OffertaVendita ov) {
+            Label l = new Label("💰 Proposta economica: " + ov.getPrezzoOffertaVendita() + " €");
+            l.getStyleClass().add("offer-details-label");
+            corpoDettagli.getChildren().add(l);
+        } else if (o instanceof OffertaScambio os) {
+            Label l = new Label("🔄 Oggetti proposti per lo scambio:");
+            l.getStyleClass().add("offer-details-label");
+            corpoDettagli.getChildren().add(l);
 
-        Text msg = new Text("\"" + o.getMessaggio() + "\"");
-        msg.getStyleClass().add("offer-message-text");
-        msg.setWrappingWidth(600);
+            FlowPane containerOggetti = new FlowPane(10, 10);
+            containerOggetti.setPadding(new Insets(5, 0, 5, 0));
+            for (Oggetto obj : os.getOggetti()) {
+                containerOggetti.getChildren().add(creaMiniCardOggetto(obj));
+            }
+            corpoDettagli.getChildren().add(containerOggetti);
+        } else {
+            Label l = new Label("🎁 Richiesta di regalo");
+            l.getStyleClass().add("offer-details-label");
+            corpoDettagli.getChildren().add(l);
+        }
 
-        card.getChildren().addAll(header, details, msg);
+        // --- 3. MESSAGGIO PERSONALE ---
+        Text msgText = new Text("\"" + o.getMessaggio() + "\"");
+        msgText.getStyleClass().add("offer-message-text");
+        msgText.setWrappingWidth(650);
 
-        // Pulsanti Azione
+        card.getChildren().addAll(header, corpoDettagli, msgText);
+
+        // --- 4. TASTI AZIONE (Solo se ricevuta e in attesa) ---
         if (isRicevuta && o.getStato() == Offerta.STATO_OFFERTA.IN_ATTESA) {
             HBox azioni = new HBox(15);
             azioni.setAlignment(Pos.CENTER_RIGHT);
@@ -128,13 +141,60 @@ public class GestioneOfferteBoundary {
             btnAccetta.getStyleClass().add("btn-accept");
             Button btnRifiuta = new Button("Rifiuta");
             btnRifiuta.getStyleClass().add("btn-reject");
+
             btnAccetta.setOnAction(e -> cambiaStato(o, Offerta.STATO_OFFERTA.ACCETTATA));
             btnRifiuta.setOnAction(e -> cambiaStato(o, Offerta.STATO_OFFERTA.RIFIUTATA));
+
             azioni.getChildren().addAll(btnRifiuta, btnAccetta);
             card.getChildren().add(azioni);
         }
 
         return card;
+    }
+
+    /**
+     * MINI CARD OGGETTO: Testo nero, a capo e foto reale
+     */
+    private VBox creaMiniCardOggetto(Oggetto obj) {
+        VBox miniCard = new VBox(5);
+        miniCard.setAlignment(Pos.CENTER);
+        miniCard.setStyle("-fx-background-color: #ffffff; -fx-padding: 10; -fx-background-radius: 10; " +
+                "-fx-border-color: #bdc3c7; -fx-border-width: 1; -fx-border-radius: 10;");
+        miniCard.setPrefWidth(130);
+
+        // Immagine Oggetto
+        ImageView imgObj = new ImageView();
+        imgObj.setFitWidth(100);
+        imgObj.setFitHeight(80);
+        imgObj.setPreserveRatio(true);
+
+        if (obj.getImmagini() != null && !obj.getImmagini().isEmpty()) {
+            File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + obj.getImmagini().get(0));
+            if (file.exists()) {
+                imgObj.setImage(new Image(file.toURI().toString(), 200, 160, true, true));
+            } else {
+                setDefaultItemImage(imgObj);
+            }
+        } else {
+            setDefaultItemImage(imgObj);
+        }
+
+        // Nome (NERO, GRASSETTO, A CAPO)
+        Label nome = new Label(obj.getNome());
+        nome.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #000000;");
+        nome.setWrapText(true);
+        nome.setTextAlignment(TextAlignment.CENTER);
+        nome.setMaxWidth(110);
+
+        // Condizione (NERO su badge chiaro)
+        Label cond = new Label(obj.getCondizione().toString().replace("_", " "));
+        cond.setStyle("-fx-font-size: 10px; -fx-text-fill: #000000; -fx-background-color: #f1f2f6; " +
+                "-fx-padding: 3 6; -fx-background-radius: 5; -fx-border-color: #dfe4ea; -fx-border-radius: 5;");
+        cond.setWrapText(true);
+        cond.setTextAlignment(TextAlignment.CENTER);
+
+        miniCard.getChildren().addAll(imgObj, nome, cond);
+        return miniCard;
     }
 
     private void caricaFotoProfilo(Utente u, ImageView iv) {
@@ -152,7 +212,12 @@ public class GestioneOfferteBoundary {
         }
     }
 
+    private void setDefaultItemImage(ImageView iv) {
+        iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+    }
+
     private void impostaColoreStato(Label l, Offerta.STATO_OFFERTA s) {
+        l.getStyleClass().removeAll("status-accepted", "status-rejected", "status-pending");
         switch (s) {
             case ACCETTATA: l.getStyleClass().add("status-accepted"); break;
             case RIFIUTATA: l.getStyleClass().add("status-rejected"); break;

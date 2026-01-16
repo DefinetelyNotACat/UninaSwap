@@ -34,10 +34,8 @@ public class EffettuaOffertaBoundary {
     private Annuncio annuncioTarget;
     private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
 
-    // Proprietà per monitorare la validità del Regex
     private final BooleanProperty messaggioRegexOk = new SimpleBooleanProperty(true);
 
-    // Controlli dinamici generati a runtime
     private TextField inputPrezzo;
     private ListView<Oggetto> listaMieiOggetti;
 
@@ -46,20 +44,13 @@ public class EffettuaOffertaBoundary {
         setupValidazioneRegex();
     }
 
-    /**
-     * Monitora il campo messaggio in tempo reale usando il Regex di Costanti.
-     */
     private void setupValidazioneRegex() {
         txtMessaggio.textProperty().addListener((obs, old, newVal) -> {
-            // Il messaggio può essere vuoto (opzionale), ma se scritto deve rispettare il Regex
             boolean ok = newVal == null || newVal.isEmpty() || newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
             messaggioRegexOk.set(ok);
-
-            // Applica stile errore e mostra il testo di avviso
             gestisciErroreVisivo(txtMessaggio, erroreRegexMessaggio, ok);
         });
 
-        // Disabilita il pulsante di invio se il Regex non è soddisfatto
         btnInvia.disableProperty().bind(messaggioRegexOk.not());
     }
 
@@ -78,9 +69,6 @@ public class EffettuaOffertaBoundary {
         costruisciInterfaccia();
     }
 
-    /**
-     * Genera dinamicamente i campi in base al tipo di annuncio (Vendita, Scambio, Regalo).
-     */
     private void costruisciInterfaccia() {
         containerSpecifico.getChildren().clear();
 
@@ -103,7 +91,6 @@ public class EffettuaOffertaBoundary {
             listaMieiOggetti.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             listaMieiOggetti.setPrefHeight(250);
 
-            // Filtro eventi per gestire la selezione multipla con click singolo (Sticky Selection)
             listaMieiOggetti.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                 event.consume();
                 javafx.scene.Node node = event.getPickResult().getIntersectedNode();
@@ -166,7 +153,6 @@ public class EffettuaOffertaBoundary {
 
     @FXML
     public void confermaOfferta() {
-        // Controllo finale Regex
         if (!messaggioRegexOk.get()) {
             lblErrore.setText("Correggi il messaggio prima di inviare.");
             return;
@@ -203,11 +189,11 @@ public class EffettuaOffertaBoundary {
                         LocalTime.now(), LocalTime.now().plusHours(1), null, me, (AnnuncioRegalo) annuncioTarget);
             }
 
-            com.example.uninaswap.dao.OffertaDAO dao = new com.example.uninaswap.dao.OffertaDAO();
-            if (dao.salvaOfferta(nuovaOfferta)) {
+            // --- DELEGATA L'INTERAZIONE AL CONTROLLER ---
+            if (controller.EseguiOfferta(me, nuovaOfferta)) {
                 tornaHome();
             } else {
-                lblErrore.setText("Errore salvataggio database.");
+                lblErrore.setText("Errore durante l'invio dell'offerta.");
             }
 
         } catch (Exception e) {
