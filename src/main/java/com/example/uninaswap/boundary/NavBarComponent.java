@@ -2,6 +2,8 @@ package com.example.uninaswap.boundary;
 
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.entity.Categoria;
+import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -20,11 +22,14 @@ public class NavBarComponent {
 
     @FXML private Button bottoneRicerca;
     @FXML private Button bottoneAggiungiAnnuncio;
-    @FXML private ChoiceBox<String> filtroBarraDiRicerca;
+    @FXML private ComboBox<String> filtroBarraDiRicerca;
     @FXML private TextField barraDiRicerca;
     @FXML private Text erroreRicerca;
     @FXML private ImageView fotoProfilo;
     @FXML private ImageView logo;
+
+    @FXML private ComboBox<Oggetto.CONDIZIONE> filtroCondizione;
+    @FXML private ComboBox<Categoria> filtroCategoria;
 
     private ContextMenu menuProfilo;
     private final ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
@@ -32,9 +37,6 @@ public class NavBarComponent {
 
     private HomePageBoundary homePageBoundary;
 
-    /**
-     * Collega la Navbar alla HomePage per permettere l'aggiornamento dinamico della griglia.
-     */
     public void setHomePageBoundary(HomePageBoundary home) {
         this.homePageBoundary = home;
     }
@@ -46,74 +48,154 @@ public class NavBarComponent {
         bottoneRicerca.setCursor(Cursor.HAND);
         logo.setCursor(Cursor.HAND);
         fotoProfilo.setCursor(Cursor.HAND);
+        filtroBarraDiRicerca.setCursor(Cursor.HAND);
+        filtroCondizione.setCursor(Cursor.HAND);
+        filtroCategoria.setCursor(Cursor.HAND);
 
         // --- NAVIGAZIONE: CREA ANNUNCIO ---
         bottoneAggiungiAnnuncio.setOnAction(event -> {
+            homePageBoundary = null;
             gestoreScene.CambiaScena(Costanti.pathCreaAnnuncio, "Crea Annuncio", event);
         });
 
-        // --- LOGICA VALIDAZIONE REGEX ---
+        // --- NAVIGAZIONE: HOME (LOGO) ---
+        logo.setOnMouseClicked(event -> {
+            homePageBoundary = null;
+            gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
+        });
+
+        popolaFiltri();
+
+        // Switch filtri Articoli/Utenti
+        filtroBarraDiRicerca.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            boolean isArticoli = "Articoli".equals(newVal);
+            filtroCondizione.setVisible(isArticoli);
+            filtroCondizione.setManaged(isArticoli);
+            filtroCategoria.setVisible(isArticoli);
+            filtroCategoria.setManaged(isArticoli);
+        });
+
+        // Validazione Regex
         barraDiRicerca.textProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null || newVal.trim().isEmpty()) {
                 setStatoErrore(false);
             } else {
-                // Controllo caratteri speciali proibiti tramite Regex
-                boolean isValido = newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
-                setStatoErrore(!isValido);
+                setStatoErrore(!newVal.matches(Costanti.FIELDS_REGEX_SPAZIO));
             }
         });
 
-        // --- LOGICA DI RICERCA ---
+        // LOGICA DI RICERCA
         bottoneRicerca.setOnAction(event -> {
-            String selezione = filtroBarraDiRicerca.getValue();
-            String testo = barraDiRicerca.getText();
-
-            // Protezione: non inviare query se il regex è violato
-            if (testo != null && !testo.trim().isEmpty() && !testo.matches(Costanti.FIELDS_REGEX_SPAZIO)) {
-                return;
-            }
-
-            if (homePageBoundary != null) {
-                try {
-                    if ("Articoli".equals(selezione)) {
-                        // Cerca annunci (non case-sensitive nel DB con ILIKE)
-                        homePageBoundary.caricaCatalogoAnnunci(testo, true);
-                    } else {
-                        // Cerca utente specifico (Case-Sensitive)
-                        homePageBoundary.caricaCatalogoAnnunci(testo, false);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Errore durante la ricerca dalla NavBar: " + e.getMessage());
-                }
-            }
+            eseguiRicerca();
         });
 
-        // --- SETUP CHOICEBOX ---
         if (filtroBarraDiRicerca.getItems().isEmpty()) {
             filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
             filtroBarraDiRicerca.setValue("Articoli");
-        }
-        filtroBarraDiRicerca.setCursor(Cursor.HAND);
-
-        // --- CARICAMENTO LOGO ---
-        try {
-            logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-        } catch (Exception e) {
-            System.err.println("Logo non caricato.");
         }
 
         aggiornaFotoProfilo();
         setupMenuProfilo();
     }
 
-    /**
-     * Gestisce il feedback visivo (bordo rosso, testo errore e disabilitazione pulsante).
-     */
+    private void eseguiRicerca() {
+        String selezione = filtroBarraDiRicerca.getValue();
+        String testo = barraDiRicerca.getText();
+
+        // Se siamo fuori dalla Home, la ricerca deve riportarci in Home
+        if (homePageBoundary == null || logo.getScene() == null || !logo.getScene().equals(homePageBoundary.getScene())) {
+            gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
+            return;
+        }
+
+        try {
+            if (testo == null || testo.trim().isEmpty()) {
+                homePageBoundary.caricaCatalogoAnnunci(null, null, null, true);
+                return;
+            }
+            if ("Articoli".equals(selezione)) {
+                homePageBoundary.caricaCatalogoAnnunci(testo.trim(), filtroCondizione.getValue(), filtroCategoria.getValue(), true);
+            } else {
+                homePageBoundary.caricaCatalogoAnnunci(testo.trim(), false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void popolaFiltri() {
+        filtroCondizione.getItems().setAll(controllerUninaSwap.getCondizioni());
+        filtroCategoria.getItems().setAll(controllerUninaSwap.getCategorie());
+        filtroCondizione.setPromptText("Condizione");
+        filtroCategoria.setPromptText("Categoria");
+    }
+
+    private void setupMenuProfilo() {
+        menuProfilo = new ContextMenu();
+        menuProfilo.getStyleClass().add("profilo-context-menu");
+
+        // 1. ESPLORA TUTTI (FIX PER PAGINA OFFERTE/ALTRO)
+        MenuItem esploraTutti = creaVoceMenu("Esplora tutti gli annunci", null);
+        esploraTutti.setOnAction(e -> {
+            // Controllo se la Home è quella attiva
+            if (homePageBoundary != null && logo.getScene() != null && logo.getScene().equals(homePageBoundary.getScene())) {
+                try {
+                    homePageBoundary.caricaCatalogoAnnunci(null, null, null, true);
+                } catch (Exception ex) { ex.printStackTrace(); }
+            } else {
+                homePageBoundary = null;
+                gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
+            }
+        });
+
+        // 2. Offerte
+        MenuItem offerte = creaVoceMenu("Le mie offerte", null);
+        offerte.setOnAction(e -> {
+            homePageBoundary = null;
+            gestoreScene.CambiaScena(Costanti.pathGestioneOfferte, "Gestione Offerte", (Stage) fotoProfilo.getScene().getWindow());
+        });
+
+        // 3. I Miei Annunci
+        MenuItem annunci = creaVoceMenu("I miei annunci", null);
+        annunci.setOnAction(e -> {
+            homePageBoundary = null;
+            gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", (Stage) fotoProfilo.getScene().getWindow());
+        });
+
+        // 4. Inventario
+        MenuItem inv = creaVoceMenu("Mostra il mio inventario", null);
+        inv.setOnAction(e -> {
+            homePageBoundary = null;
+            gestoreScene.CambiaScena(Costanti.pathInventario, Costanti.inventario, (Stage) fotoProfilo.getScene().getWindow());
+        });
+
+        // 5. Modifica Profilo
+        MenuItem mod = creaVoceMenu("Modifica Profilo", null);
+        mod.setOnAction(e -> {
+            homePageBoundary = null;
+            gestoreScene.CambiaScena(Costanti.pathModificaProfilo, "Modifica Profilo", (Stage) fotoProfilo.getScene().getWindow());
+        });
+
+        // 6. Logout
+        MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
+        logout.setOnAction(e -> {
+            homePageBoundary = null;
+            controllerUninaSwap.setUtente(null);
+            gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, (Stage) fotoProfilo.getScene().getWindow());
+        });
+
+        menuProfilo.getItems().addAll(esploraTutti, new SeparatorMenuItem(), offerte, annunci, inv, mod, new SeparatorMenuItem(), logout);
+
+        fotoProfilo.setOnMouseClicked(e -> {
+            if (menuProfilo.isShowing()) menuProfilo.hide();
+            else showmenuProfilo(e);
+        });
+    }
+
+    // --- METODI DI UTILITÀ ---
     private void setStatoErrore(boolean erroreAttivo) {
         if (erroreAttivo) {
-            if (!barraDiRicerca.getStyleClass().contains("error")) {
-                barraDiRicerca.getStyleClass().add("error");
-            }
+            if (!barraDiRicerca.getStyleClass().contains("error")) barraDiRicerca.getStyleClass().add("error");
             erroreRicerca.setVisible(true);
             erroreRicerca.setManaged(true);
             bottoneRicerca.setDisable(true);
@@ -129,39 +211,29 @@ public class NavBarComponent {
         try {
             Utente u = controllerUninaSwap.getUtente();
             boolean caricato = false;
-
-            if (u != null && u.getPathImmagineProfilo() != null) {
-                String path = u.getPathImmagineProfilo();
-                if (!path.isEmpty() && !path.equals("default")) {
-                    String fullPath = System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path;
-                    File f = new File(fullPath);
-                    if (f.exists()) {
-                        Image img = new Image(f.toURI().toString());
-                        fotoProfilo.setImage(img);
-                        centraImmagine(fotoProfilo, img);
-                        caricato = true;
-                    }
+            if (u != null && u.getPathImmagineProfilo() != null && !u.getPathImmagineProfilo().equals("default")) {
+                File f = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
+                if (f.exists()) {
+                    Image img = new Image(f.toURI().toString());
+                    fotoProfilo.setImage(img);
+                    centraImmagine(fotoProfilo, img);
+                    caricato = true;
                 }
             }
-
             if (!caricato) {
                 Image def = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
                 fotoProfilo.setImage(def);
                 centraImmagine(fotoProfilo, def);
             }
             applicaCerchio();
-        } catch (Exception e) {
-            System.err.println("Errore caricamento foto Navbar: " + e.getMessage());
-        }
+            logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void centraImmagine(ImageView iv, Image img) {
         if (img == null) return;
         double min = Math.min(img.getWidth(), img.getHeight());
-        double x = (img.getWidth() - min) / 2;
-        double y = (img.getHeight() - min) / 2;
-        iv.setViewport(new Rectangle2D(x, y, min, min));
-        iv.setPreserveRatio(false);
+        iv.setViewport(new Rectangle2D((img.getWidth() - min) / 2, (img.getHeight() - min) / 2, min, min));
         iv.setSmooth(true);
     }
 
@@ -170,44 +242,6 @@ public class NavBarComponent {
         fotoProfilo.setClip(new Circle(fotoProfilo.getFitWidth()/2, fotoProfilo.getFitHeight()/2, r));
     }
 
-    private void setupMenuProfilo() {
-        menuProfilo = new ContextMenu();
-        menuProfilo.getStyleClass().add("profilo-context-menu");
-
-        // --- VOCE: INVENTARIO ---
-        MenuItem inv = creaVoceMenu("Mostra il mio inventario", null);
-        inv.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathInventario, Costanti.inventario, (Stage) fotoProfilo.getScene().getWindow()));
-
-        // --- VOCE: I MIEI ANNUNCI (COLLEGAMENTO AGGIUNTO) ---
-        MenuItem annunci = creaVoceMenu("I miei annunci", null);
-        annunci.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", (Stage) fotoProfilo.getScene().getWindow()));
-
-        // --- VOCE: MODIFICA PROFILO ---
-        MenuItem mod = creaVoceMenu("Modifica Profilo", null);
-        mod.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathModificaProfilo, "Modifica Profilo", (Stage) fotoProfilo.getScene().getWindow()));
-
-        // --- VOCE: LOGOUT ---
-        MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
-        logout.setOnAction(e -> {
-            controllerUninaSwap.setUtente(null);
-            gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, (Stage) fotoProfilo.getScene().getWindow());
-        });
-
-        // Aggiungi tutto al menu (Rimuovi la stringa statica "I miei annunci" se l'avevi messa prima)
-        menuProfilo.getItems().addAll(
-                creaVoceMenu("Le mie offerte", null),
-                annunci, // Usiamo la variabile con l'azione associata
-                inv,
-                mod,
-                new SeparatorMenuItem(),
-                logout
-        );
-
-        fotoProfilo.setOnMouseClicked(e -> {
-            if (menuProfilo.isShowing()) menuProfilo.hide();
-            else showmenuProfilo(e);
-        });
-    }
     private void showmenuProfilo(MouseEvent e) {
         Point2D p = fotoProfilo.localToScreen(0, fotoProfilo.getBoundsInLocal().getHeight());
         if (p != null) menuProfilo.show(fotoProfilo, p.getX(), p.getY());

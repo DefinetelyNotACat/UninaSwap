@@ -112,7 +112,7 @@
                 @Override
                 public void initialize(URL url, ResourceBundle resourceBundle) {
                   this.controllerUninaSwap = ControllerUninaSwap.getInstance();
-                  //eliminaecreaDB();
+                    //eliminaecreaDB();
                     // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
                     if (profileImageView != null) {
                         javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(

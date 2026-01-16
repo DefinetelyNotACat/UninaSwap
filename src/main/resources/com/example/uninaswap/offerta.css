@@ -1,0 +1,80 @@
+/* Sfondo della pagina */
+.offerta-root {
+    -fx-background-color: #f4f7f6;
+}
+
+/* Card principale */
+.form-container {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 40;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 15, 0, 0, 10);
+}
+
+/* Titoli */
+.offer-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-fill: #2d3436;
+}
+
+.offer-subtitle {
+    -fx-font-size: 14px;
+    -fx-fill: #636e72;
+}
+
+/* Input e Messaggio */
+.text-area, .text-field {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 10;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 10;
+    -fx-padding: 12;
+}
+
+.text-area:focused, .text-field:focused {
+    /*-fx-border-color: #28a745; !* Verde solo per l'azione di offerta *!*/
+    -fx-background-color: white;
+}
+
+/* ListView Scambio */
+.list-view {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-background-color: #f8f9fa;
+}
+
+.list-cell:filled:selected {
+    -fx-background-color: #e8f5e9;
+    -fx-text-fill: #28a745;
+    -fx-font-weight: bold;
+}
+
+/* Pulsanti Offerta */
+.btn-send {
+    -fx-background-color: linear-gradient(to bottom right, #28a745, #218838);
+    -fx-text-fill: white;
+    -fx-background-radius: 12;
+    -fx-font-weight: bold;
+    -fx-padding: 12 35;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(40, 167, 69, 0.3), 8, 0, 0, 3);
+}
+
+.btn-send:hover {
+    -fx-translate-y: -1;
+    -fx-background-color: #218838;
+}
+
+.btn-back {
+    -fx-background-color: transparent;
+    -fx-text-fill: #636e72;
+    -fx-border-color: #b2bec3;
+    -fx-border-radius: 12;
+    -fx-padding: 12 35;
+    -fx-cursor: hand;
+}
+
+.btn-back:hover {
+    -fx-background-color: #f8f9fa;
+}

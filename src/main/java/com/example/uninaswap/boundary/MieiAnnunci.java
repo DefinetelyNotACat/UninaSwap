@@ -120,7 +120,7 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
             Stage stage = (Stage) containerAnnunci.getScene().getWindow();
 
             // Ricarico la scena passando il messaggio di successo
-            //TODO! FAR SI CHE IL BANNER NON OCCUPI TUTTO LO SPAZIO CAZZO
+
             gestoreScene.CambiaScena(
                     Costanti.pathMieiAnnunci,
                     "I Miei Annunci",
@@ -145,7 +145,8 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
             if (pathRelativo != null) {
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + pathRelativo);
                 if (file.exists()) {
-                    imgView.setImage(new Image(file.toURI().toString(), 240, 180, true, true, true));
+                    imgView.setImage(new Image(file.toURI().toString(), 480, 360, true, true, true));
+                    imgView.setSmooth(true);
                 } else {
                     setDefaultImage(imgView);
                 }

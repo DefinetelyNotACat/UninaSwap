@@ -35,4 +35,6 @@ public class Categoria {
         Categoria categoria = (Categoria) o;
         return nome != null ? nome.equals(categoria.nome) : categoria.nome == null;
     }
+
+
 }
