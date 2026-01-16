@@ -203,22 +203,6 @@
         public void cancellaDB(){
             PopolaDBPostgreSQL.cancellaDB();
         }
-        public boolean pubblicaRecensione(Utente recensito, Utente recensore, int voto, String commento) {
-            Recensione recensione = new Recensione(recensito.getEmail(), recensore.getEmail(), voto);
-            if (commento != null) {
-                recensione.setCommento(commento);
-            }
-            RecensioneDAO recensioneDAO = new RecensioneDAO();
-            if (recensioneDAO.SalvaRecensione(recensione)) {
-                recensito.addRecensioneRicevuta(recensione);
-                recensore.addRecensioneInviata(recensione);
-                System.out.println("Recensione salvata");
-                return true;
-            } else {
-                System.out.println("Recensione non salvata");
-                return false;
-            }
-        }
         public boolean verificaCredenzialiDuplicate(String nuovoUsername, String nuovaMatricola, String emailAttuale) {
             return utenteDAO.verificaEsistenzaAltroUtente(nuovoUsername, nuovaMatricola, emailAttuale);
         }
@@ -262,4 +246,29 @@
                 return null;
             }
         }
+        public boolean pubblicaRecensione(Utente recensito, Utente recensore, int voto, String commento) {
+            RecensioneDAO dao = new RecensioneDAO();
+
+            // 1. Cerchiamo se esiste già una recensione tra l'utente loggato (recensore) e il target (recensito)
+            Recensione esistente = dao.OttieniRecensioneTraUtenti(recensore.getEmail(), recensito.getEmail());
+
+            if (esistente != null) {
+                // Se esiste, aggiorniamo i dati dell'oggetto trovato (che ha già l'ID corretto)
+                System.out.println("DEBUG CONTROLLER: Trovata recensione esistente (ID: " + esistente.getId() + "). Procedo con UPDATE.");
+                esistente.setVoto(voto);
+                esistente.setCommento(commento);
+                return dao.ModificaRecensione(esistente);
+            } else {
+                // Se non esiste, creiamo una nuova recensione
+                System.out.println("DEBUG CONTROLLER: Nessuna recensione trovata. Procedo con INSERT.");
+                Recensione nuova = new Recensione(recensito.getEmail(), recensore.getEmail(), voto);
+                nuova.setCommento(commento);
+                return dao.SalvaRecensione(nuova);
+            }
+        }
+
+        public Recensione trovaRecensioneEsistente(Utente recensore, Utente recensito) {
+            return new RecensioneDAO().OttieniRecensioneTraUtenti(recensore.getEmail(), recensito.getEmail());
+        }
+
     }

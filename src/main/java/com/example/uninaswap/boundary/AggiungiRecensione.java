@@ -2,7 +2,9 @@ package com.example.uninaswap.boundary;
 
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.entity.Recensione;
 import com.example.uninaswap.entity.Utente;
+import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,25 +32,39 @@ public class AggiungiRecensione {
 
     @FXML
     public void initialize() {
-        // initialize viene chiamato al caricamento dell'FXML
-        // Non settiamo l'utente qui perché arriverà dopo tramite initData
         setupValidazione();
     }
 
     /**
-     * METODO MANCANTE: Riceve l'utente da recensire dalla Boundary precedente
+     * Riceve i dati e pre-carica la recensione se l'utente ne ha già fatta una.
      */
     public void initData(Utente target) {
-        this.utenteDaRecensire = target;
         try {
+            this.utenteDaRecensire = target;
             this.utenteRecensore = controller.getUtente();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
-        if (this.utenteDaRecensire != null && this.utenteRecensore != null) {
-            testoRecensito.setText("Tu, " + this.utenteRecensore.getUsername() +
-                    " stai recensendo: " + this.utenteDaRecensire.getUsername());
+            if (this.utenteDaRecensire != null && this.utenteRecensore != null) {
+                testoRecensito.setText("Stai recensendo: " + this.utenteDaRecensire.getUsername());
+
+                // --- LOGICA DI PRE-CARICAMENTO ---
+                // Cerchiamo nel DB se esiste già una recensione tra questi due utenti
+                Recensione esistente = controller.trovaRecensioneEsistente(utenteRecensore, utenteDaRecensire);
+
+                if (esistente != null) {
+                    // 1. Popoliamo il commento
+                    commentoArea.setText(esistente.getCommento());
+
+                    // 2. Impostiamo il voto e aggiorniamo le stelle graficamente
+                    votoSelezionato.set(esistente.getVoto());
+                    aggiornaStelle(esistente.getVoto());
+
+                    // 3. Cambiamo il testo del bottone per far capire che è un aggiornamento
+                    inviaButton.setText("Aggiorna Recensione");
+                    System.out.println("DEBUG: Pre-caricata recensione esistente ID " + esistente.getId());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Errore nel caricamento dati recensione: " + e.getMessage());
         }
     }
 
@@ -59,10 +75,9 @@ public class AggiungiRecensione {
             gestisciErroreVisivo(commentoArea, erroreCommento, ok);
         });
 
-        // Il pulsante invia si abilita solo se c'è un voto (>=1) e il commento è valido
+        // Abilita il tasto solo se il voto è >= 1 e il commento rispetta la regex
         inviaButton.disableProperty().bind(
-                votoSelezionato.lessThan(1)
-                        .or(commentoRegexOk.not())
+                votoSelezionato.lessThan(1).or(commentoRegexOk.not())
         );
     }
 
@@ -70,7 +85,6 @@ public class AggiungiRecensione {
     private void onStarClick(MouseEvent event) {
         Label starCliccata = (Label) event.getSource();
         String id = starCliccata.getId();
-        // star1, star2... estraiamo l'ultimo carattere come intero
         int voto = Character.getNumericValue(id.charAt(id.length() - 1));
 
         votoSelezionato.set(voto);
@@ -97,22 +111,18 @@ public class AggiungiRecensione {
         try {
             int voto = votoSelezionato.get();
 
-            if (voto < 1) {
-                erroreVoto.setVisible(true);
-                erroreVoto.setManaged(true);
-                return;
-            }
-
-            // Chiamata al controller per salvare la recensione
+            // Il controller gestirà internamente se fare INSERT o UPDATE
+            // confrontando le email di recensore e recensito
             boolean successo = controller.pubblicaRecensione(
-                    utenteDaRecensire, // Ricevuto da initData
-                    utenteRecensore,   // Preso dal controller
+                    utenteDaRecensire,
+                    utenteRecensore,
                     voto,
                     commentoArea.getText()
             );
 
             if (successo) {
-                new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, event, "Recensione inviata!", Messaggio.TIPI.SUCCESS);
+                new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, event,
+                        "Recensione salvata con successo!", Messaggio.TIPI.SUCCESS);
             }
         } catch (Exception e) {
             e.printStackTrace();
