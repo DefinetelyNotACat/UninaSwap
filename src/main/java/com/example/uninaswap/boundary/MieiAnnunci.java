@@ -99,23 +99,35 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // 5. Bottone Elimina (Logica Trasparenza)
+        // 5. Area Azioni (Tasto Elimina o Stato Concluso)
+        StackPane actionArea = new StackPane();
+        actionArea.setMaxWidth(Double.MAX_VALUE);
+
         Button btnElimina = new Button("🗑 Elimina Annuncio");
         btnElimina.getStyleClass().add("button-danger");
         btnElimina.setMaxWidth(Double.MAX_VALUE);
 
-        // --- FIX LOGICA: Confronto tra Enum ---
-        // Ora usiamo l'uguaglianza tra costanti Enum invece di equalsIgnoreCase
         if (a.getStato() != Annuncio.STATO_ANNUNCIO.DISPONIBILE) {
-            btnElimina.setOpacity(0.0); // Lo rendiamo trasparente
-            btnElimina.setDisable(true); // Impediamo il click
+            // Se l'annuncio NON è disponibile (Affare fatto)
+            btnElimina.setOpacity(0.0); // Nascondiamo il tasto ma teniamo lo spazio
+            btnElimina.setDisable(true);
+
+            // Creiamo un'etichetta fighissima per lo stato
+            String testoStato = "Affare Concluso ✅";
+            if (a instanceof AnnuncioScambio) testoStato = "Scambio Effettuato 🤝";
+            if (a instanceof AnnuncioRegalo) testoStato = "Regalo Consegnato 🎉";
+
+            Label lblStato = new Label(testoStato);
+            lblStato.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 15px;");
+
+            actionArea.getChildren().addAll(btnElimina, lblStato);
         } else {
-            btnElimina.setOpacity(1.0);
-            btnElimina.setDisable(false);
+            // Se è ancora disponibile, mostriamo il tasto elimina normalmente
             btnElimina.setOnAction(e -> onEliminaAnnuncio(a));
+            actionArea.getChildren().add(btnElimina);
         }
 
-        card.getChildren().addAll(imgView, header, desc, extraInfo, spacer, btnElimina);
+        card.getChildren().addAll(imgView, header, desc, extraInfo, spacer, actionArea);
         return card;
     }
 
