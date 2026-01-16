@@ -236,6 +236,7 @@ public class HomePageBoundary implements GestoreMessaggio {
     }
 
     private void apriDettaglioAnnuncio(Annuncio annuncio) {
+        //todo! potremmo usare il metodo di GestoreScene
         try {
             // CORREZIONE: Usa Costanti.pathDettaglioAnnuncio invece della stringa manuale
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathDettaglioAnnuncio));

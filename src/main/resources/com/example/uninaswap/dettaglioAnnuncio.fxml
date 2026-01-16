@@ -8,7 +8,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.uninaswap.boundary.DettaglioAnnuncioBoundary"
-            stylesheets="@homepage.css, @banners.css" prefHeight="600.0" prefWidth="900.0">
+            stylesheets="@homepage.css, @banners.css, @dettaglio.css" prefHeight="600.0" prefWidth="900.0">
 
     <top>
         <HBox alignment="CENTER" styleClass="navbar-container">
