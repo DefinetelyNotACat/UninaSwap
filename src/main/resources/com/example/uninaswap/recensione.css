@@ -30,3 +30,22 @@
 .star-filled {
     -fx-text-fill: #ffcc00 !important; /* Giallo Oro (Accesa) */
 }
+/* --- STILE TASTO SECONDARIO (TORNA ALLA HOME) --- */
+.button-secondary {
+    -fx-background-color: transparent;
+    -fx-border-color: #666666; /* Grigio neutro per non distrarre dal blu primario */
+    -fx-border-width: 1.5;
+    -fx-border-radius: 10;
+    -fx-text-fill: #666666;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #f2f2f2;
+    -fx-border-color: #444444;
+    -fx-text-fill: #444444;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
