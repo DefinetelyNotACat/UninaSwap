@@ -91,7 +91,26 @@
             return annuncioDAO.OttieniAnnunciNonMiei(this.utente.getId());
         }
         public ArrayList<Offerta> OttieniOfferte() {return null;}
-        public ArrayList<Offerta> OttieniLeMieOfferte(){return null;}
+        public ArrayList<Offerta> OttieniLeMieOfferte() {
+            if (this.utente == null) return new ArrayList<>();
+            // Offerte che IO ho inviato ad altri
+            return offertaDAO.ottieniOfferteInviate(this.utente.getId());
+        }
+        public ArrayList<Offerta> OttieniOfferteRicevute() {
+            if (this.utente == null) return new ArrayList<>();
+            // Offerte che ALTRI hanno inviato ai MIEI annunci
+            return offertaDAO.ottieniOfferteRicevute(this.utente.getId());
+        }
+        public boolean GestisciStatoOfferta(Offerta offerta, Offerta.STATO_OFFERTA nuovoStato) {
+            boolean esito = offertaDAO.modificaStatoOfferta(offerta.getId(), nuovoStato);
+
+            // Se accettiamo uno scambio, potremmo voler settare l'annuncio come NON_DISPONIBILE
+            // o fare altre logiche di business qui, ma per ora basta aggiornare lo stato.
+            if(esito) {
+                offerta.setStato(nuovoStato);
+            }
+            return esito;
+        }
         public boolean SalvaOggetto(Oggetto oggetto){
             return oggettoDAO.salvaOggetto(oggetto, utente);
         }
