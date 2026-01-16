@@ -96,6 +96,7 @@ public class HomePageBoundary implements GestoreMessaggio {
         card.setPrefWidth(280);
         card.setPadding(new Insets(20));
 
+        // Gestione Immagine Profilo
         ImageView imgView = new ImageView();
         imgView.setFitWidth(100);
         imgView.setFitHeight(100);
@@ -104,9 +105,16 @@ public class HomePageBoundary implements GestoreMessaggio {
         Circle clip = new Circle(50, 50, 50);
         imgView.setClip(clip);
 
+        // Username
         Text username = new Text(u.getUsername());
         username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-fill: #003366;");
 
+        // --- AGGIUNTA EMAIL ---
+        Text email = new Text(u.getEmail());
+        email.setStyle("-fx-font-size: 14px; -fx-fill: #666; -fx-font-style: italic;");
+        // ----------------------
+
+        // Pulsante di Azione
         Button btnProfilo = new Button("Vedi Annunci");
         btnProfilo.getStyleClass().add("button");
         btnProfilo.setOnAction(e -> {
@@ -119,10 +127,10 @@ public class HomePageBoundary implements GestoreMessaggio {
             }
         });
 
-        card.getChildren().addAll(imgView, username, btnProfilo);
+        // Aggiungi l'email alla lista dei figli (posizionata tra username e bottone)
+        card.getChildren().addAll(imgView, username, email, btnProfilo);
         return card;
     }
-
     private VBox creaCardAnnuncio(Annuncio a) {
         VBox card = new VBox(10);
         card.getStyleClass().add("ad-card");
