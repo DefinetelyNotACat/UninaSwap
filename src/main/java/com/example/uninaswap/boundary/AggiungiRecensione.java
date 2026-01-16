@@ -46,21 +46,14 @@ public class AggiungiRecensione {
             if (this.utenteDaRecensire != null && this.utenteRecensore != null) {
                 testoRecensito.setText("Stai recensendo: " + this.utenteDaRecensire.getUsername());
 
-                // --- LOGICA DI PRE-CARICAMENTO ---
                 // Cerchiamo nel DB se esiste già una recensione tra questi due utenti
                 Recensione esistente = controller.trovaRecensioneEsistente(utenteRecensore, utenteDaRecensire);
 
                 if (esistente != null) {
-                    // 1. Popoliamo il commento
                     commentoArea.setText(esistente.getCommento());
-
-                    // 2. Impostiamo il voto e aggiorniamo le stelle graficamente
                     votoSelezionato.set(esistente.getVoto());
                     aggiornaStelle(esistente.getVoto());
-
-                    // 3. Cambiamo il testo del bottone per far capire che è un aggiornamento
                     inviaButton.setText("Aggiorna Recensione");
-                    System.out.println("DEBUG: Pre-caricata recensione esistente ID " + esistente.getId());
                 }
             }
         } catch (Exception e) {
@@ -69,13 +62,15 @@ public class AggiungiRecensione {
     }
 
     private void setupValidazione() {
+        // --- VALIDAZIONE REGEX COMMENTO ---
         commentoArea.textProperty().addListener((obs, old, newVal) -> {
+            // Il commento è opzionale, ma se presente deve rispettare il regex
             boolean ok = newVal == null || newVal.isEmpty() || newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
             commentoRegexOk.set(ok);
             gestisciErroreVisivo(commentoArea, erroreCommento, ok);
         });
 
-        // Abilita il tasto solo se il voto è >= 1 e il commento rispetta la regex
+        // Abilita il tasto solo se il voto è >= 1 E il regex del commento è OK
         inviaButton.disableProperty().bind(
                 votoSelezionato.lessThan(1).or(commentoRegexOk.not())
         );
@@ -90,8 +85,10 @@ public class AggiungiRecensione {
         votoSelezionato.set(voto);
         aggiornaStelle(voto);
 
-        erroreVoto.setVisible(false);
-        erroreVoto.setManaged(false);
+        if (erroreVoto != null) {
+            erroreVoto.setVisible(false);
+            erroreVoto.setManaged(false);
+        }
     }
 
     private void aggiornaStelle(int voto) {
@@ -111,8 +108,7 @@ public class AggiungiRecensione {
         try {
             int voto = votoSelezionato.get();
 
-            // Il controller gestirà internamente se fare INSERT o UPDATE
-            // confrontando le email di recensore e recensito
+            // Il controller gestirà l'INSERT o l'UPDATE confrontando gli ID degli utenti
             boolean successo = controller.pubblicaRecensione(
                     utenteDaRecensire,
                     utenteRecensore,
@@ -137,6 +133,9 @@ public class AggiungiRecensione {
     private void gestisciErroreVisivo(Control f, Text e, boolean ok) {
         f.getStyleClass().removeAll("error", "right");
         f.getStyleClass().add(ok ? "right" : "error");
-        if (e != null) { e.setVisible(!ok); e.setManaged(!ok); }
+        if (e != null) {
+            e.setVisible(!ok);
+            e.setManaged(!ok);
+        }
     }
 }

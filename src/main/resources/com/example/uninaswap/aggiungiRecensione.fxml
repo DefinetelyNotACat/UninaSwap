@@ -36,7 +36,7 @@
         <children>
             <Text styleClass="label" text="Il tuo commento (Opzionale)"/>
             <TextArea fx:id="commentoArea" promptText="Come è andata l'esperienza?" wrapText="true" prefRowCount="3" styleClass="form-field" />
-            <Text fx:id="erroreCommento" managed="false" styleClass="error-text" text="Il testo contiene caratteri non validi" visible="false" />
+            <Text fx:id="erroreCommento" managed="false" styleClass="error-text" text="Caratteri non validi (usare solo lettere, numeri, ? ! ' € e spazi)" visible="false" />
         </children>
     </VBox>
 
