@@ -29,7 +29,6 @@ public class EffettuaOffertaBoundary {
     private Annuncio annuncioTarget;
     private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
 
-    // Controlli dinamici
     private TextField inputPrezzo;
     private ListView<Oggetto> listaMieiOggetti;
 
@@ -65,7 +64,6 @@ public class EffettuaOffertaBoundary {
                 ArrayList<Oggetto> mieiOggetti = controller.OttieniOggettiDisponibili(controller.getUtente());
                 listaMieiOggetti.getItems().addAll(mieiOggetti);
 
-                // --- MIGLIORAMENTO GRAFICO CELLA ---
                 listaMieiOggetti.setCellFactory(param -> new ListCell<>() {
                     @Override
                     protected void updateItem(Oggetto item, boolean empty) {
@@ -76,14 +74,11 @@ public class EffettuaOffertaBoundary {
                         } else {
                             HBox cellBox = new HBox(10);
                             cellBox.setAlignment(Pos.CENTER_LEFT);
-
                             VBox textContainer = new VBox(2);
                             Label nome = new Label(item.getNome());
                             nome.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-
                             Label info = new Label("Condizione: " + item.getCondizione());
                             info.setStyle("-fx-font-size: 11px; -fx-text-fill: #666;");
-
                             textContainer.getChildren().addAll(nome, info);
                             cellBox.getChildren().add(textContainer);
                             setGraphic(cellBox);
@@ -96,7 +91,6 @@ public class EffettuaOffertaBoundary {
             containerSpecifico.getChildren().addAll(l, listaMieiOggetti);
 
         } else {
-            // Regalo
             Label l = new Label("🎁 Questo annuncio è un REGALO!");
             l.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #fd7e14;");
             Text t = new Text("Confermando l'offerta, il venditore riceverà la tua richiesta di interesse.");
@@ -112,14 +106,26 @@ public class EffettuaOffertaBoundary {
             String msg = txtMessaggio.getText();
             Offerta nuovaOfferta = null;
 
-            if (annuncioTarget instanceof AnnuncioVendita) {
+            if (annuncioTarget instanceof AnnuncioVendita av) {
                 if (inputPrezzo.getText().isEmpty()) throw new Exception("Inserisci un prezzo.");
-                double prezzo = Double.parseDouble(inputPrezzo.getText().replace(",", "."));
+
+                // Conversione input in double per il check
+                double prezzoOfferto = Double.parseDouble(inputPrezzo.getText().replace(",", "."));
+
+                // --- LOGICA DI VALIDAZIONE PREZZO RICHIESTA ---
+                // 1. Controllo Prezzo Minimo (se non è null)
+                if (av.getPrezzoMinimo() != null && prezzoOfferto < av.getPrezzoMinimo().doubleValue()) {
+                    throw new Exception("L'offerta è troppo bassa! Il prezzo minimo accettato è " + av.getPrezzoMinimo() + "€.");
+                }
+                // 2. Controllo Prezzo Medio (Prezzo Normale)
+                else if (prezzoOfferto < av.getPrezzoMedio().doubleValue()) {
+                    throw new Exception("L'offerta non può essere inferiore al prezzo richiesto di " + av.getPrezzoMedio() + "€.");
+                }
 
                 nuovaOfferta = new OffertaVendita(
                         annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
                         LocalTime.now(), LocalTime.now().plusHours(1), null, me,
-                        BigDecimal.valueOf(prezzo), (AnnuncioVendita) annuncioTarget
+                        BigDecimal.valueOf(prezzoOfferto), av
                 );
 
             } else if (annuncioTarget instanceof AnnuncioScambio) {
@@ -134,7 +140,6 @@ public class EffettuaOffertaBoundary {
                 nuovaOfferta = os;
 
             } else {
-                // Regalo
                 nuovaOfferta = new OffertaRegalo(
                         annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
                         LocalTime.now(), LocalTime.now().plusHours(1), null, me,
@@ -142,7 +147,6 @@ public class EffettuaOffertaBoundary {
                 );
             }
 
-            // Salvataggio tramite DAO
             com.example.uninaswap.dao.OffertaDAO dao = new com.example.uninaswap.dao.OffertaDAO();
             if (dao.salvaOfferta(nuovaOfferta)) {
                 System.out.println("Offerta Inviata con successo!");
@@ -169,11 +173,8 @@ public class EffettuaOffertaBoundary {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathHomePage));
             Parent root = loader.load();
             Stage stage = (Stage) containerSpecifico.getScene().getWindow();
-
-            // Manteniamo le dimensioni correnti della finestra
             double width = stage.getScene().getWidth();
             double height = stage.getScene().getHeight();
-
             stage.setScene(new Scene(root, width, height));
             stage.show();
         } catch (Exception e) {
