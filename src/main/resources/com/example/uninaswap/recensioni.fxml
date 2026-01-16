@@ -1,14 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.Button?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<BorderPane prefHeight="600.0" prefWidth="900.0"
+            xmlns="http://javafx.com/javafx/24.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.uninaswap.boundary.Recensioni"
+            stylesheets="@homepage.css, @recensione.css">
 
-</AnchorPane>
+    <top>
+        <HBox alignment="CENTER" styleClass="navbar-container">
+            <fx:include source="navbar.fxml" />
+        </HBox>
+    </top>
+
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20">
+            <padding><Insets top="30" right="50" bottom="30" left="50"/></padding>
+
+            <VBox alignment="CENTER" spacing="5">
+                <Text fx:id="txtTitolo" styleClass="hero-title" />
+                <Text fx:id="txtMedia" styleClass="hero-subtitle" text="Valutazione Media: 0.0/5" />
+            </VBox>
+
+            <ScrollPane fitToWidth="true" styleClass="main-scroll-pane" VBox.vgrow="ALWAYS">
+                <content>
+                    <VBox fx:id="containerRecensioni" spacing="15" alignment="TOP_CENTER">
+                        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                    </VBox>
+                </content>
+            </ScrollPane>
+
+            <Button text="Torna alla Home" onAction="#tornaHome" styleClass="button-secondary" />
+        </VBox>
+    </center>
+</BorderPane>

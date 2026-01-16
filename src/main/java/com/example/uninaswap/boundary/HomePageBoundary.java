@@ -138,14 +138,26 @@ public class HomePageBoundary implements GestoreMessaggio {
         // btnRecensioni.setStyle("-fx-background-color: #28a745;");
         btnRecensioni.setMinWidth(180);
         btnRecensioni.setOnAction(e -> {
-            // Qui andrà la logica per aprire la schermata delle recensioni dell'utente u
-            System.out.println("Apertura recensioni per: " + u.getUsername());
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathRecensioni));
+                Parent root = loader.load();
 
-            // Esempio di cambio scena se hai già il path:
-            // gestoreScene.CambiaScena(Costanti.pathVediRecensioni, "Recensioni Utente", e);
-        });
+                // Recuperiamo il controller e passiamo i dati
+                Recensioni controllerRecensioni = loader.getController();
+                controllerRecensioni.initData(u);
 
-        containerBottoni.getChildren().addAll(btnProfilo, btnRecensioni);
+                // Prendiamo lo stage e la scena attuale
+                Stage stage = (Stage) containerAnnunci.getScene().getWindow();
+                Scene currentScene = stage.getScene();
+
+                // CREIAMO LA NUOVA SCENA CON LE DIMENSIONI ATTUALI
+                Scene nextScene = new Scene(root, currentScene.getWidth(), currentScene.getHeight());
+
+                stage.setScene(nextScene);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });        containerBottoni.getChildren().addAll(btnProfilo, btnRecensioni);
 
         // Aggiungi tutto alla card
         card.getChildren().addAll(imgView, username, email, containerBottoni);

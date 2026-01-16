@@ -32,4 +32,5 @@ public class Costanti {
     public static final String pathMieiAnnunci = "/com/example/uninaswap/mieiAnnunci.fxml";
     public static final String pathDettaglioAnnuncio = "/com/example/uninaswap/dettaglioAnnuncio.fxml";
     public static final String pathEffettuaOfferta = "/com/example/uninaswap/effettuaOfferta.fxml";
+    public static final String pathRecensioni = "/com/example/uninaswap/recensioni.fxml";
 }
