@@ -14,9 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -36,23 +34,16 @@ public class HomePageBoundary implements GestoreMessaggio {
         if (navBarComponentController != null) {
             navBarComponentController.setHomePageBoundary(this);
         }
-        // Caricamento iniziale
         caricaCatalogoAnnunci(null, true);
     }
 
-    /**
-     * Versione per ricerca rapida o caricamento iniziale (Annunci o Utenti).
-     */
     public void caricaCatalogoAnnunci(String query, boolean ricercaAnnuncio) throws Exception {
         containerAnnunci.getChildren().clear();
 
         if (ricercaAnnuncio) {
-            // Richiama la versione completa con filtri null
             caricaCatalogoAnnunci(query, null, null, true);
         } else {
-            // --- LOGICA RICERCA MULTI-UTENTE ---
             if (query == null || query.trim().isEmpty()) return;
-
             List<Utente> utentiTrovati = controller.cercaUtenti(query.trim());
 
             if (utentiTrovati == null || utentiTrovati.isEmpty()) {
@@ -66,9 +57,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         }
     }
 
-    /**
-     * Versione COMPLETA con FILTRI.
-     */
     public void caricaCatalogoAnnunci(String query, Oggetto.CONDIZIONE cond, Categoria cat, boolean ricercaAnnuncio) throws Exception {
         containerAnnunci.getChildren().clear();
 
@@ -84,7 +72,6 @@ public class HomePageBoundary implements GestoreMessaggio {
                 containerAnnunci.getChildren().add(creaCardAnnuncio(a));
             }
         } else {
-            // Se ricerca utente, delega al metodo semplificato
             caricaCatalogoAnnunci(query, false);
         }
     }
@@ -96,7 +83,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         card.setPrefWidth(280);
         card.setPadding(new Insets(20));
 
-        // Gestione Immagine Profilo
         ImageView imgView = new ImageView();
         imgView.setFitWidth(100);
         imgView.setFitHeight(100);
@@ -105,22 +91,18 @@ public class HomePageBoundary implements GestoreMessaggio {
         Circle clip = new Circle(50, 50, 50);
         imgView.setClip(clip);
 
-        // Username
         Text username = new Text(u.getUsername());
         username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-fill: #003366;");
 
-        // Email
         Text email = new Text(u.getEmail());
         email.setStyle("-fx-font-size: 14px; -fx-fill: #666; -fx-font-style: italic;");
 
-        // Container per i bottoni per gestirne la spaziatura
         VBox containerBottoni = new VBox(10);
         containerBottoni.setAlignment(Pos.CENTER);
 
-        // Pulsante Vedi Annunci
         Button btnProfilo = new Button("Vedi Annunci");
         btnProfilo.getStyleClass().add("button");
-        btnProfilo.setMinWidth(180); // Larghezza fissa per uniformità
+        btnProfilo.setMinWidth(180);
         btnProfilo.setOnAction(e -> {
             containerAnnunci.getChildren().clear();
             List<Annuncio> annunciUtente = controller.OttieniAnnunciDiUtente(u.getId());
@@ -131,65 +113,86 @@ public class HomePageBoundary implements GestoreMessaggio {
             }
         });
 
-        // --- NUOVO PULSANTE VEDI RECENSIONI ---
         Button btnRecensioni = new Button("Vedi Recensioni");
         btnRecensioni.getStyleClass().add("button");
-        // Se vuoi differenziarlo graficamente puoi usare uno stile inline o una classe CSS diversa
-        // btnRecensioni.setStyle("-fx-background-color: #28a745;");
         btnRecensioni.setMinWidth(180);
         btnRecensioni.setOnAction(e -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathRecensioni));
                 Parent root = loader.load();
-
-                // Recuperiamo il controller e passiamo i dati
                 Recensioni controllerRecensioni = loader.getController();
                 controllerRecensioni.initData(u);
 
-                // Prendiamo lo stage e la scena attuale
                 Stage stage = (Stage) containerAnnunci.getScene().getWindow();
                 Scene currentScene = stage.getScene();
-
-                // CREIAMO LA NUOVA SCENA CON LE DIMENSIONI ATTUALI
                 Scene nextScene = new Scene(root, currentScene.getWidth(), currentScene.getHeight());
-
                 stage.setScene(nextScene);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        });        containerBottoni.getChildren().addAll(btnProfilo, btnRecensioni);
+        });
 
-        // Aggiungi tutto alla card
+        containerBottoni.getChildren().addAll(btnProfilo, btnRecensioni);
         card.getChildren().addAll(imgView, username, email, containerBottoni);
         return card;
     }
+
+    /**
+     * Card Annuncio Aggiornata con Sede, Badge e Prezzo/Info Scambio.
+     */
     private VBox creaCardAnnuncio(Annuncio a) {
-        VBox card = new VBox(10);
+        VBox card = new VBox(12);
         card.getStyleClass().add("ad-card");
         card.setAlignment(Pos.TOP_CENTER);
-        card.setPrefWidth(250);
+        card.setPrefWidth(260);
+        card.setPadding(new Insets(15));
 
+        // 1. Immagine dell'oggetto
         ImageView imgView = new ImageView();
         imgView.setFitWidth(230);
-        imgView.setFitHeight(160);
+        imgView.setFitHeight(150);
         imgView.setPreserveRatio(true);
         imgView.setSmooth(true);
         caricaFotoOggetto(a, imgView);
 
+        // 2. Header: Badge del tipo + Sede (📍 Nome Sede)
+        HBox headerInfo = new HBox(10);
+        headerInfo.setAlignment(Pos.CENTER_LEFT);
+
         Label badge = new Label(determinaTipo(a));
         badge.getStyleClass().addAll("badge-base", determinaClasseBadge(a));
 
+        Text location = new Text("📍 " + a.getSede().getNomeSede());
+        location.getStyleClass().add("ad-location");
+
+        headerInfo.getChildren().addAll(badge, location);
+
+        // 3. Descrizione Annuncio
         Text desc = new Text(a.getDescrizione());
-        desc.setWrappingWidth(220);
+        desc.setWrappingWidth(230);
         desc.getStyleClass().add("ad-description");
 
-        card.getChildren().addAll(imgView, badge, desc);
+        // 4. Info Extra (Prezzo per Vendita, Proposta per Scambio)
+        Text extraInfo = new Text();
+        extraInfo.getStyleClass().add("ad-extra-info");
+
+        if (a instanceof AnnuncioVendita av) {
+            extraInfo.setText(av.getPrezzoMedio() + " €");
+        } else if (a instanceof AnnuncioScambio as) {
+            extraInfo.setText("🔄 " + as.getListaOggetti());
+        } else {
+            extraInfo.setText("OMAGGIO");
+        }
+
+        // Spacer per allineare l'info extra in fondo alla card
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        card.getChildren().addAll(imgView, headerInfo, desc, spacer, extraInfo);
         card.setOnMouseClicked(e -> apriDettaglioAnnuncio(a));
 
         return card;
     }
-
-    // --- METODI DI SUPPORTO ---
 
     private void caricaFotoProfilo(Utente u, ImageView iv) {
         try {
