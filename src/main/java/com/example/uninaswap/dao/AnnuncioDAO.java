@@ -17,13 +17,13 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     private ArrayList<Annuncio> caricaAnnunciConJoin(String condizioneSql, Object... params) {
         LinkedHashMap<Integer, Annuncio> mappaAnnunci = new LinkedHashMap<>();
 
-        // Query aggiornata con JOIN su UTENTE
+        // Query aggiornata con JOIN su UTENTE (Mantenuta come da tua richiesta)
         String sql = "SELECT a.*, s.nome_sede, " +
-                "u.username as u_username, u.matricola as u_matricola, u.email as u_email, u.immagine_profilo as u_img, " + // Dati Utente
+                "u.username as u_username, u.matricola as u_matricola, u.email as u_email, u.immagine_profilo as u_img, " +
                 "o.id as o_id, o.nome as o_nome, o.condizione as o_condizione, i.path as i_path " +
                 "FROM annuncio a " +
                 "LEFT JOIN sede s ON a.sede_id = s.id " +
-                "LEFT JOIN utente u ON a.utente_id = u.id " + // JOIN CON UTENTE
+                "LEFT JOIN utente u ON a.utente_id = u.id " +
                 "LEFT JOIN oggetto o ON a.id = o.annuncio_id " +
                 "LEFT JOIN immagine i ON o.id = i.oggetto_id " +
                 condizioneSql;
@@ -48,19 +48,19 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                         sede.setNomeSede(rs.getString("nome_sede"));
                         annuncio.setSede(sede);
 
-                        // NUOVO: Popolamento UTENTE (Venditore)
+                        // Popolamento UTENTE (Venditore)
                         Utente venditore = new Utente();
                         venditore.setId(rs.getInt("utente_id"));
                         venditore.setUsername(rs.getString("u_username"));
                         venditore.setMatricola(rs.getString("u_matricola"));
                         venditore.setEmail(rs.getString("u_email"));
                         venditore.setPathImmagineProfilo(rs.getString("u_img"));
-                        annuncio.setUtente(venditore); // Assicurati che l'entity Annuncio abbia questo campo
+                        annuncio.setUtente(venditore);
 
                         mappaAnnunci.put(idAnnuncio, annuncio);
                     }
 
-                    // Logica Oggetti e Immagini (rimane invariata)
+                    // Logica Oggetti e Immagini
                     int idOggetto = rs.getInt("o_id");
                     if (idOggetto > 0) {
                         final int currentObjId = idOggetto;
@@ -91,6 +91,7 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         }
         return new ArrayList<>(mappaAnnunci.values());
     }
+
     // =================================================================================
     // LOGICA DI RICERCA E FILTRAGGIO
     // =================================================================================
@@ -110,7 +111,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
             params.add(condizione.replace("_", " "));
         }
 
-        // QUERY CORRETTA: Secondo il tuo dump, le colonne sono 'oggetto_id' e 'categoria_nome'
         if (nomeCategoria != null && !nomeCategoria.isEmpty()) {
             sqlFiltro.append("AND EXISTS (")
                     .append("  SELECT 1 FROM oggetto_categoria oc ")
@@ -130,7 +130,7 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
 
     @Override
     public ArrayList<Annuncio> OttieniAnnunciRicercaUtente(String ricerca, int mioId) {
-        return null; // Da implementare se necessario
+        return null;
     }
 
     public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
@@ -229,6 +229,10 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
+// Trova il metodo mapRowToAnnuncio in AnnuncioDAO.java e sostituiscilo con questo:
+
+// Trova il metodo mapRowToAnnuncio in AnnuncioDAO.java e sostituiscilo con questo:
+
     private Annuncio mapRowToAnnuncio(ResultSet rs) throws SQLException {
         String tipo = rs.getString("tipo_annuncio");
         Annuncio annuncio;
@@ -249,10 +253,21 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         annuncio.setId(rs.getInt("id"));
         annuncio.setDescrizione(rs.getString("descrizione"));
         annuncio.setUtenteId(rs.getInt("utente_id"));
-        return annuncio;
-    }
 
-    @Override
+        // FIX FONDAMENTALE: Conversione da String (DB) a Enum (Java)
+        String statoDalDB = rs.getString("stato");
+        if (statoDalDB != null) {
+            try {
+                // valueOf trasforma "DISPONIBILE" in Annuncio.STATO_ANNUNCIO.DISPONIBILE
+                annuncio.setStato(Annuncio.STATO_ANNUNCIO.valueOf(statoDalDB.toUpperCase().trim()));
+            } catch (IllegalArgumentException e) {
+                System.err.println("Stato non riconosciuto nel DB: " + statoDalDB);
+                annuncio.setStato(Annuncio.STATO_ANNUNCIO.DISPONIBILE); // Fallback di sicurezza
+            }
+        }
+
+        return annuncio;
+    }    @Override
     public boolean modificaAnnuncio(Annuncio annuncio) {
         return true;
     }

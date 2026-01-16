@@ -71,13 +71,11 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
         imgView.setPreserveRatio(true);
         caricaImmagine(a, imgView);
 
-        // 2. Badge e Sede (📍)
+        // 2. Badge e Sede
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
-
         Label badge = new Label(determinaTipo(a).toUpperCase());
         badge.getStyleClass().addAll("badge-base", determinaClasseBadge(a));
-
         Text sede = new Text("📍 " + (a.getSede() != null ? a.getSede().getNomeSede() : "N/A"));
         sede.getStyleClass().add("ad-location");
         header.getChildren().addAll(badge, sede);
@@ -101,11 +99,21 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // 5. Bottone Elimina
+        // 5. Bottone Elimina (Logica Trasparenza)
         Button btnElimina = new Button("🗑 Elimina Annuncio");
         btnElimina.getStyleClass().add("button-danger");
         btnElimina.setMaxWidth(Double.MAX_VALUE);
-        btnElimina.setOnAction(e -> onEliminaAnnuncio(a));
+
+        // --- FIX LOGICA: Confronto tra Enum ---
+        // Ora usiamo l'uguaglianza tra costanti Enum invece di equalsIgnoreCase
+        if (a.getStato() != Annuncio.STATO_ANNUNCIO.DISPONIBILE) {
+            btnElimina.setOpacity(0.0); // Lo rendiamo trasparente
+            btnElimina.setDisable(true); // Impediamo il click
+        } else {
+            btnElimina.setOpacity(1.0);
+            btnElimina.setDisable(false);
+            btnElimina.setOnAction(e -> onEliminaAnnuncio(a));
+        }
 
         card.getChildren().addAll(imgView, header, desc, extraInfo, spacer, btnElimina);
         return card;
@@ -127,38 +135,24 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
         if (controller.EliminaAnnuncio(annuncio)) {
             Stage stage = (Stage) containerAnnunci.getScene().getWindow();
             gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", stage,
-                    "Annuncio eliminato con successo!", Messaggio.TIPI.SUCCESS);
+                    "Annuncio eliminato correttamente!", Messaggio.TIPI.SUCCESS);
         } else {
-            mostraMessaggioEsterno("Impossibile eliminare l'annuncio.", Messaggio.TIPI.ERROR);
+            mostraMessaggioEsterno("Errore nell'eliminazione dell'annuncio", Messaggio.TIPI.ERROR);
         }
     }
 
     private void caricaImmagine(Annuncio annuncio, ImageView imgView) {
         try {
-            String path = null;
-            if (annuncio.getOggetti() != null && !annuncio.getOggetti().isEmpty() &&
-                    !annuncio.getOggetti().get(0).getImmagini().isEmpty()) {
-                path = annuncio.getOggetti().get(0).getImmagini().get(0);
-            }
-
+            String path = (annuncio.getOggetti() != null && !annuncio.getOggetti().isEmpty() &&
+                    !annuncio.getOggetti().get(0).getImmagini().isEmpty()) ? annuncio.getOggetti().get(0).getImmagini().get(0) : null;
             if (path != null) {
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
-                if (file.exists()) {
-                    imgView.setImage(new Image(file.toURI().toString(), 400, 300, true, true));
-                    return;
-                }
+                if (file.exists()) { imgView.setImage(new Image(file.toURI().toString(), 400, 300, true, true)); return; }
             }
             imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-        } catch (Exception e) {
-            imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-        }
+        } catch (Exception e) { imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png"))); }
     }
 
-    @FXML public void onIndietroClick(ActionEvent event) {
-        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
-    }
-
-    @Override public void mostraMessaggioEsterno(String t, Messaggio.TIPI tip) {
-        if (notificaController != null) notificaController.mostraMessaggio(t, tip);
-    }
+    @FXML public void onIndietroClick(ActionEvent event) { gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event); }
+    @Override public void mostraMessaggioEsterno(String t, Messaggio.TIPI tip) { if (notificaController != null) notificaController.mostraMessaggio(t, tip); }
 }

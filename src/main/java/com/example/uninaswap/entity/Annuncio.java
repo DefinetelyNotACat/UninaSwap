@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public abstract class Annuncio {
 
     // --- ENUM STATO ---
-    protected enum STATO_ANNUNCIO {
+    public enum STATO_ANNUNCIO {
         DISPONIBILE,
         NON_DISPONIBILE
     }
