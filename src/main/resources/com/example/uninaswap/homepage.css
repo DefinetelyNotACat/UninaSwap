@@ -92,3 +92,16 @@
     -fx-border-color: #004a94;
     -fx-text-fill: #004a94;
 }
+
+.button-danger {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.button-danger:hover {
+    -fx-background-color: #c82333;
+    -fx-effect: dropshadow(three-pass-box, rgba(220, 53, 69, 0.4), 10, 0, 0, 0);
+}

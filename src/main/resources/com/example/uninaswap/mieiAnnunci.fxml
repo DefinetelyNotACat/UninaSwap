@@ -3,10 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
 <StackPane prefHeight="600.0" prefWidth="900.0"
@@ -21,35 +18,35 @@
             <fx:include source="navbar.fxml" />
         </HBox>
 
-        <HBox alignment="CENTER" fillHeight="false">
-            <padding>
-                <Insets top="10" bottom="5" />
-            </padding>
+        <HBox alignment="CENTER" fillHeight="false" minHeight="50">
             <fx:include fx:id="notifica" source="banners.fxml" />
         </HBox>
 
         <VBox alignment="CENTER" spacing="5">
-            <padding><Insets bottom="10" top="10" /></padding>
-            <Text styleClass="hero-title" text="I Tuoi Annunci Pubblicati" />
-            <Text styleClass="hero-subtitle" text="Gestisci le tue inserzioni di vendita e scambio" />
+            <padding><Insets bottom="10" top="5" /></padding>
+            <Text styleClass="hero-title" text="I Tuoi Annunci" />
+            <Text styleClass="hero-subtitle" text="Gestisci, visualizza o elimina le tue inserzioni attive" />
         </VBox>
 
-        <Text fx:id="testoVuoto" visible="false" managed="false"
-              text="Non hai ancora pubblicato nessun annuncio."
-              style="-fx-font-size: 18px; -fx-fill: #666;" />
+        <StackPane VBox.vgrow="ALWAYS">
+            <Text fx:id="testoVuoto" visible="false" managed="false"
+                  text="Non hai ancora pubblicato nessun annuncio."
+                  style="-fx-font-size: 18px; -fx-fill: #888; -fx-font-style: italic;" />
 
-        <ScrollPane fitToWidth="true" styleClass="main-scroll-pane" VBox.vgrow="ALWAYS">
-            <content>
-                <FlowPane fx:id="containerAnnunci" alignment="TOP_CENTER" hgap="25" vgap="25">
-                    <padding>
-                        <Insets bottom="40" left="20" right="20" top="20" />
-                    </padding>
-                </FlowPane>
-            </content>
-        </ScrollPane>
+            <ScrollPane fitToWidth="true" styleClass="main-scroll-pane">
+                <content>
+                    <FlowPane fx:id="containerAnnunci" alignment="TOP_CENTER" hgap="25" vgap="25">
+                        <padding>
+                            <Insets bottom="30" left="20" right="20" top="10" />
+                        </padding>
+                    </FlowPane>
+                </content>
+            </ScrollPane>
+        </StackPane>
 
-        <HBox alignment="CENTER_RIGHT" spacing="15" style="-fx-padding: 0 20 20 0;">
-            <Button text="Indietro" onAction="#onIndietroClick" styleClass="button-small"/>
+        <HBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-border-color: #eee; -fx-border-width: 1 0 0 0;">
+            <padding><Insets top="15" bottom="15" /></padding>
+            <Button text="⬅ Torna alla Home" onAction="#onIndietroClick" styleClass="button-outline" prefWidth="200" />
         </HBox>
 
     </VBox>
