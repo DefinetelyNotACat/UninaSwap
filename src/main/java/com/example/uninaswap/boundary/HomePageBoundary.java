@@ -79,10 +79,11 @@ public class HomePageBoundary implements GestoreMessaggio {
     private VBox creaCardUtente(Utente u) {
         VBox card = new VBox(15);
         card.getStyleClass().add("ad-card");
-        card.setAlignment(Pos.CENTER);
+        card.setAlignment(Pos.CENTER); // Centra i nodi nel VBox
         card.setPrefWidth(280);
-        card.setPadding(new Insets(20));
+        card.setPadding(new Insets(25));
 
+        // Gestione Immagine Profilo
         ImageView imgView = new ImageView();
         imgView.setFitWidth(100);
         imgView.setFitHeight(100);
@@ -91,18 +92,26 @@ public class HomePageBoundary implements GestoreMessaggio {
         Circle clip = new Circle(50, 50, 50);
         imgView.setClip(clip);
 
+        // Username - Centrato esplicitamente
         Text username = new Text(u.getUsername());
+        username.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-fill: #003366;");
 
+        // Email - Centrata esplicitamente
         Text email = new Text(u.getEmail());
+        email.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         email.setStyle("-fx-font-size: 14px; -fx-fill: #666; -fx-font-style: italic;");
 
-        VBox containerBottoni = new VBox(10);
+        // Container Bottoni
+        VBox containerBottoni = new VBox(12);
         containerBottoni.setAlignment(Pos.CENTER);
+        containerBottoni.setMaxWidth(200);
 
+        // Pulsante Vedi Annunci
         Button btnProfilo = new Button("Vedi Annunci");
-        btnProfilo.getStyleClass().add("button");
-        btnProfilo.setMinWidth(180);
+        btnProfilo.getStyleClass().setAll("button-primary");
+        btnProfilo.setAlignment(Pos.CENTER); // Centra il testo nel bottone
+        btnProfilo.setMaxWidth(Double.MAX_VALUE);
         btnProfilo.setOnAction(e -> {
             containerAnnunci.getChildren().clear();
             List<Annuncio> annunciUtente = controller.OttieniAnnunciDiUtente(u.getId());
@@ -113,9 +122,11 @@ public class HomePageBoundary implements GestoreMessaggio {
             }
         });
 
+        // Pulsante Vedi Recensioni
         Button btnRecensioni = new Button("Vedi Recensioni");
-        btnRecensioni.getStyleClass().add("button");
-        btnRecensioni.setMinWidth(180);
+        btnRecensioni.getStyleClass().setAll("button-outline");
+        btnRecensioni.setAlignment(Pos.CENTER); // Centra il testo nel bottone
+        btnRecensioni.setMaxWidth(Double.MAX_VALUE);
         btnRecensioni.setOnAction(e -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathRecensioni));
@@ -125,19 +136,17 @@ public class HomePageBoundary implements GestoreMessaggio {
 
                 Stage stage = (Stage) containerAnnunci.getScene().getWindow();
                 Scene currentScene = stage.getScene();
-                Scene nextScene = new Scene(root, currentScene.getWidth(), currentScene.getHeight());
-                stage.setScene(nextScene);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+                stage.setScene(new Scene(root, currentScene.getWidth(), currentScene.getHeight()));
+            } catch (Exception ex) { ex.printStackTrace(); }
         });
 
         containerBottoni.getChildren().addAll(btnProfilo, btnRecensioni);
-        card.getChildren().addAll(imgView, username, email, containerBottoni);
-        return card;
-    }
 
-    /**
+        // Aggiunta finale dei componenti
+        card.getChildren().addAll(imgView, username, email, containerBottoni);
+
+        return card;
+    }    /**
      * Card Annuncio Aggiornata con Sede, Badge e Prezzo/Info Scambio.
      */
     private VBox creaCardAnnuncio(Annuncio a) {

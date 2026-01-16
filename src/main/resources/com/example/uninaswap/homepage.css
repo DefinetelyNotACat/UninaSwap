@@ -59,3 +59,36 @@
 .badge-vendita { -fx-background-color: #28a745; }
 .badge-scambio { -fx-background-color: #007bff; }
 .badge-regalo  { -fx-background-color: #fd7e14; }
+
+/* --- BOTTONI MODERNI PER LE CARD --- */
+
+.button-primary {
+    -fx-background-color: #003366; /* Blu scuro come il titolo */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.button-primary:hover {
+    -fx-background-color: #004a94;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+.button-outline {
+    -fx-background-color: transparent;
+    -fx-border-color: #003366;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 10;
+    -fx-text-fill: #003366;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+}
+
+.button-outline:hover {
+    -fx-background-color: #f0f4f8;
+    -fx-border-color: #004a94;
+    -fx-text-fill: #004a94;
+}
