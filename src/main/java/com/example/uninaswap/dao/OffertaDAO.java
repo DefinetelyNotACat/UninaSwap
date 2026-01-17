@@ -407,4 +407,24 @@ public class OffertaDAO implements GestoreOffertaDAO {
             }
         }
         return new ArrayList<>(mappaOggetti.values());
-    }}
+    }
+    public boolean haOffertaInAttesa(int utenteId, int annuncioId) {
+        String sql = "SELECT COUNT(*) FROM OFFERTA WHERE utente_id = ? AND annuncio_id = ? AND stato = 'IN_ATTESA'::stato_offerta";
+
+        try (java.sql.Connection conn = PostgreSQLConnection.getConnection();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, utenteId);
+            ps.setInt(2, annuncioId);
+
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+}
