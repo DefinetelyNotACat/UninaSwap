@@ -1,0 +1,153 @@
+/* --- 1. IL TUO CSS ORIGINALE --- */
+
+.main-scroll-pane {
+    -fx-background-color: #f8f9fa;
+}
+
+.offer-card {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 5);
+    -fx-border-color: #f1f1f1;
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+    -fx-max-width: 700;
+}
+
+.offer-card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-fill: #2c3e50;
+}
+
+.offer-card-subtitle {
+    -fx-font-size: 14px;
+    -fx-fill: #7f8c8d;
+}
+
+.offer-details-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #3498db;
+    -fx-font-size: 14px;
+}
+
+.offer-message-text {
+    -fx-font-style: italic;
+    -fx-fill: #34495e;
+    -fx-background-color: #fdfdfd;
+}
+
+.status-badge {
+    -fx-padding: 5 12;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+}
+
+.status-pending { -fx-background-color: #f39c12; }
+.status-accepted { -fx-background-color: #27ae60; }
+.status-rejected { -fx-background-color: #e74c3c; }
+
+.btn-accept, .btn-reject {
+    -fx-cursor: hand;
+    -fx-padding: 8 20;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.btn-accept { -fx-background-color: #2ecc71; }
+.btn-accept:hover { -fx-background-color: #27ae60; }
+
+.btn-reject {
+    -fx-background-color: #ecf0f1;
+    -fx-text-fill: #c0392b;
+}
+.btn-reject:hover { -fx-background-color: #e74c3c; -fx-text-fill: white; }
+
+.tab-pane .tab-header-area .tab {
+    -fx-background-color: transparent;
+    -fx-padding: 10 20;
+}
+.tab-pane .tab:selected {
+    -fx-background-color: white;
+    -fx-background-radius: 10 10 0 0;
+}
+
+/* --- 2. AGGIUNTA: NAVIGAZIONE A BOTTONI CENTRATA --- */
+
+.nav-button-container {
+    -fx-alignment: CENTER;      /* Centrali perfettamente */
+    -fx-background-color: #e9ecef;
+    -fx-background-radius: 12;
+    -fx-padding: 4;
+}
+
+.nav-btn {
+    -fx-cursor: hand;           /* MANO HAND */
+    -fx-background-color: transparent;
+    -fx-text-fill: #6c757d;
+    -fx-font-weight: bold;
+    -fx-padding: 10 30;
+    -fx-min-width: 200;
+    -fx-font-size: 14px;
+}
+
+.nav-btn:hover {
+    -fx-text-fill: #0d6efd;
+}
+
+.nav-btn-active {
+    -fx-background-color: white;
+    -fx-text-fill: #0d6efd;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.nav-btn-left { -fx-background-radius: 10 0 0 10; }
+.nav-btn-right { -fx-background-radius: 0 10 10 0; }
+
+.custom-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+
+/* --- NAVIGAZIONE A BOTTONI --- */
+.nav-button-container {
+    -fx-background-color: #e9ecef;
+    -fx-background-radius: 12;
+    -fx-padding: 4;
+}
+
+.nav-btn {
+    -fx-cursor: hand; /* MANINA CAZZO! */
+    -fx-background-color: transparent;
+    -fx-text-fill: #6c757d;
+    -fx-font-weight: bold;
+    -fx-padding: 10 30;
+    -fx-min-width: 200;
+    -fx-font-size: 14px;
+}
+
+.nav-btn:hover {
+    -fx-text-fill: #0d6efd;
+}
+
+/* Stile per il bottone cliccato */
+.nav-btn-active {
+    -fx-background-color: white;
+    -fx-text-fill: #0d6efd;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.nav-btn-left { -fx-background-radius: 10 0 0 10; }
+.nav-btn-right { -fx-background-radius: 0 10 10 0; }
+
+.custom-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}

@@ -2,7 +2,9 @@ package com.example.uninaswap.boundary;
 
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.entity.Recensione;
 import com.example.uninaswap.entity.Utente;
+import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,60 +32,70 @@ public class AggiungiRecensione {
 
     @FXML
     public void initialize() {
-
-        setUtenteDaRecensire();
         setupValidazione();
     }
 
-    public void setUtenteDaRecensire() {
+    /**
+     * Riceve i dati e pre-carica la recensione se l'utente ne ha già fatta una.
+     */
+    public void initData(Utente target) {
         try {
-            //TODO! IMPLEMENTARE MODO CHE UTENTEDARECENSIRE NON SIA NULL CON PASSAGGIO DI BOUNDARY ECC
-            this.utenteDaRecensire = null;
+            this.utenteDaRecensire = target;
             this.utenteRecensore = controller.getUtente();
-            testoRecensito.setText("Tu, " + this.utenteRecensore.getUsername() + " Stai recensendo: " + this.utenteDaRecensire.getUsername());
+
+            if (this.utenteDaRecensire != null && this.utenteRecensore != null) {
+                testoRecensito.setText("Stai recensendo: " + this.utenteDaRecensire.getUsername());
+
+                // Cerchiamo nel DB se esiste già una recensione tra questi due utenti
+                Recensione esistente = controller.trovaRecensioneEsistente(utenteRecensore, utenteDaRecensire);
+
+                if (esistente != null) {
+                    commentoArea.setText(esistente.getCommento());
+                    votoSelezionato.set(esistente.getVoto());
+                    aggiornaStelle(esistente.getVoto());
+                    inviaButton.setText("Aggiorna Recensione");
+                }
+            }
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            System.err.println("Errore nel caricamento dati recensione: " + e.getMessage());
         }
     }
 
     private void setupValidazione() {
+        // --- VALIDAZIONE REGEX COMMENTO ---
         commentoArea.textProperty().addListener((obs, old, newVal) -> {
+            // Il commento è opzionale, ma se presente deve rispettare il regex
             boolean ok = newVal == null || newVal.isEmpty() || newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
             commentoRegexOk.set(ok);
             gestisciErroreVisivo(commentoArea, erroreCommento, ok);
         });
 
-        // Binding rigoroso: il voto deve essere almeno 1
+        // Abilita il tasto solo se il voto è >= 1 E il regex del commento è OK
         inviaButton.disableProperty().bind(
-                votoSelezionato.lessThan(1)
-                        .or(commentoRegexOk.not())
+                votoSelezionato.lessThan(1).or(commentoRegexOk.not())
         );
     }
 
     @FXML
     private void onStarClick(MouseEvent event) {
         Label starCliccata = (Label) event.getSource();
-        // Estraiamo il numero ID (star1 -> 1, star2 -> 2...)
         String id = starCliccata.getId();
         int voto = Character.getNumericValue(id.charAt(id.length() - 1));
 
         votoSelezionato.set(voto);
         aggiornaStelle(voto);
 
-        // Nascondi errore voto se presente
-        erroreVoto.setVisible(false);
-        erroreVoto.setManaged(false);
+        if (erroreVoto != null) {
+            erroreVoto.setVisible(false);
+            erroreVoto.setManaged(false);
+        }
     }
 
     private void aggiornaStelle(int voto) {
-        // Cicliamo su tutti i figli del contenitore stelle
         for (int i = 0; i < boxStelle.getChildren().size(); i++) {
             Node node = boxStelle.getChildren().get(i);
             if (node instanceof Label star) {
-                // Rimuoviamo TUTTE le istanze precedenti per evitare bug di rendering
                 star.getStyleClass().removeAll("star-filled");
-
-                // Se l'indice i è minore del voto (es: i=0 per voto 1), accendiamo
                 if (i < voto) {
                     star.getStyleClass().add("star-filled");
                 }
@@ -94,25 +106,19 @@ public class AggiungiRecensione {
     @FXML
     public void onInviaClick(ActionEvent event) {
         try {
-            Utente recensore = controller.getUtente();
             int voto = votoSelezionato.get();
 
-            if (voto < 1) {
-                erroreVoto.setVisible(true);
-                erroreVoto.setManaged(true);
-                return;
-            }
-
-            // TODO! implementare la logica di pubblicazione recensione
+            // Il controller gestirà l'INSERT o l'UPDATE confrontando gli ID degli utenti
             boolean successo = controller.pubblicaRecensione(
                     utenteDaRecensire,
-                    recensore,
+                    utenteRecensore,
                     voto,
                     commentoArea.getText()
             );
 
             if (successo) {
-                new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, event, "Recensione inviata!", Messaggio.TIPI.SUCCESS);
+                new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, event,
+                        "Recensione salvata con successo!", Messaggio.TIPI.SUCCESS);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,6 +133,9 @@ public class AggiungiRecensione {
     private void gestisciErroreVisivo(Control f, Text e, boolean ok) {
         f.getStyleClass().removeAll("error", "right");
         f.getStyleClass().add(ok ? "right" : "error");
-        if (e != null) { e.setVisible(!ok); e.setManaged(!ok); }
+        if (e != null) {
+            e.setVisible(!ok);
+            e.setManaged(!ok);
+        }
     }
 }

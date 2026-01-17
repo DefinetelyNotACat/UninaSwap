@@ -17,10 +17,13 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     private ArrayList<Annuncio> caricaAnnunciConJoin(String condizioneSql, Object... params) {
         LinkedHashMap<Integer, Annuncio> mappaAnnunci = new LinkedHashMap<>();
 
-        // Query base: nomi tabelle e colonne allineati al tuo dump SQL
-        String sql = "SELECT a.*, s.nome_sede, o.id as o_id, o.nome as o_nome, o.condizione as o_condizione, i.path as i_path " +
+        // Query aggiornata con JOIN su UTENTE (Mantenuta come da tua richiesta)
+        String sql = "SELECT a.*, s.nome_sede, " +
+                "u.username as u_username, u.matricola as u_matricola, u.email as u_email, u.immagine_profilo as u_img, " +
+                "o.id as o_id, o.nome as o_nome, o.condizione as o_condizione, i.path as i_path " +
                 "FROM annuncio a " +
                 "LEFT JOIN sede s ON a.sede_id = s.id " +
+                "LEFT JOIN utente u ON a.utente_id = u.id " +
                 "LEFT JOIN oggetto o ON a.id = o.annuncio_id " +
                 "LEFT JOIN immagine i ON o.id = i.oggetto_id " +
                 condizioneSql;
@@ -39,12 +42,25 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                     Annuncio annuncio = mappaAnnunci.get(idAnnuncio);
                     if (annuncio == null) {
                         annuncio = mapRowToAnnuncio(rs);
+
+                        // Popolamento SEDE
                         Sede sede = new Sede();
                         sede.setNomeSede(rs.getString("nome_sede"));
                         annuncio.setSede(sede);
+
+                        // Popolamento UTENTE (Venditore)
+                        Utente venditore = new Utente();
+                        venditore.setId(rs.getInt("utente_id"));
+                        venditore.setUsername(rs.getString("u_username"));
+                        venditore.setMatricola(rs.getString("u_matricola"));
+                        venditore.setEmail(rs.getString("u_email"));
+                        venditore.setPathImmagineProfilo(rs.getString("u_img"));
+                        annuncio.setUtente(venditore);
+
                         mappaAnnunci.put(idAnnuncio, annuncio);
                     }
 
+                    // Logica Oggetti e Immagini
                     int idOggetto = rs.getInt("o_id");
                     if (idOggetto > 0) {
                         final int currentObjId = idOggetto;
@@ -56,10 +72,8 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                             oggetto = new Oggetto();
                             oggetto.setId(idOggetto);
                             oggetto.setNome(rs.getString("o_nome"));
-
                             String condStr = rs.getString("o_condizione");
                             if(condStr != null) {
-                                // Converte il formato DB (es. "COME NUOVO") in Enum (es. "COME_NUOVO")
                                 oggetto.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr.replace(" ", "_").toUpperCase()));
                             }
                             annuncio.getOggetti().add(oggetto);
@@ -73,7 +87,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Errore caricamento annunci con JOIN: " + e.getMessage());
             e.printStackTrace();
         }
         return new ArrayList<>(mappaAnnunci.values());
@@ -98,7 +111,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
             params.add(condizione.replace("_", " "));
         }
 
-        // QUERY CORRETTA: Secondo il tuo dump, le colonne sono 'oggetto_id' e 'categoria_nome'
         if (nomeCategoria != null && !nomeCategoria.isEmpty()) {
             sqlFiltro.append("AND EXISTS (")
                     .append("  SELECT 1 FROM oggetto_categoria oc ")
@@ -118,7 +130,7 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
 
     @Override
     public ArrayList<Annuncio> OttieniAnnunciRicercaUtente(String ricerca, int mioId) {
-        return null; // Da implementare se necessario
+        return null;
     }
 
     public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
@@ -217,6 +229,10 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
+// Trova il metodo mapRowToAnnuncio in AnnuncioDAO.java e sostituiscilo con questo:
+
+// Trova il metodo mapRowToAnnuncio in AnnuncioDAO.java e sostituiscilo con questo:
+
     private Annuncio mapRowToAnnuncio(ResultSet rs) throws SQLException {
         String tipo = rs.getString("tipo_annuncio");
         Annuncio annuncio;
@@ -237,11 +253,40 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         annuncio.setId(rs.getInt("id"));
         annuncio.setDescrizione(rs.getString("descrizione"));
         annuncio.setUtenteId(rs.getInt("utente_id"));
-        return annuncio;
-    }
 
-    @Override
+        // FIX FONDAMENTALE: Conversione da String (DB) a Enum (Java)
+        String statoDalDB = rs.getString("stato");
+        if (statoDalDB != null) {
+            try {
+                // valueOf trasforma "DISPONIBILE" in Annuncio.STATO_ANNUNCIO.DISPONIBILE
+                annuncio.setStato(Annuncio.STATO_ANNUNCIO.valueOf(statoDalDB.toUpperCase().trim()));
+            } catch (IllegalArgumentException e) {
+                System.err.println("Stato non riconosciuto nel DB: " + statoDalDB);
+                annuncio.setStato(Annuncio.STATO_ANNUNCIO.DISPONIBILE); // Fallback di sicurezza
+            }
+        }
+
+        return annuncio;
+    }    @Override
     public boolean modificaAnnuncio(Annuncio annuncio) {
         return true;
+    }
+
+    public boolean aggiornaStatoAnnuncio(int idAnnuncio, String nuovoStato) {
+        String sql = "UPDATE annuncio SET stato = ?::stato_annuncio WHERE id = ?";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, nuovoStato);
+            ps.setInt(2, idAnnuncio);
+
+            int rows = ps.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

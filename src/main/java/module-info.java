@@ -16,6 +16,10 @@ module com.example.uninaswap {
     requires org.postgresql.jdbc;
     requires java.compiler;
     requires java.net.http;
+    requires annotations;
+    requires javafx.swing;
+    requires java.desktop;
+    requires org.jfree.jfreechart;
 
     opens com.example.uninaswap to javafx.fxml;
     opens com.example.uninaswap.boundary to javafx.fxml;

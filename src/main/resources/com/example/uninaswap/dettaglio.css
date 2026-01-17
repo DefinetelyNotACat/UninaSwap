@@ -1,19 +1,20 @@
-/* Sfondo della pagina */
+/* --- 1. SFONDO E ROOT --- */
 .detail-root {
     -fx-background-color: #f8f9fa;
 }
 
-/* Card principale bianca */
+/* --- 2. CARD PRINCIPALE (PREMIUM) --- */
 .detail-card {
     -fx-background-color: white;
     -fx-background-radius: 20;
     -fx-padding: 40;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 20, 0, 0, 10);
+    /* Ombra profonda per dare l'effetto "sollevato" */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 20, 0, 0, 10);
 }
 
-/* Contenitore Immagine */
+/* --- 3. CONTENITORE IMMAGINE --- */
 .image-wrapper {
-    -fx-background-color: #ffffff;
+    -fx-background-color: white;
     -fx-border-color: #f1f1f1;
     -fx-border-width: 1;
     -fx-border-radius: 15;
@@ -21,19 +22,20 @@
     -fx-padding: 10;
 }
 
-/* Testi */
+/* --- 4. TESTI E TITOLI --- */
 .detail-title {
     -fx-font-size: 28px;
     -fx-font-weight: bold;
-    -fx-fill: #212529;
+    -fx-fill: #2d3436;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
 }
 
 .detail-location {
     -fx-font-size: 15px;
-    -fx-fill: #6c757d;
+    -fx-fill: #636e72;
 }
 
-/* Box Dettagli */
+/* --- 5. BOX DETTAGLI (INFO SECTION) --- */
 .info-section {
     -fx-background-color: #f8f9fa;
     -fx-padding: 20;
@@ -44,25 +46,69 @@
 }
 
 .info-label {
-    -fx-font-size: 13px;
+    -fx-font-size: 11px;
     -fx-font-weight: bold;
     -fx-fill: #adb5bd;
     -fx-text-transform: uppercase;
 }
 
 .info-value {
-    -fx-font-size: 18px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-fill: #0d6efd; /* Colore risaltato per il prezzo/scambio */
+    -fx-fill: #0d6efd; /* Colore risaltato per il prezzo/offerta */
 }
 
-/* Bottoni */
+/* --- 6. BOTTONI (UNIFORMATI E HAND CURSOR) --- */
+
+/* Regole comuni per entrambi i bottoni */
+.btn-back, .button-primary {
+    -fx-cursor: hand;            /* Manina su entrambi */
+    -fx-padding: 12 25;          /* Padding identico */
+    -fx-min-width: 180px;        /* Larghezza minima uguale per renderli grandi uguali */
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Bottone Indietro (Neutro) */
 .btn-back {
     -fx-background-color: transparent;
-    -fx-text-fill: #495057;
-    -fx-border-color: #ced4da;
+    -fx-text-fill: #636e72;
+    -fx-border-color: #b2bec3;
     -fx-border-radius: 10;
-    -fx-padding: 12 25;
-    -fx-cursor: hand;
 }
-.btn-back:hover { -fx-background-color: #f1f1f1; }
+
+.btn-back:hover {
+    -fx-background-color: #f1f1f1;
+    -fx-border-color: #2d3436;
+}
+
+/* Bottone Fai Offerta (Azione Principale) */
+.button-primary {
+    -fx-background-color: linear-gradient(to bottom right, #0d6efd, #0056b3);
+    -fx-text-fill: white;
+    -fx-background-radius: 10;   /* Arrotondamento identico a quello di 'indietro' */
+    -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.3), 10, 0, 0, 4);
+}
+
+.button-primary:hover {
+    -fx-translate-y: -2;         /* Si alza leggermente al passaggio */
+    -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.4), 12, 0, 0, 6);
+}
+
+.button-primary:pressed {
+    -fx-translate-y: 1;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* --- 7. LABEL AGGIUNTIVE (EMAIL, PREZZO MINIMO) --- */
+#txtEmailVenditore {
+    -fx-fill: #7f8c8d;
+    -fx-font-size: 13px;
+    -fx-font-style: italic;
+}
+
+#txtPrezzoMinimo {
+    -fx-fill: #e74c3c; /* Rosso per indicare un limite/allerta */
+    -fx-font-weight: bold;
+}

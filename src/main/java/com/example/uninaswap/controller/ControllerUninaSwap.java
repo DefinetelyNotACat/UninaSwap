@@ -91,7 +91,16 @@
             return annuncioDAO.OttieniAnnunciNonMiei(this.utente.getId());
         }
         public ArrayList<Offerta> OttieniOfferte() {return null;}
-        public ArrayList<Offerta> OttieniLeMieOfferte(){return null;}
+        public ArrayList<Offerta> OttieniLeMieOfferte() {
+            if (this.utente == null) return new ArrayList<>();
+            // Offerte che IO ho inviato ad altri
+            return offertaDAO.ottieniOfferteInviate(this.utente.getId());
+        }
+        public ArrayList<Offerta> OttieniOfferteRicevute() {
+            if (this.utente == null) return new ArrayList<>();
+            // Offerte che ALTRI hanno inviato ai MIEI annunci
+            return offertaDAO.ottieniOfferteRicevute(this.utente.getId());
+        }
         public boolean SalvaOggetto(Oggetto oggetto){
             return oggettoDAO.salvaOggetto(oggetto, utente);
         }
@@ -127,8 +136,9 @@
         public boolean EliminaAnnuncio(Annuncio annuncio){
             return annuncioDAO.eliminaAnnuncio(annuncio.getId());
         }
-        public boolean EseguiOfferta(Utente utente, Offerta offerta){
-            return true;
+        public boolean EseguiOfferta(Utente utente, Offerta offerta) {
+            System.out.println("Controller: Salvataggio offerta per l'annuncio " + offerta.getAnnuncio().getId());
+            return offertaDAO.salvaOfferta(offerta);
         }
         public boolean ModificaOfferta(Offerta offerta){
             return true;
@@ -184,22 +194,6 @@
         public void cancellaDB(){
             PopolaDBPostgreSQL.cancellaDB();
         }
-        public boolean pubblicaRecensione(Utente recensito, Utente recensore, int voto, String commento) {
-            Recensione recensione = new Recensione(recensito.getEmail(), recensore.getEmail(), voto);
-            if (commento != null) {
-                recensione.setCommento(commento);
-            }
-            RecensioneDAO recensioneDAO = new RecensioneDAO();
-            if (recensioneDAO.SalvaRecensione(recensione)) {
-                recensito.addRecensioneRicevuta(recensione);
-                recensore.addRecensioneInviata(recensione);
-                System.out.println("Recensione salvata");
-                return true;
-            } else {
-                System.out.println("Recensione non salvata");
-                return false;
-            }
-        }
         public boolean verificaCredenzialiDuplicate(String nuovoUsername, String nuovaMatricola, String emailAttuale) {
             return utenteDAO.verificaEsistenzaAltroUtente(nuovoUsername, nuovaMatricola, emailAttuale);
         }
@@ -228,5 +222,63 @@
             } catch (Exception e) {
                 return new ArrayList<>();
             }
+        }
+        public ArrayList<Recensione> OttieniRecensioniRicevuteUtente(Utente u) {
+            if (u == null) return new ArrayList<>();
+            RecensioneDAO dao = new RecensioneDAO();
+            return dao.ottieniRecensioniPerUtente(u.getEmail());
+        }
+        // Aggiungi questo metodo nel tuo ControllerUninaSwap
+        public Utente ottieniUtenteDaEmail(String email) {
+            try {
+                return utenteDAO.ottieniUtente(email);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        public boolean pubblicaRecensione(Utente recensito, Utente recensore, int voto, String commento) {
+            RecensioneDAO dao = new RecensioneDAO();
+
+            // 1. Cerchiamo se esiste già una recensione tra l'utente loggato (recensore) e il target (recensito)
+            Recensione esistente = dao.OttieniRecensioneTraUtenti(recensore.getEmail(), recensito.getEmail());
+
+            if (esistente != null) {
+                // Se esiste, aggiorniamo i dati dell'oggetto trovato (che ha già l'ID corretto)
+                System.out.println("DEBUG CONTROLLER: Trovata recensione esistente (ID: " + esistente.getId() + "). Procedo con UPDATE.");
+                esistente.setVoto(voto);
+                esistente.setCommento(commento);
+                return dao.ModificaRecensione(esistente);
+            } else {
+                // Se non esiste, creiamo una nuova recensione
+                System.out.println("DEBUG CONTROLLER: Nessuna recensione trovata. Procedo con INSERT.");
+                Recensione nuova = new Recensione(recensito.getEmail(), recensore.getEmail(), voto);
+                nuova.setCommento(commento);
+                return dao.SalvaRecensione(nuova);
+            }
+        }
+
+        public Recensione trovaRecensioneEsistente(Utente recensore, Utente recensito) {
+            return new RecensioneDAO().OttieniRecensioneTraUtenti(recensore.getEmail(), recensito.getEmail());
+        }
+        public boolean GestisciStatoOfferta(Offerta offerta, Offerta.STATO_OFFERTA nuovoStato) {
+            // 1. Aggiorniamo lo stato dell'offerta nel DB
+            boolean esito = offertaDAO.modificaStatoOfferta(offerta.getId(), nuovoStato);
+
+            if (esito) {
+                offerta.setStato(nuovoStato);
+
+                // 2. Se l'offerta viene ACCETTATA, l'annuncio deve diventare NON_DISPONIBILE
+                if (nuovoStato == Offerta.STATO_OFFERTA.ACCETTATA) {
+                    // FIX: Prendi l'ID dell'ANNUNCIO, non dell'offerta!
+                    int idAnnuncioReal = offerta.getAnnuncio().getId();
+                    boolean annuncioChiuso = annuncioDAO.aggiornaStatoAnnuncio(idAnnuncioReal, "NON_DISPONIBILE");
+
+                    if (annuncioChiuso) {
+                        System.out.println("Annuncio ID " + idAnnuncioReal + " marcato come NON_DISPONIBILE.");
+                    }
+                }
+            }
+            return esito;
         }
     }
