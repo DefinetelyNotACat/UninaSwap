@@ -125,7 +125,7 @@ public class HomePageBoundary implements GestoreMessaggio {
         btnProfilo.setMaxWidth(Double.MAX_VALUE); // Riempie il containerBottoni che è centrato
         btnProfilo.setOnAction(e -> {
             containerAnnunci.getChildren().clear();
-            List<Annuncio> annunciUtente = controller.OttieniAnnunciDiUtente(u.getId());
+            List<Annuncio> annunciUtente = controller.OttieniAnnunciDiUtenteDaAltroUtente(u.getId());
             if (annunciUtente.isEmpty()) mostraMessaggioVuoto("Nessun annuncio.", u.getUsername() + " non ha annunci.");
             else for (Annuncio a : annunciUtente) containerAnnunci.getChildren().add(creaCardAnnuncio(a));
         });

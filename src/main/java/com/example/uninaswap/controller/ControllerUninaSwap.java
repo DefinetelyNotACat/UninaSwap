@@ -107,6 +107,9 @@
         public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
             return annuncioDAO.OttieniAnnunciDiUtente(idUtente);
         }
+        public ArrayList<Annuncio> OttieniAnnunciDiUtenteDaAltroUtente(int idUtente) {
+            return annuncioDAO.OttieniAnnunciDiUtenteDaALtroUtente(idUtente);
+        }
             public boolean ModificaOggetto(Oggetto oggetto) {
             return oggettoDAO.modificaOggetto(oggetto); //
         }

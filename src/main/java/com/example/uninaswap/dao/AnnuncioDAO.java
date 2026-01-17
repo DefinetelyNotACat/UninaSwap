@@ -137,6 +137,14 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         return caricaAnnunciConJoin("WHERE a.utente_id = ? ORDER BY a.id DESC", idUtente);
     }
 
+
+    public ArrayList<Annuncio> OttieniAnnunciDiUtenteDaALtroUtente(int idUtente) {
+        return caricaAnnunciConJoin(
+                "WHERE a.utente_id = ? AND a.stato = 'DISPONIBILE'::stato_annuncio ORDER BY a.id DESC",
+                idUtente
+        );
+    }
+
     @Override
     public Annuncio OttieniAnnuncio(int id) {
         ArrayList<Annuncio> res = caricaAnnunciConJoin("WHERE a.id = ?", id);
