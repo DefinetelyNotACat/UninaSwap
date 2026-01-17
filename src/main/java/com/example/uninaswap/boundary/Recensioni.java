@@ -26,88 +26,83 @@ public class Recensioni {
     @FXML private VBox containerRecensioni;
     @FXML private Text txtTitolo;
     @FXML private Text txtMedia;
-
-    // AGGIUNTO: fx:id deve corrispondere nel file recensioni.fxml
     @FXML private Button btnLasciaRecensione;
+    @FXML private Button btnMostraRicevute;
+    @FXML private Button btnMostraDate;
 
-    private Utente utenteTarget; // Memorizziamo l'utente per passarlo alla prossima scena
+    private Utente utenteTarget;
+    private boolean visualizzandoRicevute = true;
 
-    /**
-     * Inizializza la pagina caricando le recensioni dell'utente passato come parametro.
-     * Se l'utente è se stesso, il tasto per recensire viene rimosso.
-     */
     public void initData(Utente utente) {
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         if (utente == null) return;
         this.utenteTarget = utente;
 
-        // --- LOGICA DI CONTROLLO IDENTITÀ (PER CANCELLARE IL TASTO) ---
         try {
             Utente utenteLoggato = controller.getUtente();
-
             if (utenteLoggato != null && utenteLoggato.getId() == utente.getId()) {
-                // Se sono io che guardo me stesso, il tasto deve sparire fottutamente!
                 if (btnLasciaRecensione != null) {
                     btnLasciaRecensione.setVisible(false);
                     btnLasciaRecensione.setManaged(false);
                 }
                 txtTitolo.setText("Le tue Recensioni");
             } else {
-                // Altrimenti mostriamo il tasto e il titolo standard
                 if (btnLasciaRecensione != null) {
                     btnLasciaRecensione.setVisible(true);
                     btnLasciaRecensione.setManaged(true);
                 }
                 txtTitolo.setText("Recensioni di " + utente.getUsername());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // -------------------------------------------------------------
+        } catch (Exception e) { e.printStackTrace(); }
 
-        // Chiedi al controller di recuperarle dal DB (Fix per liste vuote in memoria)
-        List<Recensione> recensioni = controller.OttieniRecensioniRicevuteUtente(utente);
+        caricaRicevute(); // Default all'apertura
+    }
 
+    @FXML
+    private void cliccaRicevute() {
+        visualizzandoRicevute = true;
+        btnMostraRicevute.getStyleClass().removeAll("button-outline");
+        btnMostraRicevute.getStyleClass().add("button-primary"); // Evidenzia attivo
+        btnMostraDate.getStyleClass().removeAll("button-primary");
+        btnMostraDate.getStyleClass().add("button-outline");
+        caricaRicevute();
+    }
+
+    @FXML
+    private void cliccaDate() {
+        visualizzandoRicevute = false;
+        btnMostraDate.getStyleClass().removeAll("button-outline");
+        btnMostraDate.getStyleClass().add("button-primary"); // Evidenzia attivo
+        btnMostraRicevute.getStyleClass().removeAll("button-primary");
+        btnMostraRicevute.getStyleClass().add("button-outline");
+        caricaDate();
+    }
+
+    private void caricaRicevute() {
+        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+        List<Recensione> recensioni = controller.OttieniRecensioniRicevuteUtente(utenteTarget);
+        aggiornaLista(recensioni, "ricevute");
+    }
+
+    private void caricaDate() {
+        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+        // Assicurati che questo metodo esista nel tuo Controller
+        List<Recensione> recensioni = controller.OttieniRecensioniFatteUtente(utenteTarget);
+        aggiornaLista(recensioni, "fatte");
+    }
+
+    private void aggiornaLista(List<Recensione> recensioni, String tipo) {
+        containerRecensioni.getChildren().clear();
         if (recensioni == null || recensioni.isEmpty()) {
-            mostraMessaggioVuoto();
+            mostraMessaggioVuoto(tipo);
         } else {
             calcolaEMostraMedia(recensioni);
-            containerRecensioni.getChildren().clear(); // Pulisci prima di aggiungere
             for (Recensione r : recensioni) {
                 containerRecensioni.getChildren().add(creaCardRecensione(r));
             }
         }
     }
 
-    @FXML
-    private void apriAggiungiRecensione() {
-        ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathAggiungiRecensione));
-            Parent root = loader.load();
-
-            // Passiamo l'utente target al controller di "AggiungiRecensione"
-            Object controllerAggiungi = loader.getController();
-            if (controllerAggiungi instanceof AggiungiRecensione arb) {
-                arb.initData(utenteTarget);
-            }
-
-            // Manteniamo le dimensioni correnti della finestra
-            Stage stage = (Stage) containerRecensioni.getScene().getWindow();
-            double width = stage.getScene().getWidth();
-            double height = stage.getScene().getHeight();
-
-            stage.setScene(new Scene(root, width, height));
-
-        } catch (Exception e) {
-            System.err.println("Errore nel caricamento di aggiungiRecensione: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Crea dinamicamente la card grafica per ogni recensione.
-     */
     private VBox creaCardRecensione(Recensione r) {
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         VBox card = new VBox(10);
@@ -118,15 +113,21 @@ public class Recensioni {
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
 
-        // --- RECUPERO USERNAME TRAMITE CONTROLLER ---
-        String nomeDaVisualizzare = "Utente Anonimo";
-        Utente recensore = controller.ottieniUtenteDaEmail(r.getEmailRecensore());
+        String etichetta;
+        String emailDaCercare;
 
-        if (recensore != null) {
-            nomeDaVisualizzare = recensore.getUsername();
+        if (visualizzandoRicevute) {
+            etichetta = "Da: ";
+            emailDaCercare = r.getEmailRecensore();
+        } else {
+            etichetta = "A: ";
+            emailDaCercare = r.getEmailRecensito();
         }
 
-        Label autore = new Label("Da: " + nomeDaVisualizzare);
+        Utente u = controller.ottieniUtenteDaEmail(emailDaCercare);
+        String nome = (u != null) ? u.getUsername() : "Utente Anonimo";
+
+        Label autore = new Label(etichetta + nome);
         autore.setStyle("-fx-font-weight: bold; -fx-text-fill: #003366;");
 
         Region spacer = new Region();
@@ -137,9 +138,7 @@ public class Recensioni {
 
         header.getChildren().addAll(autore, spacer, badgeVoto);
 
-        Text commento = new Text(r.getCommento() != null && !r.getCommento().isEmpty()
-                ? r.getCommento()
-                : "Nessun commento lasciato.");
+        Text commento = new Text(r.getCommento() != null && !r.getCommento().isEmpty() ? r.getCommento() : "Nessun commento lasciato.");
         commento.setWrappingWidth(550);
         commento.setStyle("-fx-font-style: italic; -fx-fill: #555;");
 
@@ -147,28 +146,31 @@ public class Recensioni {
         return card;
     }
 
-    /**
-     * Calcola la media matematica dei voti ricevuti.
-     */
     private void calcolaEMostraMedia(List<Recensione> list) {
-        if (list == null || list.isEmpty()) return;
         double somma = 0;
-        for (Recensione r : list) {
-            somma += r.getVoto();
-        }
+        for (Recensione r : list) somma += r.getVoto();
         double media = somma / list.size();
         txtMedia.setText(String.format("Valutazione Media: %.1f/5 (%d recensioni)", media, list.size()));
     }
 
-    /**
-     * Mostra un placeholder se l'utente non ha recensioni.
-     */
-    private void mostraMessaggioVuoto() {
-        txtMedia.setText("Nessuna valutazione ricevuta");
-        containerRecensioni.getChildren().clear();
-        Text t = new Text("Questo utente non è ancora stato recensito.");
+    private void mostraMessaggioVuoto(String tipo) {
+        txtMedia.setText("Nessuna valutazione");
+        String msg = tipo.equals("ricevute") ? "Nessuna recensione ricevuta." : "Non hai ancora scritto recensioni.";
+        Text t = new Text(msg);
         t.setStyle("-fx-fill: #aaa; -fx-font-size: 16px;");
         containerRecensioni.getChildren().add(t);
+    }
+
+    @FXML
+    private void apriAggiungiRecensione() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathAggiungiRecensione));
+            Parent root = loader.load();
+            AggiungiRecensione arb = loader.getController();
+            arb.initData(utenteTarget);
+            Stage stage = (Stage) containerRecensioni.getScene().getWindow();
+            stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     @FXML
@@ -176,11 +178,7 @@ public class Recensioni {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(Costanti.pathHomePage));
             Stage stage = (Stage) containerRecensioni.getScene().getWindow();
-            double currentWidth = stage.getScene().getWidth();
-            double currentHeight = stage.getScene().getHeight();
-            stage.setScene(new Scene(root, currentWidth, currentHeight));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
+        } catch (Exception e) { e.printStackTrace(); }
     }
 }

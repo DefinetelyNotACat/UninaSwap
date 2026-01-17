@@ -236,11 +236,7 @@
                 return new ArrayList<>();
             }
         }
-        public ArrayList<Recensione> OttieniRecensioniRicevuteUtente(Utente u) {
-            if (u == null) return new ArrayList<>();
-            RecensioneDAO dao = new RecensioneDAO();
-            return dao.ottieniRecensioniPerUtente(u.getEmail());
-        }
+
         // Aggiungi questo metodo nel tuo ControllerUninaSwap
         public Utente ottieniUtenteDaEmail(String email) {
             try {
@@ -293,5 +289,17 @@
                 }
             }
             return esito;
+        }
+        public ArrayList<Recensione> OttieniRecensioniRicevuteUtente(Utente u) {
+            if (u == null) return new ArrayList<>();
+            RecensioneDAO dao = new RecensioneDAO();
+            return dao.ottieniRecensioniPerUtente(u.getEmail());
+        }
+
+        // --- ECCO LA MERDA CHE MANCAVA CAZZO! ---
+        public ArrayList<Recensione> OttieniRecensioniFatteUtente(Utente u) {
+            if (u == null) return new ArrayList<>();
+            RecensioneDAO dao = new RecensioneDAO();
+            return dao.ottieniRecensioniFatteDaUtente(u.getEmail());
         }
     }

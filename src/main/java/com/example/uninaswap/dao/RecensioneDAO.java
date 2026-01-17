@@ -8,7 +8,7 @@ import com.example.uninaswap.interfaces.GestoreRecensioneDAO;
 
 public class RecensioneDAO implements GestoreRecensioneDAO {
 
-    // Query base che unisce le tabelle per recuperare le email partendo dagli ID
+    // Query base con JOIN per trasformare gli ID in email
     private static final String SELECT_BASE =
             "SELECT r.*, u1.email AS email_recensore, u2.email AS email_recensito " +
                     "FROM recensione r " +
@@ -52,10 +52,10 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
 
     /**
      * Recupera tutte le recensioni che un utente ha RICEVUTO.
-     * USA LOWER e TRIM per ignorare spazi e maiuscole/minuscole.
      */
     public ArrayList<Recensione> ottieniRecensioniPerUtente(String emailRecensito) {
         ArrayList<Recensione> recensioni = new ArrayList<>();
+        // u2 è l'utente RECENSITO nella SELECT_BASE
         String sql = SELECT_BASE + " WHERE LOWER(TRIM(u2.email)) = LOWER(TRIM(?))";
 
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -74,9 +74,30 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
     }
 
     /**
-     * Cerca una recensione specifica fatta da un utente ad un altro.
-     * ESSENZIALE per far funzionare l'UPDATE invece della INSERT.
+     * FIX FOTTUTO: Recupera tutte le recensioni che un utente ha SCRITTO (FATTE).
+     * Usa la SELECT_BASE per avere accesso alle email tramite i JOIN.
      */
+    public ArrayList<Recensione> ottieniRecensioniFatteDaUtente(String emailRecensore) {
+        ArrayList<Recensione> lista = new ArrayList<>();
+        // u1 è l'utente RECENSORE nella SELECT_BASE
+        String sql = SELECT_BASE + " WHERE LOWER(TRIM(u1.email)) = LOWER(TRIM(?))";
+
+        try (Connection conn = PostgreSQLConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, emailRecensore);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    lista.add(mapResultSetToRecensione(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("ERRORE IN ottieniRecensioniFatteDaUtente: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
     public Recensione OttieniRecensioneTraUtenti(String emailRecensore, String emailRecensito) {
         Recensione recensione = null;
         String sql = SELECT_BASE + " WHERE LOWER(TRIM(u1.email)) = LOWER(TRIM(?)) " +
@@ -101,7 +122,6 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
 
     @Override
     public boolean SalvaRecensione(Recensione recensione) {
-        // Mappa le email agli ID corretti ignorando spazi e casing
         String sql = "INSERT INTO recensione (voto, commento, recensore_id, recensito_id) " +
                 "VALUES (?, ?, (SELECT id FROM utente WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))), " +
                 "(SELECT id FROM utente WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))))";
@@ -116,7 +136,6 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
 
             return query.executeUpdate() > 0;
         } catch (Exception e) {
-            System.err.println("ERRORE IN SALVA_RECENSIONE: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -124,7 +143,6 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
 
     @Override
     public boolean ModificaRecensione(Recensione recensione) {
-        // L'ID deve essere quello trovato con OttieniRecensioneTraUtenti
         String sql = "UPDATE recensione SET voto = ?, commento = ? WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
@@ -133,11 +151,8 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
             query.setString(2, recensione.getCommento());
             query.setInt(3, recensione.getId());
 
-            int righeModificate = query.executeUpdate();
-            System.out.println("DEBUG DAO: Eseguito UPDATE su ID " + recensione.getId() + ". Esito: " + (righeModificate > 0));
-            return righeModificate > 0;
+            return query.executeUpdate() > 0;
         } catch (Exception e) {
-            System.err.println("ERRORE IN MODIFICA_RECENSIONE: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -157,9 +172,6 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
         }
     }
 
-    /**
-     * Mappa i dati del database all'oggetto Recensione popolando l'ID per future modifiche.
-     */
     private Recensione mapResultSetToRecensione(ResultSet rs) throws SQLException {
         Recensione r = new Recensione(
                 rs.getString("email_recensito"),
@@ -167,7 +179,7 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
                 rs.getInt("voto")
         );
         r.setCommento(rs.getString("commento"));
-        r.setId(rs.getInt("id")); // Fondamentale: senza questo l'UPDATE non sa dove colpire
+        r.setId(rs.getInt("id"));
         return r;
     }
 }
