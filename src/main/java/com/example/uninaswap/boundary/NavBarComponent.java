@@ -6,9 +6,12 @@ import com.example.uninaswap.entity.Categoria;
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -86,7 +89,6 @@ public class NavBarComponent {
 
         bottoneRicerca.setOnAction(e -> eseguiRicerca());
 
-        // Inizializzazione Combo (verrà sovrascritta da setHomePageBoundary se c'è una ricerca attiva)
         if (filtroBarraDiRicerca.getItems().isEmpty()) {
             filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
             filtroBarraDiRicerca.setValue("Articoli");
@@ -130,11 +132,26 @@ public class NavBarComponent {
         MenuItem offerte = creaVoceMenu("Le mie offerte", null);
         offerte.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathGestioneOfferte, "Offerte", (Stage) fotoProfilo.getScene().getWindow()));
 
+        // --- VOCE REINSERITA ---
         MenuItem annunci = creaVoceMenu("I miei annunci", null);
         annunci.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", (Stage) fotoProfilo.getScene().getWindow()));
 
         MenuItem inv = creaVoceMenu("Il mio inventario", null);
         inv.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathInventario, "Inventario", (Stage) fotoProfilo.getScene().getWindow()));
+
+        // --- AGGIUNTA MODIFICA RECENSIONI SENZA RIMUOVERE NULLA ---
+        MenuItem mieRecensioni = creaVoceMenu("Le mie recensioni", null);
+        mieRecensioni.setOnAction(e -> {
+            try {
+                Utente me = controllerUninaSwap.getUtente();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathRecensioni));
+                Parent root = loader.load();
+                Recensioni controllerRec = loader.getController();
+                controllerRec.initData(me);
+                Stage stage = (Stage) fotoProfilo.getScene().getWindow();
+                stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
+            } catch (Exception ex) { ex.printStackTrace(); }
+        });
 
         MenuItem mod = creaVoceMenu("Modifica Profilo", null);
         mod.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathModificaProfilo, "Modifica", (Stage) fotoProfilo.getScene().getWindow()));
@@ -145,45 +162,13 @@ public class NavBarComponent {
             gestoreScene.CambiaScena(Costanti.pathSignIn, "Login", (Stage) fotoProfilo.getScene().getWindow());
         });
 
-        menuProfilo.getItems().addAll(esplora, new SeparatorMenuItem(), offerte, annunci, inv, mod, new SeparatorMenuItem(), logout);
-        fotoProfilo.setOnMouseClicked(e -> showmenuProfilo(e));
-    }
+        // AGGIUNTO mieRecensioni ALLA LISTA ORIGINALE
+        menuProfilo.getItems().addAll(esplora, new SeparatorMenuItem(), offerte, annunci, inv, mieRecensioni, mod, new SeparatorMenuItem(), logout);
 
-    public void aggiornaFotoProfilo() {
-        try {
-            Utente u = controllerUninaSwap.getUtente();
-            Image imgDaCaricare = null;
-            boolean isDefault = true;
-
-            if (u != null && u.getPathImmagineProfilo() != null && !u.getPathImmagineProfilo().equals("default") && !u.getPathImmagineProfilo().isEmpty()) {
-                File f = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
-                if (f.exists()) {
-                    imgDaCaricare = new Image(f.toURI().toString());
-                    isDefault = false;
-                }
-            }
-
-            if (isDefault) {
-                imgDaCaricare = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
-                fotoProfilo.setViewport(null); // RESET VIEWPORT PER FOTO DEFAULT
-            }
-
-            if (imgDaCaricare != null) {
-                fotoProfilo.setImage(imgDaCaricare);
-                centraImmagine(fotoProfilo, imgDaCaricare);
-            }
-
-            applicaCerchio();
-            logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-        } catch (Exception e) { e.printStackTrace(); }
-    }
-
-    private void centraImmagine(ImageView iv, Image img) {
-        if (img == null || img.isError()) return;
-        double d = Math.min(img.getWidth(), img.getHeight());
-        double x = (img.getWidth() - d) / 2;
-        double y = (img.getHeight() - d) / 2;
-        iv.setViewport(new Rectangle2D(x, y, d, d));
+        fotoProfilo.setOnMouseClicked(e -> {
+            if (menuProfilo.isShowing()) menuProfilo.hide();
+            else showmenuProfilo(e);
+        });
     }
 
     private void setupUI() {
@@ -204,6 +189,59 @@ public class NavBarComponent {
         bottoneRicerca.setDisable(err);
     }
 
+    public void aggiornaFotoProfilo() {
+        try {
+            Utente u = controllerUninaSwap.getUtente();
+            Image imgDaCaricare = null;
+            boolean isDefault = true;
+
+            // 1. Controllo se l'utente ha una foto valida
+            if (u != null && u.getPathImmagineProfilo() != null &&
+                    !u.getPathImmagineProfilo().equals("default") &&
+                    !u.getPathImmagineProfilo().isEmpty()) {
+
+                File f = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
+                if (f.exists()) {
+                    imgDaCaricare = new Image(f.toURI().toString());
+                    isDefault = false;
+                }
+            }
+
+            // 2. Se non ho trovato nulla, carico quella di default
+            if (isDefault) {
+                imgDaCaricare = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
+                // RESETTA IL VIEWPORT altrimenti l'immagine di default non si vede cazzo!
+                fotoProfilo.setViewport(null);
+            }
+
+            // 3. Imposto l'immagine e la centro
+            if (imgDaCaricare != null) {
+                fotoProfilo.setImage(imgDaCaricare);
+                centraImmagine(fotoProfilo, imgDaCaricare);
+            }
+
+            // 4. Applico il cerchio e il logo
+            applicaCerchio();
+            logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+
+        } catch (Exception e) {
+            System.err.println("ERRORE CRITICO CARICAMENTO PFP: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void centraImmagine(ImageView iv, Image img) {
+        if (img == null || img.isError()) return;
+
+        // Calcoliamo il lato più corto per fare un quadrato perfetto
+        double d = Math.min(img.getWidth(), img.getHeight());
+        double x = (img.getWidth() - d) / 2;
+        double y = (img.getHeight() - d) / 2;
+
+        // Impostiamo il Viewport per centrare la parte quadrata dell'immagine
+        iv.setViewport(new Rectangle2D(x, y, d, d));
+    }
+
     private void showmenuProfilo(MouseEvent e) {
         Point2D p = fotoProfilo.localToScreen(0, fotoProfilo.getBoundsInLocal().getHeight());
         menuProfilo.show(fotoProfilo, p.getX(), p.getY());
@@ -217,9 +255,11 @@ public class NavBarComponent {
     }
 
     private void applicaCerchio() {
+        // Il cerchio deve essere sempre centrato sulla ImageView da 40x40
         double centerX = fotoProfilo.getFitWidth() / 2;
         double centerY = fotoProfilo.getFitHeight() / 2;
         double radius = Math.min(centerX, centerY);
+
         fotoProfilo.setClip(new Circle(centerX, centerY, radius));
     }
 }

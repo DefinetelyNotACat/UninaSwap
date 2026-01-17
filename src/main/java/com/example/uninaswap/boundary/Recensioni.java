@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -26,17 +27,45 @@ public class Recensioni {
     @FXML private Text txtTitolo;
     @FXML private Text txtMedia;
 
+    // AGGIUNTO: fx:id deve corrispondere nel file recensioni.fxml
+    @FXML private Button btnLasciaRecensione;
+
     private Utente utenteTarget; // Memorizziamo l'utente per passarlo alla prossima scena
 
+    /**
+     * Inizializza la pagina caricando le recensioni dell'utente passato come parametro.
+     * Se l'utente è se stesso, il tasto per recensire viene rimosso.
+     */
     public void initData(Utente utente) {
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         if (utente == null) return;
         this.utenteTarget = utente;
 
-        txtTitolo.setText("Recensioni di " + utente.getUsername());
+        // --- LOGICA DI CONTROLLO IDENTITÀ (PER CANCELLARE IL TASTO) ---
+        try {
+            Utente utenteLoggato = controller.getUtente();
 
-        // FIX: Non usare utente.getRecensioniRicevute() perché è una lista vuota in memoria!
-        // Chiedi al controller di recuperarle dal DB
+            if (utenteLoggato != null && utenteLoggato.getId() == utente.getId()) {
+                // Se sono io che guardo me stesso, il tasto deve sparire fottutamente!
+                if (btnLasciaRecensione != null) {
+                    btnLasciaRecensione.setVisible(false);
+                    btnLasciaRecensione.setManaged(false);
+                }
+                txtTitolo.setText("Le tue Recensioni");
+            } else {
+                // Altrimenti mostriamo il tasto e il titolo standard
+                if (btnLasciaRecensione != null) {
+                    btnLasciaRecensione.setVisible(true);
+                    btnLasciaRecensione.setManaged(true);
+                }
+                txtTitolo.setText("Recensioni di " + utente.getUsername());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // -------------------------------------------------------------
+
+        // Chiedi al controller di recuperarle dal DB (Fix per liste vuote in memoria)
         List<Recensione> recensioni = controller.OttieniRecensioniRicevuteUtente(utente);
 
         if (recensioni == null || recensioni.isEmpty()) {
@@ -49,16 +78,15 @@ public class Recensioni {
             }
         }
     }
+
     @FXML
     private void apriAggiungiRecensione() {
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         try {
-            // Carichiamo il loader per accedere al controller
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathAggiungiRecensione));
             Parent root = loader.load();
 
             // Passiamo l'utente target al controller di "AggiungiRecensione"
-            // Assicurati che il controller di aggiungiRecensione abbia un metodo initData(Utente u)
             Object controllerAggiungi = loader.getController();
             if (controllerAggiungi instanceof AggiungiRecensione arb) {
                 arb.initData(utenteTarget);
@@ -77,6 +105,9 @@ public class Recensioni {
         }
     }
 
+    /**
+     * Crea dinamicamente la card grafica per ogni recensione.
+     */
     private VBox creaCardRecensione(Recensione r) {
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         VBox card = new VBox(10);
@@ -97,7 +128,6 @@ public class Recensioni {
 
         Label autore = new Label("Da: " + nomeDaVisualizzare);
         autore.setStyle("-fx-font-weight: bold; -fx-text-fill: #003366;");
-        // --------------------------------------------
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -116,7 +146,12 @@ public class Recensioni {
         card.getChildren().addAll(header, commento);
         return card;
     }
+
+    /**
+     * Calcola la media matematica dei voti ricevuti.
+     */
     private void calcolaEMostraMedia(List<Recensione> list) {
+        if (list == null || list.isEmpty()) return;
         double somma = 0;
         for (Recensione r : list) {
             somma += r.getVoto();
@@ -125,8 +160,12 @@ public class Recensioni {
         txtMedia.setText(String.format("Valutazione Media: %.1f/5 (%d recensioni)", media, list.size()));
     }
 
+    /**
+     * Mostra un placeholder se l'utente non ha recensioni.
+     */
     private void mostraMessaggioVuoto() {
         txtMedia.setText("Nessuna valutazione ricevuta");
+        containerRecensioni.getChildren().clear();
         Text t = new Text("Questo utente non è ancora stato recensito.");
         t.setStyle("-fx-fill: #aaa; -fx-font-size: 16px;");
         containerRecensioni.getChildren().add(t);
