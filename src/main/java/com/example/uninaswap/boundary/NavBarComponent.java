@@ -152,26 +152,52 @@ public class NavBarComponent {
     public void aggiornaFotoProfilo() {
         try {
             Utente u = controllerUninaSwap.getUtente();
-            if (u != null && u.getPathImmagineProfilo() != null && !u.getPathImmagineProfilo().equals("default") && !u.getPathImmagineProfilo().isEmpty()) {
+            Image imgDaCaricare = null;
+            boolean isDefault = true;
+
+            // 1. Controllo se l'utente ha una foto valida
+            if (u != null && u.getPathImmagineProfilo() != null &&
+                    !u.getPathImmagineProfilo().equals("default") &&
+                    !u.getPathImmagineProfilo().isEmpty()) {
+
                 File f = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
                 if (f.exists()) {
-                    Image img = new Image(f.toURI().toString());
-                    fotoProfilo.setImage(img);
-                    centraImmagine(fotoProfilo, img);
+                    imgDaCaricare = new Image(f.toURI().toString());
+                    isDefault = false;
                 }
-            } else {
-                fotoProfilo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
             }
-            double r = Math.min(fotoProfilo.getFitWidth(), fotoProfilo.getFitHeight()) / 2;
-            fotoProfilo.setClip(new Circle(fotoProfilo.getFitWidth()/2, fotoProfilo.getFitHeight()/2, r));
-            logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-        } catch (Exception e) { e.printStackTrace(); }
-    }
 
-    private void centraImmagine(ImageView iv, Image img) {
-        if (img == null) return;
-        double min = Math.min(img.getWidth(), img.getHeight());
-        iv.setViewport(new Rectangle2D((img.getWidth() - min) / 2, (img.getHeight() - min) / 2, min, min));
+            // 2. Se non ho trovato nulla, carico quella di default
+            if (isDefault) {
+                imgDaCaricare = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
+                // RESETTA IL VIEWPORT altrimenti l'immagine di default non si vede cazzo!
+                fotoProfilo.setViewport(null);
+            }
+
+            // 3. Imposto l'immagine e la centro
+            if (imgDaCaricare != null) {
+                fotoProfilo.setImage(imgDaCaricare);
+                centraImmagine(fotoProfilo, imgDaCaricare);
+            }
+
+            // 4. Applico il cerchio e il logo
+            applicaCerchio();
+            logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+
+        } catch (Exception e) {
+            System.err.println("ERRORE CRITICO CARICAMENTO PFP: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }    private void centraImmagine(ImageView iv, Image img) {
+        if (img == null || img.isError()) return;
+
+        // Calcoliamo il lato più corto per fare un quadrato perfetto
+        double d = Math.min(img.getWidth(), img.getHeight());
+        double x = (img.getWidth() - d) / 2;
+        double y = (img.getHeight() - d) / 2;
+
+        // Impostiamo il Viewport per centrare la parte quadrata dell'immagine
+        iv.setViewport(new Rectangle2D(x, y, d, d));
     }
 
     private void showmenuProfilo(MouseEvent e) {
@@ -184,5 +210,13 @@ public class NavBarComponent {
         MenuItem item = new MenuItem(); item.setGraphic(label);
         if (customClass != null) label.getStyleClass().add(customClass);
         return item;
+    }
+    private void applicaCerchio() {
+        // Il cerchio deve essere sempre centrato sulla ImageView da 40x40
+        double centerX = fotoProfilo.getFitWidth() / 2;
+        double centerY = fotoProfilo.getFitHeight() / 2;
+        double radius = Math.min(centerX, centerY);
+
+        fotoProfilo.setClip(new Circle(centerX, centerY, radius));
     }
 }
