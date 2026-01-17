@@ -1,11 +1,14 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -18,32 +21,32 @@ import javafx.scene.text.TextAlignment;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.SwingUtilities;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
 
 public class GestioneOfferteBoundary {
 
-    // --- RIFERIMENTI FXML (Devono corrispondere agli fx:id nel file FXML) ---
-    @FXML private ScrollPane viewListaOfferte;      // La vista classica a scorrimento
-    @FXML private VBox containerOfferte;            // Il contenitore delle card dentro lo ScrollPane
-
-    // Nuovi componenti per il Report
-    @FXML private VBox viewReport;                  // La vista del report (inizialmente nascosta)
-    @FXML private StackPane chartContainer;         // Dove inseriremo il grafico Swing
-    @FXML private Label lblMedia;                   // Statistiche: Media
-    @FXML private Label lblMin;                     // Statistiche: Minimo
-    @FXML private Label lblMax;                     // Statistiche: Massimo
-
-    // Bottoni di navigazione
+    // --- RIFERIMENTI FXML ---
+    @FXML private ScrollPane viewListaOfferte;
+    @FXML private VBox containerOfferte;
+    @FXML private VBox viewReport;
+    @FXML private StackPane chartContainer;
+    @FXML private Label lblMedia;
+    @FXML private Label lblMin;
+    @FXML private Label lblMax;
     @FXML private Button btnNavRicevute;
     @FXML private Button btnNavInviate;
-    @FXML private Button btnNavReport;              // Nuovo bottone per le statistiche
+    @FXML private Button btnNavReport;
 
     private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
     private boolean visualizzandoRicevute = true;
@@ -51,12 +54,11 @@ public class GestioneOfferteBoundary {
 
     @FXML
     public void initialize() {
-        // All'avvio mostriamo le offerte ricevute e nascondiamo il report
         mostraRicevute();
     }
 
     // =================================================================================
-    // SEZIONE NAVIGAZIONE (Ricevute / Inviate / Report)
+    // SEZIONE NAVIGAZIONE
     // =================================================================================
 
     @FXML
@@ -77,17 +79,12 @@ public class GestioneOfferteBoundary {
 
     @FXML
     public void mostraReport() {
-        // 1. Attiva la vista report e nasconde la lista
         impostaVistaAttiva(viewReport);
         aggiornaBottoni(btnNavReport);
-
-        // 2. Calcola i dati e genera il grafico
         generaReportStatistico();
     }
 
-    // Metodo helper per gestire la visibilità (Switch delle viste)
     private void impostaVistaAttiva(javafx.scene.Node vistaDaMostrare) {
-        // Nascondiamo tutto
         if(viewListaOfferte != null) {
             viewListaOfferte.setVisible(false);
             viewListaOfferte.setManaged(false);
@@ -96,8 +93,6 @@ public class GestioneOfferteBoundary {
             viewReport.setVisible(false);
             viewReport.setManaged(false);
         }
-
-        // Mostriamo solo quello richiesto
         if(vistaDaMostrare != null) {
             vistaDaMostrare.setVisible(true);
             vistaDaMostrare.setManaged(true);
@@ -105,81 +100,73 @@ public class GestioneOfferteBoundary {
     }
 
     private void aggiornaBottoni(Button attivo) {
-        // Rimuove lo stile attivo da tutti
         if(btnNavRicevute != null) btnNavRicevute.getStyleClass().remove(CLASS_ACTIVE);
         if(btnNavInviate != null) btnNavInviate.getStyleClass().remove(CLASS_ACTIVE);
         if(btnNavReport != null) btnNavReport.getStyleClass().remove(CLASS_ACTIVE);
-
-        // Aggiunge lo stile solo a quello cliccato
         if(attivo != null) attivo.getStyleClass().add(CLASS_ACTIVE);
     }
 
     // =================================================================================
-    // SEZIONE LOGICA REPORT (JFreeChart)
+    // SEZIONE LOGICA REPORT (FIXED: NO SCIENTIFIC NOTATION + NULL CHECK)
     // =================================================================================
 
     private void generaReportStatistico() {
-        // Recuperiamo le offerte INVIATE dall'utente
         ArrayList<Offerta> mieOfferte = controller.OttieniLeMieOfferte();
 
-        // Variabili per i conteggi
+        // --- FIX VUOTO: Caricamento FXML esterno se non ci sono offerte ---
+        if (mieOfferte == null || mieOfferte.isEmpty()) {
+            caricaScenaNessunaOfferta();
+            if (lblMedia != null) { lblMedia.setText("-"); lblMin.setText("-"); lblMax.setText("-"); }
+            return;
+        }
+
         int totVendita = 0, accVendita = 0;
         int totScambio = 0, accScambio = 0;
         int totRegalo = 0, accRegalo = 0;
-
         ArrayList<Double> prezziAccettati = new ArrayList<>();
 
-        if (mieOfferte != null) {
-            for (Offerta o : mieOfferte) {
-                boolean isAccettata = o.getStato() == Offerta.STATO_OFFERTA.ACCETTATA;
+        for (Offerta o : mieOfferte) {
+            boolean isAccettata = o.getStato() == Offerta.STATO_OFFERTA.ACCETTATA;
 
-                if (o instanceof OffertaVendita) {
-                    totVendita++;
-                    if (isAccettata) {
-                        accVendita++;
-                        // Salviamo il prezzo per le statistiche economiche
-                        BigDecimal p = ((OffertaVendita) o).getPrezzoOffertaVendita();
-                        if (p != null) prezziAccettati.add(p.doubleValue());
-                    }
-                } else if (o instanceof OffertaScambio) {
-                    totScambio++;
-                    if (isAccettata) accScambio++;
-                } else if (o instanceof OffertaRegalo) {
-                    totRegalo++;
-                    if (isAccettata) accRegalo++;
+            if (o instanceof OffertaVendita ov) {
+                totVendita++;
+                if (isAccettata) {
+                    accVendita++;
+                    BigDecimal p = ov.getPrezzoOffertaVendita();
+                    if (p != null) prezziAccettati.add(p.doubleValue());
                 }
+            } else if (o instanceof OffertaScambio) {
+                totScambio++;
+                if (isAccettata) accScambio++;
+            } else if (o instanceof OffertaRegalo) {
+                totRegalo++;
+                if (isAccettata) accRegalo++;
             }
         }
 
-        // 1. Creazione Dataset per il Grafico
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        // Barre per le offerte totali inviate
         dataset.addValue(totVendita, "Totale Inviate", "Vendita");
         dataset.addValue(totScambio, "Totale Inviate", "Scambio");
         dataset.addValue(totRegalo, "Totale Inviate", "Regalo");
-
-        // Barre per le offerte accettate
         dataset.addValue(accVendita, "Accettate", "Vendita");
         dataset.addValue(accScambio, "Accettate", "Scambio");
         dataset.addValue(accRegalo, "Accettate", "Regalo");
 
-        // 2. Creazione Grafico JFreeChart
-        JFreeChart barChart = ChartFactory.createBarChart(
-                "", // Titolo vuoto (già presente nella label FXML)
-                "Tipologia",
-                "Numero Offerte",
-                dataset,
-                PlotOrientation.VERTICAL,
-                true, true, false);
-
-        // Personalizzazione colori sfondo (opzionale)
+        JFreeChart barChart = ChartFactory.createBarChart("", "Tipologia", "Numero Offerte", dataset, PlotOrientation.VERTICAL, true, true, false);
         barChart.getPlot().setBackgroundPaint(new java.awt.Color(255, 255, 255));
 
-        // 3. Integrazione in JavaFX tramite SwingNode
+        // --- FIX FOTTUTO: PIALLA LA NOTAZIONE SCIENTIFICA (5E-9) ---
+        CategoryPlot plot = barChart.getCategoryPlot();
+        NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
+
+        yAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits()); // Solo numeri interi
+        yAxis.setNumberFormatOverride(new DecimalFormat("0"));           // Forza formato "0"
+        yAxis.setAutoRangeMinimumSize(1.0);                              // Impedisce zoom assurdi
+        yAxis.setLowerBound(0.0);                                        // Parte sempre da zero
+
         SwingNode swingNode = new SwingNode();
         SwingUtilities.invokeLater(() -> {
             ChartPanel panel = new ChartPanel(barChart);
-            // Impostiamo una dimensione preferita
             panel.setPreferredSize(new java.awt.Dimension(750, 350));
             swingNode.setContent(panel);
         });
@@ -189,7 +176,6 @@ public class GestioneOfferteBoundary {
             chartContainer.getChildren().add(swingNode);
         }
 
-        // 4. Aggiornamento Labels Statistiche Economiche
         if (lblMedia != null && lblMin != null && lblMax != null) {
             if (!prezziAccettati.isEmpty()) {
                 DoubleSummaryStatistics stats = prezziAccettati.stream().mapToDouble(Double::doubleValue).summaryStatistics();
@@ -197,15 +183,26 @@ public class GestioneOfferteBoundary {
                 lblMin.setText(String.format("Minimo: %.2f €", stats.getMin()));
                 lblMax.setText(String.format("Massimo: %.2f €", stats.getMax()));
             } else {
-                lblMedia.setText("Media: -");
-                lblMin.setText("Minimo: -");
-                lblMax.setText("Massimo: -");
+                lblMedia.setText("Media: -"); lblMin.setText("Minimo: -"); lblMax.setText("Massimo: -");
             }
         }
     }
 
+    private void caricaScenaNessunaOfferta() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource(Costanti.pathNessunaOfferta));
+            chartContainer.getChildren().clear();
+            chartContainer.getChildren().add(root);
+        } catch (IOException e) {
+            Label fallback = new Label("Ancora nessuna offerta effettuata.");
+            fallback.setStyle("-fx-text-fill: #7f8c8d; -fx-font-style: italic;");
+            chartContainer.getChildren().clear();
+            chartContainer.getChildren().add(fallback);
+        }
+    }
+
     // =================================================================================
-    // SEZIONE LOGICA LISTA OFFERTE (Codice Originale Mantenuto)
+    // SEZIONE LOGICA LISTA OFFERTE
     // =================================================================================
 
     private void caricaOfferte() {
@@ -228,16 +225,12 @@ public class GestioneOfferteBoundary {
         }
     }
 
-    /**
-     * Crea la card principale dell'offerta
-     */
     private VBox creaCardOfferta(Offerta o, boolean isRicevuta) {
         VBox card = new VBox(15);
         card.getStyleClass().add("offer-card");
 
         Utente utenteControparte = isRicevuta ? o.getUtente() : o.getAnnuncio().getUtente();
 
-        // --- 1. HEADER ---
         HBox header = new HBox(15);
         header.setAlignment(Pos.CENTER_LEFT);
 
@@ -259,7 +252,6 @@ public class GestioneOfferteBoundary {
         impostaColoreStato(statoLabel, o.getStato());
         header.getChildren().addAll(imgProfilo, infoUtente, statoLabel);
 
-        // --- 2. CORPO DETTAGLI ---
         VBox corpoDettagli = new VBox(10);
         if (o instanceof OffertaVendita ov) {
             Label l = new Label("💰 Proposta economica: " + ov.getPrezzoOffertaVendita() + " €");
@@ -282,14 +274,12 @@ public class GestioneOfferteBoundary {
             corpoDettagli.getChildren().add(l);
         }
 
-        // --- 3. MESSAGGIO ---
         Text msgText = new Text("\"" + o.getMessaggio() + "\"");
         msgText.getStyleClass().add("offer-message-text");
         msgText.setWrappingWidth(650);
 
         card.getChildren().addAll(header, corpoDettagli, msgText);
 
-        // --- 4. TASTI AZIONE ---
         if (isRicevuta && o.getStato() == Offerta.STATO_OFFERTA.IN_ATTESA) {
             HBox azioni = new HBox(15);
             azioni.setAlignment(Pos.CENTER_RIGHT);
