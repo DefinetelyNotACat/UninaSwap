@@ -21,14 +21,39 @@
                 <Button fx:id="btnNavRicevute" text="Offerte Ricevute" onAction="#mostraRicevute"
                         styleClass="nav-btn, nav-btn-left, nav-btn-active"/>
                 <Button fx:id="btnNavInviate" text="Offerte Inviate" onAction="#mostraInviate"
+                        styleClass="nav-btn, nav-btn-center"/>
+                <Button fx:id="btnNavReport" text="Statistiche" onAction="#mostraReport"
                         styleClass="nav-btn, nav-btn-right"/>
             </HBox>
 
-            <ScrollPane fitToWidth="true" styleClass="custom-scroll">
-                <VBox fx:id="containerOfferte" spacing="15" alignment="TOP_CENTER">
-                    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+            <StackPane VBox.vgrow="ALWAYS">
+
+                <ScrollPane fx:id="viewListaOfferte" fitToWidth="true" styleClass="custom-scroll">
+                    <VBox fx:id="containerOfferte" spacing="15" alignment="TOP_CENTER">
+                        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+                    </VBox>
+                </ScrollPane>
+
+                <VBox fx:id="viewReport" visible="false" managed="false" spacing="20" alignment="TOP_CENTER"
+                      style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20;">
+
+                    <Label text="Analisi delle Offerte Inviate" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                    <StackPane fx:id="chartContainer" VBox.vgrow="ALWAYS" minHeight="300"/>
+
+                    <Separator />
+
+                    <VBox spacing="10" alignment="CENTER">
+                        <Label text="Dettagli Offerte di Vendita Accettate" style="-fx-font-weight: bold;"/>
+                        <HBox spacing="40" alignment="CENTER">
+                            <Label fx:id="lblMedia" text="Media: - €" style="-fx-text-fill: #2980b9; -fx-font-size: 16px;"/>
+                            <Label fx:id="lblMin" text="Minimo: - €" style="-fx-text-fill: #e67e22; -fx-font-size: 16px;"/>
+                            <Label fx:id="lblMax" text="Massimo: - €" style="-fx-text-fill: #27ae60; -fx-font-size: 16px;"/>
+                        </HBox>
+                    </VBox>
                 </VBox>
-            </ScrollPane>
+
+            </StackPane>
         </VBox>
     </center>
 </BorderPane>

@@ -136,7 +136,17 @@
         public boolean EliminaAnnuncio(Annuncio annuncio){
             return annuncioDAO.eliminaAnnuncio(annuncio.getId());
         }
-        public boolean EseguiOfferta(Utente utente, Offerta offerta) {
+        public boolean EseguiOfferta(Utente utente, Offerta offerta) throws Exception {
+            // 1. Controllo se l'utente è il proprietario dell'annuncio (non puoi farti un'offerta da solo)
+            if (offerta.getAnnuncio().getUtenteId() == utente.getId()) {
+                throw new Exception("Non puoi fare un'offerta sul tuo stesso annuncio!");
+            }
+
+            // 2. Controllo se esiste già un'offerta IN_ATTESA [NUOVA LOGICA]
+            if (offertaDAO.haOffertaInAttesa(utente.getId(), offerta.getAnnuncio().getId())) {
+                throw new Exception("Hai già un'offerta in attesa per questo annuncio. Attendi la risposta del venditore.");
+            }
+
             System.out.println("Controller: Salvataggio offerta per l'annuncio " + offerta.getAnnuncio().getId());
             return offertaDAO.salvaOfferta(offerta);
         }

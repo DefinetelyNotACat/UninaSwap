@@ -145,7 +145,8 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
 
     @Override
     public ArrayList<Annuncio> OttieniAnnunci() {
-        return caricaAnnunciConJoin("ORDER BY a.id DESC");
+        // MODIFICA: Aggiunto WHERE stato = 'DISPONIBILE'
+        return caricaAnnunciConJoin("WHERE a.stato = 'DISPONIBILE'::stato_annuncio ORDER BY a.id DESC");
     }
 
     // =================================================================================
