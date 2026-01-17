@@ -11,7 +11,7 @@
 
 <BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.uninaswap.boundary.Inventario"
-            stylesheets="@inventario.css, @form.css, @homepage.css">
+            stylesheets="@banners.css, @inventario.css, @form.css, @homepage.css">
 
     <top>
         <HBox alignment="CENTER" styleClass="navbar-container">

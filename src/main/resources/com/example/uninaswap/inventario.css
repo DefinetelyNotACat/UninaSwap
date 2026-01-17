@@ -150,3 +150,18 @@
 .badge-red { -fx-background-color: #e74c3c; }
 .badge-orange { -fx-background-color: #f1c40f; }
 .badge-violet{ -fx-background-color: #7f00ff; }
+
+
+/* Forza le dimensioni del pulsante nella navbar per non farlo gonfiare */
+.navbar-container .button-search {
+    -fx-min-height: 30px !important; /* Forza altezza fissa */
+    -fx-max-height: 30px !important;
+    -fx-padding: 0 15px !important;   /* Padding laterale ridotto */
+    -fx-font-size: 12px !important;   /* Font piccolo e controllato */
+}
+
+/* Assicurati che il contenitore della barra di ricerca non spinga i bottoni */
+.navbar-container TextField {
+    -fx-pref-height: 30px;
+    -fx-max-height: 30px;
+}
