@@ -11,7 +11,7 @@
 
 <BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.uninaswap.boundary.Inventario"
-            stylesheets="@banners.css, @inventario.css, @form.css, @homepage.css">
+            stylesheets="@banners.css, @homepage.css">
 
     <top>
         <HBox alignment="CENTER" styleClass="navbar-container">
@@ -20,7 +20,8 @@
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" styleClass="main-scroll-pane">
+        <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" styleClass="main-scroll-pane"
+                    stylesheets="@inventario.css, @form.css">
             <content>
                 <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="myPadding">
 
