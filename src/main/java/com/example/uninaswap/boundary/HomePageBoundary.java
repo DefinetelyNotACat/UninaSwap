@@ -45,7 +45,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         if (navBarComponentController != null) {
             navBarComponentController.setHomePageBoundary(this);
         }
-
         if (queryPrenotata != null) {
             caricaCatalogoAnnunci(queryPrenotata, cercaAnnunciPrenotato);
             // Non resettiamo qui, lasciamo che NavBarComponent lo faccia dopo aver letto il testo
@@ -55,6 +54,9 @@ public class HomePageBoundary implements GestoreMessaggio {
     }
 
     public void resetRicercaPrenotata() { queryPrenotata = null; }
+
+    public static boolean isCercaAnnunciPrenotato() { return cercaAnnunciPrenotato; }
+
 
     public void caricaCatalogoAnnunci(String query, boolean ricercaAnnuncio) throws Exception {
         containerAnnunci.getChildren().clear();

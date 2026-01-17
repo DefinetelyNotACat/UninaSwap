@@ -37,11 +37,24 @@ public class NavBarComponent {
 
     private HomePageBoundary homePageBoundary;
 
+    /**
+     * Sincronizza la Navbar con la Home e ripristina lo stato della ricerca (Testo + Filtro)
+     */
     public void setHomePageBoundary(HomePageBoundary home) {
         this.homePageBoundary = home;
-        // Ripristina il testo nella barra se arriviamo da una ricerca prenotata
+
+        // Recuperiamo i dati prenotati dalla Home
         String q = HomePageBoundary.getQueryPrenotata();
-        if (q != null) barraDiRicerca.setText(q);
+        boolean isAnnuncio = HomePageBoundary.isCercaAnnunciPrenotato();
+
+        // FIX: Ripristiniamo sia il testo che la selezione del ComboBox (Articoli/Utenti)
+        if (q != null) {
+            barraDiRicerca.setText(q);
+            filtroBarraDiRicerca.setValue(isAnnuncio ? "Articoli" : "Utenti");
+        }
+
+        // Puliamo la memoria della Home solo dopo aver sincronizzato la Navbar
+        home.resetRicercaPrenotata();
     }
 
     @FXML
@@ -51,12 +64,13 @@ public class NavBarComponent {
 
         // Navigazione Rapida
         bottoneAggiungiAnnuncio.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathCreaAnnuncio, "Crea Annuncio", e));
+
         logo.setOnMouseClicked(e -> {
-            HomePageBoundary.prenotaRicerca(null, true);
+            HomePageBoundary.prenotaRicerca(null, true); // Reset ricerca
             gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
         });
 
-        // Toggle filtri extra
+        // Toggle visibilità filtri extra basato sulla selezione
         filtroBarraDiRicerca.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
             boolean isArticoli = "Articoli".equals(n);
             filtroCondizione.setVisible(isArticoli);
@@ -65,13 +79,14 @@ public class NavBarComponent {
             filtroCategoria.setManaged(isArticoli);
         });
 
-        // Regex barra di ricerca
+        // Validazione Regex in tempo reale
         barraDiRicerca.textProperty().addListener((obs, o, n) -> {
             setStatoErrore(n != null && !n.trim().isEmpty() && !n.matches(Costanti.FIELDS_REGEX_SPAZIO));
         });
 
         bottoneRicerca.setOnAction(e -> eseguiRicerca());
 
+        // Inizializzazione Combo (verrà sovrascritta da setHomePageBoundary se c'è una ricerca attiva)
         if (filtroBarraDiRicerca.getItems().isEmpty()) {
             filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
             filtroBarraDiRicerca.setValue("Articoli");
@@ -81,17 +96,22 @@ public class NavBarComponent {
         setupMenuProfilo();
     }
 
+    /**
+     * Esegue la ricerca o prenota i dati per la Home se ci troviamo in un'altra pagina
+     */
     private void eseguiRicerca() {
         String sel = filtroBarraDiRicerca.getValue();
         String txt = barraDiRicerca.getText();
         boolean isAnn = "Articoli".equals(sel);
 
+        // Se siamo già in Home, aggiorniamo il catalogo direttamente
         if (homePageBoundary != null && logo.getScene() != null && logo.getScene().equals(homePageBoundary.getScene())) {
             try {
                 if (isAnn) homePageBoundary.caricaCatalogoAnnunci(txt, filtroCondizione.getValue(), filtroCategoria.getValue(), true);
                 else homePageBoundary.caricaCatalogoAnnunci(txt, false);
             } catch (Exception e) { e.printStackTrace(); }
         } else {
+            // Se siamo altrove (Inventario, Offerte...), salviamo i dati e cambiamo scena verso la Home
             HomePageBoundary.prenotaRicerca(txt, isAnn);
             gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
         }
@@ -110,7 +130,6 @@ public class NavBarComponent {
         MenuItem offerte = creaVoceMenu("Le mie offerte", null);
         offerte.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathGestioneOfferte, "Offerte", (Stage) fotoProfilo.getScene().getWindow()));
 
-        // --- VOCE REINSERITA ---
         MenuItem annunci = creaVoceMenu("I miei annunci", null);
         annunci.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", (Stage) fotoProfilo.getScene().getWindow()));
 
@@ -130,7 +149,43 @@ public class NavBarComponent {
         fotoProfilo.setOnMouseClicked(e -> showmenuProfilo(e));
     }
 
-    // Metodi grafici (Foto profilo, centra immagine ecc.) rimangono identici
+    public void aggiornaFotoProfilo() {
+        try {
+            Utente u = controllerUninaSwap.getUtente();
+            Image imgDaCaricare = null;
+            boolean isDefault = true;
+
+            if (u != null && u.getPathImmagineProfilo() != null && !u.getPathImmagineProfilo().equals("default") && !u.getPathImmagineProfilo().isEmpty()) {
+                File f = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
+                if (f.exists()) {
+                    imgDaCaricare = new Image(f.toURI().toString());
+                    isDefault = false;
+                }
+            }
+
+            if (isDefault) {
+                imgDaCaricare = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
+                fotoProfilo.setViewport(null); // RESET VIEWPORT PER FOTO DEFAULT
+            }
+
+            if (imgDaCaricare != null) {
+                fotoProfilo.setImage(imgDaCaricare);
+                centraImmagine(fotoProfilo, imgDaCaricare);
+            }
+
+            applicaCerchio();
+            logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private void centraImmagine(ImageView iv, Image img) {
+        if (img == null || img.isError()) return;
+        double d = Math.min(img.getWidth(), img.getHeight());
+        double x = (img.getWidth() - d) / 2;
+        double y = (img.getHeight() - d) / 2;
+        iv.setViewport(new Rectangle2D(x, y, d, d));
+    }
+
     private void setupUI() {
         Cursor h = Cursor.HAND;
         bottoneAggiungiAnnuncio.setCursor(h); bottoneRicerca.setCursor(h);
@@ -149,57 +204,6 @@ public class NavBarComponent {
         bottoneRicerca.setDisable(err);
     }
 
-    public void aggiornaFotoProfilo() {
-        try {
-            Utente u = controllerUninaSwap.getUtente();
-            Image imgDaCaricare = null;
-            boolean isDefault = true;
-
-            // 1. Controllo se l'utente ha una foto valida
-            if (u != null && u.getPathImmagineProfilo() != null &&
-                    !u.getPathImmagineProfilo().equals("default") &&
-                    !u.getPathImmagineProfilo().isEmpty()) {
-
-                File f = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
-                if (f.exists()) {
-                    imgDaCaricare = new Image(f.toURI().toString());
-                    isDefault = false;
-                }
-            }
-
-            // 2. Se non ho trovato nulla, carico quella di default
-            if (isDefault) {
-                imgDaCaricare = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
-                // RESETTA IL VIEWPORT altrimenti l'immagine di default non si vede cazzo!
-                fotoProfilo.setViewport(null);
-            }
-
-            // 3. Imposto l'immagine e la centro
-            if (imgDaCaricare != null) {
-                fotoProfilo.setImage(imgDaCaricare);
-                centraImmagine(fotoProfilo, imgDaCaricare);
-            }
-
-            // 4. Applico il cerchio e il logo
-            applicaCerchio();
-            logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-
-        } catch (Exception e) {
-            System.err.println("ERRORE CRITICO CARICAMENTO PFP: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }    private void centraImmagine(ImageView iv, Image img) {
-        if (img == null || img.isError()) return;
-
-        // Calcoliamo il lato più corto per fare un quadrato perfetto
-        double d = Math.min(img.getWidth(), img.getHeight());
-        double x = (img.getWidth() - d) / 2;
-        double y = (img.getHeight() - d) / 2;
-
-        // Impostiamo il Viewport per centrare la parte quadrata dell'immagine
-        iv.setViewport(new Rectangle2D(x, y, d, d));
-    }
-
     private void showmenuProfilo(MouseEvent e) {
         Point2D p = fotoProfilo.localToScreen(0, fotoProfilo.getBoundsInLocal().getHeight());
         menuProfilo.show(fotoProfilo, p.getX(), p.getY());
@@ -211,12 +215,11 @@ public class NavBarComponent {
         if (customClass != null) label.getStyleClass().add(customClass);
         return item;
     }
+
     private void applicaCerchio() {
-        // Il cerchio deve essere sempre centrato sulla ImageView da 40x40
         double centerX = fotoProfilo.getFitWidth() / 2;
         double centerY = fotoProfilo.getFitHeight() / 2;
         double radius = Math.min(centerX, centerY);
-
         fotoProfilo.setClip(new Circle(centerX, centerY, radius));
     }
 }
