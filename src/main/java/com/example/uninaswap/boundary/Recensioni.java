@@ -54,27 +54,40 @@ public class Recensioni {
                 txtTitolo.setText("Recensioni di " + utente.getUsername());
             }
         } catch (Exception e) { e.printStackTrace(); }
-
-        caricaRicevute(); // Default all'apertura
+        cliccaRicevute();
     }
 
     @FXML
     private void cliccaRicevute() {
         visualizzandoRicevute = true;
+        // Aggiornamento Stili: Ricevute diventa Pieno, Fatte diventa Outline
         btnMostraRicevute.getStyleClass().removeAll("button-outline");
-        btnMostraRicevute.getStyleClass().add("button-primary"); // Evidenzia attivo
+        if (!btnMostraRicevute.getStyleClass().contains("button-primary")) {
+            btnMostraRicevute.getStyleClass().add("button-primary");
+        }
+
         btnMostraDate.getStyleClass().removeAll("button-primary");
-        btnMostraDate.getStyleClass().add("button-outline");
+        if (!btnMostraDate.getStyleClass().contains("button-outline")) {
+            btnMostraDate.getStyleClass().add("button-outline");
+        }
+
         caricaRicevute();
     }
 
     @FXML
     private void cliccaDate() {
         visualizzandoRicevute = false;
+        // Aggiornamento Stili: Fatte diventa Pieno, Ricevute diventa Outline
         btnMostraDate.getStyleClass().removeAll("button-outline");
-        btnMostraDate.getStyleClass().add("button-primary"); // Evidenzia attivo
+        if (!btnMostraDate.getStyleClass().contains("button-primary")) {
+            btnMostraDate.getStyleClass().add("button-primary");
+        }
+
         btnMostraRicevute.getStyleClass().removeAll("button-primary");
-        btnMostraRicevute.getStyleClass().add("button-outline");
+        if (!btnMostraRicevute.getStyleClass().contains("button-outline")) {
+            btnMostraRicevute.getStyleClass().add("button-outline");
+        }
+
         caricaDate();
     }
 
@@ -86,7 +99,6 @@ public class Recensioni {
 
     private void caricaDate() {
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
-        // Assicurati che questo metodo esista nel tuo Controller
         List<Recensione> recensioni = controller.OttieniRecensioniFatteUtente(utenteTarget);
         aggiornaLista(recensioni, "fatte");
     }
@@ -149,7 +161,7 @@ public class Recensioni {
     private void calcolaEMostraMedia(List<Recensione> list) {
         double somma = 0;
         for (Recensione r : list) somma += r.getVoto();
-        double media = somma / list.size();
+        double media = list.isEmpty() ? 0 : somma / list.size();
         txtMedia.setText(String.format("Valutazione Media: %.1f/5 (%d recensioni)", media, list.size()));
     }
 
