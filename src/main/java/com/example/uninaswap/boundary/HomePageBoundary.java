@@ -17,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -29,97 +30,108 @@ public class HomePageBoundary implements GestoreMessaggio {
     @FXML private Messaggio notificaController;
     @FXML private NavBarComponent navBarComponentController;
 
+    private static String queryPrenotata = null;
+    private static boolean cercaAnnunciPrenotato = true;
+
+    public static void prenotaRicerca(String query, boolean cercaAnnunci) {
+        queryPrenotata = query;
+        cercaAnnunciPrenotato = cercaAnnunci;
+    }
+
+    public static String getQueryPrenotata() { return queryPrenotata; }
+
     @FXML
     private void initialize() throws Exception {
         if (navBarComponentController != null) {
             navBarComponentController.setHomePageBoundary(this);
         }
-        caricaCatalogoAnnunci(null, true);
+
+        if (queryPrenotata != null) {
+            caricaCatalogoAnnunci(queryPrenotata, cercaAnnunciPrenotato);
+            // Non resettiamo qui, lasciamo che NavBarComponent lo faccia dopo aver letto il testo
+        } else {
+            caricaCatalogoAnnunci(null, true);
+        }
     }
+
+    public void resetRicercaPrenotata() { queryPrenotata = null; }
 
     public void caricaCatalogoAnnunci(String query, boolean ricercaAnnuncio) throws Exception {
         containerAnnunci.getChildren().clear();
-
         if (ricercaAnnuncio) {
             caricaCatalogoAnnunci(query, null, null, true);
         } else {
             if (query == null || query.trim().isEmpty()) return;
             List<Utente> utentiTrovati = controller.cercaUtenti(query.trim());
-
             if (utentiTrovati == null || utentiTrovati.isEmpty()) {
                 mostraMessaggioVuoto("Utente non trovato.", "Nessun utente corrisponde a '" + query + "'.");
                 return;
             }
-
-            for (Utente u : utentiTrovati) {
-                containerAnnunci.getChildren().add(creaCardUtente(u));
-            }
+            for (Utente u : utentiTrovati) containerAnnunci.getChildren().add(creaCardUtente(u));
         }
     }
 
     public void caricaCatalogoAnnunci(String query, Oggetto.CONDIZIONE cond, Categoria cat, boolean ricercaAnnuncio) throws Exception {
         containerAnnunci.getChildren().clear();
-
         if (ricercaAnnuncio) {
             List<Annuncio> annunci = controller.FiltraAnnunciCatalogo(query, cond, cat);
-
             if (annunci == null || annunci.isEmpty()) {
                 mostraMessaggioVuoto("Nessun risultato.", "La ricerca non ha prodotto risultati.");
                 return;
             }
-
-            for (Annuncio a : annunci) {
-                containerAnnunci.getChildren().add(creaCardAnnuncio(a));
-            }
+            for (Annuncio a : annunci) containerAnnunci.getChildren().add(creaCardAnnuncio(a));
         } else {
             caricaCatalogoAnnunci(query, false);
         }
     }
 
+    /**
+     * FIX ALLINEAMENTO CARD UTENTE
+     */
     private VBox creaCardUtente(Utente u) {
         VBox card = new VBox(15);
         card.getStyleClass().add("ad-card");
-        card.setAlignment(Pos.CENTER);
+        card.setAlignment(Pos.CENTER); // Centra i figli nel VBox
         card.setPrefWidth(280);
         card.setPadding(new Insets(25));
 
+        // 1. Immagine Profilo
         ImageView imgView = new ImageView();
         imgView.setFitWidth(100);
         imgView.setFitHeight(100);
         caricaFotoProfilo(u, imgView);
+        imgView.setClip(new Circle(50, 50, 50));
 
-        Circle clip = new Circle(50, 50, 50);
-        imgView.setClip(clip);
+        // 2. Nome Utente (Usiamo LABEL per centramento fottuto)
+        Label username = new Label(u.getUsername());
+        username.setAlignment(Pos.CENTER);
+        username.setMaxWidth(Double.MAX_VALUE);
+        username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #003366;");
 
-        Text username = new Text(u.getUsername());
-        username.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-        username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-fill: #003366;");
+        // 3. Email (Usiamo LABEL)
+        Label email = new Label(u.getEmail());
+        email.setAlignment(Pos.CENTER);
+        email.setMaxWidth(Double.MAX_VALUE);
+        email.setStyle("-fx-font-size: 14px; -fx-text-fill: #666; -fx-font-style: italic;");
 
-        Text email = new Text(u.getEmail());
-        email.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
-        email.setStyle("-fx-font-size: 14px; -fx-fill: #666; -fx-font-style: italic;");
-
+        // 4. Container Bottoni
         VBox containerBottoni = new VBox(12);
         containerBottoni.setAlignment(Pos.CENTER);
+        containerBottoni.setPrefWidth(200);
         containerBottoni.setMaxWidth(200);
 
         Button btnProfilo = new Button("Vedi Annunci");
-        btnProfilo.getStyleClass().setAll("button-primary");
-        btnProfilo.setAlignment(Pos.CENTER);
-        btnProfilo.setMaxWidth(Double.MAX_VALUE);
+        btnProfilo.getStyleClass().add("button-primary");
+        btnProfilo.setMaxWidth(Double.MAX_VALUE); // Riempie il containerBottoni che è centrato
         btnProfilo.setOnAction(e -> {
             containerAnnunci.getChildren().clear();
             List<Annuncio> annunciUtente = controller.OttieniAnnunciDiUtente(u.getId());
-            if (annunciUtente == null || annunciUtente.isEmpty()) {
-                mostraMessaggioVuoto("Nessun annuncio.", u.getUsername() + " non ha annunci.");
-            } else {
-                for (Annuncio a : annunciUtente) containerAnnunci.getChildren().add(creaCardAnnuncio(a));
-            }
+            if (annunciUtente.isEmpty()) mostraMessaggioVuoto("Nessun annuncio.", u.getUsername() + " non ha annunci.");
+            else for (Annuncio a : annunciUtente) containerAnnunci.getChildren().add(creaCardAnnuncio(a));
         });
 
         Button btnRecensioni = new Button("Vedi Recensioni");
-        btnRecensioni.getStyleClass().setAll("button-outline");
-        btnRecensioni.setAlignment(Pos.CENTER);
+        btnRecensioni.getStyleClass().add("button-outline");
         btnRecensioni.setMaxWidth(Double.MAX_VALUE);
         btnRecensioni.setOnAction(e -> {
             try {
@@ -127,10 +139,8 @@ public class HomePageBoundary implements GestoreMessaggio {
                 Parent root = loader.load();
                 Recensioni controllerRecensioni = loader.getController();
                 controllerRecensioni.initData(u);
-
                 Stage stage = (Stage) containerAnnunci.getScene().getWindow();
-                Scene currentScene = stage.getScene();
-                stage.setScene(new Scene(root, currentScene.getWidth(), currentScene.getHeight()));
+                stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
             } catch (Exception ex) { ex.printStackTrace(); }
         });
 
@@ -140,9 +150,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         return card;
     }
 
-    /**
-     * Card Annuncio con Emoji 💰, 🔄, 🎁 integrate!
-     */
     private VBox creaCardAnnuncio(Annuncio a) {
         VBox card = new VBox(12);
         card.getStyleClass().add("ad-card");
@@ -150,49 +157,35 @@ public class HomePageBoundary implements GestoreMessaggio {
         card.setPrefWidth(260);
         card.setPadding(new Insets(15));
 
-        // 1. Immagine dell'oggetto
         ImageView imgView = new ImageView();
         imgView.setFitWidth(230);
         imgView.setFitHeight(150);
         imgView.setPreserveRatio(true);
-        imgView.setSmooth(true);
         caricaFotoOggetto(a, imgView);
 
-        // 2. Header: Badge + Sede
         HBox headerInfo = new HBox(10);
         headerInfo.setAlignment(Pos.CENTER_LEFT);
-
         Label badge = new Label(determinaTipo(a));
         badge.getStyleClass().addAll("badge-base", determinaClasseBadge(a));
-
         Text location = new Text("📍 " + (a.getSede() != null ? a.getSede().getNomeSede() : "N/A"));
         location.getStyleClass().add("ad-location");
-
         headerInfo.getChildren().addAll(badge, location);
 
-        // 3. Descrizione
         Text desc = new Text(a.getDescrizione());
         desc.setWrappingWidth(230);
         desc.getStyleClass().add("ad-description");
 
-        // 4. Info Extra con EMOJI (Recuperate dalle colonne prezzo/nomi_items_scambio)
         Text extraInfo = new Text();
         extraInfo.getStyleClass().add("ad-extra-info");
-
-        if (a instanceof AnnuncioVendita av) {
-            extraInfo.setText("💰 " + av.getPrezzoMedio() + " €");
-        } else if (a instanceof AnnuncioScambio as) {
-            extraInfo.setText("🔄 Cerco: " + as.getListaOggetti());
-        } else {
-            extraInfo.setText("🎁 REGALO");
-        }
+        if (a instanceof AnnuncioVendita av) extraInfo.setText("💰 " + av.getPrezzoMedio() + " €");
+        else if (a instanceof AnnuncioScambio as) extraInfo.setText("🔄 " + as.getListaOggetti());
+        else extraInfo.setText("🎁 REGALO");
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
         card.getChildren().addAll(imgView, headerInfo, desc, spacer, extraInfo);
         card.setOnMouseClicked(e -> apriDettaglioAnnuncio(a));
-
         return card;
     }
 
@@ -215,10 +208,9 @@ public class HomePageBoundary implements GestoreMessaggio {
     private void caricaFotoOggetto(Annuncio a, ImageView iv) {
         try {
             if (a.getOggetti() != null && !a.getOggetti().isEmpty() && !a.getOggetti().get(0).getImmagini().isEmpty()) {
-                String path = a.getOggetti().get(0).getImmagini().get(0);
-                File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
-                if (file.exists()) {
-                    iv.setImage(new Image(file.toURI().toString(), 400, 300, true, true));
+                File f = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + a.getOggetti().get(0).getImmagini().get(0));
+                if (f.exists()) {
+                    iv.setImage(new Image(f.toURI().toString(), 400, 300, true, true));
                     return;
                 }
             }
@@ -248,9 +240,7 @@ public class HomePageBoundary implements GestoreMessaggio {
             controllerDettaglio.initData(annuncio);
             Stage stage = (Stage) containerAnnunci.getScene().getWindow();
             stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void mostraMessaggioVuoto(String titolo, String sottotitolo) {
@@ -271,5 +261,5 @@ public class HomePageBoundary implements GestoreMessaggio {
     }
 
     public void svuotaCatalogo(){ containerAnnunci.getChildren().clear(); }
-    public javafx.scene.Scene getScene() { return containerAnnunci.getScene(); }
+    public Scene getScene() { return containerAnnunci.getScene(); }
 }
