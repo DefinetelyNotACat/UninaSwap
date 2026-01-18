@@ -83,17 +83,6 @@ public abstract class Annuncio {
 
     public ArrayList<Oggetto> getOggetti() { return oggetti; }
 
-    public void setOrari(LocalTime orarioInizio, LocalTime orarioFine) throws Exception {
-        if (orarioInizio == null || orarioFine == null) {
-            throw new Exception("Entrambi gli orari devono essere specificati");
-        }
-        if (orarioInizio.isAfter(orarioFine)) {
-            throw new Exception("L'orario d'inizio non può essere successivo a quello di fine!");
-        }
-        this.orarioInizio = orarioInizio;
-        this.orarioFine = orarioFine;
-    }
-
     public void setOggetti(ArrayList<Oggetto> nuoviOggetti) {
         this.oggetti.clear();
         if (nuoviOggetti != null) {

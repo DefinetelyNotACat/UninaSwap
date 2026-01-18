@@ -8,6 +8,4 @@ import java.util.ArrayList;
 public interface GestoreOffertaDAO {
     public boolean salvaOfferta(Offerta offerta);
     public boolean modificaStatoOfferta(int idOfferta, Offerta.STATO_OFFERTA nuovoStato);
-    public ArrayList<Offerta> ottieniOffertePerAnnuncio(int idAnnuncio);
-    public boolean eliminaOfferta(int idOfferta);
 }

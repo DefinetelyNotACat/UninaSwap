@@ -33,7 +33,6 @@ public class Messaggio {
         this.messaggio = messaggio;
         this.tipo = tipo;
         bannerLabel.setText(messaggio);
-        //resetto tutti gli stili
         bannerContainer.getStyleClass().removeAll("banner-success", "banner-error", "banner-info");
         switch (tipo) {
             case SUCCESS:

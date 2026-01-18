@@ -115,16 +115,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         return caricaAnnunciConJoin(sqlFiltro.toString(), params.toArray());
     }
 
-    @Override
-    public ArrayList<Annuncio> OttieniAnnunciNonMiei(int idUtenteCorrente) {
-        return caricaAnnunciConJoin("WHERE a.utente_id <> ? AND a.stato = 'DISPONIBILE'::stato_annuncio ORDER BY a.id DESC", idUtenteCorrente);
-    }
-
-    @Override
-    public ArrayList<Annuncio> OttieniAnnunciRicercaUtente(String ricerca, int mioId) {
-        return null;
-    }
-
     public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
         return caricaAnnunciConJoin("WHERE a.utente_id = ? ORDER BY a.id DESC", idUtente);
     }
@@ -141,12 +131,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     public Annuncio OttieniAnnuncio(int id) {
         ArrayList<Annuncio> res = caricaAnnunciConJoin("WHERE a.id = ?", id);
         return res.isEmpty() ? null : res.get(0);
-    }
-
-    @Override
-    public ArrayList<Annuncio> OttieniAnnunci() {
-        // MODIFICA: Aggiunto WHERE stato = 'DISPONIBILE'
-        return caricaAnnunciConJoin("WHERE a.stato = 'DISPONIBILE'::stato_annuncio ORDER BY a.id DESC");
     }
 
     @Override
@@ -260,11 +244,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         }
 
         return annuncio;
-    }
-
-    @Override
-    public boolean modificaAnnuncio(Annuncio annuncio) {
-        return true;
     }
 
     public boolean aggiornaStatoAnnuncio(int idAnnuncio, String nuovoStato) {

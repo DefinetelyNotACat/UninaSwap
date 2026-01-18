@@ -41,19 +41,16 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
     @FXML
     private Messaggio notificaController;
 
-    // --- Testi Errore ---
     @FXML private Text erroreUsername;
     @FXML private Text erroreMatricola;
     @FXML private Text errorePassword;
     @FXML private Text erroreConfermaPassword;
     @FXML private Text erroreGenerico;
 
-    // --- Regex ---
     private static final String REGEX_PASSWORD = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9@$!%*?&._-]{8,20}$";
     private static final String REGEX_CAMPI_SEMPLICI = "^[a-zA-Z0-9]+$";
     private static final String REGEX_ALMENO_UN_NUMERO = ".*\\d.*";
 
-    // --- Variabili di istanza ---
     private Utente profiloUtente;
     private File fileImmagineSelezionata;
     private ControllerUninaSwap controllerUninaSwap;
@@ -88,58 +85,42 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
     }
 
     private void configuraValidazione() {
-        // --- 1. Binding Username ---
         BooleanBinding usernameNonValido = Bindings.createBooleanBinding(() -> {
-            String u = usernameField.getText();
-            return u == null || u.trim().isEmpty() || !u.matches(REGEX_CAMPI_SEMPLICI);
+            String campoUsername = usernameField.getText();
+            return campoUsername == null || campoUsername.trim().isEmpty() || !campoUsername.matches(REGEX_CAMPI_SEMPLICI);
         }, usernameField.textProperty());
 
-        // Listener per errori visivi (Username)
         usernameField.textProperty().addListener((obs, oldVal, newVal) ->
                 gestisciStileCampo(newVal, usernameField, erroreUsername, false)
         );
 
-        // --- 2. Binding Matricola ---
         BooleanBinding matricolaNonValida = Bindings.createBooleanBinding(() -> {
-            String m = matricolaField.getText();
-            return m == null || m.trim().isEmpty() || !m.matches(REGEX_CAMPI_SEMPLICI) || !m.matches(REGEX_ALMENO_UN_NUMERO);
+            String campoMatricola = matricolaField.getText();
+            return campoMatricola == null || campoMatricola.trim().isEmpty() || !campoMatricola.matches(REGEX_CAMPI_SEMPLICI) || !campoMatricola.matches(REGEX_ALMENO_UN_NUMERO);
         }, matricolaField.textProperty());
 
-        // Listener per errori visivi (Matricola)
         matricolaField.textProperty().addListener((obs, oldVal, newVal) ->
                 gestisciStileCampo(newVal, matricolaField, erroreMatricola, true)
         );
 
-        // --- 3. Binding Password (LA PARTE CRITICA) ---
         BooleanBinding passwordNonValida = Bindings.createBooleanBinding(() -> {
-            String pass = passwordField.getText();
-            String conf = confermaPasswordField.getText();
-            boolean isPasswordVuota = pass == null || pass.trim().isEmpty();
-
-            // CASO A: Se il campo è vuoto, NON è invalido (l'utente tiene la vecchia pass).
-            // Quindi restituiamo false (nessun errore).
+            String campoPassword = passwordField.getText();
+            String campoConfermaPassword = confermaPasswordField.getText();
+            boolean isPasswordVuota = campoPassword == null || campoPassword.trim().isEmpty();
             if (isPasswordVuota) {
                 return false;
             }
 
-            // CASO B: L'utente ha scritto qualcosa.
-            // Deve rispettare la REGEX E deve essere uguale alla CONFERMA.
-            boolean regexOk = pass.matches(REGEX_PASSWORD);
-            boolean matchOk = pass.equals(conf);
+            boolean regexOk = campoPassword.matches(REGEX_PASSWORD);
+            boolean matchOk = campoPassword.equals(campoConfermaPassword);
 
-            // Se anche solo una condizione fallisce, restituiamo true (C'È un errore).
             return !regexOk || !matchOk;
 
         }, passwordField.textProperty(), confermaPasswordField.textProperty());
 
-        // Listener per errori visivi (Password)
         passwordField.textProperty().addListener((obs, oldVal, newVal) -> gestisciStilePassword());
         confermaPasswordField.textProperty().addListener((obs, oldVal, newVal) -> gestisciStilePassword());
 
-
-        // --- 4. LEGAME COL BOTTONE SALVA ---
-        // Il bottone si disabilita SE:
-        // Username invalido OPPURE Matricola invalida OPPURE Password invalida (se iniziata a scrivere)
         if (salvaButton != null) {
             salvaButton.disableProperty().bind(
                     usernameNonValido.or(matricolaNonValida).or(passwordNonValida)
@@ -147,31 +128,29 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
         }
     }
 
-    // --- Gestione Stili CSS Generica ---
     private void gestisciStileCampo(String valore, TextField campo, Text testoErrore, boolean isMatricola) {
         if (erroreGenerico != null) {
             erroreGenerico.setVisible(false);
             erroreGenerico.setManaged(false);
         }
 
-        boolean isVuoto = valore == null || valore.trim().isEmpty();
-        boolean regexOk = valore != null && valore.matches(REGEX_CAMPI_SEMPLICI);
-        boolean lunghezzaOk = valore != null && valore.length() >= 3 && valore.length() <= 20;
-        boolean matricolaOk = !isMatricola || (valore != null && valore.matches(REGEX_ALMENO_UN_NUMERO));
+        boolean checkVuoto = valore == null || valore.trim().isEmpty();
+        boolean checkRegex = valore != null && valore.matches(REGEX_CAMPI_SEMPLICI);
+        boolean checkLunghezza = valore != null && valore.length() >= 3 && valore.length() <= 20;
+        boolean checkMatricola = !isMatricola || (valore != null && valore.matches(REGEX_ALMENO_UN_NUMERO));
 
-        if (!isVuoto && regexOk && lunghezzaOk && matricolaOk) {
+        if (!checkVuoto && checkRegex && checkLunghezza && checkMatricola) {
             applicaStileValido(campo, testoErrore);
         } else {
-            if (isVuoto) rimuoviStili(campo, testoErrore);
+            if (checkVuoto) rimuoviStili(campo, testoErrore);
             else applicaStileErrore(campo, testoErrore);
         }
     }
 
-    // --- Gestione Stili Password ---
     private void gestisciStilePassword() {
-        String pass = passwordField.getText();
-        String conf = confermaPasswordField.getText();
-        boolean passVuota = pass == null || pass.trim().isEmpty();
+        String campoPassword = passwordField.getText();
+        String campoConfermaPassword = confermaPasswordField.getText();
+        boolean passVuota = campoPassword == null || campoPassword.trim().isEmpty();
 
         if (passVuota) {
             rimuoviStili(passwordField, errorePassword);
@@ -179,19 +158,16 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
             return;
         }
 
-        // Controllo Regex
-        if (pass.matches(REGEX_PASSWORD)) {
+        if (campoPassword.matches(REGEX_PASSWORD)) {
             applicaStileValido(passwordField, errorePassword);
         } else {
             applicaStileErrore(passwordField, errorePassword);
         }
 
-        // Controllo Match
-        if (pass.equals(conf)) {
-            if (pass.matches(REGEX_PASSWORD)) {
+        if (campoPassword.equals(campoConfermaPassword)) {
+            if (campoPassword.matches(REGEX_PASSWORD)) {
                 applicaStileValido(confermaPasswordField, erroreConfermaPassword);
             } else {
-                // Uguali ma deboli
                 applicaStileErrore(confermaPasswordField, erroreConfermaPassword);
             }
         } else {
@@ -199,7 +175,6 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
         }
     }
 
-    // Helpers CSS
     private void applicaStileErrore(Node nodo, Text testoErrore) {
         if(erroreGenerico != null) {
             erroreGenerico.setVisible(false);
@@ -231,28 +206,27 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
         }
     }
 
-    // --- Logica Click Salva ---
     @FXML
     public void onSalvaClick(ActionEvent event) {
-        // Raccogli dati
-        String nuovoUser = usernameField.getText();
-        String nuovaMatr = matricolaField.getText();
-        String nuovaPass = passwordField.getText();
+
+        String usernameInserito = usernameField.getText();
+        String matricolaInserita = matricolaField.getText();
+        String passwordInserita = passwordField.getText();
 
         // Controllo Duplicati DB
-        boolean userCambiato = !nuovoUser.equals(profiloUtente.getUsername());
-        boolean matrCambiata = !nuovaMatr.equals(profiloUtente.getMatricola());
+        boolean userCambiato = !usernameInserito.equals(profiloUtente.getUsername());
+        boolean matricolaCambiata = !matricolaInserita.equals(profiloUtente.getMatricola());
 
-        if (userCambiato || matrCambiata) {
-            if (controllerUninaSwap.verificaCredenzialiDuplicate(nuovoUser, nuovaMatr, profiloUtente.getEmail())) {
+        if (userCambiato || matricolaCambiata) {
+            if (controllerUninaSwap.verificaCredenzialiDuplicate(usernameInserito, matricolaInserita, profiloUtente.getEmail())) {
                 mostraErroreGenerico("Username o Matricola già in uso!");
                 return;
             }
         }
 
         // Aggiorna Entità
-        profiloUtente.setUsername(nuovoUser);
-        profiloUtente.setMatricola(nuovaMatr);
+        profiloUtente.setUsername(usernameInserito);
+        profiloUtente.setMatricola(matricolaInserita);
         String pathImg = (fileImmagineSelezionata != null) ? fileImmagineSelezionata.getAbsolutePath() : profiloUtente.getPathImmagineProfilo();
         try {
             profiloUtente.modificaImmagineProfilo(pathImg);
@@ -261,9 +235,9 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
         }
 
 
-        if (!nuovaPass.isEmpty()) {
-            profiloUtente.setPassword(nuovaPass);
-            System.out.println("nuova password vale " + nuovaPass);
+        if (!passwordInserita.isEmpty()) {
+            profiloUtente.setPassword(passwordInserita);
+            System.out.println("nuova password vale " + passwordInserita);
         }
 
         // Salva DB
@@ -273,91 +247,87 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
             } else {
                 mostraErroreGenerico("Errore salvataggio DB");
             }
-        } catch (Exception e) {
+        } catch (Exception exception) {
             erroreGenerico.setVisible(true);
             erroreGenerico.setManaged(true);
-            erroreGenerico.setText(e.getMessage());
+            erroreGenerico.setText(exception.getMessage());
         }
     }
 
     @FXML
-    public void onAnnullaClick(ActionEvent event) {
-        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event, "Modifica profilo annullata", INFO);
+    public void onAnnullaClick(ActionEvent actionEvent) {
+        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Modifica profilo annullata", INFO);
     }
 
-    // --- Gestione Immagine ---
     @FXML
-    public void cambiaImmagineProfilo(ActionEvent event) {
+    public void cambiaImmagineProfilo(ActionEvent actionEvent) {
         notificaController.mostraMessaggio("Funzione cambio immagine in arrivo...", INFO);
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Seleziona Immagine");
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleziona Immagine");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
 
-        Stage s = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        File f = fc.showOpenDialog(s);
+        Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+        File file = fileChooser.showOpenDialog(stage);
 
-        if (f != null) {
-            this.fileImmagineSelezionata = f;
-            impostaImmagineCircolare(new Image(f.toURI().toString()));
+        if (file != null) {
+            this.fileImmagineSelezionata = file;
+            impostaImmagineCircolare(new Image(file.toURI().toString()));
         }
     }
 
     private void caricaImmagineProfilo() {
         try {
             String pathDalDb = profiloUtente.getPathImmagineProfilo();
-            Image img = null;
+            Image immagine = null;
 
-            // CORREZIONE QUI: Aggiungiamo "dati_utenti" al percorso base
             String BASE_PATH = System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator;
 
-            // DEBUG: Vediamo cosa stiamo costruendo
             System.out.println("Base Path impostato a: " + BASE_PATH);
 
             boolean isDefault = pathDalDb == null || pathDalDb.trim().isEmpty() || pathDalDb.equals("default");
 
             if (isDefault) {
                 URL res = getClass().getResource("/com/example/uninaswap/images/immagine_di_profilo_default.jpg");
-                if (res != null) img = new Image(res.toExternalForm());
+                if (res != null) immagine = new Image(res.toExternalForm());
             } else {
-                // Costruiamo il file unendo Base + PathDB
-                File f = new File(BASE_PATH + pathDalDb);
+                File file = new File(BASE_PATH + pathDalDb);
 
-                System.out.println("Tento di caricare da: " + f.getAbsolutePath());
+                System.out.println("Tento di caricare da: " + file.getAbsolutePath());
 
-                if (f.exists()) {
-                    img = new Image(f.toURI().toString());
+                if (file.exists()) {
+                    immagine = new Image(file.toURI().toString());
                 } else {
                     System.out.println("File non trovato! Carico default.");
-                    URL res = getClass().getResource("/com/example/uninaswap/images/ImmagineProfiloDefault.jpg");
-                    if (res != null) img = new Image(res.toExternalForm());
+                    URL risultato = getClass().getResource("/com/example/uninaswap/images/ImmagineProfiloDefault.jpg");
+                    if (risultato != null) immagine = new Image(risultato.toExternalForm());
                 }
             }
 
-            if (img != null) {
-                impostaImmagineCircolare(img);
+            if (immagine != null) {
+                impostaImmagineCircolare(immagine);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
-    private void impostaImmagineCircolare(Image img) {
-        if (img == null || profileImageView == null) return;
-        double min = Math.min(img.getWidth(), img.getHeight());
-        double x = (img.getWidth() - min) / 2;
-        double y = (img.getHeight() - min) / 2;
+    private void impostaImmagineCircolare(Image immagine) {
+        if (immagine == null || profileImageView == null) return;
+        double min = Math.min(immagine.getWidth(), immagine.getHeight());
+        double x = (immagine.getWidth() - min) / 2;
+        double y = (immagine.getHeight() - min) / 2;
 
         profileImageView.setViewport(new Rectangle2D(x, y, min, min));
-        profileImageView.setImage(img);
+        profileImageView.setImage(immagine);
 
         double r = Math.min(profileImageView.getFitWidth(), profileImageView.getFitHeight()) / 2;
         profileImageView.setClip(new Circle(profileImageView.getFitWidth()/2, profileImageView.getFitHeight()/2, r));
     }
 
-    private void mostraErroreGenerico(String msg) {
+    private void mostraErroreGenerico(String messaggioErrore) {
         if (erroreGenerico != null) {
-            erroreGenerico.setText(msg);
+            erroreGenerico.setText(messaggioErrore);
             erroreGenerico.setVisible(true);
             erroreGenerico.setManaged(true);
         }

@@ -79,25 +79,24 @@ public class Inventario implements Initializable, GestoreMessaggio {
             gridInventario.add(card, colonna, riga);
 
             colonna++;
-            if (colonna == 3) { // Grid a 3 colonne per un layout pulito
+            if (colonna == 3) {
                 colonna = 0;
                 riga++;
             }
         }
     }
 
-    private VBox creaCardOggetto(Oggetto obj) {
+    private VBox creaCardOggetto(Oggetto oggetto) {
         VBox card = new VBox();
         card.setAlignment(Pos.CENTER);
         card.setSpacing(15);
         card.getStyleClass().add("inventory-card");
 
-        // Dimensioni fisse per mantenere la griglia allineata
         card.setPrefWidth(260);
         card.setMinWidth(260);
         card.setMinHeight(380);
 
-        // 1. IMMAGINE (Caricamento HD e Smooth)
+        //Immagine
         ImageView imgView = new ImageView();
         imgView.setFitWidth(220);
         imgView.setFitHeight(180);
@@ -105,12 +104,11 @@ public class Inventario implements Initializable, GestoreMessaggio {
         imgView.setSmooth(true);
 
         try {
-            String pathRelativo = (obj.getImmagini() != null && !obj.getImmagini().isEmpty()) ? obj.getImmagini().get(0) : null;
+            String pathRelativo = (oggetto.getImmagini() != null && !oggetto.getImmagini().isEmpty()) ? oggetto.getImmagini().get(0) : null;
 
             if (pathRelativo != null) {
                 File fileImg = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + pathRelativo);
                 if (fileImg.exists()) {
-                    // Caricamento con background loading e alta qualità
                     imgView.setImage(new Image(fileImg.toURI().toString(), 400, 400, true, true, true));
                 } else {
                     setDefaultImage(imgView);
@@ -122,47 +120,46 @@ public class Inventario implements Initializable, GestoreMessaggio {
             setDefaultImage(imgView);
         }
 
-        // 2. NOME OGGETTO (Testo centrato e a capo)
-        Text nome = new Text(obj.getNome());
+        //Nome Oggetto
+        Text nome = new Text(oggetto.getNome());
         nome.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-fill: #2d3436;");
         nome.setWrappingWidth(230);
         nome.setTextAlignment(TextAlignment.CENTER);
 
-        // 3. SEZIONE BADGE (Pillole colorate)
+        //Sezione badge
         FlowPane badgeBox = new FlowPane();
         badgeBox.setAlignment(Pos.CENTER);
         badgeBox.setHgap(8);
         badgeBox.setVgap(8);
 
-        Label badgeCondizione = new Label(obj.getCondizione().toString().replace("_", " "));
+        Label badgeCondizione = new Label(oggetto.getCondizione().toString().replace("_", " "));
         badgeCondizione.getStyleClass().addAll("badge", "badge-violet");
 
-        Label badgeStato = new Label(obj.getDisponibilita().toString());
+        Label badgeStato = new Label(oggetto.getDisponibilita().toString());
         badgeStato.getStyleClass().add("badge");
 
-        // Logica colori dinamica
-        String statoStr = obj.getDisponibilita().toString();
+        String statoStr = oggetto.getDisponibilita().toString();
         if ("DISPONIBILE".equalsIgnoreCase(statoStr)) {
             badgeStato.getStyleClass().add("badge-green");
         } else if ("SCAMBIATO".equalsIgnoreCase(statoStr) || "VENDUTO".equalsIgnoreCase(statoStr)) {
             badgeStato.getStyleClass().add("badge-red");
         } else {
-            badgeStato.getStyleClass().add("badge-orange"); // Es: OCCUPATO (in annuncio)
+            badgeStato.getStyleClass().add("badge-orange");
         }
 
         badgeBox.getChildren().addAll(badgeCondizione, badgeStato);
 
-        // 4. BOTTONI AZIONE
+        //Tasti
         HBox btnBox = new HBox(12);
         btnBox.setAlignment(Pos.CENTER);
 
         Button btnModifica = new Button("Modifica");
         btnModifica.getStyleClass().add("button-small");
-        btnModifica.setOnAction(e -> onModificaOggetto(obj, e));
+        btnModifica.setOnAction(e -> onModificaOggetto(oggetto, e));
 
         Button btnElimina = new Button("Elimina");
         btnElimina.getStyleClass().addAll("button-small", "button-danger");
-        btnElimina.setOnAction(e -> onEliminaOggetto(obj));
+        btnElimina.setOnAction(e -> onEliminaOggetto(oggetto));
 
         btnBox.getChildren().addAll(btnModifica, btnElimina);
 
@@ -170,49 +167,48 @@ public class Inventario implements Initializable, GestoreMessaggio {
         return card;
     }
 
-    private void setDefaultImage(ImageView iv) {
-        iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+    private void setDefaultImage(ImageView imageView) {
+        imageView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
     }
 
-    private void onModificaOggetto(Oggetto obj, ActionEvent event) {
+    private void onModificaOggetto(Oggetto oggetto, ActionEvent actionEvent) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathAggiungiOggetto));
             Parent root = loader.load();
 
-            // Passaggio dell'oggetto al controller di destinazione
             AggiungiOggetto controllerAggiungi = loader.getController();
-            controllerAggiungi.setOggettoDaModificare(obj);
+            controllerAggiungi.setOggettoDaModificare(oggetto);
 
-            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            Stage stage = (Stage)((Node) actionEvent.getSource()).getScene().getWindow();
             Scene scene = new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight());
             stage.setScene(scene);
             stage.setTitle("Modifica Oggetto - UninaSwap");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
             mostraMessaggioEsterno("Errore nel caricamento della pagina di modifica.", Messaggio.TIPI.ERROR);
         }
     }
 
-    private void onEliminaOggetto(Oggetto obj) {
+    private void onEliminaOggetto(Oggetto oggetto) {
         try {
-            if (controller.EliminaOggetto(obj, controller.getUtente())) {
+            if (controller.EliminaOggetto(oggetto, controller.getUtente())) {
                 mostraMessaggioEsterno("Oggetto rimosso correttamente.", Messaggio.TIPI.SUCCESS);
-                caricaOggetti(); // Refresh della visualizzazione
+                caricaOggetti();
             } else {
                 mostraMessaggioEsterno("Errore: Impossibile eliminare un oggetto associato a un annuncio attivo.", Messaggio.TIPI.ERROR);
             }
-        } catch (Exception e) {
+        } catch (Exception exception) {
             mostraMessaggioEsterno("Errore durante l'eliminazione.", Messaggio.TIPI.ERROR);
         }
     }
 
     @FXML
-    public void onAggiungiNuovoClick(ActionEvent event) {
-        gestoreScene.CambiaScena(Costanti.pathAggiungiOggetto, "Aggiungi Oggetto", event);
+    public void onAggiungiNuovoClick(ActionEvent actionEvent) {
+        gestoreScene.CambiaScena(Costanti.pathAggiungiOggetto, "Aggiungi Oggetto", actionEvent);
     }
 
-    @FXML public void onIndietroClick(ActionEvent event) {
-        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event);
+    @FXML public void onIndietroClick(ActionEvent actionEvent) {
+        gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
     }
 
     @Override

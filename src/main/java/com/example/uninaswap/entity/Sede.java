@@ -30,10 +30,6 @@ public class Sede {
         }
     }
 
-    public void rimuoviAnnunci() {
-        this.annunci.clear();
-    }
-
     //Setter e Getter
     //
     public int getId() {
@@ -52,13 +48,6 @@ public class Sede {
 
     public String getIndirizzo() {
         return indirizzo;
-    }
-    public void setIndirizzo(String indirizzo) {
-        this.indirizzo = indirizzo;
-    }
-
-    public ArrayList<Annuncio> getAnnunci() {
-        return annunci;
     }
 
     //toString

@@ -36,24 +36,12 @@ public class Recensione {
     public String getCommento() { return commento; }
     public void setCommento(String commento) { this.commento = commento; }
 
-    public String getRecensito() { return recensito; }
-    public void setRecensito(String recensito) { this.recensito = recensito; }
-
-    public String getRecensore() { return recensore; }
-    public void setRecensore(String recensore) { this.recensore = recensore; }
-
     public String getEmailRecensito() {
         return recensito;
-    }
-    public void setEmailRecensito(String email) {
-        this.recensito = email;
     }
 
     public String getEmailRecensore() {
         return recensore;
-    }
-    public void setEmailRecensore(String email) {
-        this.recensore = email;
     }
 
     //toString

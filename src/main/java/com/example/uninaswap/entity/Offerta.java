@@ -41,15 +41,6 @@ public abstract class Offerta {
         }
     }
 
-    //Adder remover clearer
-    //
-    public void addOfferta(Annuncio annuncio) throws Exception {
-        this.annuncio = annuncio;
-        if (annuncio != null) {
-            annuncio.ottieniOfferta(this);
-        }
-    }
-
     //Getter e Setter
     //
     public void setId(int id) {
@@ -83,15 +74,9 @@ public abstract class Offerta {
     public LocalTime getOrarioInizio() {
         return orarioInizio;
     }
-    public void setOrarioInizio(LocalTime orarioInizio) {
-        this.orarioInizio = orarioInizio;
-    }
 
     public LocalTime getOrarioFine() {
         return orarioFine;
-    }
-    public void setOrarioFine(LocalTime orarioFine) {
-        this.orarioFine = orarioFine;
     }
 
     public Oggetto getOggetto() {
@@ -99,17 +84,6 @@ public abstract class Offerta {
     }
     public void setOggetto(Oggetto oggetto) {
         this.oggetto = oggetto;
-    }
-
-    public void setOrari(LocalTime orarioInizio, LocalTime orarioFine) {
-        if (orarioInizio == null || orarioFine == null) {
-            throw new IllegalArgumentException("Entrambi gli orari devono essere specificati");
-        }
-        if (orarioInizio.isAfter(orarioFine)) {
-            throw new IllegalArgumentException("L'orario d'inizio non può essere successivo all'orario di fine!");
-        }
-        this.orarioInizio = orarioInizio;
-        this.orarioFine = orarioFine;
     }
 
     public Annuncio getAnnuncio() {

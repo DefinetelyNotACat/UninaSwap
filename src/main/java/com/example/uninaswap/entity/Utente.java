@@ -42,12 +42,9 @@ public class Utente {
     //Metodi di logica
     //
     public String modificaImmagineProfilo(String pathImmagineCaricata) throws IOException {
-        System.out.println("Sono nella modifica e l'id e': " + this.id);
         //Genera il path di destinazione dell'immagine: dati_utenti/{id}/immagini
         //
         Path cartellaUtente = Paths.get(pathUtenti, String.valueOf(this.id), "immagini");
-
-        System.out.println("La cartella per le immagini e': " + Paths.get(cartellaUtente.toString()));
 
         //Se le cartelle non esistono le crea tutte in una sola volta
         //
@@ -79,9 +76,6 @@ public class Utente {
         //
         Path pathDestinazione = cartellaUtente.resolve(nomeFileFinale);
 
-
-        System.out.println("Questo e' il path dell'immagine originale : " + sorgenteImmagineCaricata.toString());
-
         //Copia del file caricato nella cartella di destinazione con il nuovo nome, in caso il file esista gia' lo sovrascrive
         //
         Files.copy(sorgenteImmagineCaricata, pathDestinazione,  StandardCopyOption.REPLACE_EXISTING);
@@ -94,44 +88,8 @@ public class Utente {
 
     //Adder, Remover e Clearer
     //
-    public boolean addRecensioneInviata(Recensione recensione) {
-        return this.recensioniInviata.add(recensione);
-    }
-
-    public boolean removeRecensioneInviata(Recensione recensione) {
-        return this.recensioniInviata.remove(recensione);
-    }
-
-    public void clearRecensioneInviata() {
-        this.recensioniInviata.clear();
-    }
-
-    public boolean addRecensioneRicevuta(Recensione recensione) {
-        return this.recensioniRicevuta.add(recensione);
-    }
-
-    public boolean removeRecensioneRicevuta(Recensione recensione) {
-        return this.recensioniRicevuta.remove(recensione);
-    }
-
-    public void clearRecensioneRicevuta() {
-        this.recensioniRicevuta.clear();
-    }
-
     public boolean addOggetto(Oggetto oggetto){
         return this.oggetti.add(oggetto);
-    }
-
-    public boolean removeOggetto(Oggetto oggetto){
-        return this.oggetti.remove(oggetto);
-    }
-
-    public void clearOggetto(){
-        this.oggetti.clear();
-    }
-
-    public void clearOfferte(){
-        this.offerte.clear();
     }
 
     //Setter e Getter
@@ -191,14 +149,6 @@ public class Utente {
 
     public ArrayList<Oggetto> getOggetti() {
         return oggetti;
-    }
-
-    public ArrayList<Recensione> getRecensioniInviate() {
-        return recensioniInviata;
-    }
-
-    public ArrayList<Recensione> getRecensioniRicevute() {
-        return recensioniRicevuta;
     }
 
     //toString

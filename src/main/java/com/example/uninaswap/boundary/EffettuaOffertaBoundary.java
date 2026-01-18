@@ -5,7 +5,6 @@ import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -54,12 +53,12 @@ public class EffettuaOffertaBoundary {
         btnInvia.disableProperty().bind(messaggioRegexOk.not());
     }
 
-    private void gestisciErroreVisivo(Control f, Text e, boolean ok) {
-        f.getStyleClass().removeAll("error", "right");
-        f.getStyleClass().add(ok ? "right" : "error");
-        if (e != null) {
-            e.setVisible(!ok);
-            e.setManaged(!ok);
+    private void gestisciErroreVisivo(Control controller, Text messaggio, boolean check) {
+        controller.getStyleClass().removeAll("error", "right");
+        controller.getStyleClass().add(check ? "right" : "error");
+        if (messaggio != null) {
+            messaggio.setVisible(!check);
+            messaggio.setManaged(!check);
         }
     }
 
@@ -73,19 +72,19 @@ public class EffettuaOffertaBoundary {
         containerSpecifico.getChildren().clear();
 
         if (annuncioTarget instanceof AnnuncioVendita) {
-            Label l = new Label("Inserisci la tua offerta in €:");
-            l.setStyle("-fx-font-weight: bold; -fx-font-size: 15px;");
+            Label etichetta = new Label("Inserisci la tua offerta in €:");
+            etichetta.setStyle("-fx-font-weight: bold; -fx-font-size: 15px;");
 
             inputPrezzo = new TextField();
             inputPrezzo.setPromptText("Es. 50.00");
             inputPrezzo.getStyleClass().add("text-field-premium");
             inputPrezzo.setMaxWidth(250);
 
-            containerSpecifico.getChildren().addAll(l, inputPrezzo);
+            containerSpecifico.getChildren().addAll(etichetta, inputPrezzo);
 
         } else if (annuncioTarget instanceof AnnuncioScambio) {
-            Label l = new Label("Seleziona gli oggetti da offrire:");
-            l.setStyle("-fx-font-weight: bold; -fx-text-fill: #2d3436; -fx-font-size: 15px;");
+            Label etichetta = new Label("Seleziona gli oggetti da offrire:");
+            etichetta.setStyle("-fx-font-weight: bold; -fx-text-fill: #2d3436; -fx-font-size: 15px;");
 
             listaMieiOggetti = new ListView<>();
             listaMieiOggetti.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -98,9 +97,9 @@ public class EffettuaOffertaBoundary {
                     node = node.getParent();
                 }
                 if (node instanceof ListCell) {
-                    ListCell<?> cell = (ListCell<?>) node;
-                    if (!cell.isEmpty()) {
-                        int index = cell.getIndex();
+                    ListCell<?> cella = (ListCell<?>) node;
+                    if (!cella.isEmpty()) {
+                        int index = cella.getIndex();
                         if (listaMieiOggetti.getSelectionModel().isSelected(index)) {
                             listaMieiOggetti.getSelectionModel().clearSelection(index);
                         } else {
@@ -115,14 +114,14 @@ public class EffettuaOffertaBoundary {
                 listaMieiOggetti.getItems().addAll(mieiOggetti);
 
                 listaMieiOggetti.setCellFactory(param -> new ListCell<>() {
-                    private final CheckBox cb = new CheckBox();
+                    private final CheckBox checkBox = new CheckBox();
                     private final HBox cellBox = new HBox(15);
                     private final Label nome = new Label();
                     {
-                        cb.setMouseTransparent(true);
-                        cb.setFocusTraversable(false);
+                        checkBox.setMouseTransparent(true);
+                        checkBox.setFocusTraversable(false);
                         cellBox.setAlignment(Pos.CENTER_LEFT);
-                        cellBox.getChildren().addAll(cb, nome);
+                        cellBox.getChildren().addAll(checkBox, nome);
                     }
                     @Override
                     protected void updateItem(Oggetto item, boolean empty) {
@@ -131,22 +130,22 @@ public class EffettuaOffertaBoundary {
                             setGraphic(null);
                         } else {
                             nome.setText(item.getNome());
-                            cb.setSelected(listaMieiOggetti.getSelectionModel().isSelected(getIndex()));
+                            checkBox.setSelected(listaMieiOggetti.getSelectionModel().isSelected(getIndex()));
                             setGraphic(cellBox);
                         }
                     }
                 });
-            } catch (Exception e) {
+            } catch (Exception exception) {
                 lblErrore.setText("Errore caricamento oggetti.");
             }
-            containerSpecifico.getChildren().addAll(l, listaMieiOggetti);
+            containerSpecifico.getChildren().addAll(etichetta, listaMieiOggetti);
 
         } else {
             VBox boxRegalo = new VBox(10);
             boxRegalo.setAlignment(Pos.CENTER);
-            Label l = new Label("🎁 Questo annuncio è un REGALO!");
-            l.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #fd7e14;");
-            boxRegalo.getChildren().add(l);
+            Label etichetta = new Label("🎁 Questo annuncio è un REGALO!");
+            etichetta.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #fd7e14;");
+            boxRegalo.getChildren().add(etichetta);
             containerSpecifico.getChildren().add(boxRegalo);
         }
     }

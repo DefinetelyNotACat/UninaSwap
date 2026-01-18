@@ -19,20 +19,6 @@ public class OffertaScambio extends Offerta {
 
     }
 
-    //Adder, Remover e Clearer
-    //
-    public void addOggetto(Oggetto oggetto) {
-        this.oggetti.add(oggetto);
-    }
-
-    public void removeOggetto(Oggetto oggetto) {
-        this.oggetti.remove(oggetto);
-    }
-
-    public void clearOggetti() {
-        this.oggetti.clear();
-    }
-
     //Getter e Setter
     //
     public ArrayList<Oggetto> getOggetti() {

@@ -8,23 +8,6 @@ import java.util.ArrayList;
 
 public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
 
-    public boolean associaCategoria(int idOggetto, String nomeCategoria) {
-        String sql = "INSERT INTO OGGETTO_CATEGORIA (oggetto_id, categoria_nome) VALUES (?, ?)";
-
-        try (Connection conn = PostgreSQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idOggetto);
-            stmt.setString(2, nomeCategoria);
-
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Errore associazione Oggetto-Categoria: " + e.getMessage());
-            return false;
-        }
-    }
-
     public void associaCategorie(Connection conn, int idOggetto, ArrayList<Categoria> categorie) throws SQLException {
         if (categorie == null || categorie.isEmpty()) return;
 
@@ -37,45 +20,6 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
                 stmt.addBatch(); // Aggiunge al batch
             }
             stmt.executeBatch(); // Esegue tutto insieme
-        }
-    }
-
-    public boolean rimuoviAssociazione(int idOggetto, String nomeCategoria) {
-        String sql = "DELETE FROM OGGETTO_CATEGORIA WHERE oggetto_id = ? AND categoria_nome = ?";
-
-        try (Connection conn = PostgreSQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, idOggetto);
-            stmt.setString(2, nomeCategoria);
-
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean rimuoviTutteLeCategorieDiOggetto(int idOggetto, Connection connEsterna) throws SQLException {
-        String sql = "DELETE FROM OGGETTO_CATEGORIA WHERE oggetto_id = ?";
-
-        PreparedStatement stmt = null;
-        boolean chiudiConnessione = (connEsterna == null);
-        Connection conn = chiudiConnessione ? PostgreSQLConnection.getConnection() : connEsterna;
-
-        try {
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, idOggetto);
-            // executeUpdate ritorna il numero di righe cancellate.
-            // Se ritorna 0 non è un errore (l'oggetto non aveva categorie), quindi torniamo true comunque se non ci sono eccezioni.
-            stmt.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (stmt != null) stmt.close();
-            if (chiudiConnessione && conn != null) conn.close();
         }
     }
 

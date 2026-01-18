@@ -31,25 +31,11 @@ public class Immagine {
         this.id = id;
     }
 
-    public Date getDataCaricamento() {
-        return dataCaricamento;
-    }
-    public void setDataCaricamento(Date dataCaricamento) {
-        this.dataCaricamento = dataCaricamento;
-    }
-
     public String getPath() {
         return path;
     }
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public int getIdOggetto() {
-        return idOggetto;
-    }
-    public void setIdOggetto(int idOggetto) {
-        this.idOggetto = idOggetto;
     }
 
     //toString

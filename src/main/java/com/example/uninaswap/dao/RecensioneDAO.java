@@ -15,41 +15,6 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
                     "JOIN utente u1 ON r.recensore_id = u1.id " +
                     "JOIN utente u2 ON r.recensito_id = u2.id";
 
-    @Override
-    public Recensione OttieniRecensione(int id) {
-        Recensione recensione = null;
-        String sql = SELECT_BASE + " WHERE r.id = ?";
-        try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql)) {
-
-            query.setInt(1, id);
-            try (ResultSet rs = query.executeQuery()) {
-                if (rs.next()) {
-                    recensione = mapResultSetToRecensione(rs);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return recensione;
-    }
-
-    @Override
-    public List<Recensione> OttieniTutteRecensione() {
-        ArrayList<Recensione> tutteRecensione = new ArrayList<>();
-        try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(SELECT_BASE);
-             ResultSet rs = query.executeQuery()) {
-
-            while (rs.next()) {
-                tutteRecensione.add(mapResultSetToRecensione(rs));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return tutteRecensione;
-    }
-
     public ArrayList<Recensione> ottieniRecensioniPerUtente(String emailRecensito) {
         ArrayList<Recensione> recensioni = new ArrayList<>();
         // u2 è l'utente RECENSITO nella SELECT_BASE
@@ -144,20 +109,6 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
             query.setString(2, recensione.getCommento());
             query.setInt(3, recensione.getId());
 
-            return query.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean EliminaRecensione(int id) {
-        String sql = "DELETE FROM recensione WHERE id = ?";
-        try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql)) {
-
-            query.setInt(1, id);
             return query.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();

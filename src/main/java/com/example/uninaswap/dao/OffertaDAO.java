@@ -235,68 +235,6 @@ public class OffertaDAO implements GestoreOffertaDAO {
         }
     }
 
-    public boolean eliminaOfferta(int idOfferta) {
-        String sqlLiberaOggetti = "UPDATE OGGETTO SET offerta_id = NULL, disponibilita = 'DISPONIBILE'::disponibilita_oggetto WHERE offerta_id = ?";
-        String sqlElimina = "DELETE FROM OFFERTA WHERE id = ?";
-
-        Connection conn = null;
-        try {
-            conn = PostgreSQLConnection.getConnection();
-            conn.setAutoCommit(false);
-
-            // 1. Libera oggetti (se esistono collegati a questa offerta)
-            try (PreparedStatement ps = conn.prepareStatement(sqlLiberaOggetti)) {
-                ps.setInt(1, idOfferta);
-                ps.executeUpdate();
-            }
-
-            // 2. Elimina offerta
-            try (PreparedStatement ps = conn.prepareStatement(sqlElimina)) {
-                ps.setInt(1, idOfferta);
-                int rows = ps.executeUpdate();
-                if (rows > 0) {
-                    conn.commit();
-                    return true;
-                } else {
-                    conn.rollback();
-                    return false;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            if (conn != null) try {
-                conn.rollback();
-            } catch (SQLException ex) {
-            }
-            return false;
-        } finally {
-            if (conn != null) try {
-                conn.setAutoCommit(true);
-                conn.close();
-            } catch (SQLException ex) {
-            }
-        }
-    }
-
-    public ArrayList<Offerta> ottieniOffertePerAnnuncio(int idAnnuncio) {
-        ArrayList<Offerta> lista = new ArrayList<>();
-        String sql = "SELECT * FROM OFFERTA WHERE annuncio_id = ? ORDER BY data_creazione DESC";
-
-        try (Connection conn = PostgreSQLConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, idAnnuncio);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    lista.add(mapRowToOfferta(conn, rs));
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return lista;
-    }
-
     private Offerta mapRowToOfferta(Connection conn, ResultSet rs) throws Exception {
         String tipo = rs.getString("tipo_offerta");
         int idOfferta = rs.getInt("id");

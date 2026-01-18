@@ -52,24 +52,27 @@ public class AggiungiOggetto implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         controllerUninaSwap = ControllerUninaSwap.getInstance();
 
-        // 1. Popolamento categorie
-        for (Categoria c : controllerUninaSwap.getCategorie()) {
-            CheckBox cb = new CheckBox(c.getNome());
-            cb.setUserData(c);
-            cb.selectedProperty().addListener((obs, oldV, newV) -> controllaCampiValidi());
-            categorieMenuButton.getItems().add(new CustomMenuItem(cb, false));
+        //Popolamento categorie
+        //
+        for (Categoria categoria : controllerUninaSwap.getCategorie()) {
+            CheckBox checkBox = new CheckBox(categoria.getNome());
+            checkBox.setUserData(categoria);
+            checkBox.selectedProperty().addListener((obs, oldV, newV) -> controllaCampiValidi());
+            categorieMenuButton.getItems().add(new CustomMenuItem(checkBox, false));
         }
 
-        // 2. Popolamento condizioni
+        //Popolamento condizioni
+        //
         condizioneBox.getItems().setAll(controllerUninaSwap.getCondizioni());
 
-        // 3. Listener per Validazione Regex Nome
+        //Listener per Validazione Regex Nome
+        //
         nomeOggettoField.textProperty().addListener((obs, oldV, newV) -> {
             boolean matchesRegex = newV != null && newV.matches(Costanti.FIELDS_REGEX_SPAZIO);
             boolean isLongEnough = newV != null && newV.trim().length() >= 5;
-            boolean ok = matchesRegex && isLongEnough;
+            boolean check = matchesRegex && isLongEnough;
 
-            nomeRegexValido.set(ok);
+            nomeRegexValido.set(check);
 
             if(erroreNome != null) {
                 if (!matchesRegex) {
@@ -77,10 +80,10 @@ public class AggiungiOggetto implements Initializable {
                 } else if (!isLongEnough) {
                     erroreNome.setText("Il nome deve contenere almeno 5 caratteri");
                 }
-                erroreNome.setVisible(!ok);
-                erroreNome.setManaged(!ok);
+                erroreNome.setVisible(!check);
+                erroreNome.setManaged(!check);
             }
-            gestisciStileCampo(nomeOggettoField, ok);
+            gestisciStileCampo(nomeOggettoField, check);
             controllaCampiValidi();
         });
 
@@ -89,50 +92,53 @@ public class AggiungiOggetto implements Initializable {
 
     private void controllaCampiValidi() {
         // Verifica Categorie
+        //
         List<Categoria> selezionate = getCategorieSelezionate();
-        boolean categoriaOk = !selezionate.isEmpty();
-        categorieMenuButton.setText(categoriaOk ? selezionate.size() + " categorie selezionate" : "Seleziona categorie");
+        boolean checkCategoria = !selezionate.isEmpty();
+        categorieMenuButton.setText(checkCategoria ? selezionate.size() + " categorie selezionate" : "Seleziona categorie");
 
         // Verifica Condizione e Immagini
-        boolean condizioneOk = condizioneBox.getValue() != null;
-        boolean immaginiOk = !immaginiNuove.isEmpty() || !immaginiEsistenti.isEmpty();
+        //
+        boolean checkCondizione = condizioneBox.getValue() != null;
+        boolean checkImmagini = !immaginiNuove.isEmpty() || !immaginiEsistenti.isEmpty();
 
         if (erroreImmagini != null) {
-            erroreImmagini.setVisible(!immaginiOk);
-            erroreImmagini.setManaged(!immaginiOk);
+            erroreImmagini.setVisible(!checkImmagini);
+            erroreImmagini.setManaged(!checkImmagini);
         }
 
-        // Abilitazione pulsante basata su tutti i controlli (incluso il Regex Property)
+        //Abilitazione pulsante basata su tutti i controlli (incluso il Regex Property)
+        //
         if (aggiungiButton != null) {
-            aggiungiButton.setDisable(!(nomeRegexValido.get() && categoriaOk && condizioneOk && immaginiOk));
+            aggiungiButton.setDisable(!(nomeRegexValido.get() && checkCategoria && checkCondizione && checkImmagini));
         }
     }
 
-    private void gestisciStileCampo(Control f, boolean ok) {
-        f.getStyleClass().removeAll("error", "right");
-        f.getStyleClass().add(ok ? "right" : "error");
+    private void gestisciStileCampo(Control controller, boolean check) {
+        controller.getStyleClass().removeAll("error", "right");
+        controller.getStyleClass().add(check ? "right" : "error");
     }
 
-    public void setOggettoDaModificare(Oggetto obj) {
-        this.oggettoDaModificare = obj;
+    public void setOggettoDaModificare(Oggetto oggettoDaModificare) {
+        this.oggettoDaModificare = oggettoDaModificare;
         if(aggiungiButton != null) aggiungiButton.setText("Salva Modifiche");
 
-        nomeOggettoField.setText(obj.getNome());
+        nomeOggettoField.setText(oggettoDaModificare.getNome());
 
         for (MenuItem item : categorieMenuButton.getItems()) {
-            if (item instanceof CustomMenuItem customItem && customItem.getContent() instanceof CheckBox cb) {
-                Categoria catNelMenu = (Categoria) cb.getUserData();
-                boolean presente = obj.getCategorie().stream()
+            if (item instanceof CustomMenuItem customItem && customItem.getContent() instanceof CheckBox checkBox) {
+                Categoria catNelMenu = (Categoria) checkBox.getUserData();
+                boolean presente = oggettoDaModificare.getCategorie().stream()
                         .anyMatch(c -> c.getNome().equals(catNelMenu.getNome()));
-                cb.setSelected(presente);
+                checkBox.setSelected(presente);
             }
         }
 
-        condizioneBox.setValue(obj.getCondizione());
+        condizioneBox.setValue(oggettoDaModificare.getCondizione());
 
-        if (obj.getImmagini() != null) {
+        if (oggettoDaModificare.getImmagini() != null) {
             immaginiEsistenti.clear();
-            immaginiEsistenti.addAll(obj.getImmagini());
+            immaginiEsistenti.addAll(oggettoDaModificare.getImmagini());
             aggiornaVisualizzazioneImmagini();
         }
         controllaCampiValidi();
@@ -222,8 +228,8 @@ public class AggiungiOggetto implements Initializable {
                 new GestoreScene().CambiaScena(Costanti.pathInventario, "Il Tuo Inventario", actionEvent,
                         oggettoDaModificare == null ? "Oggetto aggiunto!" : "Oggetto modificato!", Messaggio.TIPI.SUCCESS);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -235,8 +241,8 @@ public class AggiungiOggetto implements Initializable {
     private List<Categoria> getCategorieSelezionate() {
         List<Categoria> selezionate = new ArrayList<>();
         for (MenuItem item : categorieMenuButton.getItems()) {
-            if (item instanceof CustomMenuItem customItem && customItem.getContent() instanceof CheckBox cb) {
-                if (cb.isSelected()) selezionate.add((Categoria) cb.getUserData());
+            if (item instanceof CustomMenuItem customItem && customItem.getContent() instanceof CheckBox checkBox) {
+                if (checkBox.isSelected()) selezionate.add((Categoria) checkBox.getUserData());
             }
         }
         return selezionate;

@@ -90,11 +90,6 @@ public class Oggetto {
         return "oggetti/" + nomeFileFinale;
     }
 
-    //Adder Remover Clearer
-    //
-    public void addCategoria(Categoria c) { if(c != null) this.categorie.add(c); }
-
-    public void addImmagine(String img) { if(img != null) this.immagini.add(img); }
 
     //Setter e Getter
     //
@@ -104,7 +99,6 @@ public class Oggetto {
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
-    public Utente getProprietario() { return proprietario; }
     public void setProprietario(Utente proprietario) { this.proprietario = proprietario; }
 
     public Annuncio getAnnuncio() { return annuncio; }

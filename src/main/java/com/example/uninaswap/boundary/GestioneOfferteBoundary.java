@@ -36,7 +36,6 @@ import java.util.DoubleSummaryStatistics;
 
 public class GestioneOfferteBoundary {
 
-    // --- RIFERIMENTI FXML ---
     @FXML private ScrollPane viewListaOfferte;
     @FXML private VBox containerOfferte;
     @FXML private VBox viewReport;
@@ -105,7 +104,6 @@ public class GestioneOfferteBoundary {
     private void generaReportStatistico() {
         ArrayList<Offerta> mieOfferte = controller.OttieniLeMieOfferte();
 
-        // --- FIX VUOTO: Caricamento FXML esterno se non ci sono offerte ---
         if (mieOfferte == null || mieOfferte.isEmpty()) {
             caricaScenaNessunaOfferta();
             if (lblMedia != null) { lblMedia.setText("-"); lblMin.setText("-"); lblMax.setText("-"); }
@@ -286,7 +284,7 @@ public class GestioneOfferteBoundary {
         return card;
     }
 
-    private VBox creaMiniCardOggetto(Oggetto obj) {
+    private VBox creaMiniCardOggetto(Oggetto oggetto) {
         VBox miniCard = new VBox(5);
         miniCard.setAlignment(Pos.CENTER);
         miniCard.setStyle("-fx-background-color: #ffffff; -fx-padding: 10; -fx-background-radius: 10; " +
@@ -296,13 +294,13 @@ public class GestioneOfferteBoundary {
         ImageView imgObj = new ImageView();
         imgObj.setFitWidth(110); imgObj.setFitHeight(80);
         imgObj.setPreserveRatio(true);
-        if (obj.getImmagini() != null && !obj.getImmagini().isEmpty()) {
-            File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + obj.getImmagini().get(0));
+        if (oggetto.getImmagini() != null && !oggetto.getImmagini().isEmpty()) {
+            File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + oggetto.getImmagini().get(0));
             if (file.exists()) imgObj.setImage(new Image(file.toURI().toString(), 200, 160, true, true));
             else setDefaultItemImage(imgObj);
         } else { setDefaultItemImage(imgObj); }
 
-        Label nome = new Label(obj.getNome());
+        Label nome = new Label(oggetto.getNome());
         nome.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #000000;");
         nome.setWrapText(true);
         nome.setTextAlignment(TextAlignment.CENTER);
@@ -310,14 +308,14 @@ public class GestioneOfferteBoundary {
 
         FlowPane containerCategorie = new FlowPane(4, 4);
         containerCategorie.setAlignment(Pos.CENTER);
-        for (Categoria c : obj.getCategorie()) {
+        for (Categoria c : oggetto.getCategorie()) {
             Label chip = new Label(c.getNome());
             chip.setStyle("-fx-font-size: 9px; -fx-text-fill: #003366; -fx-background-color: #e1f5fe; " +
                     "-fx-padding: 2 5; -fx-background-radius: 10; -fx-border-color: #b3e5fc; -fx-border-radius: 10;");
             containerCategorie.getChildren().add(chip);
         }
 
-        Label cond = new Label(obj.getCondizione().toString().replace("_", " "));
+        Label cond = new Label(oggetto.getCondizione().toString().replace("_", " "));
         cond.setStyle("-fx-font-size: 10px; -fx-text-fill: #000000; -fx-background-color: #f1f2f6; " +
                 "-fx-padding: 3 6; -fx-background-radius: 5; -fx-border-color: #dfe4ea; -fx-border-radius: 5;");
         cond.setWrapText(true);
@@ -327,31 +325,31 @@ public class GestioneOfferteBoundary {
         return miniCard;
     }
 
-    private void caricaFotoProfilo(Utente u, ImageView iv) {
+    private void caricaFotoProfilo(Utente utente, ImageView imageView) {
         try {
-            if (u != null && u.getPathImmagineProfilo() != null && !u.getPathImmagineProfilo().isEmpty()) {
-                File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
+            if (utente != null && utente.getPathImmagineProfilo() != null && !utente.getPathImmagineProfilo().isEmpty()) {
+                File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + utente.getPathImmagineProfilo());
                 if (file.exists()) {
-                    iv.setImage(new Image(file.toURI().toString()));
+                    imageView.setImage(new Image(file.toURI().toString()));
                     return;
                 }
             }
-            iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
+            imageView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
         } catch (Exception e) {
-            iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
+            imageView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg")));
         }
     }
 
-    private void setDefaultItemImage(ImageView iv) {
-        iv.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+    private void setDefaultItemImage(ImageView imageView) {
+        imageView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
     }
 
-    private void impostaColoreStato(Label l, Offerta.STATO_OFFERTA s) {
-        l.getStyleClass().removeAll("status-accepted", "status-rejected", "status-pending");
-        switch (s) {
-            case ACCETTATA: l.getStyleClass().add("status-accepted"); break;
-            case RIFIUTATA: l.getStyleClass().add("status-rejected"); break;
-            default: l.getStyleClass().add("status-pending"); break;
+    private void impostaColoreStato(Label etichetta, Offerta.STATO_OFFERTA statoOfferta) {
+        etichetta.getStyleClass().removeAll("status-accepted", "status-rejected", "status-pending");
+        switch (statoOfferta) {
+            case ACCETTATA: etichetta.getStyleClass().add("status-accepted"); break;
+            case RIFIUTATA: etichetta.getStyleClass().add("status-rejected"); break;
+            default: etichetta.getStyleClass().add("status-pending"); break;
         }
     }
 
@@ -361,8 +359,8 @@ public class GestioneOfferteBoundary {
         return l;
     }
 
-    private void cambiaStato(Offerta o, Offerta.STATO_OFFERTA nuovoStato) {
-        if (controller.GestisciStatoOfferta(o, nuovoStato)) {
+    private void cambiaStato(Offerta offerta, Offerta.STATO_OFFERTA nuovoStato) {
+        if (controller.GestisciStatoOfferta(offerta, nuovoStato)) {
             caricaOfferte();
         }
     }

@@ -9,33 +9,6 @@ import java.util.ArrayList;
 
 public class ImmagineDAO implements GestoreImmagineDAO {
 
-    // Metodo standard per inserimento singolo (apre/chiude connessione)
-    public boolean inserisciImmagine(String path, int idOggetto) {
-        try (Connection conn = PostgreSQLConnection.getConnection()) {
-            inserisciImmaginiBatch(conn, idOggetto, new ArrayList<String>() {{ add(path); }});
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean inserisciImmagine(Connection conn, String immagine, int idOggetto) throws SQLException{
-        return true;
-    }
-
-    public boolean rimuoviImmagine(Immagine immagine){
-        return true;
-    }
-
-    public ArrayList<Immagine> ottieniImmagini(int idOggetto){
-        return null;
-    }
-
-    public boolean rimuoviImmagine(Connection conn, int idOggetto) throws SQLException{
-        return true;
-    }
-
     // Metodo per transazione: accetta Connection e lista di stringhe
     public void inserisciImmaginiBatch(Connection conn, int idOggetto, ArrayList<String> paths) throws SQLException {
         if (paths == null || paths.isEmpty()) return;
@@ -50,10 +23,6 @@ public class ImmagineDAO implements GestoreImmagineDAO {
             }
             stmt.executeBatch();
         }
-    }
-
-    public ArrayList<Immagine> ottieniTutteImmagini(){
-        return null;
     }
 
     public ArrayList<String> ottieniImmaginiStringhe(int idOggetto) {

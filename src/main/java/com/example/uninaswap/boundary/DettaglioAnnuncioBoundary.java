@@ -42,14 +42,11 @@ public class DettaglioAnnuncioBoundary {
     private void popolaCampi() {
         if (annuncioCorrente == null) return;
 
-        // 1. Dati Annuncio base
         txtTitoloDescrizione.setText(annuncioCorrente.getDescrizione());
         txtSede.setText("📍 " + (annuncioCorrente.getSede() != null ? annuncioCorrente.getSede().getNomeSede() : "Sede non specificata"));
 
-        // 2. Immagine dell'oggetto in alta qualità
         caricaImmagineAnnuncio();
 
-        // 3. Dati VENDITORE (Recupero informazioni profilo)
         Utente venditore = annuncioCorrente.getUtente();
         if (venditore != null) {
             txtVenditore.setText(venditore.getUsername());
@@ -61,24 +58,21 @@ public class DettaglioAnnuncioBoundary {
             setFotoProfiloDefault();
         }
 
-        // 4. Dati OGGETTO (Condizione)
         if (annuncioCorrente.getOggetti() != null && !annuncioCorrente.getOggetti().isEmpty()) {
             Oggetto obj = annuncioCorrente.getOggetti().get(0);
             txtCondizioni.setText(obj.getCondizione().toString().replace("_", " "));
         }
 
-        // 5. Logica Polimorfica (Badge e Prezzi)
         configuraBadgeEPrezzi();
 
-        // 6. Restrizione: Nascondi bottone "Fai Offerta" se l'annuncio è dell'utente loggato
         try {
             Utente loggato = controller.getUtente();
             if (loggato != null && annuncioCorrente.getUtenteId() == loggato.getId()) {
                 btnFaiOfferta.setVisible(false);
                 btnFaiOfferta.setManaged(false);
             }
-        } catch (Exception e) {
-            // Se non c'è utente loggato, il bottone rimane visibile (gestito poi dal login)
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -86,18 +80,18 @@ public class DettaglioAnnuncioBoundary {
         badgeTipo.getStyleClass().removeAll("badge-vendita", "badge-scambio", "badge-regalo");
         txtPrezzoMinimo.setText("");
 
-        if (annuncioCorrente instanceof AnnuncioVendita av) {
+        if (annuncioCorrente instanceof AnnuncioVendita annuncioVendita) {
             badgeTipo.setText("VENDITA");
             badgeTipo.getStyleClass().add("badge-vendita");
-            txtDettagliSpecifici.setText(av.getPrezzoMedio() + " €");
+            txtDettagliSpecifici.setText(annuncioVendita.getPrezzoMedio() + " €");
 
-            if (av.getPrezzoMinimo() != null && av.getPrezzoMinimo().doubleValue() > 0) {
-                txtPrezzoMinimo.setText("Prezzo minimo accettato: " + av.getPrezzoMinimo() + " €");
+            if (annuncioVendita.getPrezzoMinimo() != null && annuncioVendita.getPrezzoMinimo().doubleValue() > 0) {
+                txtPrezzoMinimo.setText("Prezzo minimo accettato: " + annuncioVendita.getPrezzoMinimo() + " €");
             }
-        } else if (annuncioCorrente instanceof AnnuncioScambio as) {
+        } else if (annuncioCorrente instanceof AnnuncioScambio annuncioScambio) {
             badgeTipo.setText("SCAMBIO");
             badgeTipo.getStyleClass().add("badge-scambio");
-            txtDettagliSpecifici.setText("Cerco: " + as.getListaOggetti());
+            txtDettagliSpecifici.setText("Cerco: " + annuncioScambio.getListaOggetti());
         } else {
             badgeTipo.setText("REGALO");
             badgeTipo.getStyleClass().add("badge-regalo");
@@ -105,9 +99,9 @@ public class DettaglioAnnuncioBoundary {
         }
     }
 
-    private void caricaFotoProfiloVenditore(Utente u) {
+    private void caricaFotoProfiloVenditore(Utente utente) {
         try {
-            String path = u.getPathImmagineProfilo();
+            String path = utente.getPathImmagineProfilo();
             if (path != null && !path.equals("default") && !path.isEmpty()) {
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
                 if (file.exists()) {
@@ -117,7 +111,7 @@ public class DettaglioAnnuncioBoundary {
                 }
             }
             setFotoProfiloDefault();
-        } catch (Exception e) {
+        } catch (Exception exception) {
             setFotoProfiloDefault();
         }
     }
@@ -149,7 +143,7 @@ public class DettaglioAnnuncioBoundary {
             } else {
                 setDefaultImage();
             }
-        } catch (Exception e) {
+        } catch (Exception exception) {
             setDefaultImage();
         }
     }
@@ -164,7 +158,6 @@ public class DettaglioAnnuncioBoundary {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathEffettuaOfferta));
             Parent root = loader.load();
 
-            // Passaggio dati al controller dell'offerta
             Object controllerOfferta = loader.getController();
             if (controllerOfferta instanceof EffettuaOffertaBoundary eob) {
                 eob.initData(annuncioCorrente);
@@ -172,8 +165,8 @@ public class DettaglioAnnuncioBoundary {
 
             Stage stage = (Stage) btnFaiOfferta.getScene().getWindow();
             stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -184,8 +177,8 @@ public class DettaglioAnnuncioBoundary {
             Parent root = loader.load();
             Stage stage = (Stage) btnFaiOfferta.getScene().getWindow();
             stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 }

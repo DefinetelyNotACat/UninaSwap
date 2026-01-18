@@ -2,11 +2,9 @@ package com.example.uninaswap.dao;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.io.IOException;
 
 import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
-import com.example.uninaswap.entity.Categoria;
 import com.example.uninaswap.interfaces.GestoreOggettoDAO;
 
 public class OggettoDAO implements GestoreOggettoDAO {
@@ -149,16 +147,6 @@ public class OggettoDAO implements GestoreOggettoDAO {
         return lista;
     }
 
-    @Override
-    public boolean associaOgettiAdAnnuncio(ArrayList<Oggetto> oggetti, int idAnnuncio) {
-        return false;
-    }
-
-    @Override
-    public void associaListaOggetti(ArrayList<Oggetto> listaOggetti, int idAnnuncio) {
-
-    }
-
     public ArrayList<Oggetto> ottieniTuttiOggettiDisponibili(int idUtente) {
         ArrayList<Oggetto> lista = new ArrayList<>();
         String sql = "SELECT * FROM OGGETTO WHERE utente_id = ? AND disponibilita = 'DISPONIBILE' ORDER BY id DESC";
@@ -205,42 +193,17 @@ public class OggettoDAO implements GestoreOggettoDAO {
         } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
-    @Override
-    public boolean associaUtente(int idU, int idO) {
-        return false;
-    }
-
-    @Override
-    public boolean rimuoviDaUtente(int idU, int idO) {
-        return false;
-    }
-
-    public boolean associaAnnuncio(int idOggetto, int idAnnuncio) {
-        String sql = "UPDATE OGGETTO SET annuncio_id = ? WHERE id = ?";
-        try (Connection conn = PostgreSQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, idAnnuncio);
-            stmt.setInt(2, idOggetto);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) { e.printStackTrace(); return false; }
-    }
-
-    @Override
-    public boolean rimuoviDaAnnuncio(int idU, int idA) {
-        return false;
-    }
-
-    private Oggetto mapResultSetToOggetto(ResultSet rs) throws SQLException {
+    private Oggetto mapResultSetToOggetto(ResultSet result) throws SQLException {
         Oggetto oggetto = new Oggetto();
-        oggetto.setId(rs.getInt("id"));
-        oggetto.setNome(rs.getString("nome"));
+        oggetto.setId(result.getInt("id"));
+        oggetto.setNome(result.getString("nome"));
 
-        String condStr = rs.getString("condizione");
+        String condStr = result.getString("condizione");
         if(condStr != null) {
             oggetto.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr.replace(" ", "_").toUpperCase()));
         }
 
-        String dispStr = rs.getString("disponibilita");
+        String dispStr = result.getString("disponibilita");
         if(dispStr != null) {
             oggetto.setDisponibilita(Oggetto.DISPONIBILITA.valueOf(dispStr.replace(" ", "_").toUpperCase()));
         }

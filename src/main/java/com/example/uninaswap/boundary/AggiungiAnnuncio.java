@@ -3,6 +3,7 @@ package com.example.uninaswap.boundary;
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -17,7 +18,6 @@ import javafx.scene.text.Text;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,39 +86,44 @@ public class AggiungiAnnuncio {
     }
 
     private void setupValidazioneRealTime() {
-        // --- 1. VALIDAZIONE DESCRIZIONE (REGEX) ---
+        //Validazione descrizione
+        //
         descrizioneAnnuncioArea.textProperty().addListener((obs, old, newVal) -> {
             boolean ok = newVal != null && newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
             descrizioneRegexValida.set(ok);
             gestisciErroreGenerico(descrizioneAnnuncioArea, erroreDescrizione, ok);
         });
 
-        // --- 2. VALIDAZIONE SCAMBIO (REGEX) ---
+        //Validazione scambio
+        //
         desideriScambioArea.textProperty().addListener((obs, old, newVal) -> {
             boolean ok = newVal != null && newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
             scambioRegexValido.set(ok);
             gestisciErroreGenerico(desideriScambioArea, erroreScambio, ok);
         });
 
-        // --- 3. VALIDAZIONE RITIRO (REGEX - Opzionale ma controllata se scritta) ---
+        //Validazione ritiro
+        //
         infoRitiroField.textProperty().addListener((obs, old, newVal) -> {
             boolean ok = newVal.isEmpty() || newVal.matches(Costanti.FIELDS_REGEX_SPAZIO);
             ritiroRegexValido.set(ok);
             gestisciErroreGenerico(infoRitiroField, erroreRitiro, ok);
         });
 
-        // --- 4. ALTRE VALIDAZIONI ---
+        //Altre validazione
         orarioInizioField.textProperty().addListener((o, old, n) -> validaOrari());
         orarioFineField.textProperty().addListener((o, old, n) -> validaOrari());
         prezzoField.textProperty().addListener((o, old, n) -> validaPrezzi());
         prezzoMinField.textProperty().addListener((o, old, n) -> validaPrezzi());
 
-        // --- 5. BINDING DISABILITAZIONE PULSANTE ---
+        //Binding disabilitazione pulsanti
+        //
         BooleanBinding tipologiaScelta = radioVendita.selectedProperty()
                 .or(radioScambio.selectedProperty())
                 .or(radioRegalo.selectedProperty());
 
         // Validazione dinamica basata sulla tipologia
+        //
         BooleanBinding sezioneSpecificaOk = Bindings.createBooleanBinding(() -> {
                     if (radioVendita.isSelected()) return prezziValidiProperty.get();
                     if (radioScambio.isSelected()) return scambioRegexValido.get();
@@ -127,7 +132,6 @@ public class AggiungiAnnuncio {
                 }, radioVendita.selectedProperty(), radioScambio.selectedProperty(), radioRegalo.selectedProperty(),
                 prezziValidiProperty, scambioRegexValido, ritiroRegexValido);
 
-        // IL TESTO DEVE ESSERE VALIDO, LA SEDE SCELTA, GLI ORARI OK, ALMENO UN OGGETTO E LA SEZIONE SPECIFICA OK
         pubblicaButton.disableProperty().bind(
                 descrizioneRegexValida.not()
                         .or(sedeBox.valueProperty().isNull())
@@ -140,40 +144,40 @@ public class AggiungiAnnuncio {
 
     private void validaOrari() {
         try {
-            DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm");
-            LocalTime i = LocalTime.parse(orarioInizioField.getText(), f);
-            LocalTime o = LocalTime.parse(orarioFineField.getText(), f);
-            boolean ok = i.isBefore(o);
-            orariValidiProperty.set(ok);
-            impostaStile(orarioInizioField, ok);
-            impostaStile(orarioFineField, ok);
-            erroreOrario.setVisible(!ok);
-        } catch (Exception e) { orariValidiProperty.set(false); }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            LocalTime orarioInizio = LocalTime.parse(orarioInizioField.getText(), formatter);
+            LocalTime orarioFine = LocalTime.parse(orarioFineField.getText(), formatter);
+            boolean checkOrario = orarioInizio.isBefore(orarioFine);
+            orariValidiProperty.set(checkOrario);
+            impostaStile(orarioInizioField, checkOrario);
+            impostaStile(orarioFineField, checkOrario);
+            erroreOrario.setVisible(!checkOrario);
+        } catch (Exception exception) { orariValidiProperty.set(false); }
     }
 
     private void validaPrezzi() {
-        boolean ok = prezzoField.getText().matches(Costanti.PRICE_REGEX);
-        prezziValidiProperty.set(ok);
-        impostaStile(prezzoField, ok);
-        errorePrezzo.setVisible(!ok);
+        boolean checkPrezzo = prezzoField.getText().matches(Costanti.PRICE_REGEX);
+        prezziValidiProperty.set(checkPrezzo);
+        impostaStile(prezzoField, checkPrezzo);
+        errorePrezzo.setVisible(!checkPrezzo);
     }
 
-    private void gestisciErroreGenerico(Control f, Text e, boolean ok) {
-        f.getStyleClass().removeAll("error", "right");
-        f.getStyleClass().add(ok ? "right" : "error");
-        if (e != null) { e.setVisible(!ok); e.setManaged(!ok); }
+    private void gestisciErroreGenerico(Control controller, Text errore, boolean check) {
+        controller.getStyleClass().removeAll("error", "right");
+        controller.getStyleClass().add(check ? "right" : "error");
+        if (errore != null) { errore.setVisible(!check); errore.setManaged(!check); }
     }
 
-    private void impostaStile(Control f, boolean ok) {
-        f.getStyleClass().removeAll("error", "right");
-        f.getStyleClass().add(ok ? "right" : "error");
+    private void impostaStile(Control controller, boolean check) {
+        controller.getStyleClass().removeAll("error", "right");
+        controller.getStyleClass().add(check ? "right" : "error");
     }
 
     private void aggiornaStatoOggetti() {
-        boolean uno = false;
-        for (Node n : contenitoreOggetti.getChildren()) if (n instanceof CheckBox cb && cb.isSelected()) uno = true;
-        almenoUnOggettoSelezionato.set(uno);
-        erroreOggetti.setVisible(!uno);
+        boolean verifica = false;
+        for (Node nodo : contenitoreOggetti.getChildren()) if (nodo instanceof CheckBox cb && cb.isSelected()) verifica = true;
+        almenoUnOggettoSelezionato.set(verifica);
+        erroreOggetti.setVisible(!verifica);
     }
 
     @FXML
@@ -181,7 +185,6 @@ public class AggiungiAnnuncio {
 
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         try {
-            // 1. Dati Comuni
             String descrizione = descrizioneAnnuncioArea.getText();
             Sede sede = trovaSedePerNome(sedeBox.getValue());
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -193,7 +196,6 @@ public class AggiungiAnnuncio {
 
             Annuncio annuncioDaInviare = null;
 
-            // 2. Creazione istanza specifica
             if (radioVendita.isSelected()) {
                 BigDecimal prezzoRichiesto = new BigDecimal(prezzoField.getText().replace(",", "."));
                 AnnuncioVendita av = new AnnuncioVendita(sede, descrizione, inizio, fine, primoOggetto, prezzoRichiesto);
@@ -208,17 +210,14 @@ public class AggiungiAnnuncio {
 
             } else if (radioRegalo.isSelected()) {
                 annuncioDaInviare = new AnnuncioRegalo(sede, descrizione, inizio, fine, primoOggetto);
-                // Nota: Se AnnuncioRegalo avesse un campo per infoRitiroField, andrebbe settato qui.
             }
 
-            // 3. Aggiunta oggetti supplementari
             if (annuncioDaInviare != null && selezionati.size() > 1) {
                 for (int i = 1; i < selezionati.size(); i++) {
                     annuncioDaInviare.addOggetto(selezionati.get(i));
                 }
             }
 
-            // 4. Invio al Controller
             if (annuncioDaInviare != null) {
 
                 boolean successo = controller.PubblicaAnnuncio(annuncioDaInviare);
@@ -227,21 +226,21 @@ public class AggiungiAnnuncio {
                 }
             }
 
-        } catch (Exception e) {
-            System.err.println("Errore pubblicazione: " + e.getMessage());
+        } catch (Exception exception) {
+            System.err.println("Errore pubblicazione: " + exception.getMessage());
         }
 
     }
 
     @FXML
-    void onTipologiaChange(ActionEvent e) {
+    void onTipologiaChange(ActionEvent actionEvent) {
         vboxVendita.setVisible(radioVendita.isSelected()); vboxVendita.setManaged(radioVendita.isSelected());
         vboxScambio.setVisible(radioScambio.isSelected()); vboxScambio.setManaged(radioScambio.isSelected());
         vboxRegalo.setVisible(radioRegalo.isSelected()); vboxRegalo.setManaged(radioRegalo.isSelected());
     }
 
-    private Sede trovaSedePerNome(String n) {
-        for (Sede s : ControllerUninaSwap.getInstance().getSedi()) if (s.getNomeSede().equals(n)) return s;
+    private Sede trovaSedePerNome(String nomeSede) {
+        for (Sede s : ControllerUninaSwap.getInstance().getSedi()) if (s.getNomeSede().equals(nomeSede)) return s;
         return null;
     }
 
@@ -251,8 +250,8 @@ public class AggiungiAnnuncio {
         return s;
     }
 
-    @FXML void onAnnullaClick(ActionEvent e) {
-        new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, e, "Pubblicazione annuncio annullata", Messaggio.TIPI.INFO);
+    @FXML void onAnnullaClick(ActionEvent actionEvent) {
+        new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Pubblicazione annuncio annullata", Messaggio.TIPI.INFO);
     }
 
 }

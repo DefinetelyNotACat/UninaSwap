@@ -63,11 +63,9 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
         System.out.println("Email: " + emailField.getText());
         try {
             if (confermaPasswordField == null) {
-                // --- LOGIN ---
                 accediUtente();
                 gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Accesso effettuato con successo", Messaggio.TIPI.SUCCESS);
             }
-            // --- SIGN-UP ---
             else {
                 try {
                     controllerUninaSwap.verificaUtenteUnico(
@@ -77,16 +75,16 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
                     );
                     registraUtente();
                     gestoreScene.CambiaScena(pathSignIn, pathSignIn, actionEvent, "Registrazione effettuata con successo, accedi", Messaggio.TIPI.SUCCESS);
-                } catch (Exception e) {
-                    System.out.println("Eccezione registrazione catturata: " + e.getMessage());
+                } catch (Exception exception) {
+                    System.out.println("Eccezione registrazione catturata: " + exception.getMessage());
                     if (erroreUtenteEsistente != null) {
                         erroreUtenteEsistente.setManaged(true);
                         erroreUtenteEsistente.setVisible(true);
-                        erroreUtenteEsistente.setText(e.getMessage());
+                        erroreUtenteEsistente.setText(exception.getMessage());
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception exception) {
             if (erroreCredenziali != null) {
                 erroreCredenziali.setVisible(true);
                 erroreCredenziali.setManaged(true);
@@ -114,7 +112,6 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = ControllerUninaSwap.getInstance();
         //eliminaecreaDB();
-        // Controllo se esiste profileImageView (per evitare errori nella schermata di Login dove non c'è)
         if (profileImageView != null) {
             javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(
                     profileImageView.getFitWidth() / 2,
@@ -185,12 +182,11 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
         String password = passwordField.getText();
         String matricola = matricolaField.getText();
         String email = emailField.getText().trim().toLowerCase();
-        // Ho fatto che la registrazione utente prevede nel costruttore come path di base per l'immagine quella di default
         System.out.println("immagine profilo a path: " + pathImmagine);
         try {
             controllerUninaSwap.creaUtente(username, password, matricola, email);
-        }catch (Exception e){
-            throw new Exception(e.getMessage());
+        }catch (Exception exception){
+            throw new Exception(exception.getMessage());
         }
     }
 

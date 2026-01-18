@@ -72,9 +72,9 @@ public class GestoreScene {
                 ((GestoreMessaggio) controller).mostraMessaggioEsterno(messaggio, tipo);
             }
         }
-        catch (Exception e){
-            System.out.println("Errore " + e.getMessage());
-            e.printStackTrace();
+        catch (Exception exception){
+            System.out.println("Errore " + exception.getMessage());
+            exception.printStackTrace();
         }
     }
 }

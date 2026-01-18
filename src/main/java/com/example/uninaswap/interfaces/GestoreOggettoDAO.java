@@ -9,13 +9,7 @@ public interface GestoreOggettoDAO {
     public boolean salvaOggetto(Oggetto oggetto, Utente utente);
     public boolean modificaOggetto(Oggetto oggetto);
     public boolean eliminaOggetto(int id);
-    public boolean associaUtente(int idU, int idO);
-    public boolean rimuoviDaUtente(int idU, int idO);
-    public boolean associaAnnuncio(int idU, int idA);
-    public boolean rimuoviDaAnnuncio(int idU, int idA);
     public Oggetto ottieniOggetto(int id, Utente utente);
     public ArrayList<Oggetto> ottieniTuttiOggetti(int idUtente);
-    public boolean associaOgettiAdAnnuncio(ArrayList<Oggetto> oggetti, int idAnnuncio);
-    public void associaListaOggetti(ArrayList<Oggetto> listaOggetti, int idAnnuncio);
     public ArrayList<Oggetto> ottieniTuttiOggettiDisponibili(int idUtente);
 }

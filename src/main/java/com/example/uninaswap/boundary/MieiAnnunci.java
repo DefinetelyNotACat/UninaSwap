@@ -51,46 +51,46 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
             testoVuoto.setVisible(false);
             testoVuoto.setManaged(false);
 
-            for (Annuncio a : mieiAnnunci) {
-                containerAnnunci.getChildren().add(creaCardAnnuncio(a));
+            for (Annuncio annuncio : mieiAnnunci) {
+                containerAnnunci.getChildren().add(creaCardAnnuncio(annuncio));
             }
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    private VBox creaCardAnnuncio(Annuncio a) {
+    private VBox creaCardAnnuncio(Annuncio annuncio) {
         VBox card = new VBox(12);
         card.getStyleClass().add("ad-card");
         card.setPrefWidth(270);
         card.setPadding(new Insets(15));
         card.setAlignment(Pos.TOP_CENTER);
 
-        // 1. Immagine
+        //Immagine
         ImageView imgView = new ImageView();
         imgView.setFitWidth(240);
         imgView.setFitHeight(160);
         imgView.setPreserveRatio(true);
-        caricaImmagine(a, imgView);
+        caricaImmagine(annuncio, imgView);
 
-        // 2. Badge e Sede
+        //Badge e Sede
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
-        Label badge = new Label(determinaTipo(a).toUpperCase());
-        badge.getStyleClass().addAll("badge-base", determinaClasseBadge(a));
-        Text sede = new Text("📍 " + (a.getSede() != null ? a.getSede().getNomeSede() : "N/A"));
+        Label badge = new Label(determinaTipo(annuncio).toUpperCase());
+        badge.getStyleClass().addAll("badge-base", determinaClasseBadge(annuncio));
+        Text sede = new Text("📍 " + (annuncio.getSede() != null ? annuncio.getSede().getNomeSede() : "N/A"));
         sede.getStyleClass().add("ad-location");
         header.getChildren().addAll(badge, sede);
 
-        // 3. Descrizione
-        Text desc = new Text(a.getDescrizione());
+        //Descrizione
+        Text desc = new Text(annuncio.getDescrizione());
         desc.getStyleClass().add("ad-description");
         desc.setWrappingWidth(240);
 
-        // 4. Info Economica Specifica
+        //Info Economica Specifica
         Text extraInfo = new Text();
         extraInfo.getStyleClass().add("ad-extra-info");
-        if (a instanceof AnnuncioVendita av) {
+        if (annuncio instanceof AnnuncioVendita av) {
             extraInfo.setText("💰 " + av.getPrezzoMedio() + " €");
-        } else if (a instanceof AnnuncioScambio as) {
+        } else if (annuncio instanceof AnnuncioScambio as) {
             extraInfo.setText("🔄 Cerco: " + as.getListaOggetti());
         } else {
             extraInfo.setText("🎁 REGALO");
@@ -99,7 +99,7 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // 5. Area Azioni (Tasto Elimina o Stato Concluso)
+        //Area Azioni
         StackPane actionArea = new StackPane();
         actionArea.setMaxWidth(Double.MAX_VALUE);
 
@@ -107,23 +107,20 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
         btnElimina.getStyleClass().add("button-danger");
         btnElimina.setMaxWidth(Double.MAX_VALUE);
 
-        if (a.getStato() != Annuncio.STATO_ANNUNCIO.DISPONIBILE) {
-            // Se l'annuncio NON è disponibile (Affare fatto)
-            btnElimina.setOpacity(0.0); // Nascondiamo il tasto ma teniamo lo spazio
+        if (annuncio.getStato() != Annuncio.STATO_ANNUNCIO.DISPONIBILE) {
+            btnElimina.setOpacity(0.0);
             btnElimina.setDisable(true);
 
-            // Creiamo un'etichetta fighissima per lo stato
             String testoStato = "Affare Concluso ✅";
-            if (a instanceof AnnuncioScambio) testoStato = "Scambio Effettuato 🤝";
-            if (a instanceof AnnuncioRegalo) testoStato = "Regalo Consegnato 🎉";
+            if (annuncio instanceof AnnuncioScambio) testoStato = "Scambio Effettuato 🤝";
+            if (annuncio instanceof AnnuncioRegalo) testoStato = "Regalo Consegnato 🎉";
 
             Label lblStato = new Label(testoStato);
             lblStato.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 15px;");
 
             actionArea.getChildren().addAll(btnElimina, lblStato);
         } else {
-            // Se è ancora disponibile, mostriamo il tasto elimina normalmente
-            btnElimina.setOnAction(e -> onEliminaAnnuncio(a));
+            btnElimina.setOnAction(e -> onEliminaAnnuncio(annuncio));
             actionArea.getChildren().add(btnElimina);
         }
 
@@ -131,15 +128,15 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
         return card;
     }
 
-    private String determinaTipo(Annuncio a) {
-        if (a instanceof AnnuncioVendita) return "Vendita";
-        if (a instanceof AnnuncioScambio) return "Scambio";
+    private String determinaTipo(Annuncio annuncio) {
+        if (annuncio instanceof AnnuncioVendita) return "Vendita";
+        if (annuncio instanceof AnnuncioScambio) return "Scambio";
         return "Regalo";
     }
 
-    private String determinaClasseBadge(Annuncio a) {
-        if (a instanceof AnnuncioVendita) return "badge-vendita";
-        if (a instanceof AnnuncioScambio) return "badge-scambio";
+    private String determinaClasseBadge(Annuncio annuncio) {
+        if (annuncio instanceof AnnuncioVendita) return "badge-vendita";
+        if (annuncio instanceof AnnuncioScambio) return "badge-scambio";
         return "badge-regalo";
     }
 
@@ -153,20 +150,20 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
         }
     }
 
-    private void caricaImmagine(Annuncio annuncio, ImageView imgView) {
+    private void caricaImmagine(Annuncio annuncio, ImageView imageView) {
         try {
             String path = (annuncio.getOggetti() != null && !annuncio.getOggetti().isEmpty() &&
                     !annuncio.getOggetti().get(0).getImmagini().isEmpty()) ? annuncio.getOggetti().get(0).getImmagini().get(0) : null;
             if (path != null) {
                 File file = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + path);
-                if (file.exists()) { imgView.setImage(new Image(file.toURI().toString(), 400, 300, true, true)); return; }
+                if (file.exists()) { imageView.setImage(new Image(file.toURI().toString(), 400, 300, true, true)); return; }
             }
-            imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-        } catch (Exception e) { imgView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png"))); }
+            imageView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+        } catch (Exception e) { imageView.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png"))); }
     }
 
-    @FXML public void onIndietroClick(ActionEvent event) { gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event); }
+    @FXML public void onIndietroClick(ActionEvent actionEvent) { gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent); }
 
-    @Override public void mostraMessaggioEsterno(String t, Messaggio.TIPI tip) { if (notificaController != null) notificaController.mostraMessaggio(t, tip); }
+    @Override public void mostraMessaggioEsterno(String messaggio, Messaggio.TIPI tipi) { if (notificaController != null) notificaController.mostraMessaggio(messaggio, tipi); }
 
 }

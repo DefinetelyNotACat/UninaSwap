@@ -20,7 +20,6 @@ import javax.swing.SwingUtilities;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
-import java.util.stream.Collectors;
 
 public class ReportOfferteBoundary {
 
@@ -37,7 +36,6 @@ public class ReportOfferteBoundary {
     }
 
     private void calcolaEVisualizzaDati() {
-        // 1. Recupero Dati dal Controller
         ArrayList<Offerta> mieOfferte = controller.OttieniLeMieOfferte();
 
         if (mieOfferte == null || mieOfferte.isEmpty()) {
@@ -45,42 +43,42 @@ public class ReportOfferteBoundary {
             return;
         }
 
-        // 2. Calcolo Statistiche Conteggio (Totali vs Accettate)
-        int totVendita = 0, accVendita = 0;
-        int totScambio = 0, accScambio = 0;
-        int totRegalo = 0, accRegalo = 0;
+        //Calcolo Statistiche Conteggio (Totali vs Accettate)
+        int totaleVendita = 0, accVendita = 0;
+        int totaleScambio = 0, accScambio = 0;
+        int totaleRegalo = 0, accRegalo = 0;
 
-        // Lista per statistiche economiche
+        //Lista per statistiche economiche
         ArrayList<Double> prezziAccettati = new ArrayList<>();
 
-        for (Offerta o : mieOfferte) {
-            boolean isAccettata = o.getStato() == Offerta.STATO_OFFERTA.ACCETTATA;
+        for (Offerta offerta : mieOfferte) {
+            boolean isAccettata = offerta.getStato() == Offerta.STATO_OFFERTA.ACCETTATA;
 
-            if (o instanceof OffertaVendita) {
-                totVendita++;
+            if (offerta instanceof OffertaVendita) {
+                totaleVendita++;
                 if (isAccettata) {
                     accVendita++;
-                    BigDecimal prezzo = ((OffertaVendita) o).getPrezzoOffertaVendita();
+                    BigDecimal prezzo = ((OffertaVendita) offerta).getPrezzoOffertaVendita();
                     if (prezzo != null) prezziAccettati.add(prezzo.doubleValue());
                 }
-            } else if (o instanceof OffertaScambio) {
-                totScambio++;
+            } else if (offerta instanceof OffertaScambio) {
+                totaleScambio++;
                 if (isAccettata) accScambio++;
-            } else if (o instanceof OffertaRegalo) {
-                totRegalo++;
+            } else if (offerta instanceof OffertaRegalo) {
+                totaleRegalo++;
                 if (isAccettata) accRegalo++;
             }
         }
 
-        // 3. Generazione Grafico a Barre (JFreeChart)
+        //Generazione Grafico a Barre
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-        // Serie Inviate
-        dataset.addValue(totVendita, "Inviate", "Vendita");
-        dataset.addValue(totScambio, "Inviate", "Scambio");
-        dataset.addValue(totRegalo, "Inviate", "Regalo");
+        //Serie Inviate
+        dataset.addValue(totaleVendita, "Inviate", "Vendita");
+        dataset.addValue(totaleScambio, "Inviate", "Scambio");
+        dataset.addValue(totaleRegalo, "Inviate", "Regalo");
 
-        // Serie Accettate
+        //Serie Accettate
         dataset.addValue(accVendita, "Accettate", "Vendita");
         dataset.addValue(accScambio, "Accettate", "Scambio");
         dataset.addValue(accRegalo, "Accettate", "Regalo");
@@ -93,7 +91,6 @@ public class ReportOfferteBoundary {
                 PlotOrientation.VERTICAL,
                 true, true, false);
 
-        // Integrazione in JavaFX tramite SwingNode
         SwingNode swingNode = new SwingNode();
         SwingUtilities.invokeLater(() -> {
             ChartPanel panel = new ChartPanel(barChart);
@@ -101,7 +98,7 @@ public class ReportOfferteBoundary {
         });
         chartContainer.getChildren().add(swingNode);
 
-        // 4. Calcolo Statistiche Economiche (Vendita Accettata)
+        //Calcolo Statistiche Economiche (Vendita Accettata)
         if (!prezziAccettati.isEmpty()) {
             DoubleSummaryStatistics stats = prezziAccettati.stream()
                     .mapToDouble(Double::doubleValue)

@@ -46,19 +46,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
     }
 
-    public boolean eliminaUtente(int id) {
-        String sql = "DELETE FROM utente WHERE id = ?";
-        try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql)) {
-
-            query.setInt(1, id);
-            return query.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     @Override
     public Utente ottieniUtente(int id) {
         String sql = "SELECT * FROM utente WHERE id = ?";
@@ -66,27 +53,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
              PreparedStatement query = connessione.prepareStatement(sql)) {
 
             query.setInt(1, id);
-            try (ResultSet rs = query.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToUtente(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public Utente trovaUtenteUsername(String username) {
-        // MODIFICA QUI: Usiamo LOWER() su entrambi i lati del confronto
-        String sql = "SELECT * FROM utente WHERE LOWER(username) = LOWER(?)";
-
-        try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql)) {
-
-            // Passiamo lo username così com'è, SQL si occuperà di renderlo minuscolo per il confronto
-            query.setString(1, username.trim());
-
             try (ResultSet rs = query.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSetToUtente(rs);
@@ -144,22 +110,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public ArrayList<Utente> ottieniTuttiUtenti() {
-        ArrayList<Utente> tuttiUtenti = new ArrayList<>();
-        String sql = "SELECT * FROM utente";
-        try (Connection connessione = PostgreSQLConnection.getConnection();
-             PreparedStatement query = connessione.prepareStatement(sql);
-             ResultSet rs = query.executeQuery()) {
-
-            while (rs.next()) {
-                tuttiUtenti.add(mapResultSetToUtente(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return tuttiUtenti;
     }
 
     public boolean verificaEsistenzaAltroUtente(String username, String matricola, String emailDaEscludere) {

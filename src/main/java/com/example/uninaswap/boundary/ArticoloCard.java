@@ -16,7 +16,6 @@ public class ArticoloCard {
     public void setAnnuncioData(Annuncio annuncio) {
         titoloAnnuncio.setText(annuncio.getDescrizione());
 
-        // Reset delle classi per sicurezza
         prezzoAnnuncio.getStyleClass().removeAll("badge-vendita", "badge-scambio", "badge-regalo");
 
         if (annuncio instanceof AnnuncioVendita av) {
@@ -53,8 +52,8 @@ public class ArticoloCard {
             }
             // Immagine di fallback se non ci sono foto o il file non esiste
             imgAnnuncio.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
-        } catch (Exception e) {
-            System.err.println("Errore caricamento immagine card: " + e.getMessage());
+        } catch (Exception exception) {
+            System.err.println("Errore caricamento immagine card: " + exception.getMessage());
         }
     }
 }

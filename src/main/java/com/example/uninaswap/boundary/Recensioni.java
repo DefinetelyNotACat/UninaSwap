@@ -53,14 +53,13 @@ public class Recensioni {
                 }
                 txtTitolo.setText("Recensioni di " + utente.getUsername());
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception exception) { exception.printStackTrace(); }
         cliccaRicevute();
     }
 
     @FXML
     private void cliccaRicevute() {
         visualizzandoRicevute = true;
-        // Aggiornamento Stili: Ricevute diventa Pieno, Fatte diventa Outline
         btnMostraRicevute.getStyleClass().removeAll("button-outline");
         if (!btnMostraRicevute.getStyleClass().contains("button-primary")) {
             btnMostraRicevute.getStyleClass().add("button-primary");
@@ -77,7 +76,6 @@ public class Recensioni {
     @FXML
     private void cliccaDate() {
         visualizzandoRicevute = false;
-        // Aggiornamento Stili: Fatte diventa Pieno, Ricevute diventa Outline
         btnMostraDate.getStyleClass().removeAll("button-outline");
         if (!btnMostraDate.getStyleClass().contains("button-primary")) {
             btnMostraDate.getStyleClass().add("button-primary");
@@ -109,13 +107,13 @@ public class Recensioni {
             mostraMessaggioVuoto(tipo);
         } else {
             calcolaEMostraMedia(recensioni);
-            for (Recensione r : recensioni) {
-                containerRecensioni.getChildren().add(creaCardRecensione(r));
+            for (Recensione recensione : recensioni) {
+                containerRecensioni.getChildren().add(creaCardRecensione(recensione));
             }
         }
     }
 
-    private VBox creaCardRecensione(Recensione r) {
+    private VBox creaCardRecensione(Recensione recensione) {
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
         VBox card = new VBox(10);
         card.getStyleClass().add("ad-card");
@@ -130,14 +128,14 @@ public class Recensioni {
 
         if (visualizzandoRicevute) {
             etichetta = "Da: ";
-            emailDaCercare = r.getEmailRecensore();
+            emailDaCercare = recensione.getEmailRecensore();
         } else {
             etichetta = "A: ";
-            emailDaCercare = r.getEmailRecensito();
+            emailDaCercare = recensione.getEmailRecensito();
         }
 
-        Utente u = controller.ottieniUtenteDaEmail(emailDaCercare);
-        String nome = (u != null) ? u.getUsername() : "Utente Anonimo";
+        Utente utente = controller.ottieniUtenteDaEmail(emailDaCercare);
+        String nome = (utente != null) ? utente.getUsername() : "Utente Anonimo";
 
         Label autore = new Label(etichetta + nome);
         autore.setStyle("-fx-font-weight: bold; -fx-text-fill: #003366;");
@@ -145,12 +143,12 @@ public class Recensioni {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        Label badgeVoto = new Label("⭐ " + r.getVoto() + "/5");
+        Label badgeVoto = new Label("⭐ " + recensione.getVoto() + "/5");
         badgeVoto.getStyleClass().addAll("badge-base", "badge-vendita");
 
         header.getChildren().addAll(autore, spacer, badgeVoto);
 
-        Text commento = new Text(r.getCommento() != null && !r.getCommento().isEmpty() ? r.getCommento() : "Nessun commento lasciato.");
+        Text commento = new Text(recensione.getCommento() != null && !recensione.getCommento().isEmpty() ? recensione.getCommento() : "Nessun commento lasciato.");
         commento.setWrappingWidth(550);
         commento.setStyle("-fx-font-style: italic; -fx-fill: #555;");
 
@@ -160,17 +158,17 @@ public class Recensioni {
 
     private void calcolaEMostraMedia(List<Recensione> list) {
         double somma = 0;
-        for (Recensione r : list) somma += r.getVoto();
+        for (Recensione recensione : list) somma += recensione.getVoto();
         double media = list.isEmpty() ? 0 : somma / list.size();
         txtMedia.setText(String.format("Valutazione Media: %.1f/5 (%d recensioni)", media, list.size()));
     }
 
     private void mostraMessaggioVuoto(String tipo) {
         txtMedia.setText("Nessuna valutazione");
-        String msg = tipo.equals("ricevute") ? "Nessuna recensione ricevuta." : "Non hai ancora scritto recensioni.";
-        Text t = new Text(msg);
-        t.setStyle("-fx-fill: #aaa; -fx-font-size: 16px;");
-        containerRecensioni.getChildren().add(t);
+        String messaggio = tipo.equals("ricevute") ? "Nessuna recensione ricevuta." : "Non hai ancora scritto recensioni.";
+        Text testo = new Text(messaggio);
+        testo.setStyle("-fx-fill: #aaa; -fx-font-size: 16px;");
+        containerRecensioni.getChildren().add(testo);
     }
 
     @FXML
@@ -182,7 +180,7 @@ public class Recensioni {
             arb.initData(utenteTarget);
             Stage stage = (Stage) containerRecensioni.getScene().getWindow();
             stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception exception) { exception.printStackTrace(); }
     }
 
     @FXML
@@ -191,6 +189,6 @@ public class Recensioni {
             Parent root = FXMLLoader.load(getClass().getResource(Costanti.pathHomePage));
             Stage stage = (Stage) containerRecensioni.getScene().getWindow();
             stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception exception) { exception.printStackTrace(); }
     }
 }

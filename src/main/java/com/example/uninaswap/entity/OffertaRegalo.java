@@ -9,10 +9,4 @@ public class OffertaRegalo extends Offerta {
         super(annuncio, messaggio, stato, orarioInizio, orarioFine, oggetto, utente);
     }
 
-    //Getter e Setter
-    //
-    public AnnuncioRegalo getAnnuncioRegalo() {
-        return (AnnuncioRegalo) this.annuncio;
-    }
-
 }

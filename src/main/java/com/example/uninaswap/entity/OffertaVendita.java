@@ -22,12 +22,5 @@ public class OffertaVendita extends Offerta{
     public BigDecimal getPrezzoOffertaVendita() {
         return prezzoOffertaVendita;
     }
-    public void setPrezzoOffertaVendita(BigDecimal prezzoOffertaVendita) {
-        this.prezzoOffertaVendita = prezzoOffertaVendita;
-    }
 
-    public AnnuncioVendita getAnnuncioVendita() {
-        return (AnnuncioVendita) this.annuncio;
     }
-
-}
