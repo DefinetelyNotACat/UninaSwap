@@ -5,11 +5,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.text.Text?>
 
-<StackPane prefHeight="600.0" prefWidth="900.0"
-           xmlns="http://javafx.com/javafx/24.0.1"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.example.uninaswap.boundary.HomePageBoundary"
-           stylesheets="@banners.css, @homepage.css">
+<StackPane prefHeight="600.0" prefWidth="900.0" xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.HomePageBoundary" stylesheets="@banners.css, @homepage.css">
 
     <VBox alignment="TOP_CENTER" spacing="10">
         <HBox alignment="CENTER" styleClass="navbar-container">
