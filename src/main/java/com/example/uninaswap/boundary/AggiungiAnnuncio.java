@@ -156,12 +156,51 @@ public class AggiungiAnnuncio {
     }
 
     private void validaPrezzi() {
-        boolean checkPrezzo = prezzoField.getText().matches(Costanti.PRICE_REGEX);
-        prezziValidiProperty.set(checkPrezzo);
-        impostaStile(prezzoField, checkPrezzo);
-        errorePrezzo.setVisible(!checkPrezzo);
-    }
+        try {
+            String testoPrezzo = prezzoField.getText().replace(",", ".");
+            String testoMinimo = prezzoMinField.getText().replace(",", ".");
 
+            // 1. Validazione Regex di base
+            boolean prezzoOk = testoPrezzo.matches(Costanti.PRICE_REGEX);
+            boolean minimoOk = testoMinimo.isEmpty() || testoMinimo.matches(Costanti.PRICE_REGEX);
+
+            if (!prezzoOk) {
+                prezziValidiProperty.set(false);
+                impostaStile(prezzoField, false);
+                errorePrezzo.setText("Prezzo non valido o negativo!");
+                errorePrezzo.setVisible(true);
+                return;
+            }
+
+            // 2. Controllo Logico (Minimo <= Prezzo e No Negativi)
+            BigDecimal p = new BigDecimal(testoPrezzo);
+            BigDecimal min = testoMinimo.isEmpty() ? BigDecimal.ZERO : new BigDecimal(testoMinimo);
+
+            // Controllo se sono negativi (anche se la regex dovrebbe bloccarli, meglio essere sicuri)
+            if (p.compareTo(BigDecimal.ZERO) < 0 || min.compareTo(BigDecimal.ZERO) < 0) {
+                prezziValidiProperty.set(false);
+                errorePrezzo.setText("I prezzi non possono essere negativi!");
+                errorePrezzo.setVisible(true);
+                return;
+            }
+
+            // IL CHECK CHE VOLEVI: Prezzo Minimo non può superare il Prezzo
+            if (!testoMinimo.isEmpty() && min.compareTo(p) > 0) {
+                prezziValidiProperty.set(false);
+                impostaStile(prezzoMinField, false);
+                errorePrezzo.setText("Il prezzo minimo non può essere superiore al prezzo di vendita!");
+                errorePrezzo.setVisible(true);
+            } else {
+                prezziValidiProperty.set(true);
+                impostaStile(prezzoField, true);
+                impostaStile(prezzoMinField, true);
+                errorePrezzo.setVisible(false);
+            }
+
+        } catch (Exception e) {
+            prezziValidiProperty.set(false);
+        }
+    }
     private void gestisciErroreGenerico(Control controller, Text errore, boolean check) {
         controller.getStyleClass().removeAll("error", "right");
         controller.getStyleClass().add(check ? "right" : "error");
@@ -192,34 +231,65 @@ public class AggiungiAnnuncio {
             LocalTime fine = LocalTime.parse(orarioFineField.getText(), formatter);
 
             List<Oggetto> selezionati = ottieniOggettiSelezionati();
-            Oggetto primoOggetto = selezionati.get(0); // Primo oggetto richiesto dai costruttori delle entity
 
+            // Controllo di sicurezza se non ci sono oggetti
+            if (selezionati.isEmpty()) {
+                erroreOggetti.setText("Devi selezionare almeno un oggetto!");
+                erroreOggetti.setVisible(true);
+                return;
+            }
+
+            Oggetto primoOggetto = selezionati.get(0);
             Annuncio annuncioDaInviare = null;
 
+            // --- LOGICA VENDITA CON CONTROLLO PREZZI ---
             if (radioVendita.isSelected()) {
-                BigDecimal prezzoRichiesto = new BigDecimal(prezzoField.getText().replace(",", "."));
+                String strPrezzo = prezzoField.getText().replace(",", ".");
+                String strMinimo = prezzoMinField.getText().replace(",", ".");
+
+                BigDecimal prezzoRichiesto = new BigDecimal(strPrezzo);
+                BigDecimal prezzoMinimo = strMinimo.isEmpty() ? BigDecimal.ZERO : new BigDecimal(strMinimo);
+
+                // CHECK FOTTUTO: NO NEGATIVI
+                if (prezzoRichiesto.compareTo(BigDecimal.ZERO) < 0 || prezzoMinimo.compareTo(BigDecimal.ZERO) < 0) {
+                    errorePrezzo.setText("I prezzi non possono essere negativi!");
+                    errorePrezzo.setVisible(true);
+                    return;
+                }
+
+                // IL CHECK CHE VOLEVI: MINIMO NON SUPERIORE AL PREZZO
+                if (!strMinimo.isEmpty() && prezzoMinimo.compareTo(prezzoRichiesto) > 0) {
+                    errorePrezzo.setText("Il prezzo minimo non può essere superiore al prezzo di vendita!");
+                    errorePrezzo.setVisible(true);
+                    impostaStile(prezzoMinField, false); // Colora il campo di rosso
+                    return;
+                }
+
                 AnnuncioVendita av = new AnnuncioVendita(sede, descrizione, inizio, fine, primoOggetto, prezzoRichiesto);
-                if (!prezzoMinField.getText().isEmpty()) {
-                    av.setPrezzoMinimo(new BigDecimal(prezzoMinField.getText().replace(",", ".")));
+                if (!strMinimo.isEmpty()) {
+                    av.setPrezzoMinimo(prezzoMinimo);
                 }
                 annuncioDaInviare = av;
 
+                // --- LOGICA SCAMBIO ---
             } else if (radioScambio.isSelected()) {
                 String cosaCerco = desideriScambioArea.getText();
                 annuncioDaInviare = new AnnuncioScambio(sede, descrizione, inizio, fine, primoOggetto, cosaCerco);
 
+                // --- LOGICA REGALO ---
             } else if (radioRegalo.isSelected()) {
                 annuncioDaInviare = new AnnuncioRegalo(sede, descrizione, inizio, fine, primoOggetto);
             }
 
-            if (annuncioDaInviare != null && selezionati.size() > 1) {
-                for (int i = 1; i < selezionati.size(); i++) {
-                    annuncioDaInviare.addOggetto(selezionati.get(i));
-                }
-            }
-
+            // AGGIUNTA OGGETTI EXTRA ALL'ANNUNCIO
             if (annuncioDaInviare != null) {
+                if (selezionati.size() > 1) {
+                    for (int i = 1; i < selezionati.size(); i++) {
+                        annuncioDaInviare.addOggetto(selezionati.get(i));
+                    }
+                }
 
+                // PUBBLICAZIONE SUL DATABASE
                 boolean successo = controller.PubblicaAnnuncio(annuncioDaInviare);
                 if (successo) {
                     new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Annuncio pubblicato!", Messaggio.TIPI.SUCCESS);
@@ -228,10 +298,9 @@ public class AggiungiAnnuncio {
 
         } catch (Exception exception) {
             System.err.println("Errore pubblicazione: " + exception.getMessage());
+            exception.printStackTrace();
         }
-
     }
-
     @FXML
     void onTipologiaChange(ActionEvent actionEvent) {
         vboxVendita.setVisible(radioVendita.isSelected()); vboxVendita.setManaged(radioVendita.isSelected());
