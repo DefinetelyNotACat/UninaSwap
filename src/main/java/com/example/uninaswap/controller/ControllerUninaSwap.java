@@ -162,11 +162,9 @@ public class ControllerUninaSwap {
         return offertaDAO.ottieniOfferteRicevute(this.utente.getId());
     }
     public boolean EseguiOfferta(Utente utente, Offerta offerta) throws Exception {
-        //Controllo se l'utente è il proprietario dell'annuncio (non puoi farti un'offerta da solo)
         if (offerta.getAnnuncio().getUtenteId() == utente.getId()) {
             throw new Exception("Non puoi fare un'offerta sul tuo stesso annuncio!");
         }
-        //Controllo se esiste già un'offerta IN_ATTESA [NUOVA LOGICA]
         if (offertaDAO.haOffertaInAttesa(utente.getId(), offerta.getAnnuncio().getId())) {
             throw new Exception("Hai già un'offerta in attesa per questo annuncio. Attendi la risposta del venditore.");
         }
@@ -174,24 +172,28 @@ public class ControllerUninaSwap {
         return offertaDAO.salvaOfferta(offerta);
     }
     public boolean GestisciStatoOfferta(Offerta offerta, Offerta.STATO_OFFERTA nuovoStato) {
-        //Aggiorniamo lo stato dell'offerta nel DB
         boolean esito = offertaDAO.modificaStatoOfferta(offerta.getId(), nuovoStato);
         if (esito) {
             offerta.setStato(nuovoStato);
 
-            //Se l'offerta viene ACCETTATA, l'annuncio deve diventare NON_DISPONIBILE
             if (nuovoStato == Offerta.STATO_OFFERTA.ACCETTATA) {
                 int idAnnuncioReal = offerta.getAnnuncio().getId();
                 boolean annuncioChiuso = annuncioDAO.aggiornaStatoAnnuncio(idAnnuncioReal, "NON_DISPONIBILE");
 
                 if (annuncioChiuso) {
                     System.out.println("Annuncio ID " + idAnnuncioReal + " marcato come NON_DISPONIBILE.");
+
+                    ArrayList<Offerta> offerteRicevute = offertaDAO.ottieniOfferteRicevute(this.utente.getId());
+                    for (Offerta o : offerteRicevute) {
+                        if (o.getAnnuncio().getId() == idAnnuncioReal && o.getId() != offerta.getId() && o.getStato() == Offerta.STATO_OFFERTA.IN_ATTESA) {
+                            offertaDAO.modificaStatoOfferta(o.getId(), Offerta.STATO_OFFERTA.RIFIUTATA);
+                        }
+                    }
                 }
             }
         }
         return esito;
     }
-
     public boolean ModificaOggetto(Oggetto oggetto) {
         return oggettoDAO.modificaOggetto(oggetto);
     }
