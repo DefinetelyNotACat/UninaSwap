@@ -20,7 +20,6 @@ public class AnnuncioVendita extends Annuncio{
         super(sede, descrizione, orarioInizio, orarioFine, oggetto);
         this.prezzoMedio = prezzoMedio;
     }
-
     //Getter e Setter
     public BigDecimal getPrezzoMedio() {
         return prezzoMedio;

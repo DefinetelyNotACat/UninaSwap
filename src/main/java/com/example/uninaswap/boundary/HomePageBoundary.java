@@ -257,7 +257,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         if(notificaController != null) notificaController.mostraMessaggio(testo, tipo);
     }
 
-    public void svuotaCatalogo(){ containerAnnunci.getChildren().clear(); }
 
     public Scene getScene() { return containerAnnunci.getScene(); }
 

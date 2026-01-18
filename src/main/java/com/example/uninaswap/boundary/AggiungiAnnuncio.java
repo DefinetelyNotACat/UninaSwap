@@ -316,5 +316,4 @@ public class AggiungiAnnuncio {
     @FXML void onAnnullaClick(ActionEvent actionEvent) {
         new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Pubblicazione annuncio annullata", Messaggio.TIPI.INFO);
     }
-
 }

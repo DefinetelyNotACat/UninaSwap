@@ -80,7 +80,6 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
             caricaImmagineProfilo();
         }
 
-        // 3. Configurazione Validazione (QUI C'È LA LOGICA DEL BOTTONE)
         configuraValidazione();
     }
 

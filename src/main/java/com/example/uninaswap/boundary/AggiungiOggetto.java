@@ -35,7 +35,6 @@ public class AggiungiOggetto implements Initializable {
     @FXML private ComboBox<Oggetto.CONDIZIONE> condizioneBox;
 
     @FXML private HBox contenitoreImmagini;
-    @FXML private Button caricaFotoButton;
     @FXML private Text erroreImmagini;
     @FXML private Button aggiungiButton;
 

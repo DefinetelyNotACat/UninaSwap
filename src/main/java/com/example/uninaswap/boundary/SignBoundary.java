@@ -45,10 +45,6 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
     @FXML
     private Button confermaButton;
     @FXML
-    private Button registraButton;
-    @FXML
-    private Button accediButton;
-    @FXML
     private ImageView profileImageView;
 
     @FXML
