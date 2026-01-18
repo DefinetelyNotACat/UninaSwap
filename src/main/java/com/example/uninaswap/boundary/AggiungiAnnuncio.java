@@ -212,9 +212,12 @@ public class AggiungiAnnuncio {
         controller.getStyleClass().add(check ? "right" : "error");
     }
 
-    private void aggiornaStatoOggetti() {
+    private void aggiornaStatoOggetti()
+    {
         boolean verifica = false;
-        for (Node nodo : contenitoreOggetti.getChildren()) if (nodo instanceof CheckBox cb && cb.isSelected()) verifica = true;
+        for (Node nodo : contenitoreOggetti.getChildren())
+            if (nodo instanceof CheckBox cb && cb.isSelected())
+                verifica = true;
         almenoUnOggettoSelezionato.set(verifica);
         erroreOggetti.setVisible(!verifica);
     }
@@ -242,7 +245,6 @@ public class AggiungiAnnuncio {
             Oggetto primoOggetto = selezionati.get(0);
             Annuncio annuncioDaInviare = null;
 
-            // --- LOGICA VENDITA CON CONTROLLO PREZZI ---
             if (radioVendita.isSelected()) {
                 String strPrezzo = prezzoField.getText().replace(",", ".");
                 String strMinimo = prezzoMinField.getText().replace(",", ".");
@@ -259,7 +261,7 @@ public class AggiungiAnnuncio {
                 if (!strMinimo.isEmpty() && prezzoMinimo.compareTo(prezzoRichiesto) > 0) {
                     errorePrezzo.setText("Il prezzo minimo non può essere superiore al prezzo di vendita!");
                     errorePrezzo.setVisible(true);
-                    impostaStile(prezzoMinField, false); // Colora il campo di rosso
+                    impostaStile(prezzoMinField, false);
                     return;
                 }
 
