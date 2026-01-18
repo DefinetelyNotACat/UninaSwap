@@ -3,7 +3,6 @@ package com.example.uninaswap.boundary;
 import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
 import com.example.uninaswap.entity.*;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.BooleanProperty;
@@ -14,7 +13,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -41,12 +39,10 @@ public class AggiungiAnnuncio {
     @FXML private Text erroreRitiro;
     @FXML private Button pubblicaButton;
 
-    // Proprietà di validazione
     private final BooleanProperty almenoUnOggettoSelezionato = new SimpleBooleanProperty(false);
     private final BooleanProperty prezziValidiProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty orariValidiProperty = new SimpleBooleanProperty(false);
 
-    // Nuove proprietà per Regex
     private final BooleanProperty descrizioneRegexValida = new SimpleBooleanProperty(false);
     private final BooleanProperty scambioRegexValido = new SimpleBooleanProperty(false);
     private final BooleanProperty ritiroRegexValido = new SimpleBooleanProperty(true);
@@ -68,17 +64,17 @@ public class AggiungiAnnuncio {
     private void caricaInventarioUtente() {
         contenitoreOggetti.getChildren().clear();
         try {
-            Utente u = ControllerUninaSwap.getInstance().getUtente();
-            List<Oggetto> list = ControllerUninaSwap.getInstance().OttieniOggettiDisponibili(u);
+            Utente utente = ControllerUninaSwap.getInstance().getUtente();
+            List<Oggetto> list = ControllerUninaSwap.getInstance().OttieniOggettiDisponibili(utente);
             if (list == null || list.isEmpty()) {
                 contenitoreOggetti.getChildren().add(new Text("Inventario vuoto."));
                 return;
             }
-            for (Oggetto obj : list) {
-                CheckBox cb = new CheckBox(obj.getNome());
-                cb.setUserData(obj);
-                cb.selectedProperty().addListener((obs, old, newVal) -> aggiornaStatoOggetti());
-                contenitoreOggetti.getChildren().add(cb);
+            for (Oggetto oggetto : list) {
+                CheckBox checkBox = new CheckBox(oggetto.getNome());
+                checkBox.setUserData(oggetto);
+                checkBox.selectedProperty().addListener((obs, old, newVal) -> aggiornaStatoOggetti());
+                contenitoreOggetti.getChildren().add(checkBox);
             }
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -159,7 +155,6 @@ public class AggiungiAnnuncio {
             String testoMinimo = prezzoMinField.getText().replace(",", ".");
 
             boolean prezzoOk = testoPrezzo.matches(Costanti.PRICE_REGEX);
-            boolean minimoOk = testoMinimo.isEmpty() || testoMinimo.matches(Costanti.PRICE_REGEX);
 
             if (!prezzoOk) {
                 prezziValidiProperty.set(false);
@@ -169,18 +164,16 @@ public class AggiungiAnnuncio {
                 return;
             }
 
-            BigDecimal p = new BigDecimal(testoPrezzo);
-            BigDecimal min = testoMinimo.isEmpty() ? BigDecimal.ZERO : new BigDecimal(testoMinimo);
+            BigDecimal prezzo = new BigDecimal(testoPrezzo);
+            BigDecimal prezzoMinimo = testoMinimo.isEmpty() ? BigDecimal.ZERO : new BigDecimal(testoMinimo);
 
-            if (p.compareTo(BigDecimal.ZERO) < 0 || min.compareTo(BigDecimal.ZERO) < 0) {
+            if (prezzo.compareTo(BigDecimal.ZERO) < 0 || prezzoMinimo.compareTo(BigDecimal.ZERO) < 0) {
                 prezziValidiProperty.set(false);
                 errorePrezzo.setText("I prezzi non possono essere negativi!");
                 errorePrezzo.setVisible(true);
                 return;
             }
-
-            // IL CHECK CHE VOLEVI: Prezzo Minimo non può superare il Prezzo
-            if (!testoMinimo.isEmpty() && min.compareTo(p) > 0) {
+            if (!testoMinimo.isEmpty() && prezzoMinimo.compareTo(prezzo) > 0) {
                 prezziValidiProperty.set(false);
                 impostaStile(prezzoMinField, false);
                 errorePrezzo.setText("Il prezzo minimo non può essere superiore al prezzo di vendita!");
@@ -211,7 +204,7 @@ public class AggiungiAnnuncio {
     {
         boolean verifica = false;
         for (Node nodo : contenitoreOggetti.getChildren())
-            if (nodo instanceof CheckBox cb && cb.isSelected())
+            if (nodo instanceof CheckBox checkBox && checkBox.isSelected())
                 verifica = true;
         almenoUnOggettoSelezionato.set(verifica);
         erroreOggetti.setVisible(!verifica);
@@ -230,7 +223,6 @@ public class AggiungiAnnuncio {
 
             List<Oggetto> selezionati = ottieniOggettiSelezionati();
 
-            // Controllo di sicurezza se non ci sono oggetti
             if (selezionati.isEmpty()) {
                 erroreOggetti.setText("Devi selezionare almeno un oggetto!");
                 erroreOggetti.setVisible(true);
@@ -305,9 +297,11 @@ public class AggiungiAnnuncio {
     }
 
     private List<Oggetto> ottieniOggettiSelezionati() {
-        List<Oggetto> s = new ArrayList<>();
-        for (Node n : contenitoreOggetti.getChildren()) if (n instanceof CheckBox cb && cb.isSelected()) s.add((Oggetto) cb.getUserData());
-        return s;
+        List<Oggetto> oggettiSelezionati = new ArrayList<>();
+        for (Node node : contenitoreOggetti.getChildren())
+            if (node instanceof CheckBox checkBox && checkBox.isSelected())
+                oggettiSelezionati.add((Oggetto) checkBox.getUserData());
+        return oggettiSelezionati;
     }
 
     @FXML void onAnnullaClick(ActionEvent actionEvent) {

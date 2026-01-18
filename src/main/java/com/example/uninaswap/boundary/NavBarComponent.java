@@ -195,7 +195,6 @@ public class NavBarComponent {
             //Se non ho trovato nulla, carico quella di default
             if (isDefault) {
                 immagineDaCaricare = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
-                // RESETTA IL VIEWPORT altrimenti l'immagine di default non si vede cazzo!
                 fotoProfilo.setViewport(null);
             }
 

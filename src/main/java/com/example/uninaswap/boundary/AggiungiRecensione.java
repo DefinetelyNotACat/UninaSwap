@@ -101,7 +101,6 @@ public class AggiungiRecensione {
         try {
             int voto = votoSelezionato.get();
 
-            // Il controller gestirà l'INSERT o l'UPDATE confrontando gli ID degli utenti
             boolean successo = controller.pubblicaRecensione(
                     utenteDaRecensire,
                     utenteRecensore,
