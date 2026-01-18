@@ -94,8 +94,12 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         params.add(mioId);
 
         if (ricerca != null && !ricerca.trim().isEmpty()) {
-            sqlFiltro.append("AND a.descrizione ILIKE ? ");
-            params.add("%" + ricerca.trim() + "%");
+            String queryRicerca = "%" + ricerca.trim() + "%";
+
+            sqlFiltro.append("AND (a.descrizione ILIKE ? OR o.nome ILIKE ?) ");
+
+            params.add(queryRicerca);
+            params.add(queryRicerca);
         }
 
         if (condizione != null && !condizione.isEmpty()) {
@@ -112,9 +116,9 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         }
 
         sqlFiltro.append("ORDER BY a.id DESC");
+
         return caricaAnnunciConJoin(sqlFiltro.toString(), params.toArray());
     }
-
     public ArrayList<Annuncio> OttieniAnnunciDiUtente(int idUtente) {
         return caricaAnnunciConJoin("WHERE a.utente_id = ? ORDER BY a.id DESC", idUtente);
     }
