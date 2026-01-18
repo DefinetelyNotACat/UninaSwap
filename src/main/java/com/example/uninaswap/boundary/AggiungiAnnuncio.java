@@ -158,7 +158,6 @@ public class AggiungiAnnuncio {
             String testoPrezzo = prezzoField.getText().replace(",", ".");
             String testoMinimo = prezzoMinField.getText().replace(",", ".");
 
-            // 1. Validazione Regex di base
             boolean prezzoOk = testoPrezzo.matches(Costanti.PRICE_REGEX);
             boolean minimoOk = testoMinimo.isEmpty() || testoMinimo.matches(Costanti.PRICE_REGEX);
 
@@ -170,11 +169,9 @@ public class AggiungiAnnuncio {
                 return;
             }
 
-            // 2. Controllo Logico (Minimo <= Prezzo e No Negativi)
             BigDecimal p = new BigDecimal(testoPrezzo);
             BigDecimal min = testoMinimo.isEmpty() ? BigDecimal.ZERO : new BigDecimal(testoMinimo);
 
-            // Controllo se sono negativi (anche se la regex dovrebbe bloccarli, meglio essere sicuri)
             if (p.compareTo(BigDecimal.ZERO) < 0 || min.compareTo(BigDecimal.ZERO) < 0) {
                 prezziValidiProperty.set(false);
                 errorePrezzo.setText("I prezzi non possono essere negativi!");

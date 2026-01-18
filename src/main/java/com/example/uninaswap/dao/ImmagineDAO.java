@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 public class ImmagineDAO implements GestoreImmagineDAO {
 
-    // Metodo per transazione: accetta Connection e lista di stringhe
     public void inserisciImmaginiBatch(Connection conn, int idOggetto, ArrayList<String> paths) throws SQLException {
         if (paths == null || paths.isEmpty()) return;
 
