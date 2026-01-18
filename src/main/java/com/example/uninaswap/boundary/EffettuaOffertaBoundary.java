@@ -191,7 +191,7 @@ public class EffettuaOffertaBoundary {
             }
 
             if (controller.EseguiOfferta(me, nuovaOfferta)) {
-                tornaHome();
+                tornaDettaglio();
             } else {
                 lblErrore.setText("Errore durante l'invio dell'offerta.");
             }
@@ -202,15 +202,22 @@ public class EffettuaOffertaBoundary {
             lblErrore.setText(e.getMessage());
         }
     }
+
     @FXML
     public void annulla() {
-        tornaHome();
+        tornaDettaglio();
     }
 
-    private void tornaHome() {
+    private void tornaDettaglio() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathHomePage));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathDettaglioAnnuncio));
             Parent root = loader.load();
+
+            Object controllerDettaglio = loader.getController();
+            if (controllerDettaglio instanceof DettaglioAnnuncioBoundary da) {
+                da.initData(annuncioTarget);
+            }
+
             Stage stage = (Stage) containerSpecifico.getScene().getWindow();
             stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
         } catch (Exception e) {
