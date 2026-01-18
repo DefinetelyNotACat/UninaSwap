@@ -26,13 +26,11 @@ public class AggiungiAnnuncio {
     @FXML private TextArea descrizioneAnnuncioArea;
     @FXML private Text erroreDescrizione;
     @FXML private ComboBox<String> sedeBox;
-    @FXML private Text erroreSede;
     @FXML private TextField orarioInizioField;
     @FXML private TextField orarioFineField;
     @FXML private Text erroreOrario;
     @FXML private VBox contenitoreOggetti;
     @FXML private Text erroreOggetti;
-    @FXML private ToggleGroup tipoAnnuncioGroup;
     @FXML private RadioButton radioVendita, radioScambio, radioRegalo;
     @FXML private VBox vboxVendita, vboxScambio, vboxRegalo;
     @FXML private TextField prezzoField, prezzoMinField;
@@ -41,7 +39,7 @@ public class AggiungiAnnuncio {
     @FXML private Text erroreScambio;
     @FXML private TextField infoRitiroField;
     @FXML private Text erroreRitiro;
-    @FXML private Button annullaButton, pubblicaButton;
+    @FXML private Button pubblicaButton;
 
     // Proprietà di validazione
     private final BooleanProperty almenoUnOggettoSelezionato = new SimpleBooleanProperty(false);
