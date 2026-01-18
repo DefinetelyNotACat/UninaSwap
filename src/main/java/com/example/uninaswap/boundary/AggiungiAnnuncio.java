@@ -269,17 +269,14 @@ public class AggiungiAnnuncio {
                 }
                 annuncioDaInviare = av;
 
-                // --- LOGICA SCAMBIO ---
             } else if (radioScambio.isSelected()) {
                 String cosaCerco = desideriScambioArea.getText();
                 annuncioDaInviare = new AnnuncioScambio(sede, descrizione, inizio, fine, primoOggetto, cosaCerco);
 
-                // --- LOGICA REGALO ---
             } else if (radioRegalo.isSelected()) {
                 annuncioDaInviare = new AnnuncioRegalo(sede, descrizione, inizio, fine, primoOggetto);
             }
 
-            // AGGIUNTA OGGETTI EXTRA ALL'ANNUNCIO
             if (annuncioDaInviare != null) {
                 if (selezionati.size() > 1) {
                     for (int i = 1; i < selezionati.size(); i++) {
@@ -287,7 +284,6 @@ public class AggiungiAnnuncio {
                     }
                 }
 
-                // PUBBLICAZIONE SUL DATABASE
                 boolean successo = controller.PubblicaAnnuncio(annuncioDaInviare);
                 if (successo) {
                     new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent, "Annuncio pubblicato!", Messaggio.TIPI.SUCCESS);
