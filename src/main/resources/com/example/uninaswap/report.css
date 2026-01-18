@@ -1,0 +1,49 @@
+.report-root {
+    -fx-background-color: white;
+}
+
+.report-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.report-details-container {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 20;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1 0 0 0;
+}
+
+.report-details-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.lbl-stat-media {
+    -fx-text-fill: #2980b9;
+    -fx-font-size: 16px;
+}
+
+.lbl-stat-min {
+    -fx-text-fill: #e67e22;
+    -fx-font-size: 16px;
+}
+
+.lbl-stat-max {
+    -fx-text-fill: #27ae60;
+    -fx-font-size: 16px;
+}
+
+.button-close {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+    -fx-padding: 8 20;
+    -fx-font-weight: bold;
+}
+
+.button-close:hover {
+    -fx-background-color: #c0392b;
+}

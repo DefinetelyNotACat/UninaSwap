@@ -3,12 +3,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.ReportOfferteBoundary" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: white;">
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.uninaswap.boundary.ReportOfferteBoundary"
+            prefHeight="600.0" prefWidth="800.0"
+            styleClass="report-root"
+            stylesheets="@report.css">
 
     <top>
         <VBox alignment="CENTER" spacing="10">
             <padding><Insets top="20" bottom="10"/></padding>
-            <Label text="Report Statistico Offerte Inviate" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+            <Label text="Report Statistico Offerte Inviate" styleClass="report-title"/>
         </VBox>
     </top>
 
@@ -17,14 +21,16 @@
     </center>
 
     <bottom>
-        <VBox spacing="10" style="-fx-background-color: #f8f9fa; -fx-padding: 20; -fx-border-color: #dee2e6; -fx-border-width: 1 0 0 0;">
-            <Label text="Dettagli Economici (Solo Offerte di Vendita Accettate)" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+        <VBox spacing="10" styleClass="report-details-container">
+            <Label text="Dettagli Economici (Solo Offerte di Vendita Accettate)" styleClass="report-details-title"/>
             <HBox spacing="30" alignment="CENTER">
-                <Label fx:id="lblMedia" text="Media: - €" style="-fx-text-fill: #2980b9; -fx-font-size: 16px;"/>
-                <Label fx:id="lblMin" text="Minimo: - €" style="-fx-text-fill: #e67e22; -fx-font-size: 16px;"/>
-                <Label fx:id="lblMax" text="Massimo: - €" style="-fx-text-fill: #27ae60; -fx-font-size: 16px;"/>
+                <Label fx:id="lblMedia" text="Media: - €" styleClass="lbl-stat-media"/>
+                <Label fx:id="lblMin" text="Minimo: - €" styleClass="lbl-stat-min"/>
+                <Label fx:id="lblMax" text="Massimo: - €" styleClass="lbl-stat-max"/>
             </HBox>
-            <Button text="Chiudi" onAction="#chiudiFinestra" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;" alignment="CENTER"/>
+            <HBox alignment="CENTER">
+                <Button text="Chiudi" onAction="#chiudiFinestra" styleClass="button-close"/>
+            </HBox>
         </VBox>
     </bottom>
 </BorderPane>

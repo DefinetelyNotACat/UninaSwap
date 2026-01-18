@@ -4,12 +4,20 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
 
-<VBox alignment="CENTER" spacing="15.0" xmlns="" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER"
+      spacing="15.0"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      styleClass="no-data-container"
+      stylesheets="@nessunaofferta.css">
+
     <children>
-        <Text text="Nessun Dato Disponibile" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #c0392b;" />
+        <Text text="Nessun Dato Disponibile"
+              styleClass="no-data-title" />
+
         <Text text="Non hai effettuato offerte, ritorna dopo averne effettuata almeno una."
-              style="-fx-font-size: 14px; -fx-fill: #7f8c8d;" wrappingWidth="300.0" textAlignment="CENTER" />
+              styleClass="no-data-description"
+              wrappingWidth="300.0"
+              textAlignment="CENTER" />
     </children>
-    <padding>
-    </padding>
 </VBox>
