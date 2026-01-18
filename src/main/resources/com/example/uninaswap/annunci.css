@@ -1,0 +1,82 @@
+.ad-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-padding: 15;
+    -fx-alignment: top-center;
+    -fx-spacing: 12;
+    -fx-pref-width: 270;
+}
+
+.ad-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+.ad-location {
+    -fx-fill: #636e72;
+    -fx-font-size: 13px;
+}
+
+.ad-description {
+    -fx-font-size: 14px;
+    -fx-fill: #2d3436;
+    -fx-wrapping-width: 240;
+}
+
+.ad-extra-info {
+    -fx-font-weight: bold;
+    -fx-fill: #2d3436;
+    -fx-font-size: 15px;
+}
+
+.action-area {
+    -fx-max-width: infinity;
+}
+
+.button-danger-full {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-max-width: infinity;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+    -fx-font-weight: bold;
+}
+
+.button-danger-full:hover {
+    -fx-background-color: #c0392b;
+}
+
+.lbl-stato-concluso {
+    -fx-text-fill: #27ae60;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-alignment: center;
+}
+
+.placeholder-text-italic {
+    -fx-font-size: 18px;
+    -fx-fill: #888;
+    -fx-font-style: italic;
+}
+
+.footer-container {
+    -fx-background-color: white;
+    -fx-border-color: #eee;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 15;
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.badge-base {
+    -fx-padding: 4 8;
+    -fx-background-radius: 5;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.badge-vendita { -fx-background-color: #0984e3; }
+.badge-scambio { -fx-background-color: #6c5ce7; }
+.badge-regalo  { -fx-background-color: #e67e22; }

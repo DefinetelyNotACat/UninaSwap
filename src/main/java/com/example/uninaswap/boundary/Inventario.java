@@ -9,7 +9,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -22,7 +21,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -88,15 +86,8 @@ public class Inventario implements Initializable, GestoreMessaggio {
 
     private VBox creaCardOggetto(Oggetto oggetto) {
         VBox card = new VBox();
-        card.setAlignment(Pos.CENTER);
-        card.setSpacing(15);
         card.getStyleClass().add("inventory-card");
 
-        card.setPrefWidth(260);
-        card.setMinWidth(260);
-        card.setMinHeight(380);
-
-        //Immagine
         ImageView imgView = new ImageView();
         imgView.setFitWidth(220);
         imgView.setFitHeight(180);
@@ -120,17 +111,11 @@ public class Inventario implements Initializable, GestoreMessaggio {
             setDefaultImage(imgView);
         }
 
-        //Nome Oggetto
         Text nome = new Text(oggetto.getNome());
-        nome.setStyle("-fx-font-weight: bold; -fx-font-size: 18px; -fx-fill: #2d3436;");
-        nome.setWrappingWidth(230);
-        nome.setTextAlignment(TextAlignment.CENTER);
+        nome.getStyleClass().add("inventory-card-title");
 
-        //Sezione badge
         FlowPane badgeBox = new FlowPane();
-        badgeBox.setAlignment(Pos.CENTER);
-        badgeBox.setHgap(8);
-        badgeBox.setVgap(8);
+        badgeBox.getStyleClass().add("inventory-card-badges");
 
         Label badgeCondizione = new Label(oggetto.getCondizione().toString().replace("_", " "));
         badgeCondizione.getStyleClass().addAll("badge", "badge-violet");
@@ -149,9 +134,8 @@ public class Inventario implements Initializable, GestoreMessaggio {
 
         badgeBox.getChildren().addAll(badgeCondizione, badgeStato);
 
-        //Tasti
-        HBox btnBox = new HBox(12);
-        btnBox.setAlignment(Pos.CENTER);
+        HBox btnBox = new HBox();
+        btnBox.getStyleClass().add("inventory-card-buttons");
 
         Button btnModifica = new Button("Modifica");
         btnModifica.getStyleClass().add("button-small");

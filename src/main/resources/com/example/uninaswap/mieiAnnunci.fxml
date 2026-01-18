@@ -6,7 +6,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<StackPane prefHeight="600.0" prefWidth="900.0" xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.MieiAnnunci" stylesheets="@homepage.css">
+<StackPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.uninaswap.boundary.MieiAnnunci"
+           stylesheets="@homepage.css, @annunci.css">
+
     <VBox alignment="TOP_CENTER" spacing="10">
 
         <HBox alignment="CENTER" styleClass="navbar-container">
@@ -26,7 +29,7 @@
         <StackPane VBox.vgrow="ALWAYS">
             <Text fx:id="testoVuoto" visible="false" managed="false"
                   text="Non hai ancora pubblicato nessun annuncio."
-                  style="-fx-font-size: 18px; -fx-fill: #888; -fx-font-style: italic;" />
+                  styleClass="placeholder-text-italic" />
 
             <ScrollPane fitToWidth="true" styleClass="main-scroll-pane">
                 <content>
@@ -39,8 +42,7 @@
             </ScrollPane>
         </StackPane>
 
-        <HBox alignment="CENTER" spacing="20" style="-fx-background-color: white; -fx-border-color: #eee; -fx-border-width: 1 0 0 0;">
-            <padding><Insets top="15" bottom="15" /></padding>
+        <HBox styleClass="footer-container">
             <Button text="⬅ Torna alla Home" onAction="#onIndietroClick" styleClass="button-outline" prefWidth="200" />
         </HBox>
 

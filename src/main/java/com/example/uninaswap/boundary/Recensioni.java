@@ -6,8 +6,6 @@ import com.example.uninaswap.entity.Recensione;
 import com.example.uninaswap.entity.Utente;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -115,13 +113,11 @@ public class Recensioni {
 
     private VBox creaCardRecensione(Recensione recensione) {
         ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
-        VBox card = new VBox(10);
-        card.getStyleClass().add("ad-card");
-        card.setPadding(new Insets(15));
-        card.setMaxWidth(600);
+        VBox card = new VBox();
+        card.getStyleClass().add("review-card");
 
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
+        HBox header = new HBox();
+        header.getStyleClass().add("review-header");
 
         String etichetta;
         String emailDaCercare;
@@ -138,19 +134,18 @@ public class Recensioni {
         String nome = (utente != null) ? utente.getUsername() : "Utente Anonimo";
 
         Label autore = new Label(etichetta + nome);
-        autore.setStyle("-fx-font-weight: bold; -fx-text-fill: #003366;");
+        autore.getStyleClass().add("review-author");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         Label badgeVoto = new Label("⭐ " + recensione.getVoto() + "/5");
-        badgeVoto.getStyleClass().addAll("badge-base", "badge-vendita");
+        badgeVoto.getStyleClass().addAll("badge-base", "badge-review-vote");
 
         header.getChildren().addAll(autore, spacer, badgeVoto);
 
         Text commento = new Text(recensione.getCommento() != null && !recensione.getCommento().isEmpty() ? recensione.getCommento() : "Nessun commento lasciato.");
-        commento.setWrappingWidth(550);
-        commento.setStyle("-fx-font-style: italic; -fx-fill: #555;");
+        commento.getStyleClass().add("review-comment");
 
         card.getChildren().addAll(header, commento);
         return card;
@@ -167,7 +162,7 @@ public class Recensioni {
         txtMedia.setText("Nessuna valutazione");
         String messaggio = tipo.equals("ricevute") ? "Nessuna recensione ricevuta." : "Non hai ancora scritto recensioni.";
         Text testo = new Text(messaggio);
-        testo.setStyle("-fx-fill: #aaa; -fx-font-size: 16px;");
+        testo.getStyleClass().add("placeholder-text-review");
         containerRecensioni.getChildren().add(testo);
     }
 

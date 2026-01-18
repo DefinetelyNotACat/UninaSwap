@@ -46,7 +46,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         }
         if (queryPrenotata != null) {
             caricaCatalogoAnnunci(queryPrenotata, cercaAnnunciPrenotato);
-            // Non resettiamo qui, lasciamo che NavBarComponent lo faccia dopo aver letto il testo
         } else {
             caricaCatalogoAnnunci(null, true);
         }
@@ -88,30 +87,26 @@ public class HomePageBoundary implements GestoreMessaggio {
     private VBox creaCardUtente(Utente utente) {
         VBox card = new VBox(15);
         card.getStyleClass().add("ad-card");
-        card.setAlignment(Pos.CENTER); // Centra i figli nel VBox
+        card.setAlignment(Pos.CENTER);
         card.setPrefWidth(280);
         card.setPadding(new Insets(25));
 
-        //Immagine Profilo
         ImageView imgView = new ImageView();
         imgView.setFitWidth(100);
         imgView.setFitHeight(100);
         caricaFotoProfilo(utente, imgView);
         imgView.setClip(new Circle(50, 50, 50));
 
-        //Nome Utente
         Label username = new Label(utente.getUsername());
         username.setAlignment(Pos.CENTER);
         username.setMaxWidth(Double.MAX_VALUE);
-        username.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #003366;");
+        username.getStyleClass().add("user-card-username");
 
-        //Email
         Label email = new Label(utente.getEmail());
         email.setAlignment(Pos.CENTER);
         email.setMaxWidth(Double.MAX_VALUE);
-        email.setStyle("-fx-font-size: 14px; -fx-text-fill: #666; -fx-font-style: italic;");
+        email.getStyleClass().add("user-card-email");
 
-        //Container Bottoni
         VBox containerBottoni = new VBox(12);
         containerBottoni.setAlignment(Pos.CENTER);
         containerBottoni.setPrefWidth(200);
@@ -119,7 +114,7 @@ public class HomePageBoundary implements GestoreMessaggio {
 
         Button btnProfilo = new Button("Vedi Annunci");
         btnProfilo.getStyleClass().add("button-primary");
-        btnProfilo.setMaxWidth(Double.MAX_VALUE); // Riempie il containerBottoni che è centrato
+        btnProfilo.setMaxWidth(Double.MAX_VALUE);
         btnProfilo.setOnAction(e -> {
             containerAnnunci.getChildren().clear();
             List<Annuncio> annunciUtente = controller.OttieniAnnunciDiUtenteDaAltroUtente(utente.getId());
@@ -246,9 +241,9 @@ public class HomePageBoundary implements GestoreMessaggio {
         boxVuoto.setMinWidth(800);
         boxVuoto.setPadding(new Insets(50, 0, 0, 0));
         Text t1 = new Text(titolo);
-        t1.setStyle("-fx-font-size: 20px; -fx-fill: #888; -fx-font-weight: bold;");
+        t1.getStyleClass().add("empty-message-title");
         Text t2 = new Text(sottotitolo);
-        t2.setStyle("-fx-font-size: 14px; -fx-fill: #aaa;");
+        t2.getStyleClass().add("empty-message-subtitle");
         boxVuoto.getChildren().addAll(t1, t2);
         containerAnnunci.getChildren().add(boxVuoto);
     }
@@ -256,7 +251,6 @@ public class HomePageBoundary implements GestoreMessaggio {
     @Override public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
         if(notificaController != null) notificaController.mostraMessaggio(testo, tipo);
     }
-
 
     public Scene getScene() { return containerAnnunci.getScene(); }
 

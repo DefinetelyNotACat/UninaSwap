@@ -49,3 +49,54 @@
     -fx-text-fill: #444444;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
 }
+
+.review-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0, 0, 4);
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-max-width: 600;
+}
+
+.review-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+.review-author {
+    -fx-font-weight: bold;
+    -fx-text-fill: #003366;
+    -fx-font-size: 14px;
+}
+
+.badge-review-vote {
+    -fx-background-color: #f1c40f;
+    -fx-text-fill: #2d3436;
+    -fx-font-weight: bold;
+}
+
+.review-comment {
+    -fx-font-style: italic;
+    -fx-fill: #555;
+    -fx-wrapping-width: 550;
+    -fx-font-size: 14px;
+}
+
+.placeholder-text-review {
+    -fx-fill: #aaa;
+    -fx-font-size: 16px;
+    -fx-text-alignment: center;
+}
+
+.button-primary:hover {
+    -fx-background-color: #2980b9;
+}
+
+.button-outline:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #7f8c8d;
+}

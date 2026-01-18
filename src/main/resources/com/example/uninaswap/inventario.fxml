@@ -9,7 +9,9 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.Inventario" stylesheets="@banners.css, @homepage.css">
+<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.uninaswap.boundary.Inventario"
+            stylesheets="@banners.css, @homepage.css, @inventario.css, @form.css">
 
     <top>
         <HBox alignment="CENTER" styleClass="navbar-container">
@@ -18,8 +20,7 @@
     </top>
 
     <center>
-        <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" styleClass="main-scroll-pane"
-                    stylesheets="@inventario.css, @form.css">
+        <ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" styleClass="main-scroll-pane">
             <content>
                 <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="myPadding">
 
@@ -28,7 +29,7 @@
                         <padding><Insets bottom="10.0" /></padding>
                     </VBox>
 
-                    <VBox alignment="CENTER" spacing="10">
+                    <VBox alignment="CENTER" spacing="10" styleClass="header-section">
                         <children>
                             <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
                                 <image><Image url="@images/uninaLogo.png" /></image>
@@ -48,7 +49,8 @@
                     <VBox alignment="CENTER" VBox.vgrow="ALWAYS">
                         <children>
                             <GridPane fx:id="gridInventario" alignment="CENTER" hgap="25.0" vgap="25.0"></GridPane>
-                            <Text fx:id="testoVuoto" text="Non hai ancora inserito oggetti nel tuo inventario." styleClass="placeholder-text" visible="false" managed="false"/>
+                            <Text fx:id="testoVuoto" text="Non hai ancora inserito oggetti nel tuo inventario."
+                                  styleClass="placeholder-text" visible="false" managed="false"/>
                         </children>
                         <padding><Insets bottom="50.0" left="20.0" right="20.0" top="10.0"/></padding>
                     </VBox>

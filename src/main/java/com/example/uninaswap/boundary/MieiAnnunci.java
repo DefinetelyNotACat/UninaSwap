@@ -7,7 +7,6 @@ import com.example.uninaswap.interfaces.GestoreMessaggio;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -58,34 +57,28 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
     }
 
     private VBox creaCardAnnuncio(Annuncio annuncio) {
-        VBox card = new VBox(12);
+        VBox card = new VBox();
         card.getStyleClass().add("ad-card");
-        card.setPrefWidth(270);
-        card.setPadding(new Insets(15));
-        card.setAlignment(Pos.TOP_CENTER);
 
-        //Immagine
         ImageView imgView = new ImageView();
         imgView.setFitWidth(240);
         imgView.setFitHeight(160);
         imgView.setPreserveRatio(true);
         caricaImmagine(annuncio, imgView);
 
-        //Badge e Sede
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
+        HBox header = new HBox();
+        header.getStyleClass().add("ad-header");
+
         Label badge = new Label(determinaTipo(annuncio).toUpperCase());
         badge.getStyleClass().addAll("badge-base", determinaClasseBadge(annuncio));
+
         Text sede = new Text("📍 " + (annuncio.getSede() != null ? annuncio.getSede().getNomeSede() : "N/A"));
         sede.getStyleClass().add("ad-location");
         header.getChildren().addAll(badge, sede);
 
-        //Descrizione
         Text desc = new Text(annuncio.getDescrizione());
         desc.getStyleClass().add("ad-description");
-        desc.setWrappingWidth(240);
 
-        //Info Economica Specifica
         Text extraInfo = new Text();
         extraInfo.getStyleClass().add("ad-extra-info");
         if (annuncio instanceof AnnuncioVendita av) {
@@ -99,26 +92,23 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        //Area Azioni
         StackPane actionArea = new StackPane();
-        actionArea.setMaxWidth(Double.MAX_VALUE);
+        actionArea.getStyleClass().add("action-area");
 
         Button btnElimina = new Button("🗑 Elimina Annuncio");
-        btnElimina.getStyleClass().add("button-danger");
-        btnElimina.setMaxWidth(Double.MAX_VALUE);
+        btnElimina.getStyleClass().add("button-danger-full");
 
         if (annuncio.getStato() != Annuncio.STATO_ANNUNCIO.DISPONIBILE) {
-            btnElimina.setOpacity(0.0);
-            btnElimina.setDisable(true);
+            btnElimina.setVisible(false);
+            btnElimina.setManaged(false);
 
             String testoStato = "Affare Concluso ✅";
             if (annuncio instanceof AnnuncioScambio) testoStato = "Scambio Effettuato 🤝";
             if (annuncio instanceof AnnuncioRegalo) testoStato = "Regalo Consegnato 🎉";
 
             Label lblStato = new Label(testoStato);
-            lblStato.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 15px;");
-
-            actionArea.getChildren().addAll(btnElimina, lblStato);
+            lblStato.getStyleClass().add("lbl-stato-concluso");
+            actionArea.getChildren().add(lblStato);
         } else {
             btnElimina.setOnAction(e -> onEliminaAnnuncio(annuncio));
             actionArea.getChildren().add(btnElimina);
@@ -166,4 +156,4 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
 
     @Override public void mostraMessaggioEsterno(String messaggio, Messaggio.TIPI tipi) { if (notificaController != null) notificaController.mostraMessaggio(messaggio, tipi); }
 
-}
+}   

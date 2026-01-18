@@ -32,6 +32,7 @@ public class EffettuaOffertaBoundary {
 
     private Annuncio annuncioTarget;
     private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
+    private final GestoreScene gestoreScene = new GestoreScene();
 
     private final BooleanProperty messaggioRegexOk = new SimpleBooleanProperty(true);
 
@@ -73,22 +74,21 @@ public class EffettuaOffertaBoundary {
 
         if (annuncioTarget instanceof AnnuncioVendita) {
             Label etichetta = new Label("Inserisci la tua offerta in €:");
-            etichetta.setStyle("-fx-font-weight: bold; -fx-font-size: 15px;");
+            etichetta.getStyleClass().add("info-label-premium");
 
             inputPrezzo = new TextField();
             inputPrezzo.setPromptText("Es. 50.00");
-            inputPrezzo.getStyleClass().add("text-field-premium");
-            inputPrezzo.setMaxWidth(250);
+            inputPrezzo.getStyleClass().addAll("text-field-premium", "input-prezzo-dinamico");
 
             containerSpecifico.getChildren().addAll(etichetta, inputPrezzo);
 
         } else if (annuncioTarget instanceof AnnuncioScambio) {
             Label etichetta = new Label("Seleziona gli oggetti da offrire:");
-            etichetta.setStyle("-fx-font-weight: bold; -fx-text-fill: #2d3436; -fx-font-size: 15px;");
+            etichetta.getStyleClass().add("info-label-premium");
 
             listaMieiOggetti = new ListView<>();
             listaMieiOggetti.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-            listaMieiOggetti.setPrefHeight(250);
+            listaMieiOggetti.getStyleClass().add("lista-oggetti-offerta");
 
             listaMieiOggetti.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                 event.consume();
@@ -115,12 +115,12 @@ public class EffettuaOffertaBoundary {
 
                 listaMieiOggetti.setCellFactory(param -> new ListCell<>() {
                     private final CheckBox checkBox = new CheckBox();
-                    private final HBox cellBox = new HBox(15);
+                    private final HBox cellBox = new HBox();
                     private final Label nome = new Label();
                     {
                         checkBox.setMouseTransparent(true);
                         checkBox.setFocusTraversable(false);
-                        cellBox.setAlignment(Pos.CENTER_LEFT);
+                        cellBox.getStyleClass().add("cell-box-offerta");
                         cellBox.getChildren().addAll(checkBox, nome);
                     }
                     @Override
@@ -141,10 +141,10 @@ public class EffettuaOffertaBoundary {
             containerSpecifico.getChildren().addAll(etichetta, listaMieiOggetti);
 
         } else {
-            VBox boxRegalo = new VBox(10);
-            boxRegalo.setAlignment(Pos.CENTER);
+            VBox boxRegalo = new VBox();
+            boxRegalo.getStyleClass().add("box-regalo-offerta");
             Label etichetta = new Label("🎁 Questo annuncio è un REGALO!");
-            etichetta.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #fd7e14;");
+            etichetta.getStyleClass().add("gift-label");
             boxRegalo.getChildren().add(etichetta);
             containerSpecifico.getChildren().add(boxRegalo);
         }
@@ -164,12 +164,11 @@ public class EffettuaOffertaBoundary {
 
             if (annuncioTarget instanceof AnnuncioVendita av) {
                 if (inputPrezzo.getText().isEmpty()) throw new Exception("Inserisci un prezzo.");
-
                 double prezzoOfferto = Double.parseDouble(inputPrezzo.getText().replace(",", "."));
 
                 if (av.getPrezzoMinimo() != null && prezzoOfferto < av.getPrezzoMinimo().doubleValue()) {
-                    String prezzoMinimoFormattato = String.format("%.2f", av.getPrezzoMinimo().doubleValue());
-                    throw new Exception("Offerta troppo bassa! Il venditore non accetta meno di " + prezzoMinimoFormattato + " €.");
+                    String pMin = String.format("%.2f", av.getPrezzoMinimo().doubleValue());
+                    throw new Exception("Offerta troppo bassa! Il minimo è " + pMin + " €.");
                 }
 
                 nuovaOfferta = new OffertaVendita(annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
@@ -178,7 +177,7 @@ public class EffettuaOffertaBoundary {
 
             } else if (annuncioTarget instanceof AnnuncioScambio) {
                 var selezionati = new ArrayList<>(listaMieiOggetti.getSelectionModel().getSelectedItems());
-                if (selezionati.isEmpty()) throw new Exception("Seleziona almeno un oggetto da scambiare.");
+                if (selezionati.isEmpty()) throw new Exception("Seleziona almeno un oggetto.");
 
                 OffertaScambio os = new OffertaScambio((AnnuncioScambio) annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
                         LocalTime.now(), LocalTime.now().plusHours(1), selezionati.get(0), me);
@@ -190,14 +189,14 @@ public class EffettuaOffertaBoundary {
                         LocalTime.now(), LocalTime.now().plusHours(1), null, me, (AnnuncioRegalo) annuncioTarget);
             }
 
+            // --- INVIO OFFERTA E REINDIRIZZAMENTO ALLA HOME ---
             if (controller.EseguiOfferta(me, nuovaOfferta)) {
-                tornaDettaglio();
+                Stage stage = (Stage) btnInvia.getScene().getWindow();
+                gestoreScene.CambiaScena(Costanti.pathHomePage, "UninaSwap - Home", stage, "Offerta inviata con successo!", Messaggio.TIPI.SUCCESS);
             } else {
                 lblErrore.setText("Errore durante l'invio dell'offerta.");
             }
 
-        } catch (NumberFormatException nfe) {
-            lblErrore.setText("Formato prezzo non valido (usa es. 50.00).");
         } catch (Exception e) {
             lblErrore.setText(e.getMessage());
         }
@@ -205,22 +204,21 @@ public class EffettuaOffertaBoundary {
 
     @FXML
     public void annulla() {
-        tornaDettaglio();
+        tornaAlDettaglio();
     }
 
-    private void tornaDettaglio() {
+    private void tornaAlDettaglio() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathDettaglioAnnuncio));
             Parent root = loader.load();
 
-            Object controllerDettaglio = loader.getController();
-            if (controllerDettaglio instanceof DettaglioAnnuncioBoundary da) {
-                da.initData(annuncioTarget);
-            }
+            DettaglioAnnuncioBoundary controllerDettaglio = loader.getController();
+            controllerDettaglio.initData(annuncioTarget);
 
-            Stage stage = (Stage) containerSpecifico.getScene().getWindow();
+            Stage stage = (Stage) btnInvia.getScene().getWindow();
             stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
         } catch (Exception e) {
+            System.err.println("Errore nel caricamento del dettaglio: " + e.getMessage());
             e.printStackTrace();
         }
     }

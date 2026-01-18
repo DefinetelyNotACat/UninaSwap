@@ -210,12 +210,6 @@ public class ControllerUninaSwap {
         return (ArrayList<Oggetto>) oggettoDAO.ottieniTuttiOggettiDisponibili(utente.getId());
     }
 
-    public void popolaDB() throws Exception {
-        PopolaDBPostgreSQL.creaDB();
-    }
-    public void cancellaDB(){
-        PopolaDBPostgreSQL.cancellaDB();
-    }
     public boolean verificaCredenzialiDuplicate(String nuovoUsername, String nuovaMatricola, String emailAttuale) {
         return utenteDAO.verificaEsistenzaAltroUtente(nuovoUsername, nuovaMatricola, emailAttuale);
     }

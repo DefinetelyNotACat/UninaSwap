@@ -162,3 +162,63 @@
     -fx-pref-height: 30px;
     -fx-max-height: 30px;
 }
+/* Stile della Card */
+.inventory-card {
+    -fx-alignment: center;
+    -fx-spacing: 15;
+    -fx-pref-width: 260;
+    -fx-min-width: 260;
+    -fx-min-height: 380;
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+    -fx-padding: 20;
+}
+
+/* Immagine dentro la card */
+.inventory-card-image {
+    -fx-fit-width: 220;
+    -fx-fit-height: 180;
+}
+
+/* Titolo dell'oggetto */
+.inventory-card-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-fill: #2d3436;
+    -fx-text-alignment: center;
+    -fx-wrapping-width: 230;
+}
+
+/* Container dei Badge */
+.inventory-card-badges {
+    -fx-alignment: center;
+    -fx-hgap: 8;
+    -fx-vgap: 8;
+}
+
+/* Container dei Bottoni */
+.inventory-card-buttons {
+    -fx-alignment: center;
+    -fx-spacing: 12;
+}
+
+/* Badge generali (se non definiti altrove) */
+.badge {
+    -fx-padding: 5 12;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+}
+
+.badge-violet { -fx-background-color: #6c5ce7; }
+.badge-green  { -fx-background-color: #27ae60; }
+.badge-red    { -fx-background-color: #e74c3c; }
+.badge-orange { -fx-background-color: #e67e22; }
+
+/* Testo quando l'inventario è vuoto */
+.placeholder-text {
+    -fx-font-size: 16px;
+    -fx-fill: #636e72;
+    -fx-text-alignment: center;
+}

@@ -1,0 +1,17 @@
+.input-prezzo-dinamico {
+    -fx-max-width: 250;
+}
+
+.lista-oggetti-offerta {
+    -fx-pref-height: 250;
+}
+
+.cell-box-offerta {
+    -fx-spacing: 15;
+    -fx-alignment: center-left;
+}
+
+.box-regalo-offerta {
+    -fx-spacing: 10;
+    -fx-alignment: center;
+}

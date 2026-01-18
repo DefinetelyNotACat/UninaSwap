@@ -145,14 +145,12 @@ public class GestioneOfferteBoundary {
         JFreeChart barChart = ChartFactory.createBarChart("", "Tipologia", "Numero Offerte", dataset, PlotOrientation.VERTICAL, true, true, false);
         barChart.getPlot().setBackgroundPaint(new java.awt.Color(255, 255, 255));
 
-        // --- FIX FOTTUTO: PIALLA LA NOTAZIONE SCIENTIFICA (5E-9) ---
         CategoryPlot plot = barChart.getCategoryPlot();
         NumberAxis yAxis = (NumberAxis) plot.getRangeAxis();
-
-        yAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits()); // Solo numeri interi
-        yAxis.setNumberFormatOverride(new DecimalFormat("0"));           // Forza formato "0"
-        yAxis.setAutoRangeMinimumSize(1.0);                              // Impedisce zoom assurdi
-        yAxis.setLowerBound(0.0);                                        // Parte sempre da zero
+        yAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        yAxis.setNumberFormatOverride(new DecimalFormat("0"));
+        yAxis.setAutoRangeMinimumSize(1.0);
+        yAxis.setLowerBound(0.0);
 
         SwingNode swingNode = new SwingNode();
         SwingUtilities.invokeLater(() -> {
@@ -185,7 +183,7 @@ public class GestioneOfferteBoundary {
             chartContainer.getChildren().add(root);
         } catch (IOException e) {
             Label fallback = new Label("Ancora nessuna offerta effettuata.");
-            fallback.setStyle("-fx-text-fill: #7f8c8d; -fx-font-style: italic;");
+            fallback.getStyleClass().add("report-fallback-label");
             chartContainer.getChildren().clear();
             chartContainer.getChildren().add(fallback);
         }
@@ -287,9 +285,7 @@ public class GestioneOfferteBoundary {
     private VBox creaMiniCardOggetto(Oggetto oggetto) {
         VBox miniCard = new VBox(5);
         miniCard.setAlignment(Pos.CENTER);
-        miniCard.setStyle("-fx-background-color: #ffffff; -fx-padding: 10; -fx-background-radius: 10; " +
-                "-fx-border-color: #bdc3c7; -fx-border-width: 1; -fx-border-radius: 10;");
-        miniCard.setPrefWidth(140);
+        miniCard.getStyleClass().add("mini-card-oggetto");
 
         ImageView imgObj = new ImageView();
         imgObj.setFitWidth(110); imgObj.setFitHeight(80);
@@ -301,23 +297,20 @@ public class GestioneOfferteBoundary {
         } else { setDefaultItemImage(imgObj); }
 
         Label nome = new Label(oggetto.getNome());
-        nome.setStyle("-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #000000;");
+        nome.getStyleClass().add("mini-card-nome");
         nome.setWrapText(true);
         nome.setTextAlignment(TextAlignment.CENTER);
-        nome.setMaxWidth(120);
 
         FlowPane containerCategorie = new FlowPane(4, 4);
         containerCategorie.setAlignment(Pos.CENTER);
         for (Categoria c : oggetto.getCategorie()) {
             Label chip = new Label(c.getNome());
-            chip.setStyle("-fx-font-size: 9px; -fx-text-fill: #003366; -fx-background-color: #e1f5fe; " +
-                    "-fx-padding: 2 5; -fx-background-radius: 10; -fx-border-color: #b3e5fc; -fx-border-radius: 10;");
+            chip.getStyleClass().add("mini-card-chip");
             containerCategorie.getChildren().add(chip);
         }
 
         Label cond = new Label(oggetto.getCondizione().toString().replace("_", " "));
-        cond.setStyle("-fx-font-size: 10px; -fx-text-fill: #000000; -fx-background-color: #f1f2f6; " +
-                "-fx-padding: 3 6; -fx-background-radius: 5; -fx-border-color: #dfe4ea; -fx-border-radius: 5;");
+        cond.getStyleClass().add("mini-card-condizione");
         cond.setWrapText(true);
         cond.setTextAlignment(TextAlignment.CENTER);
 
@@ -355,7 +348,7 @@ public class GestioneOfferteBoundary {
 
     private Label creaLabelVuota(String testo) {
         Label l = new Label(testo);
-        l.setStyle("-fx-text-fill: #95a5a6; -fx-font-size: 16px; -fx-padding: 50 0 0 0;");
+        l.getStyleClass().add("label-vuota-offerte");
         return l;
     }
 
@@ -364,5 +357,4 @@ public class GestioneOfferteBoundary {
             caricaOfferte();
         }
     }
-
 }

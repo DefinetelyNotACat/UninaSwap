@@ -107,7 +107,7 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.controllerUninaSwap = ControllerUninaSwap.getInstance();
-        //eliminaecreaDB();
+
         if (profileImageView != null) {
             javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(
                     profileImageView.getFitWidth() / 2,
@@ -331,13 +331,5 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
         }
     }
 
-    private void eliminaecreaDB(){
-        try {
-            controllerUninaSwap.cancellaDB();
-            controllerUninaSwap.popolaDB();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 }

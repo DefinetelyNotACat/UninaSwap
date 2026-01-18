@@ -103,3 +103,25 @@
     -fx-background-color: #c82333;
     -fx-effect: dropshadow(three-pass-box, rgba(220, 53, 69, 0.4), 10, 0, 0, 0);
 }
+.user-card-username {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #003366;
+}
+
+.user-card-email {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666;
+    -fx-font-style: italic;
+}
+
+.empty-message-title {
+    -fx-font-size: 20px;
+    -fx-fill: #888;
+    -fx-font-weight: bold;
+}
+
+.empty-message-subtitle {
+    -fx-font-size: 14px;
+    -fx-fill: #aaa;
+}
