@@ -164,10 +164,12 @@ public class EffettuaOffertaBoundary {
 
             if (annuncioTarget instanceof AnnuncioVendita av) {
                 if (inputPrezzo.getText().isEmpty()) throw new Exception("Inserisci un prezzo.");
+
                 double prezzoOfferto = Double.parseDouble(inputPrezzo.getText().replace(",", "."));
 
                 if (av.getPrezzoMinimo() != null && prezzoOfferto < av.getPrezzoMinimo().doubleValue()) {
-                    throw new Exception("Offerta troppo bassa!");
+                    String prezzoMinimoFormattato = String.format("%.2f", av.getPrezzoMinimo().doubleValue());
+                    throw new Exception("Offerta troppo bassa! Il venditore non accetta meno di " + prezzoMinimoFormattato + " €.");
                 }
 
                 nuovaOfferta = new OffertaVendita(annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
@@ -176,7 +178,7 @@ public class EffettuaOffertaBoundary {
 
             } else if (annuncioTarget instanceof AnnuncioScambio) {
                 var selezionati = new ArrayList<>(listaMieiOggetti.getSelectionModel().getSelectedItems());
-                if (selezionati.isEmpty()) throw new Exception("Seleziona un oggetto.");
+                if (selezionati.isEmpty()) throw new Exception("Seleziona almeno un oggetto da scambiare.");
 
                 OffertaScambio os = new OffertaScambio((AnnuncioScambio) annuncioTarget, msg, Offerta.STATO_OFFERTA.IN_ATTESA,
                         LocalTime.now(), LocalTime.now().plusHours(1), selezionati.get(0), me);
@@ -188,18 +190,18 @@ public class EffettuaOffertaBoundary {
                         LocalTime.now(), LocalTime.now().plusHours(1), null, me, (AnnuncioRegalo) annuncioTarget);
             }
 
-            // --- DELEGATA L'INTERAZIONE AL CONTROLLER ---
             if (controller.EseguiOfferta(me, nuovaOfferta)) {
                 tornaHome();
             } else {
                 lblErrore.setText("Errore durante l'invio dell'offerta.");
             }
 
+        } catch (NumberFormatException nfe) {
+            lblErrore.setText("Formato prezzo non valido (usa es. 50.00).");
         } catch (Exception e) {
             lblErrore.setText(e.getMessage());
         }
     }
-
     @FXML
     public void annulla() {
         tornaHome();
