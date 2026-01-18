@@ -8,10 +8,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.shape.Circle?>
 
-<BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.uninaswap.boundary.DettaglioAnnuncioBoundary"
-            stylesheets="@homepage.css, @banners.css, @dettaglio.css, @navbar.css"
-            styleClass="detail-root">
+<BorderPane xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.DettaglioAnnuncioBoundary" stylesheets="@homepage.css, @banners.css, @dettaglio.css, @navbar.css" styleClass="detail-root">
 
     <top>
         <HBox alignment="CENTER" styleClass="navbar-container">

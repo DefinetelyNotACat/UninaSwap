@@ -9,6 +9,7 @@ public class Sede {
     private int id;
     private String nomeSede;
     private String indirizzo;
+
     private ArrayList<Annuncio> annunci = new ArrayList<Annuncio>();
 
     //Costruttori
@@ -21,7 +22,7 @@ public class Sede {
         this.indirizzo = indirizzo;
     }
 
-    //Adder, Remover, Clearer
+    //Adder, Remover e Clearer
     //
     public void aggiungiAnnuncio(Annuncio annuncio) {
         if (this.annunci != null) {
@@ -38,7 +39,6 @@ public class Sede {
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -46,7 +46,6 @@ public class Sede {
     public String getNomeSede() {
         return nomeSede;
     }
-
     public void setNomeSede(String nomeSede) {
         this.nomeSede = nomeSede;
     }
@@ -54,7 +53,6 @@ public class Sede {
     public String getIndirizzo() {
         return indirizzo;
     }
-
     public void setIndirizzo(String indirizzo) {
         this.indirizzo = indirizzo;
     }

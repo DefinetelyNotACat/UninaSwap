@@ -4,10 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.uninaswap.boundary.EffettuaOffertaBoundary"
-            stylesheets="@homepage.css, @banners.css, @offerta.css"
-            styleClass="offerta-root">
+<BorderPane xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.EffettuaOffertaBoundary" stylesheets="@homepage.css, @banners.css, @offerta.css" styleClass="offerta-root">
 
     <top>
         <fx:include source="navbar.fxml"/>

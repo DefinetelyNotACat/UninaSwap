@@ -2,13 +2,16 @@ package com.example.uninaswap.entity;
 
 public class Recensione {
 
+    //Attributi
+    //
     private int id;
     private int voto;
     private String commento;
     private String recensito;
     private String recensore;
 
-    // --- COSTRUTTORI ---
+    //Costruttori
+    //
     public Recensione(String recensito, String recensore, int voto) {
         this.recensito = recensito;
         this.recensore = recensore;
@@ -23,7 +26,7 @@ public class Recensione {
         this.commento = commento;
     }
 
-    // --- GETTER E SETTER ORIGINALI (NON TOCCARLI) ---
+    // Getter e Setter
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -39,13 +42,9 @@ public class Recensione {
     public String getRecensore() { return recensore; }
     public void setRecensore(String recensore) { this.recensore = recensore; }
 
-
-    // --- ALIAS PER LA BOUNDARY (COSI' FUNZIONA LA SCHERMATA RECENSIONI) ---
-
     public String getEmailRecensito() {
         return recensito;
     }
-
     public void setEmailRecensito(String email) {
         this.recensito = email;
     }
@@ -53,15 +52,15 @@ public class Recensione {
     public String getEmailRecensore() {
         return recensore;
     }
-
     public void setEmailRecensore(String email) {
         this.recensore = email;
     }
 
-    // --- TO STRING ---
+    //toString
+    //
     @Override
     public String toString() {
-        return "Recensione di: " + recensore + " dedicata a " + recensito +
-                "\nCommento: " + commento + "\nVoto: " + voto;
+        return "Recensione di: " + recensore + " dedicata a " + recensito + "\nCommento: " + commento + "\nVoto: " + voto;
     }
+
 }

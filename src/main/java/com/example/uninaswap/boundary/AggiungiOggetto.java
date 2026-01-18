@@ -113,10 +113,6 @@ public class AggiungiOggetto implements Initializable {
         f.getStyleClass().add(ok ? "right" : "error");
     }
 
-    // =================================================================================
-    // SETUP PER MODIFICA
-    // =================================================================================
-
     public void setOggettoDaModificare(Oggetto obj) {
         this.oggettoDaModificare = obj;
         if(aggiungiButton != null) aggiungiButton.setText("Salva Modifiche");
@@ -141,10 +137,6 @@ public class AggiungiOggetto implements Initializable {
         }
         controllaCampiValidi();
     }
-
-    // =================================================================================
-    // GESTIONE IMMAGINI
-    // =================================================================================
 
     @FXML
     public void onCaricaFotoClick(ActionEvent actionEvent) {
@@ -207,10 +199,6 @@ public class AggiungiOggetto implements Initializable {
         }
     }
 
-    // =================================================================================
-    // AZIONI UTENTE
-    // =================================================================================
-
     public void onPubblicaClick(ActionEvent actionEvent) {
         try {
             Utente utenteCorrente = controllerUninaSwap.getUtente();
@@ -253,4 +241,5 @@ public class AggiungiOggetto implements Initializable {
         }
         return selezionate;
     }
+
 }

@@ -57,10 +57,6 @@ public class GestioneOfferteBoundary {
         mostraRicevute();
     }
 
-    // =================================================================================
-    // SEZIONE NAVIGAZIONE
-    // =================================================================================
-
     @FXML
     public void mostraRicevute() {
         visualizzandoRicevute = true;
@@ -105,10 +101,6 @@ public class GestioneOfferteBoundary {
         if(btnNavReport != null) btnNavReport.getStyleClass().remove(CLASS_ACTIVE);
         if(attivo != null) attivo.getStyleClass().add(CLASS_ACTIVE);
     }
-
-    // =================================================================================
-    // SEZIONE LOGICA REPORT (FIXED: NO SCIENTIFIC NOTATION + NULL CHECK)
-    // =================================================================================
 
     private void generaReportStatistico() {
         ArrayList<Offerta> mieOfferte = controller.OttieniLeMieOfferte();
@@ -200,10 +192,6 @@ public class GestioneOfferteBoundary {
             chartContainer.getChildren().add(fallback);
         }
     }
-
-    // =================================================================================
-    // SEZIONE LOGICA LISTA OFFERTE
-    // =================================================================================
 
     private void caricaOfferte() {
         containerOfferte.getChildren().clear();
@@ -378,4 +366,5 @@ public class GestioneOfferteBoundary {
             caricaOfferte();
         }
     }
+
 }

@@ -3,9 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.uninaswap.boundary.ReportOfferteBoundary"
-            prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: white;">
+<BorderPane xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.ReportOfferteBoundary" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: white;">
 
     <top>
         <VBox alignment="CENTER" spacing="10">

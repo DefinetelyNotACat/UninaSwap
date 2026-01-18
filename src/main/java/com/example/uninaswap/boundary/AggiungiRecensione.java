@@ -35,9 +35,6 @@ public class AggiungiRecensione {
         setupValidazione();
     }
 
-    /**
-     * Riceve i dati e pre-carica la recensione se l'utente ne ha già fatta una.
-     */
     public void initData(Utente target) {
         try {
             this.utenteDaRecensire = target;

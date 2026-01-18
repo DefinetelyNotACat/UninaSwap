@@ -12,7 +12,6 @@ public class CondizioneDAO implements GestoreCondizioneDAO {
     public ArrayList<Oggetto.CONDIZIONE> ottieniTutteCondizioni() {
         ArrayList<Oggetto.CONDIZIONE> listaCondizioni = new ArrayList<>();
 
-        // Recupera i valori dell'enum dal database
         String sql = "SELECT unnest(enum_range(NULL::condizione_oggetto))";
 
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -20,12 +19,10 @@ public class CondizioneDAO implements GestoreCondizioneDAO {
 
             ResultSet rs = query.executeQuery();
             while (rs.next()) {
-                String valoreDb = rs.getString("unnest"); // Es: "COME NUOVO"
+                String valoreDb = rs.getString("unnest");
 
                 if (valoreDb != null) {
                     try {
-                        // TRUCCO: Sostituisci spazi con underscore e metti in maiuscolo
-                        // "COME NUOVO" -> "COME_NUOVO"
                         String nomeEnumCompatibile = valoreDb.toUpperCase().replace(" ", "_");
 
                         Oggetto.CONDIZIONE condizione = Oggetto.CONDIZIONE.valueOf(nomeEnumCompatibile);
@@ -43,4 +40,5 @@ public class CondizioneDAO implements GestoreCondizioneDAO {
         }
         return new ArrayList<>();
     }
+
 }

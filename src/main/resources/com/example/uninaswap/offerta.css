@@ -1,9 +1,7 @@
-/* --- 1. SFONDO E ROOT --- */
 .offerta-root {
     -fx-background-color: linear-gradient(to bottom, #f4f7f6, #e9ecef);
 }
 
-/* --- 2. CARD PRINCIPALE (PREMIUM) --- */
 .form-container-premium {
     -fx-background-color: white;
     -fx-background-radius: 25;
@@ -14,7 +12,6 @@
     -fx-border-width: 2;
 }
 
-/* --- 3. TITOLI E TESTI --- */
 .offer-title-premium {
     -fx-font-size: 30px;
     -fx-font-weight: bold;
@@ -28,24 +25,21 @@
     -fx-font-style: italic;
 }
 
-/* --- 4. INPUT E TEXTAREA (PULIZIA ASSOLUTA) --- */
 .text-area-premium, .text-field-premium {
     -fx-background-color: #f8f9fa;
     -fx-background-radius: 12;
-    -fx-border-color: #dfe6e9; /* Colore grigio chiaro originale */
+    -fx-border-color: #dfe6e9;
     -fx-border-radius: 12;
     -fx-padding: 12;
     -fx-font-size: 14px;
 }
 
-/* RIMOSSO IL COLORE AL FOCUS: Il bordo resta grigio */
 .text-area-premium:focused, .text-field-premium:focused {
-    -fx-border-color: #dfe6e9; /* Mantiene lo stesso colore di quando non è cliccato */
-    -fx-background-color: white; /* Cambia solo lo sfondo per dare un minimo di feedback */
-    -fx-effect: none; /* Rimosso ogni alone blu o verde */
+    -fx-border-color: #dfe6e9;
+    -fx-background-color: white;
+    -fx-effect: none;
 }
 
-/* --- 5. LISTVIEW (PER SCAMBIO) --- */
 .list-view {
     -fx-background-radius: 12;
     -fx-border-radius: 12;
@@ -58,14 +52,12 @@
     -fx-background-color: transparent;
 }
 
-/* Qui l'azzurro serve per far capire cosa hai selezionato nella lista */
 .list-cell:filled:selected {
     -fx-background-color: #e7f1ff;
     -fx-text-fill: #0d6efd;
     -fx-font-weight: bold;
 }
 
-/* --- 6. BOTTONE INVIA (VERDE PREMIUM) --- */
 .btn-send-premium {
     -fx-background-color: linear-gradient(to bottom right, #2ecc71, #27ae60);
     -fx-text-fill: white;
@@ -87,7 +79,6 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
 }
 
-/* --- 7. BOTTONE ANNULLA --- */
 .btn-back-premium {
     -fx-background-color: transparent;
     -fx-text-fill: #636e72;
@@ -104,7 +95,6 @@
     -fx-text-fill: #2d3436;
 }
 
-/* --- 8. ETICHETTE ERRORE --- */
 .error-label {
     -fx-text-fill: #d63031;
     -fx-font-weight: bold;

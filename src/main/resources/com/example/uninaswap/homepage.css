@@ -14,7 +14,7 @@
     -fx-background: #f8f9fa;
 }
 
-/* Card Annuncio */
+
 .ad-card {
     -fx-background-color: white;
     -fx-background-radius: 15;
@@ -47,7 +47,7 @@
     -fx-fill: #0056b3;
 }
 
-/* Badges */
+
 .badge-base {
     -fx-padding: 3 10;
     -fx-background-radius: 10;
@@ -59,8 +59,6 @@
 .badge-vendita { -fx-background-color: #28a745; }
 .badge-scambio { -fx-background-color: #007bff; }
 .badge-regalo  { -fx-background-color: #fd7e14; }
-
-/* --- BOTTONI MODERNI PER LE CARD --- */
 
 .button-primary {
     -fx-background-color: #003366; /* Blu scuro come il titolo */

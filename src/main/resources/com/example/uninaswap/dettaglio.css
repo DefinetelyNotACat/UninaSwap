@@ -1,18 +1,14 @@
-/* --- 1. SFONDO E ROOT --- */
 .detail-root {
     -fx-background-color: #f8f9fa;
 }
 
-/* --- 2. CARD PRINCIPALE (PREMIUM) --- */
 .detail-card {
     -fx-background-color: white;
     -fx-background-radius: 20;
     -fx-padding: 40;
-    /* Ombra profonda per dare l'effetto "sollevato" */
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 20, 0, 0, 10);
 }
 
-/* --- 3. CONTENITORE IMMAGINE --- */
 .image-wrapper {
     -fx-background-color: white;
     -fx-border-color: #f1f1f1;
@@ -22,7 +18,6 @@
     -fx-padding: 10;
 }
 
-/* --- 4. TESTI E TITOLI --- */
 .detail-title {
     -fx-font-size: 28px;
     -fx-font-weight: bold;
@@ -35,7 +30,6 @@
     -fx-fill: #636e72;
 }
 
-/* --- 5. BOX DETTAGLI (INFO SECTION) --- */
 .info-section {
     -fx-background-color: #f8f9fa;
     -fx-padding: 20;
@@ -55,21 +49,17 @@
 .info-value {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-fill: #0d6efd; /* Colore risaltato per il prezzo/offerta */
+    -fx-fill: #0d6efd;
 }
 
-/* --- 6. BOTTONI (UNIFORMATI E HAND CURSOR) --- */
-
-/* Regole comuni per entrambi i bottoni */
 .btn-back, .button-primary {
-    -fx-cursor: hand;            /* Manina su entrambi */
-    -fx-padding: 12 25;          /* Padding identico */
-    -fx-min-width: 180px;        /* Larghezza minima uguale per renderli grandi uguali */
+    -fx-cursor: hand;
+    -fx-padding: 12 25;
+    -fx-min-width: 180px;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
 
-/* Bottone Indietro (Neutro) */
 .btn-back {
     -fx-background-color: transparent;
     -fx-text-fill: #636e72;
@@ -82,16 +72,15 @@
     -fx-border-color: #2d3436;
 }
 
-/* Bottone Fai Offerta (Azione Principale) */
 .button-primary {
     -fx-background-color: linear-gradient(to bottom right, #0d6efd, #0056b3);
     -fx-text-fill: white;
-    -fx-background-radius: 10;   /* Arrotondamento identico a quello di 'indietro' */
+    -fx-background-radius: 10;
     -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.3), 10, 0, 0, 4);
 }
 
 .button-primary:hover {
-    -fx-translate-y: -2;         /* Si alza leggermente al passaggio */
+    -fx-translate-y: -2;
     -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.4), 12, 0, 0, 6);
 }
 
@@ -101,7 +90,6 @@
     -fx-scale-y: 0.98;
 }
 
-/* --- 7. LABEL AGGIUNTIVE (EMAIL, PREZZO MINIMO) --- */
 #txtEmailVenditore {
     -fx-fill: #7f8c8d;
     -fx-font-size: 13px;
@@ -109,6 +97,6 @@
 }
 
 #txtPrezzoMinimo {
-    -fx-fill: #e74c3c; /* Rosso per indicare un limite/allerta */
+    -fx-fill: #e74c3c;
     -fx-font-weight: bold;
 }

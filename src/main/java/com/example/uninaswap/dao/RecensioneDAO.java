@@ -50,9 +50,6 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
         return tutteRecensione;
     }
 
-    /**
-     * Recupera tutte le recensioni che un utente ha RICEVUTO.
-     */
     public ArrayList<Recensione> ottieniRecensioniPerUtente(String emailRecensito) {
         ArrayList<Recensione> recensioni = new ArrayList<>();
         // u2 è l'utente RECENSITO nella SELECT_BASE
@@ -73,10 +70,6 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
         return recensioni;
     }
 
-    /**
-     * FIX FOTTUTO: Recupera tutte le recensioni che un utente ha SCRITTO (FATTE).
-     * Usa la SELECT_BASE per avere accesso alle email tramite i JOIN.
-     */
     public ArrayList<Recensione> ottieniRecensioniFatteDaUtente(String emailRecensore) {
         ArrayList<Recensione> lista = new ArrayList<>();
         // u1 è l'utente RECENSORE nella SELECT_BASE
@@ -182,4 +175,5 @@ public class RecensioneDAO implements GestoreRecensioneDAO {
         r.setId(rs.getInt("id"));
         return r;
     }
+
 }

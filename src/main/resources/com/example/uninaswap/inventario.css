@@ -5,6 +5,7 @@
 .form-field{
     -fx-cursor: hand;
 }
+
 .text-field{
     -fx-cursor: text;
 }
@@ -25,7 +26,6 @@
     -fx-background-color: #0056b3;
     -fx-text-fill: white;
 }
-
 
 .form-field .list-cell {
     -fx-background-color: transparent;
@@ -57,7 +57,6 @@
     -fx-background-color: transparent;
 }
 
-
 .button.button-remove {
     -fx-background-color: #ff0101;
     -fx-text-fill: white;
@@ -73,6 +72,7 @@
 .button.button-remove:hover {
     -fx-background-color: #cc0000;
 }
+
 .context-menu .menu-item {
     -fx-cursor: hand;
 }
@@ -80,7 +80,7 @@
 .context-menu .menu-item > .label {
     -fx-cursor: hand;
 }
-/* Cursor HAND sul popup del ComboBox */
+
 .combo-box-popup .list-view {
     -fx-cursor: hand;
 }
@@ -89,7 +89,7 @@
     -fx-cursor: hand;
 }
 
-/* Hover incluso */
+
 .combo-box-popup .list-view .list-cell:hover {
     -fx-cursor: hand;
 }
@@ -106,7 +106,7 @@
     -fx-cursor: hand;
 }
 
-/* Card stile moderno */
+
 .inventory-card {
     -fx-background-color: white;
     -fx-background-radius: 10px;
@@ -124,15 +124,16 @@
     -fx-border-color: #b0b0b0;
 }
 
-/* Pulsante Elimina Rosso */
+
 .button-danger {
     -fx-background-color: #dc3545;
     -fx-text-fill: white;
 }
+
 .button-danger:hover {
     -fx-background-color: #c82333;
 }
-/* Stile Badge Super Compatto */
+
 .badge {
     -fx-padding: 2px 2px;           /* Padding ridotto: più sottile */
     -fx-background-radius: 12px;    /* Molto arrotondato (pillola) */
@@ -144,23 +145,19 @@
     -fx-effect: null;               /* Rimuoviamo l'ombra per pulizia (opzionale) */
 }
 
-/* Colori più "pastello" e moderni per la leggibilità */
 .badge-blue { -fx-background-color: #3498db; }
 .badge-green { -fx-background-color: #2ecc71; }
 .badge-red { -fx-background-color: #e74c3c; }
 .badge-orange { -fx-background-color: #f1c40f; }
 .badge-violet{ -fx-background-color: #7f00ff; }
 
-
-/* Forza le dimensioni del pulsante nella navbar per non farlo gonfiare */
 .navbar-container .button-search {
-    -fx-min-height: 30px !important; /* Forza altezza fissa */
+    -fx-min-height: 30px !important;
     -fx-max-height: 30px !important;
-    -fx-padding: 0 15px !important;   /* Padding laterale ridotto */
-    -fx-font-size: 12px !important;   /* Font piccolo e controllato */
+    -fx-padding: 0 15px !important;
+    -fx-font-size: 12px !important;
 }
 
-/* Assicurati che il contenitore della barra di ricerca non spinga i bottoni */
 .navbar-container TextField {
     -fx-pref-height: 30px;
     -fx-max-height: 30px;

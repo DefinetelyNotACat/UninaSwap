@@ -40,9 +40,6 @@ public class NavBarComponent {
 
     private HomePageBoundary homePageBoundary;
 
-    /**
-     * Sincronizza la Navbar con la Home e ripristina lo stato della ricerca (Testo + Filtro)
-     */
     public void setHomePageBoundary(HomePageBoundary home) {
         this.homePageBoundary = home;
 
@@ -98,9 +95,6 @@ public class NavBarComponent {
         setupMenuProfilo();
     }
 
-    /**
-     * Esegue la ricerca o prenota i dati per la Home se ci troviamo in un'altra pagina
-     */
     private void eseguiRicerca() {
         String sel = filtroBarraDiRicerca.getValue();
         String txt = barraDiRicerca.getText();
@@ -262,4 +256,5 @@ public class NavBarComponent {
 
         fotoProfilo.setClip(new Circle(centerX, centerY, radius));
     }
+
 }

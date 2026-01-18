@@ -12,6 +12,8 @@ import static com.example.uninaswap.Costanti.pathUtenti;
 
 public class Oggetto {
 
+    //ENUM
+    //
     public enum DISPONIBILITA {
         DISPONIBILE("Disponibile"), OCCUPATO("Occupato"), VENDUTO("Venduto"), REGALATO("Regalato"), SCAMBIATO("Scambiato");
         private final String etichetta;
@@ -36,15 +38,21 @@ public class Oggetto {
         }
     }
 
+    //Attributi
+    //
     private int id;
     private String nome;
     private Utente proprietario;
     private Annuncio annuncio;
-    private ArrayList<Categoria> categorie = new ArrayList<>();
+
     private DISPONIBILITA disponibilita = DISPONIBILITA.DISPONIBILE;
     private CONDIZIONE condizione = CONDIZIONE.NUOVO;
+
+    private ArrayList<Categoria> categorie = new ArrayList<>();
     private ArrayList<String> immagini = new ArrayList<>();
 
+    //Costruttori
+    //
     public Oggetto() {}
 
     public Oggetto(String nome, ArrayList<Categoria> categorie, ArrayList<String> immaginiCaricate, Utente proprietario, CONDIZIONE condizione) {
@@ -56,9 +64,8 @@ public class Oggetto {
         if(this.proprietario != null) this.proprietario.addOggetto(this);
     }
 
-    /**
-     * METODO FONDAMENTALE: Copia il file fisico nella cartella del progetto usando l'ID dell'oggetto.
-     */
+    //Metodi di logica
+    //
     public String copiaImmagineInLocale(String pathSorgenteAssoluto) throws IOException {
         if (pathSorgenteAssoluto == null || pathSorgenteAssoluto.isEmpty()) return null;
 
@@ -82,26 +89,43 @@ public class Oggetto {
         // 2. RITORNA IL PATH PULITO: solo "oggetti/nomefile.jpg"
         return "oggetti/" + nomeFileFinale;
     }
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-    public Utente getProprietario() { return proprietario; }
-    public void setProprietario(Utente proprietario) { this.proprietario = proprietario; }
-    public Annuncio getAnnuncio() { return annuncio; }
-    public void setAnnuncio(Annuncio annuncio) { this.annuncio = annuncio; }
-    public CONDIZIONE getCondizione() { return condizione; }
-    public void setCondizione(CONDIZIONE condizione) { this.condizione = condizione; }
-    public DISPONIBILITA getDisponibilita() { return disponibilita; }
-    public void setDisponibilita(DISPONIBILITA disponibilita) { this.disponibilita = disponibilita; }
-    public ArrayList<Categoria> getCategorie() { return categorie; }
-    public void setCategorie(ArrayList<Categoria> categorie) { this.categorie = categorie; }
+
+    //Adder Remover Clearer
+    //
     public void addCategoria(Categoria c) { if(c != null) this.categorie.add(c); }
-    public ArrayList<String> getImmagini() { return immagini; }
-    public void setImmagini(ArrayList<String> immagini) { this.immagini = immagini; }
+
     public void addImmagine(String img) { if(img != null) this.immagini.add(img); }
 
+    //Setter e Getter
+    //
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+
+    public Utente getProprietario() { return proprietario; }
+    public void setProprietario(Utente proprietario) { this.proprietario = proprietario; }
+
+    public Annuncio getAnnuncio() { return annuncio; }
+    public void setAnnuncio(Annuncio annuncio) { this.annuncio = annuncio; }
+
+    public DISPONIBILITA getDisponibilita() { return disponibilita; }
+    public void setDisponibilita(DISPONIBILITA disponibilita) { this.disponibilita = disponibilita; }
+
+    public CONDIZIONE getCondizione() { return condizione; }
+    public void setCondizione(CONDIZIONE condizione) { this.condizione = condizione; }
+
+    public ArrayList<Categoria> getCategorie() { return categorie; }
+    public void setCategorie(ArrayList<Categoria> categorie) { this.categorie = categorie; }
+
+    public ArrayList<String> getImmagini() { return immagini; }
+    public void setImmagini(ArrayList<String> immagini) { this.immagini = immagini; }
+
+    //toString
+    //
     @Override public String toString() {
         return "Oggetto [id=" + id + ", nome=" + nome + ", condizione=" + condizione + "]";
     }
+
 }

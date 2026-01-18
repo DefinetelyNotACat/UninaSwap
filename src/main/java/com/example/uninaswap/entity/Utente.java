@@ -20,6 +20,7 @@ public class Utente {
     private String matricola;
     private String email;
     private String pathImmagineProfilo;
+
     private ArrayList<Offerta> offerte = new ArrayList<Offerta>();
     private ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
     private ArrayList<Recensione> recensioniInviata = new ArrayList<>();
@@ -138,7 +139,6 @@ public class Utente {
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -146,7 +146,6 @@ public class Utente {
     public String getUsername() {
         return username;
     }
-
     public void setUsername(String username) {
         this.username = username;
     }
@@ -154,7 +153,6 @@ public class Utente {
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -162,7 +160,6 @@ public class Utente {
     public String getMatricola() {
         return matricola;
     }
-
     public void setMatricola(String matricola) {
         this.matricola = matricola;
     }
@@ -170,7 +167,6 @@ public class Utente {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -182,13 +178,15 @@ public class Utente {
     public void setPathImmagineProfilo(String pathImmagineProfilo) {
         this.pathImmagineProfilo = pathImmagineProfilo;
     }
-
     public String getPathImmagineProfilo() {
         return pathImmagineProfilo;
     }
 
     public ArrayList<Offerta> getOfferte() {
         return offerte;
+    }
+    public void setOggetti(ArrayList<Oggetto> oggetti) {
+        oggetti = oggetti;
     }
 
     public ArrayList<Oggetto> getOggetti() {
@@ -201,10 +199,6 @@ public class Utente {
 
     public ArrayList<Recensione> getRecensioniRicevute() {
         return recensioniRicevuta;
-    }
-
-    public void setOggetti(ArrayList<Oggetto> oggetti) {
-        oggetti = oggetti;
     }
 
     //toString

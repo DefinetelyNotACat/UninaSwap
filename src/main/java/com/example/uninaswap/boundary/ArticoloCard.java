@@ -13,11 +13,6 @@ public class ArticoloCard {
     @FXML private Label titoloAnnuncio;
     @FXML private Label prezzoAnnuncio;
 
-    /**
-     * Popola la card con i dati dell'annuncio.
-     * I dati degli oggetti e delle immagini sono già inclusi nell'oggetto Annuncio
-     * grazie alla JOIN eseguita dal DAO.
-     */
     public void setAnnuncioData(Annuncio annuncio) {
         titoloAnnuncio.setText(annuncio.getDescrizione());
 
@@ -37,6 +32,7 @@ public class ArticoloCard {
 
         caricaImmagineAnnuncio(annuncio);
     }
+
     private void caricaImmagineAnnuncio(Annuncio annuncio) {
         try {
             // Verifica se ci sono oggetti e se il primo oggetto ha immagini (grazie alla JOIN)

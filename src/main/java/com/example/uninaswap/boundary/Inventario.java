@@ -36,8 +36,6 @@ public class Inventario implements Initializable, GestoreMessaggio {
     @FXML private GridPane gridInventario;
     @FXML private Text testoVuoto;
     @FXML private Messaggio notificaController;
-
-    // Riferimento al controller della Navbar (fx:id nel file FXML deve essere "navBarComponent")
     @FXML private NavBarComponent navBarComponentController;
 
     private final ControllerUninaSwap controller = ControllerUninaSwap.getInstance();
@@ -45,16 +43,12 @@ public class Inventario implements Initializable, GestoreMessaggio {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Sincronizzazione Navbar: carica la foto profilo aggiornata dell'utente loggato
         if (navBarComponentController != null) {
             navBarComponentController.aggiornaFotoProfilo();
         }
         caricaOggetti();
     }
 
-    /**
-     * Carica tutti gli oggetti appartenenti all'utente loggato.
-     */
     private void caricaOggetti() {
         gridInventario.getChildren().clear();
 
@@ -92,9 +86,6 @@ public class Inventario implements Initializable, GestoreMessaggio {
         }
     }
 
-    /**
-     * Crea graficamente la card per il singolo oggetto.
-     */
     private VBox creaCardOggetto(Oggetto obj) {
         VBox card = new VBox();
         card.setAlignment(Pos.CENTER);
@@ -228,4 +219,5 @@ public class Inventario implements Initializable, GestoreMessaggio {
     public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
         if (notificaController != null) notificaController.mostraMessaggio(testo, tipo);
     }
+
 }

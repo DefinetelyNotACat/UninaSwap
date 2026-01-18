@@ -6,15 +6,18 @@ import java.time.LocalTime;
 public class AnnuncioScambio extends Annuncio{
     private String listaOggetti;
 
+    //Costruttori
+    //
     public AnnuncioScambio() {
         super();
     }
 
-    public AnnuncioScambio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto,
-                           String listaOggetti) {
+    public AnnuncioScambio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, String listaOggetti) {
         super(sede, descrizione, orarioInizio, orarioFine, oggetto);
         this.listaOggetti = listaOggetti;
     }
+
+    //Getter e Setter
     public String getListaOggetti() {
         return listaOggetti;
     }

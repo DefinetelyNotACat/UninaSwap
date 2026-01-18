@@ -10,9 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class UtenteDAO implements GestoreUtenteDAO {
 
-    /**
-     * Salva un nuovo utente nel database.
-     */
     public boolean salvaUtente(Utente utente) {
         String sql = "INSERT INTO utente (username, password, matricola, email, immagine_profilo) VALUES (?, ?, ?, ?, ?)";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -31,9 +28,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
     }
 
-    /**
-     * Modifica i dati di un utente esistente basandosi sulla email.
-     */
     public boolean modificaUtente(Utente utente) {
         String sql = "UPDATE utente SET username = ?, password = ?, matricola = ?, immagine_profilo = ? WHERE email = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -52,9 +46,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
     }
 
-    /**
-     * Elimina un utente dal database tramite ID.
-     */
     public boolean eliminaUtente(int id) {
         String sql = "DELETE FROM utente WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -68,9 +59,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
     }
 
-    /**
-     * Recupera un utente tramite il suo ID numerico.
-     */
     @Override
     public Utente ottieniUtente(int id) {
         String sql = "SELECT * FROM utente WHERE id = ?";
@@ -89,9 +77,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         return null;
     }
 
-    /**
-     * Ricerca ESATTA per username (Case-Sensitive).
-     */
     public Utente trovaUtenteUsername(String username) {
         // MODIFICA QUI: Usiamo LOWER() su entrambi i lati del confronto
         String sql = "SELECT * FROM utente WHERE LOWER(username) = LOWER(?)";
@@ -140,9 +125,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         return risultati;
     }
 
-    /**
-     * Ricerca tramite email o matricola.
-     */
     public Utente ottieniUtente(String campoRicerca) {
         String sql = campoRicerca.contains("@") ?
                 "SELECT * FROM utente WHERE email = ?" :
@@ -164,9 +146,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         return null;
     }
 
-    /**
-     * Recupera la lista di tutti gli utenti registrati.
-     */
     public ArrayList<Utente> ottieniTuttiUtenti() {
         ArrayList<Utente> tuttiUtenti = new ArrayList<>();
         String sql = "SELECT * FROM utente";
@@ -183,9 +162,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         return tuttiUtenti;
     }
 
-    /**
-     * Verifica se esistono duplicati durante la modifica del profilo.
-     */
     public boolean verificaEsistenzaAltroUtente(String username, String matricola, String emailDaEscludere) {
         String sql = "SELECT COUNT(*) FROM utente WHERE (username = ? OR matricola = ?) AND email <> ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -206,9 +182,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         return false;
     }
 
-    /**
-     * Verifica conflitti durante la registrazione.
-     */
     public void verificaEsistenzaUtenteRegistrazione(String username, String email, String matricola) throws Exception {
         String sql = "SELECT username, email, matricola FROM utente WHERE username = ? OR email = ? OR matricola = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -228,9 +201,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
         }
     }
 
-    /**
-     * Metodo Helper per mappare il ResultSet in un oggetto Utente ed evitare duplicazione di codice.
-     */
     private Utente mapResultSetToUtente(ResultSet rs) throws SQLException {
         Utente u = new Utente(
                 rs.getString("username"),

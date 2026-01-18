@@ -10,10 +10,6 @@ import com.example.uninaswap.entity.Oggetto.DISPONIBILITA;
 
 public class AnnuncioDAO implements GestoreAnnuncioDAO {
 
-    // =================================================================================
-    // MOTORE DI RICERCA INTERNO (JOIN E MAPPING)
-    // =================================================================================
-
     private ArrayList<Annuncio> caricaAnnunciConJoin(String condizioneSql, Object... params) {
         LinkedHashMap<Integer, Annuncio> mappaAnnunci = new LinkedHashMap<>();
 
@@ -92,10 +88,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         return new ArrayList<>(mappaAnnunci.values());
     }
 
-    // =================================================================================
-    // LOGICA DI RICERCA E FILTRAGGIO
-    // =================================================================================
-
     public ArrayList<Annuncio> OttieniAnnunciFiltrati(String ricerca, String condizione, String nomeCategoria, int mioId) {
         StringBuilder sqlFiltro = new StringBuilder("WHERE a.utente_id <> ? AND a.stato = 'DISPONIBILE'::stato_annuncio ");
         ArrayList<Object> params = new ArrayList<>();
@@ -156,10 +148,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         // MODIFICA: Aggiunto WHERE stato = 'DISPONIBILE'
         return caricaAnnunciConJoin("WHERE a.stato = 'DISPONIBILE'::stato_annuncio ORDER BY a.id DESC");
     }
-
-    // =================================================================================
-    // OPERAZIONI DI SCRITTURA (TRANSAZIONALI)
-    // =================================================================================
 
     @Override
     public boolean inserisciAnnuncio(Annuncio annuncio, int utenteId) {
@@ -238,10 +226,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         } catch (SQLException e) { e.printStackTrace(); return false; }
     }
 
-// Trova il metodo mapRowToAnnuncio in AnnuncioDAO.java e sostituiscilo con questo:
-
-// Trova il metodo mapRowToAnnuncio in AnnuncioDAO.java e sostituiscilo con questo:
-
     private Annuncio mapRowToAnnuncio(ResultSet rs) throws SQLException {
         String tipo = rs.getString("tipo_annuncio");
         Annuncio annuncio;
@@ -276,7 +260,9 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         }
 
         return annuncio;
-    }    @Override
+    }
+
+    @Override
     public boolean modificaAnnuncio(Annuncio annuncio) {
         return true;
     }
@@ -298,4 +284,5 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
             return false;
         }
     }
+
 }

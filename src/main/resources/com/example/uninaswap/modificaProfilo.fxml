@@ -6,11 +6,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.Text?>
 <?import javafx.geometry.Insets?>
-<ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED"
-            xmlns="http://javafx.com/javafx/17.0.2-ea"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.uninaswap.boundary.ModificaProfilo"
-            stylesheets="@form.css, @banners.css">
+<ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.ModificaProfilo" stylesheets="@form.css, @banners.css">
     <content>
         <VBox alignment="TOP_CENTER" spacing="30.0" styleClass="myPadding" fillWidth="false">
             <padding>

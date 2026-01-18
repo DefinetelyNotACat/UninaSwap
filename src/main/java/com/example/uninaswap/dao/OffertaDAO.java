@@ -8,11 +8,8 @@ import java.util.ArrayList;
 
 public class OffertaDAO implements GestoreOffertaDAO {
 
-    // DAO di supporto per caricare oggetti e utenti se necessario
-    private OggettoDAO oggettoDAO = new OggettoDAO();
     private UtenteDAO utenteDAO = new UtenteDAO();
     private AnnuncioDAO annuncioDAO = new AnnuncioDAO();
-
 
     public ArrayList<Offerta> ottieniOfferteInviate(int utenteId) {
         ArrayList<Offerta> lista = new ArrayList<>();
@@ -56,9 +53,6 @@ public class OffertaDAO implements GestoreOffertaDAO {
         return lista;
     }
 
-    /**
-     * SALVA OFFERTA (Gestisce Vendita, Scambio e Regalo)
-     */
     public boolean salvaOfferta(Offerta offerta) {
         String sql = "INSERT INTO OFFERTA (utente_id, annuncio_id, tipo_offerta, messaggio, stato, orario_inizio, orario_fine, prezzo_offerta) " +
                 "VALUES (?, ?, ?, ?, ?::stato_offerta, ?, ?, ?)";
@@ -144,9 +138,6 @@ public class OffertaDAO implements GestoreOffertaDAO {
         }
     }
 
-    /**
-     * MODIFICA STATO (Accettazione/Rifiuto)
-     */
     public boolean modificaStatoOfferta(int idOfferta, Offerta.STATO_OFFERTA nuovoStato) {
         String sqlUpdateStato = "UPDATE OFFERTA SET stato = ?::stato_offerta WHERE id = ?";
 
@@ -244,10 +235,6 @@ public class OffertaDAO implements GestoreOffertaDAO {
         }
     }
 
-    /**
-     * ELIMINA OFFERTA
-     * Se è uno scambio, bisogna liberare gli oggetti prima di cancellare l'offerta.
-     */
     public boolean eliminaOfferta(int idOfferta) {
         String sqlLiberaOggetti = "UPDATE OGGETTO SET offerta_id = NULL, disponibilita = 'DISPONIBILE'::disponibilita_oggetto WHERE offerta_id = ?";
         String sqlElimina = "DELETE FROM OFFERTA WHERE id = ?";
@@ -291,9 +278,6 @@ public class OffertaDAO implements GestoreOffertaDAO {
         }
     }
 
-    /**
-     * OTTIENI OFFERTE PER UN ANNUNCIO
-     */
     public ArrayList<Offerta> ottieniOffertePerAnnuncio(int idAnnuncio) {
         ArrayList<Offerta> lista = new ArrayList<>();
         String sql = "SELECT * FROM OFFERTA WHERE annuncio_id = ? ORDER BY data_creazione DESC";
@@ -313,9 +297,6 @@ public class OffertaDAO implements GestoreOffertaDAO {
         return lista;
     }
 
-    /**
-     * MAPPER: Converte una riga del DB in un oggetto Java corretto (Polimorfico)
-     */
     private Offerta mapRowToOfferta(Connection conn, ResultSet rs) throws Exception {
         String tipo = rs.getString("tipo_offerta");
         int idOfferta = rs.getInt("id");
@@ -358,8 +339,6 @@ public class OffertaDAO implements GestoreOffertaDAO {
         return offerta;
     }
 
-    // Sostituisci il metodo recuperaOggettiOfferta nel tuo OffertaDAO.java
-// Sostituisci questo metodo nel tuo OffertaDAO.java
     private ArrayList<Oggetto> recuperaOggettiOfferta(Connection conn, int idOfferta) throws SQLException {
         java.util.LinkedHashMap<Integer, Oggetto> mappaOggetti = new java.util.LinkedHashMap<>();
 
@@ -408,6 +387,7 @@ public class OffertaDAO implements GestoreOffertaDAO {
         }
         return new ArrayList<>(mappaOggetti.values());
     }
+
     public boolean haOffertaInAttesa(int utenteId, int annuncioId) {
         String sql = "SELECT COUNT(*) FROM OFFERTA WHERE utente_id = ? AND annuncio_id = ? AND stato = 'IN_ATTESA'::stato_offerta";
 

@@ -58,15 +58,18 @@ public class Messaggio {
         delay.setOnFinished(event -> chiudiBanner());
         delay.play();
     }
+
     @FXML
     public void chiudiBanner() {
         bannerContainer.setVisible(false);
         bannerContainer.setManaged(false);
     }
+
     public TIPI getTipo() {
         return tipo;
     }
     public String getMessaggio() {
         return messaggio;
     }
+
 }

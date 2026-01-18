@@ -5,13 +5,15 @@ import java.util.ArrayList;
 
 public abstract class Annuncio {
 
-    // --- ENUM STATO ---
+    // ENUM
+    //
     public enum STATO_ANNUNCIO {
         DISPONIBILE,
         NON_DISPONIBILE
     }
 
-    // --- CAMPI DATI ---
+    //Attributi
+    //
     protected int id;
     protected int utenteId;
     protected Utente utente; // Il venditore (Popolato tramite JOIN nel DAO)
@@ -19,13 +21,14 @@ public abstract class Annuncio {
     protected String descrizione;
     protected LocalTime orarioInizio;
     protected LocalTime orarioFine;
+
     protected STATO_ANNUNCIO stato;
 
-    // Liste per gestire le relazioni
     protected ArrayList<Oggetto> oggetti = new ArrayList<>();
     protected ArrayList<Offerta> offerte = new ArrayList<>();
 
-    // --- COSTRUTTORI ---
+    //Costruttori
+    //
     public Annuncio() {
         this.stato = STATO_ANNUNCIO.DISPONIBILE;
     }
@@ -50,19 +53,17 @@ public abstract class Annuncio {
         }
     }
 
-    // --- GETTER E SETTER (FIXATI) ---
-
+    //Getter e Setter
+    //
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
     public int getUtenteId() { return utenteId; }
     public void setUtenteId(int utenteId) { this.utenteId = utenteId; }
 
-    // Questo è il metodo che ti dava errore: ora è completo
-    public void setUtente(Utente venditore) {
-        this.utente = venditore;
+    public void setUtente(Utente utente) {
+        this.utente = utente;
     }
-
     public Utente getUtente() {
         return utente;
     }
@@ -74,14 +75,13 @@ public abstract class Annuncio {
     public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
 
     public LocalTime getOrarioInizio() { return orarioInizio; }
+
     public LocalTime getOrarioFine() { return orarioFine; }
 
     public void setStato(STATO_ANNUNCIO stato) { this.stato = stato; }
     public STATO_ANNUNCIO getStato() { return stato; }
 
     public ArrayList<Oggetto> getOggetti() { return oggetti; }
-
-    // --- LOGICA DI BUSINESS ---
 
     public void setOrari(LocalTime orarioInizio, LocalTime orarioFine) throws Exception {
         if (orarioInizio == null || orarioFine == null) {
@@ -103,7 +103,7 @@ public abstract class Annuncio {
         }
     }
 
-    public void aggiungiOggetto(Oggetto oggetto) {
+    public void addOggetto(Oggetto oggetto) {
         if (oggetto != null) this.oggetti.add(oggetto);
     }
 
@@ -118,15 +118,9 @@ public abstract class Annuncio {
     // Metodo astratto implementato dalle sottoclassi (Vendita, Scambio, Regalo)
     public abstract String getTipoAnnuncio();
 
+    //toString
     @Override
     public String toString() {
-        return "Annuncio{" +
-                "id=" + id +
-                ", descrizione='" + descrizione + '\'' +
-                ", venditore=" + (utente != null ? utente.getUsername() : "N/A") +
-                ", sede=" + (sede != null ? sede.getNomeSede() : "N/A") +
-                ", stato=" + stato +
-                ", num_oggetti=" + oggetti.size() +
-                '}';
+        return "Annuncio{" + "id=" + id + ", descrizione='" + descrizione + '\'' +  ", venditore=" + (utente != null ? utente.getUsername() : "N/A") +  ", sede=" + (sede != null ? sede.getNomeSede() : "N/A") +  ", stato=" + stato +  ", num_oggetti=" + oggetti.size() + '}';
     }
 }

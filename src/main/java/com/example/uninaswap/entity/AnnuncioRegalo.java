@@ -1,11 +1,11 @@
 package com.example.uninaswap.entity;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 
 public class AnnuncioRegalo extends Annuncio {
 
-
+    //Costruttori
+    //
     public AnnuncioRegalo() {
         super();
     }
@@ -14,6 +14,8 @@ public class AnnuncioRegalo extends Annuncio {
         super(sede, descrizione, orarioInizio, orarioFine, oggetto);
     }
 
+    //Getter e Setter
+    //
     //override di getTipoAnnuncio per specificare che è un AnnuncioRegalo
     @Override
     public String getTipoAnnuncio(){
@@ -29,4 +31,5 @@ public class AnnuncioRegalo extends Annuncio {
             throw new Exception("Offerta di tipo sbagliato");
         }
     }
+
 }

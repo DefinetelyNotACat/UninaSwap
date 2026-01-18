@@ -3,9 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.uninaswap.boundary.GestioneOfferteBoundary"
-            stylesheets="@homepage.css, @banners.css, @gestioneofferte.css" prefHeight="600.0" prefWidth="900.0">
+<BorderPane xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.GestioneOfferteBoundary" stylesheets="@homepage.css, @banners.css, @gestioneofferte.css" prefHeight="600.0" prefWidth="900.0">
 
     <top>
         <HBox alignment="CENTER" styleClass="navbar-container">

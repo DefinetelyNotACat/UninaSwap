@@ -5,11 +5,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.Button?>
 
-<BorderPane prefHeight="600.0" prefWidth="900.0"
-            xmlns="http://javafx.com/javafx/24.0.1"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.uninaswap.boundary.Recensioni"
-            stylesheets="@homepage.css, @recensione.css">
+<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.Recensioni" stylesheets="@homepage.css, @recensione.css">
 
     <top>
         <HBox alignment="CENTER" styleClass="navbar-container">

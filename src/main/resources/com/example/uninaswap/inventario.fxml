@@ -9,9 +9,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.uninaswap.boundary.Inventario"
-            stylesheets="@banners.css, @homepage.css">
+<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.Inventario" stylesheets="@banners.css, @homepage.css">
 
     <top>
         <HBox alignment="CENTER" styleClass="navbar-container">

@@ -166,5 +166,7 @@ public class MieiAnnunci implements Initializable, GestoreMessaggio {
     }
 
     @FXML public void onIndietroClick(ActionEvent event) { gestoreScene.CambiaScena(Costanti.pathHomePage, Costanti.homepage, event); }
+
     @Override public void mostraMessaggioEsterno(String t, Messaggio.TIPI tip) { if (notificaController != null) notificaController.mostraMessaggio(t, tip); }
+
 }

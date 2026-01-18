@@ -4,9 +4,14 @@ import java.time.LocalTime;
 import java.math.BigDecimal;
 
 public class AnnuncioVendita extends Annuncio{
+
+    //Attributi
+    //
     private BigDecimal prezzoMedio;
     private BigDecimal prezzoMinimo;
 
+    //Costruttori
+    //
     public AnnuncioVendita() {
         super();
     }
@@ -16,10 +21,10 @@ public class AnnuncioVendita extends Annuncio{
         this.prezzoMedio = prezzoMedio;
     }
 
+    //Getter e Setter
     public BigDecimal getPrezzoMedio() {
         return prezzoMedio;
     }
-
     public void setPrezzoMedio(BigDecimal prezzoMedio) {
         this.prezzoMedio = prezzoMedio;
     }
@@ -27,7 +32,6 @@ public class AnnuncioVendita extends Annuncio{
     public BigDecimal getPrezzoMinimo() {
         return prezzoMinimo;
     }
-
     public void setPrezzoMinimo(BigDecimal prezzoMinimo) {
         this.prezzoMinimo = prezzoMinimo;
     }
@@ -48,4 +52,5 @@ public class AnnuncioVendita extends Annuncio{
             throw new Exception("Offerta di tipo sbagliato");
         }
     }
+
 }

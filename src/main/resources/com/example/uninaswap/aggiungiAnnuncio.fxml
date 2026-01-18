@@ -8,7 +8,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
-<ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.AggiungiAnnuncio"
+<ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.AggiungiAnnuncio"
             stylesheets="@inventario.css, @form.css">
     <content>
         <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="myPadding">

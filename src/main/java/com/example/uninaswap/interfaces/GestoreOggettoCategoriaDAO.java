@@ -12,6 +12,5 @@ public interface GestoreOggettoCategoriaDAO {
     public boolean rimuoviAssociazione(int idOggetto, String nomeCategoria);
     public boolean rimuoviTutteLeCategorieDiOggetto(int idOggetto, Connection connEsterna) throws SQLException;
     public ArrayList<Categoria> ottieniCategoriePerOggetto(int idOggetto);
-    public void salvaListaCategorie(Connection conn, int idOggetto, ArrayList<Categoria> categorie) throws SQLException;
     public void eliminaCategoriePerOggetto(Connection conn, int idOggetto) throws SQLException;
 }

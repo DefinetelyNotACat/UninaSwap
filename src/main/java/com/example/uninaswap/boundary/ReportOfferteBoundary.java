@@ -122,4 +122,5 @@ public class ReportOfferteBoundary {
         Stage stage = (Stage) lblMedia.getScene().getWindow();
         stage.close();
     }
+
 }

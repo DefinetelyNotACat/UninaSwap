@@ -27,7 +27,6 @@ public class Immagine {
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -35,7 +34,6 @@ public class Immagine {
     public Date getDataCaricamento() {
         return dataCaricamento;
     }
-
     public void setDataCaricamento(Date dataCaricamento) {
         this.dataCaricamento = dataCaricamento;
     }
@@ -43,7 +41,6 @@ public class Immagine {
     public String getPath() {
         return path;
     }
-
     public void setPath(String path) {
         this.path = path;
     }
@@ -51,7 +48,6 @@ public class Immagine {
     public int getIdOggetto() {
         return idOggetto;
     }
-
     public void setIdOggetto(int idOggetto) {
         this.idOggetto = idOggetto;
     }

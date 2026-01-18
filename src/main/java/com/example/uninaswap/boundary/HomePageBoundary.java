@@ -87,9 +87,6 @@ public class HomePageBoundary implements GestoreMessaggio {
         }
     }
 
-    /**
-     * FIX ALLINEAMENTO CARD UTENTE
-     */
     private VBox creaCardUtente(Utente u) {
         VBox card = new VBox(15);
         card.getStyleClass().add("ad-card");
@@ -263,5 +260,7 @@ public class HomePageBoundary implements GestoreMessaggio {
     }
 
     public void svuotaCatalogo(){ containerAnnunci.getChildren().clear(); }
+
     public Scene getScene() { return containerAnnunci.getScene(); }
+
 }

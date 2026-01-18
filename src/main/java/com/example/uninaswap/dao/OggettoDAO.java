@@ -14,10 +14,6 @@ public class OggettoDAO implements GestoreOggettoDAO {
     private final OggettoCategoriaDAO oggettoCategoriaDAO = new OggettoCategoriaDAO();
     private final ImmagineDAO immagineDAO = new ImmagineDAO();
 
-    // =================================================================================
-    // LOGICA DI SALVATAGGIO (TRANSAZIONALE)
-    // =================================================================================
-
     @Override
     public boolean salvaOggetto(Oggetto oggetto, Utente utente) {
         String sqlOggetto = "INSERT INTO OGGETTO (utente_id, nome, condizione, disponibilita) VALUES (?, ?, ?::condizione_oggetto, ?::disponibilita_oggetto)";
@@ -135,10 +131,6 @@ public class OggettoDAO implements GestoreOggettoDAO {
         }
     }
 
-    // =================================================================================
-    // LOGICA DI RECUPERO DATI
-    // =================================================================================
-
     public ArrayList<Oggetto> ottieniTuttiOggetti(int idUtente) {
         ArrayList<Oggetto> lista = new ArrayList<>();
         String sql = "SELECT * FROM OGGETTO WHERE utente_id = ? ORDER BY id DESC";
@@ -223,10 +215,6 @@ public class OggettoDAO implements GestoreOggettoDAO {
         return false;
     }
 
-    // =================================================================================
-    // ASSOCIAZIONE ANNUNCI
-    // =================================================================================
-
     public boolean associaAnnuncio(int idOggetto, int idAnnuncio) {
         String sql = "UPDATE OGGETTO SET annuncio_id = ? WHERE id = ?";
         try (Connection conn = PostgreSQLConnection.getConnection();
@@ -241,10 +229,6 @@ public class OggettoDAO implements GestoreOggettoDAO {
     public boolean rimuoviDaAnnuncio(int idU, int idA) {
         return false;
     }
-
-    // =================================================================================
-    // HELPER PRIVATI
-    // =================================================================================
 
     private Oggetto mapResultSetToOggetto(ResultSet rs) throws SQLException {
         Oggetto oggetto = new Oggetto();
