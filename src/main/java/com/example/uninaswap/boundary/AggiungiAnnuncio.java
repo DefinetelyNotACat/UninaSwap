@@ -250,14 +250,12 @@ public class AggiungiAnnuncio {
                 BigDecimal prezzoRichiesto = new BigDecimal(strPrezzo);
                 BigDecimal prezzoMinimo = strMinimo.isEmpty() ? BigDecimal.ZERO : new BigDecimal(strMinimo);
 
-                // CHECK FOTTUTO: NO NEGATIVI
                 if (prezzoRichiesto.compareTo(BigDecimal.ZERO) < 0 || prezzoMinimo.compareTo(BigDecimal.ZERO) < 0) {
                     errorePrezzo.setText("I prezzi non possono essere negativi!");
                     errorePrezzo.setVisible(true);
                     return;
                 }
 
-                // IL CHECK CHE VOLEVI: MINIMO NON SUPERIORE AL PREZZO
                 if (!strMinimo.isEmpty() && prezzoMinimo.compareTo(prezzoRichiesto) > 0) {
                     errorePrezzo.setText("Il prezzo minimo non può essere superiore al prezzo di vendita!");
                     errorePrezzo.setVisible(true);
