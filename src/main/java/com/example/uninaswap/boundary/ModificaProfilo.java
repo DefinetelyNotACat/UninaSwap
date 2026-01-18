@@ -230,6 +230,7 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
             testoErrore.setManaged(false);
         }
     }
+
     // --- Logica Click Salva ---
     @FXML
     public void onSalvaClick(ActionEvent event) {
@@ -361,6 +362,7 @@ public class ModificaProfilo implements Initializable, GestoreMessaggio {
             erroreGenerico.setManaged(true);
         }
     }
+
     @Override
     public void mostraMessaggioEsterno(String testo, Messaggio.TIPI tipo) {
         if (notificaController != null) {

@@ -8,9 +8,6 @@ import java.util.ArrayList;
 
 public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
 
-    /**
-     * Collega una singola categoria (Nuova connessione, no transazione).
-     */
     public boolean associaCategoria(int idOggetto, String nomeCategoria) {
         String sql = "INSERT INTO OGGETTO_CATEGORIA (oggetto_id, categoria_nome) VALUES (?, ?)";
 
@@ -28,10 +25,6 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
         }
     }
 
-    /**
-     * Collega una LISTA di categorie usando una connessione ESISTENTE (Per Transazioni).
-     * Sostituisce il vecchio metodo 'salvaListaCategorie'.
-     */
     public void associaCategorie(Connection conn, int idOggetto, ArrayList<Categoria> categorie) throws SQLException {
         if (categorie == null || categorie.isEmpty()) return;
 
@@ -47,9 +40,6 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
         }
     }
 
-    /**
-     * Rimuove il collegamento tra una specifica categoria e un oggetto.
-     */
     public boolean rimuoviAssociazione(int idOggetto, String nomeCategoria) {
         String sql = "DELETE FROM OGGETTO_CATEGORIA WHERE oggetto_id = ? AND categoria_nome = ?";
 
@@ -67,9 +57,6 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
         }
     }
 
-    /**
-     * Rimuove TUTTE le categorie associate a un oggetto.
-     */
     public boolean rimuoviTutteLeCategorieDiOggetto(int idOggetto, Connection connEsterna) throws SQLException {
         String sql = "DELETE FROM OGGETTO_CATEGORIA WHERE oggetto_id = ?";
 
@@ -92,9 +79,6 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
         }
     }
 
-    /**
-     * Restituisce la lista di oggetti Categoria associati a un ID oggetto.
-     */
     public ArrayList<Categoria> ottieniCategoriePerOggetto(int idOggetto) {
         ArrayList<Categoria> lista = new ArrayList<>();
         String sql = "SELECT categoria_nome FROM OGGETTO_CATEGORIA WHERE oggetto_id = ?";
@@ -114,11 +98,6 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
             e.printStackTrace();
         }
         return lista;
-    }
-
-    @Override
-    public void salvaListaCategorie(Connection conn, int idOggetto, ArrayList<Categoria> categorie) throws SQLException {
-
     }
 
     public void eliminaCategoriePerOggetto(Connection conn, int idOggetto) throws SQLException {

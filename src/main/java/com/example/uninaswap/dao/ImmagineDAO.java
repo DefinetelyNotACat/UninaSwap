@@ -56,7 +56,6 @@ public class ImmagineDAO implements GestoreImmagineDAO {
         return null;
     }
 
-    // Metodo di lettura
     public ArrayList<String> ottieniImmaginiStringhe(int idOggetto) {
         ArrayList<String> lista = new ArrayList<>();
         String sql = "SELECT path FROM IMMAGINE WHERE oggetto_id = ?";

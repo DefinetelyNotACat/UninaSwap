@@ -1,0 +1,51 @@
+.star {
+    -fx-font-size: 45px;
+    -fx-text-fill: #cccccc;
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s;
+}
+
+.star:hover {
+    -fx-scale-x: 1.2;
+    -fx-scale-y: 1.2;
+    -fx-text-fill: #ffcc00;
+}
+
+.star-filled {
+    -fx-text-fill: #ffcc00;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 204, 0, 0.4), 10, 0, 0, 0);
+}
+
+.comment-area {
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.star {
+    -fx-font-size: 45px;
+    -fx-text-fill: #cccccc;
+    -fx-cursor: hand;
+}
+
+.star-filled {
+    -fx-text-fill: #ffcc00 !important;
+}
+
+.button-secondary {
+    -fx-background-color: transparent;
+    -fx-border-color: #666666;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 10;
+    -fx-text-fill: #666666;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #f2f2f2;
+    -fx-border-color: #444444;
+    -fx-text-fill: #444444;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}

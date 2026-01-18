@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.EffettuaOffertaBoundary" stylesheets="@homepage.css, @banners.css, @offerta.css" styleClass="offerta-root">
+
+    <top>
+        <fx:include source="navbar.fxml"/>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="0">
+            <padding><Insets top="40" bottom="40"/></padding>
+
+            <VBox alignment="CENTER" spacing="25" maxWidth="650" styleClass="form-container-premium">
+
+                <VBox alignment="CENTER" spacing="8">
+                    <Text text="Fai la tua offerta" styleClass="offer-title-premium"/>
+                    <Text fx:id="txtInfoAnnuncio" text="Stai facendo un'offerta per..." styleClass="offer-subtitle-premium"/>
+                </VBox>
+
+                <Separator maxWidth="300"/>
+
+                <VBox fx:id="containerSpecifico" spacing="15" alignment="CENTER_LEFT" />
+
+                <VBox spacing="10">
+                    <Label text="Aggiungi un messaggio personale:" style="-fx-font-weight: bold; -fx-text-fill: #2d3436;"/>
+                    <TextArea fx:id="txtMessaggio" promptText="Ciao! Scrivo per..." prefRowCount="3" wrapText="true" styleClass="text-area-premium"/>
+                    <Text fx:id="erroreRegexMessaggio" managed="false" styleClass="error-text"
+                          text="Caratteri non validi (usare solo lettere, numeri, ? ! ' € e spazi)" visible="false" />
+                </VBox>
+
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="ANNULLA" onAction="#annulla" styleClass="btn-back-premium"/>
+                    <Button fx:id="btnInvia" text="INVIA OFFERTA" onAction="#confermaOfferta" styleClass="btn-send-premium"/>
+                </HBox>
+
+                <Label fx:id="lblErrore" text="" style="-fx-text-fill: #d63031; -fx-font-weight: bold;"/>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

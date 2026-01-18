@@ -1,38 +1,41 @@
 package com.example.uninaswap.entity;
-import java.util.ArrayList;
+
 
 public class Categoria {
 
+    //Attributi
+    //
     private String nome;
-    // Eviterei di mantenere la lista degli oggetti qui dentro per evitare loop infiniti
-    // o caricamenti pesanti non necessari, a meno che non serva specificamente.
-    // private ArrayList<Oggetto> oggetti = new ArrayList<>();
 
+    //Costruttori
     public Categoria(String nome) {
         this.nome = nome;
     }
 
     public Categoria() {}
 
+    //Getter e Setter
     public String getNome() {
         return nome;
     }
-
     public void setNome(String nome) {
         this.nome = nome;
     }
 
     @Override
-    public String toString() {
-        return nome;
-    }
-
-    // Equals e HashCode sono importanti per far funzionare bene le ArrayList
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Categoria categoria = (Categoria) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        Categoria categoria = (Categoria) object;
+        //serve per fare in modo tale che due categorie dello stesso nome siano considerate uguali
         return nome != null ? nome.equals(categoria.nome) : categoria.nome == null;
     }
+
+    //toString
+    //
+    @Override
+    public String toString() {
+        return "Nome: " + nome;
+    }
+
 }

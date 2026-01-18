@@ -214,7 +214,7 @@ public class AggiungiAnnuncio {
             // 3. Aggiunta oggetti supplementari
             if (annuncioDaInviare != null && selezionati.size() > 1) {
                 for (int i = 1; i < selezionati.size(); i++) {
-                    annuncioDaInviare.aggiungiOggetto(selezionati.get(i));
+                    annuncioDaInviare.addOggetto(selezionati.get(i));
                 }
             }
 
@@ -254,4 +254,5 @@ public class AggiungiAnnuncio {
     @FXML void onAnnullaClick(ActionEvent e) {
         new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, e, "Pubblicazione annuncio annullata", Messaggio.TIPI.INFO);
     }
+
 }

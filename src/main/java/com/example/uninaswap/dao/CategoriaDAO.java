@@ -35,7 +35,7 @@ public class CategoriaDAO implements GestoreCategoriaDAO {
     }
 
     public Categoria OttieniCategoria(String nome){
-        return new Categoria(nome); // Semplificazione se esiste
+        return new Categoria(nome);
     }
 
     // Metodi elimina e modifica rimangono uguali al tuo codice
@@ -52,6 +52,6 @@ public class CategoriaDAO implements GestoreCategoriaDAO {
     }
 
     public boolean modificaCategoria(Categoria categoria){
-        return true; // Stub
+        return true;
     }
 }

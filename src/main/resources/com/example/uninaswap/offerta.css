@@ -1,0 +1,102 @@
+.offerta-root {
+    -fx-background-color: linear-gradient(to bottom, #f4f7f6, #e9ecef);
+}
+
+.form-container-premium {
+    -fx-background-color: white;
+    -fx-background-radius: 25;
+    -fx-padding: 40;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 20, 0, 0, 10);
+    -fx-border-color: #ffffff;
+    -fx-border-radius: 25;
+    -fx-border-width: 2;
+}
+
+.offer-title-premium {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-fill: #2d3436;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.offer-subtitle-premium {
+    -fx-font-size: 15px;
+    -fx-fill: #636e72;
+    -fx-font-style: italic;
+}
+
+.text-area-premium, .text-field-premium {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 12;
+    -fx-border-color: #dfe6e9;
+    -fx-border-radius: 12;
+    -fx-padding: 12;
+    -fx-font-size: 14px;
+}
+
+.text-area-premium:focused, .text-field-premium:focused {
+    -fx-border-color: #dfe6e9;
+    -fx-background-color: white;
+    -fx-effect: none;
+}
+
+.list-view {
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dfe6e9;
+}
+
+.list-cell {
+    -fx-padding: 10;
+    -fx-background-color: transparent;
+}
+
+.list-cell:filled:selected {
+    -fx-background-color: #e7f1ff;
+    -fx-text-fill: #0d6efd;
+    -fx-font-weight: bold;
+}
+
+.btn-send-premium {
+    -fx-background-color: linear-gradient(to bottom right, #2ecc71, #27ae60);
+    -fx-text-fill: white;
+    -fx-background-radius: 30;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-padding: 14 45;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(46, 204, 113, 0.4), 15, 0, 0, 5);
+}
+
+.btn-send-premium:hover {
+    -fx-background-color: linear-gradient(to bottom right, #27ae60, #1e8449);
+    -fx-translate-y: -2;
+}
+
+.btn-send-premium:pressed {
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
+}
+
+.btn-back-premium {
+    -fx-background-color: transparent;
+    -fx-text-fill: #636e72;
+    -fx-border-color: #b2bec3;
+    -fx-border-radius: 30;
+    -fx-padding: 14 45;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.btn-back-premium:hover {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #2d3436;
+    -fx-text-fill: #2d3436;
+}
+
+.error-label {
+    -fx-text-fill: #d63031;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}

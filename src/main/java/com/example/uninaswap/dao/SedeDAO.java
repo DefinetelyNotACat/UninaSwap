@@ -24,6 +24,7 @@ public class SedeDAO implements GestoreSedeDAO {
             return false;
         }
     }
+
     public boolean modificaSede(Sede sede){
         String sql = "UPDATE SEDE SET nomeSede = ?, indirizzo = ? WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -38,6 +39,7 @@ public class SedeDAO implements GestoreSedeDAO {
             return false;
         }
     }
+
     public boolean eliminaSede(int id){
         String sql = "DELETE FROM SEDE WHERE id = ?";
         try (Connection connessione = PostgreSQLConnection.getConnection();
@@ -50,6 +52,7 @@ public class SedeDAO implements GestoreSedeDAO {
             return false;
         }
     }
+
     public Sede OttieniSede(int id){
         Sede sede = null;
         String sql = "SELECT * FROM SEDE WHERE id = ?";
@@ -72,6 +75,7 @@ public class SedeDAO implements GestoreSedeDAO {
         return sede;
 
     }
+
     public ArrayList<Sede> OttieniSedi(){
         ArrayList<Sede> OttieniSedi = new ArrayList<>();
         String sql = "SELECT * FROM SEDE";
@@ -92,4 +96,5 @@ public class SedeDAO implements GestoreSedeDAO {
         }
         return OttieniSedi;
     }
+
 }

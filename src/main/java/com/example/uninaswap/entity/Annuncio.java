@@ -4,106 +4,91 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 public abstract class Annuncio {
-    protected enum STATO_ANNUNCIO {
+
+    // ENUM
+    //
+    public enum STATO_ANNUNCIO {
         DISPONIBILE,
         NON_DISPONIBILE
     }
+
+    //Attributi
+    //
     protected int id;
     protected int utenteId;
+    protected Utente utente; // Il venditore (Popolato tramite JOIN nel DAO)
     protected Sede sede;
     protected String descrizione;
     protected LocalTime orarioInizio;
     protected LocalTime orarioFine;
-    protected STATO_ANNUNCIO stato;
-    protected ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
-    protected ArrayList<Offerta> offerte = new ArrayList<Offerta>();
 
-    public Annuncio() {}
+    protected STATO_ANNUNCIO stato;
+
+    protected ArrayList<Oggetto> oggetti = new ArrayList<>();
+    protected ArrayList<Offerta> offerte = new ArrayList<>();
+
+    //Costruttori
+    //
+    public Annuncio() {
+        this.stato = STATO_ANNUNCIO.DISPONIBILE;
+    }
 
     public Annuncio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto) {
         this.sede = sede;
-        this.sede.aggiungiAnnuncio(this);
+        if (this.sede != null) {
+            this.sede.aggiungiAnnuncio(this);
+        }
         this.descrizione = descrizione;
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
         this.stato = STATO_ANNUNCIO.DISPONIBILE;
-        this.sede.aggiungiAnnuncio(this);
+
         if (oggetto != null) {
+            this.oggetti.add(oggetto);
             try {
-                this.oggetti.add(oggetto);
                 oggetto.setAnnuncio(this);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
             }
         }
     }
 
-    public int getId() {
-        return id;
+    //Getter e Setter
+    //
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public int getUtenteId() { return utenteId; }
+    public void setUtenteId(int utenteId) { this.utenteId = utenteId; }
+
+    public void setUtente(Utente utente) {
+        this.utente = utente;
+    }
+    public Utente getUtente() {
+        return utente;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public Sede getSede() { return sede; }
+    public void setSede(Sede sede) { this.sede = sede; }
 
-    public int getUtenteId() {
-        return utenteId;
-    }
+    public String getDescrizione() { return descrizione; }
+    public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
 
-    public void setUtenteId(int utenteId) {
-        this.utenteId = utenteId;
-    }
+    public LocalTime getOrarioInizio() { return orarioInizio; }
 
-    public Sede getSede() {
-        return sede;
-    }
+    public LocalTime getOrarioFine() { return orarioFine; }
 
-    public void setSede(Sede sede) {
-        this.sede = sede;
-    }
+    public void setStato(STATO_ANNUNCIO stato) { this.stato = stato; }
+    public STATO_ANNUNCIO getStato() { return stato; }
 
-    public String getDescrizione() {
-        return descrizione;
-    }
-
-    public void setDescrizione(String descrizione) {
-        this.descrizione = descrizione;
-    }
-
-    public LocalTime getOrarioInizio() {
-        return orarioInizio;
-    }
-
-    public void setOrarioInizio(LocalTime orarioInizio) {
-        this.orarioInizio = orarioInizio;
-    }
-
-    public LocalTime getOrarioFine() {
-        return orarioFine;
-    }
-
-    public void setOrarioFine(LocalTime orarioFine) {
-        this.orarioFine = orarioFine;
-    }
-
-    public STATO_ANNUNCIO getStato() {
-        return stato;
-    }
-
-    public void setStato(STATO_ANNUNCIO stato) {
-        this.stato = stato;
-    }
-
-    public ArrayList<Oggetto> getOggetti() {
-        return oggetti;
-    }
+    public ArrayList<Oggetto> getOggetti() { return oggetti; }
 
     public void setOrari(LocalTime orarioInizio, LocalTime orarioFine) throws Exception {
         if (orarioInizio == null || orarioFine == null) {
             throw new Exception("Entrambi gli orari devono essere specificati");
         }
         if (orarioInizio.isAfter(orarioFine)) {
-            throw new Exception("L'orario d'inizio non può essere successivo all'orario di fine!");
+            throw new Exception("L'orario d'inizio non può essere successivo a quello di fine!");
         }
         this.orarioInizio = orarioInizio;
         this.orarioFine = orarioFine;
@@ -113,39 +98,29 @@ public abstract class Annuncio {
         this.oggetti.clear();
         if (nuoviOggetti != null) {
             for (Oggetto oggetto : nuoviOggetti) {
-                if (oggetto != null) {
-                    this.oggetti.add(oggetto);
-                }
+                if (oggetto != null) this.oggetti.add(oggetto);
             }
         }
     }
 
-    public void aggiungiOggetto(Oggetto oggetto) {
-        if (oggetto != null) {
-            this.oggetti.add(oggetto);
-        }
+    public void addOggetto(Oggetto oggetto) {
+        if (oggetto != null) this.oggetti.add(oggetto);
     }
 
-    protected void ottieniOfferta(Offerta offerta) throws Exception{
+    protected void ottieniOfferta(Offerta offerta) throws Exception {
         if (offerta != null) {
             this.offerte.add(offerta);
-        }
-        else{
-            throw new Exception("Offerta non esistente");
+        } else {
+            throw new Exception("L'Offerta non esiste");
         }
     }
 
+    // Metodo astratto implementato dalle sottoclassi (Vendita, Scambio, Regalo)
     public abstract String getTipoAnnuncio();
 
+    //toString
     @Override
     public String toString() {
-        return "Annuncio{" +
-                "descrizione='" + descrizione + '\'' +
-                ", sede=" + (sede != null ? sede.getNomeSede() : "N/A") +
-                ", orario=" + orarioInizio + "-" + orarioFine +
-                ", stato=" + stato +
-                ", num oggetti=" + oggetti.size() +
-                ", oggetti = " + oggetti +
-                '}';
+        return "Annuncio{" + "id=" + id + ", descrizione='" + descrizione + '\'' +  ", venditore=" + (utente != null ? utente.getUsername() : "N/A") +  ", sede=" + (sede != null ? sede.getNomeSede() : "N/A") +  ", stato=" + stato +  ", num_oggetti=" + oggetti.size() + '}';
     }
 }

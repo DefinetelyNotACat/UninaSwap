@@ -1,10 +1,11 @@
 package com.example.uninaswap.entity;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 
 public class AnnuncioRegalo extends Annuncio {
 
+    //Costruttori
+    //
     public AnnuncioRegalo() {
         super();
     }
@@ -13,32 +14,22 @@ public class AnnuncioRegalo extends Annuncio {
         super(sede, descrizione, orarioInizio, orarioFine, oggetto);
     }
 
-    public ArrayList<OffertaRegalo> getOfferteRegalo() {
-        ArrayList<OffertaRegalo> listaTipizzata = new ArrayList<>();
-
-        for (Offerta o : super.offerte) {
-            if (o instanceof OffertaRegalo) {
-                listaTipizzata.add((OffertaRegalo) o);
-            }
-        }
-        return listaTipizzata;
-    }
-
-    public void aggiungiOffertaRegalo(OffertaRegalo offertaRegalo) {
-        super.offerte.add(offertaRegalo);
-    }
-
+    //Getter e Setter
+    //
+    //override di getTipoAnnuncio per specificare che è un AnnuncioRegalo
     @Override
     public String getTipoAnnuncio(){
         return "Regalo";
     }
 
+    //override per evitare che venga passata una specializzazione sbagliata di offerta
     @Override
-    public void ottieniOfferta(Offerta offerta) {
+    public void ottieniOfferta(Offerta offerta) throws Exception {
         if (offerta instanceof OffertaRegalo) {
             super.offerte.add(offerta);
         } else {
-            throw new IllegalArgumentException("Si possono aggiungere solo offerte di regalo a un AnnuncioRegalo");
+            throw new Exception("Offerta di tipo sbagliato");
         }
     }
+
 }

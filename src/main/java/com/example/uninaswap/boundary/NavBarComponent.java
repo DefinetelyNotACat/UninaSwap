@@ -1,224 +1,260 @@
 package com.example.uninaswap.boundary;
 
+import com.example.uninaswap.Costanti;
 import com.example.uninaswap.controller.ControllerUninaSwap;
+import com.example.uninaswap.entity.Categoria;
+import com.example.uninaswap.entity.Oggetto;
 import com.example.uninaswap.entity.Utente;
-import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
-import javafx.geometry.Point2D;
-import java.io.File;
-import com.example.uninaswap.Costanti;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import java.io.File;
 
 public class NavBarComponent {
 
+    @FXML private Button bottoneRicerca;
     @FXML private Button bottoneAggiungiAnnuncio;
-    @FXML private ChoiceBox<String> filtroBarraDiRicerca;
+    @FXML private ComboBox<String> filtroBarraDiRicerca;
     @FXML private TextField barraDiRicerca;
+    @FXML private Text erroreRicerca;
     @FXML private ImageView fotoProfilo;
     @FXML private ImageView logo;
+
+    @FXML private ComboBox<Oggetto.CONDIZIONE> filtroCondizione;
+    @FXML private ComboBox<Categoria> filtroCategoria;
+
     private ContextMenu menuProfilo;
-    private PauseTransition hideDelay;
     private final ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
     private final GestoreScene gestoreScene = new GestoreScene();
+
+    private HomePageBoundary homePageBoundary;
+
+    public void setHomePageBoundary(HomePageBoundary home) {
+        this.homePageBoundary = home;
+
+        // Recuperiamo i dati prenotati dalla Home
+        String q = HomePageBoundary.getQueryPrenotata();
+        boolean isAnnuncio = HomePageBoundary.isCercaAnnunciPrenotato();
+
+        // FIX: Ripristiniamo sia il testo che la selezione del ComboBox (Articoli/Utenti)
+        if (q != null) {
+            barraDiRicerca.setText(q);
+            filtroBarraDiRicerca.setValue(isAnnuncio ? "Articoli" : "Utenti");
+        }
+
+        // Puliamo la memoria della Home solo dopo aver sincronizzato la Navbar
+        home.resetRicercaPrenotata();
+    }
+
     @FXML
     public void initialize() {
-        bottoneAggiungiAnnuncio.setOnAction(event ->{
-             GestoreScene gestoreScene = new GestoreScene();
-             gestoreScene.CambiaScena(Costanti.pathCreaAnnuncio, "prova", event);
+        setupUI();
+        popolaFiltri();
+
+        // Navigazione Rapida
+        bottoneAggiungiAnnuncio.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathCreaAnnuncio, "Crea Annuncio", e));
+
+        logo.setOnMouseClicked(e -> {
+            HomePageBoundary.prenotaRicerca(null, true); // Reset ricerca
+            gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
         });
 
+        // Toggle visibilità filtri extra basato sulla selezione
+        filtroBarraDiRicerca.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+            boolean isArticoli = "Articoli".equals(n);
+            filtroCondizione.setVisible(isArticoli);
+            filtroCondizione.setManaged(isArticoli);
+            filtroCategoria.setVisible(isArticoli);
+            filtroCategoria.setManaged(isArticoli);
+        });
 
-        filtroBarraDiRicerca.setCursor(Cursor.HAND);
+        // Validazione Regex in tempo reale
+        barraDiRicerca.textProperty().addListener((obs, o, n) -> {
+            setStatoErrore(n != null && !n.trim().isEmpty() && !n.matches(Costanti.FIELDS_REGEX_SPAZIO));
+        });
 
-        Label lblArticoli = new Label("Articoli");
-        lblArticoli.setCursor(Cursor.HAND); // Imposta la manina
+        bottoneRicerca.setOnAction(e -> eseguiRicerca());
 
-        Label lblUtenti = new Label("Utenti");
-        lblUtenti.setCursor(Cursor.HAND); // Imposta la manina
-        // Aggiungiamo le Label alla ChoiceBox
-        filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
-        filtroBarraDiRicerca.setValue("Articoli");
-
-        try {
-            Image logoImage = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png"));
-            logo.setImage(logoImage);
-        } catch (Exception e) {
-            System.err.println("Logo non trovato: " + e.getMessage());
+        if (filtroBarraDiRicerca.getItems().isEmpty()) {
+            filtroBarraDiRicerca.getItems().addAll("Articoli", "Utenti");
+            filtroBarraDiRicerca.setValue("Articoli");
         }
 
         aggiornaFotoProfilo();
-
         setupMenuProfilo();
     }
 
-    public void aggiornaFotoProfilo() {
-        try {
-            Utente utente = controllerUninaSwap.getUtente();
-            boolean caricato = false;
+    private void eseguiRicerca() {
+        String sel = filtroBarraDiRicerca.getValue();
+        String txt = barraDiRicerca.getText();
+        boolean isAnn = "Articoli".equals(sel);
 
-            if (utente != null && utente.getPathImmagineProfilo() != null) {
-                String pathDalDb = utente.getPathImmagineProfilo();
-
-                // 1. Definiamo i percorsi di default
-                boolean isDefault = pathDalDb.trim().isEmpty() || pathDalDb.equals("default");
-
-                if (!isDefault) {
-                    // 2. Costruiamo il percorso corretto includendo "dati_utenti"
-                    String BASE_PATH = System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator;
-                    File fileImmagine;
-
-                    // Gestione caso percorso assoluto (se esiste) vs relativo
-                    if (pathDalDb.contains(File.separator) && (pathDalDb.contains(":") || pathDalDb.startsWith("/"))) {
-                        fileImmagine = new File(pathDalDb);
-                    } else {
-                        fileImmagine = new File(BASE_PATH + pathDalDb);
-                    }
-
-                    // 3. Verifica esistenza
-                    if (fileImmagine.exists()) {
-                        Image image = new Image(fileImmagine.toURI().toString());
-                        fotoProfilo.setImage(image);
-                        centraImmagine(fotoProfilo, image);
-                        caricato = true;
-                    } else {
-                        System.out.println("NavBar: Immagine non trovata a path: " + fileImmagine.getAbsolutePath());
-                    }
-                }
-            }
-
-            // 4. Fallback se non abbiamo caricato nulla o è default
-            if (!caricato) {
-                // Assicurati che questo path sia corretto per le tue risorse
-                Image defaultImg = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
-                // Se l'immagine nel jar ha un nome diverso (es: immagine_di_profilo_default.jpg), correggi la riga sopra
-
-                if (defaultImg != null) {
-                    fotoProfilo.setImage(defaultImg);
-                    centraImmagine(fotoProfilo, defaultImg);
-                }
-            }
-
-            applicaCerchio();
-
-        } catch (Exception e) {
-            System.err.println("Errore caricamento foto profilo navbar: " + e.getMessage());
+        // Se siamo già in Home, aggiorniamo il catalogo direttamente
+        if (homePageBoundary != null && logo.getScene() != null && logo.getScene().equals(homePageBoundary.getScene())) {
+            try {
+                if (isAnn) homePageBoundary.caricaCatalogoAnnunci(txt, filtroCondizione.getValue(), filtroCategoria.getValue(), true);
+                else homePageBoundary.caricaCatalogoAnnunci(txt, false);
+            } catch (Exception e) { e.printStackTrace(); }
+        } else {
+            // Se siamo altrove (Inventario, Offerte...), salviamo i dati e cambiamo scena verso la Home
+            HomePageBoundary.prenotaRicerca(txt, isAnn);
+            gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
         }
-    }    private void centraImmagine(ImageView imageView, Image img) {
-        if (img == null) return;
-        double width = img.getWidth();
-        double height = img.getHeight();
-        double minDimension = Math.min(width, height);
-        double x = (width - minDimension) / 2;
-        double y = (height - minDimension) / 2;
-        Rectangle2D cropArea = new Rectangle2D(x, y, minDimension, minDimension);
-        imageView.setViewport(cropArea);
-        imageView.setPreserveRatio(false);
-        imageView.setSmooth(true);
-    }
-
-    private void applicaCerchio() {
-        double raggio = Math.min(fotoProfilo.getFitWidth(), fotoProfilo.getFitHeight()) / 2;
-        Circle clip = new Circle(
-                fotoProfilo.getFitWidth() / 2,
-                fotoProfilo.getFitHeight() / 2,
-                raggio
-        );
-        fotoProfilo.setClip(clip);
     }
 
     private void setupMenuProfilo() {
         menuProfilo = new ContextMenu();
         menuProfilo.getStyleClass().add("profilo-context-menu");
 
-        MenuItem leMieOfferte = creaVoceMenu("Mostra le mie offerte", null);
-        MenuItem iMieiAnnunci = creaVoceMenu("Mostra i miei annunci", null);
-        MenuItem ilMioInventario = creaVoceMenu("Mostra il mio inventario", null);
-        // Aggiungi l'azione al click
-        ilMioInventario.setOnAction(event -> {
-            try {
-                Stage stage = (Stage) fotoProfilo.getScene().getWindow();
-                gestoreScene.CambiaScena(
-                        Costanti.pathInventario,
-                        Costanti.inventario,
-                        stage
-                );
-            } catch (Exception e) {
-                System.err.println("Errore apertura inventario: " + e.getMessage());
-                e.printStackTrace();
-            }
+        MenuItem esplora = creaVoceMenu("Esplora tutti gli annunci", null);
+        esplora.setOnAction(e -> {
+            HomePageBoundary.prenotaRicerca(null, true);
+            gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) fotoProfilo.getScene().getWindow());
         });
-        // --------------------
-        MenuItem modificaProfilo = creaVoceMenu("Modifica Profilo", null);
 
-        modificaProfilo.setOnAction(event -> {
+        MenuItem offerte = creaVoceMenu("Le mie offerte", null);
+        offerte.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathGestioneOfferte, "Offerte", (Stage) fotoProfilo.getScene().getWindow()));
+
+        // --- VOCE REINSERITA ---
+        MenuItem annunci = creaVoceMenu("I miei annunci", null);
+        annunci.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathMieiAnnunci, "I Miei Annunci", (Stage) fotoProfilo.getScene().getWindow()));
+
+        MenuItem inv = creaVoceMenu("Il mio inventario", null);
+        inv.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathInventario, "Inventario", (Stage) fotoProfilo.getScene().getWindow()));
+
+        // --- AGGIUNTA MODIFICA RECENSIONI SENZA RIMUOVERE NULLA ---
+        MenuItem mieRecensioni = creaVoceMenu("Le mie recensioni", null);
+        mieRecensioni.setOnAction(e -> {
             try {
-
+                Utente me = controllerUninaSwap.getUtente();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(Costanti.pathRecensioni));
+                Parent root = loader.load();
+                Recensioni controllerRec = loader.getController();
+                controllerRec.initData(me);
                 Stage stage = (Stage) fotoProfilo.getScene().getWindow();
-                gestoreScene.CambiaScena(
-                        Costanti.pathModificaProfilo,
-                        "Modifica Profilo",
-                        stage
-                );
-            } catch (Exception e) {
-                System.err.println("Errore nel cambio scena: " + e.getMessage());
-                e.printStackTrace();
-            }
+                stage.setScene(new Scene(root, stage.getScene().getWidth(), stage.getScene().getHeight()));
+            } catch (Exception ex) { ex.printStackTrace(); }
         });
+
+        MenuItem mod = creaVoceMenu("Modifica Profilo", null);
+        mod.setOnAction(e -> gestoreScene.CambiaScena(Costanti.pathModificaProfilo, "Modifica", (Stage) fotoProfilo.getScene().getWindow()));
+
         MenuItem logout = creaVoceMenu("Logout", "menu-item-logout");
-
         logout.setOnAction(e -> {
-            Stage stage = (Stage) fotoProfilo.getScene().getWindow();
-            System.out.println("Logout");
             controllerUninaSwap.setUtente(null);
-            gestoreScene.CambiaScena(Costanti.pathSignIn, Costanti.accedi, stage);
+            gestoreScene.CambiaScena(Costanti.pathSignIn, "Login", (Stage) fotoProfilo.getScene().getWindow());
         });
 
-        menuProfilo.getItems().addAll(
-                leMieOfferte,
-                iMieiAnnunci,
-                ilMioInventario,
-                modificaProfilo,
-                new SeparatorMenuItem(), logout);
+        // AGGIUNTO mieRecensioni ALLA LISTA ORIGINALE
+        menuProfilo.getItems().addAll(esplora, new SeparatorMenuItem(), offerte, annunci, inv, mieRecensioni, mod, new SeparatorMenuItem(), logout);
 
-        fotoProfilo.setOnMouseClicked(event -> {
-            if (menuProfilo.isShowing()) {
-                menuProfilo.hide();
-            } else {
-                showmenuProfilo(event);
+        fotoProfilo.setOnMouseClicked(e -> {
+            if (menuProfilo.isShowing()) menuProfilo.hide();
+            else showmenuProfilo(e);
+        });
+    }
+
+    private void setupUI() {
+        Cursor h = Cursor.HAND;
+        bottoneAggiungiAnnuncio.setCursor(h); bottoneRicerca.setCursor(h);
+        logo.setCursor(h); fotoProfilo.setCursor(h); filtroBarraDiRicerca.setCursor(h);
+    }
+
+    private void popolaFiltri() {
+        filtroCondizione.getItems().setAll(controllerUninaSwap.getCondizioni());
+        filtroCategoria.getItems().setAll(controllerUninaSwap.getCategorie());
+    }
+
+    private void setStatoErrore(boolean err) {
+        barraDiRicerca.getStyleClass().remove("error");
+        if (err) barraDiRicerca.getStyleClass().add("error");
+        erroreRicerca.setVisible(err); erroreRicerca.setManaged(err);
+        bottoneRicerca.setDisable(err);
+    }
+
+    public void aggiornaFotoProfilo() {
+        try {
+            Utente u = controllerUninaSwap.getUtente();
+            Image imgDaCaricare = null;
+            boolean isDefault = true;
+
+            // 1. Controllo se l'utente ha una foto valida
+            if (u != null && u.getPathImmagineProfilo() != null &&
+                    !u.getPathImmagineProfilo().equals("default") &&
+                    !u.getPathImmagineProfilo().isEmpty()) {
+
+                File f = new File(System.getProperty("user.dir") + File.separator + "dati_utenti" + File.separator + u.getPathImmagineProfilo());
+                if (f.exists()) {
+                    imgDaCaricare = new Image(f.toURI().toString());
+                    isDefault = false;
+                }
             }
-        });
 
-        fotoProfilo.setCursor(javafx.scene.Cursor.HAND);
-    }    private void showmenuProfilo(MouseEvent event) {
-        if (menuProfilo.isShowing()) return;
+            // 2. Se non ho trovato nulla, carico quella di default
+            if (isDefault) {
+                imgDaCaricare = new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/immagineProfiloDefault.jpg"));
+                // RESETTA IL VIEWPORT altrimenti l'immagine di default non si vede cazzo!
+                fotoProfilo.setViewport(null);
+            }
 
-        Point2D point = fotoProfilo.localToScreen(0, fotoProfilo.getBoundsInLocal().getHeight());
-        if (point != null) {
-            menuProfilo.show(fotoProfilo, point.getX(), point.getY());
-        } else {
-            menuProfilo.show(fotoProfilo, event.getScreenX(), event.getScreenY());
+            // 3. Imposto l'immagine e la centro
+            if (imgDaCaricare != null) {
+                fotoProfilo.setImage(imgDaCaricare);
+                centraImmagine(fotoProfilo, imgDaCaricare);
+            }
+
+            // 4. Applico il cerchio e il logo
+            applicaCerchio();
+            logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
+
+        } catch (Exception e) {
+            System.err.println("ERRORE CRITICO CARICAMENTO PFP: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
+    private void centraImmagine(ImageView iv, Image img) {
+        if (img == null || img.isError()) return;
+
+        // Calcoliamo il lato più corto per fare un quadrato perfetto
+        double d = Math.min(img.getWidth(), img.getHeight());
+        double x = (img.getWidth() - d) / 2;
+        double y = (img.getHeight() - d) / 2;
+
+        // Impostiamo il Viewport per centrare la parte quadrata dell'immagine
+        iv.setViewport(new Rectangle2D(x, y, d, d));
+    }
+
+    private void showmenuProfilo(MouseEvent e) {
+        Point2D p = fotoProfilo.localToScreen(0, fotoProfilo.getBoundsInLocal().getHeight());
+        menuProfilo.show(fotoProfilo, p.getX(), p.getY());
+    }
+
     private MenuItem creaVoceMenu(String testo, String customClass) {
-        MenuItem item = new MenuItem();
-        Label label = new Label(testo);
-
-        label.setCursor(javafx.scene.Cursor.HAND);
-
-        item.setGraphic(label);
-
-        if (customClass != null) {
-            item.getStyleClass().add(customClass);
-            label.getStyleClass().add(customClass);
-        }
-
+        Label label = new Label(testo); label.setCursor(Cursor.HAND);
+        MenuItem item = new MenuItem(); item.setGraphic(label);
+        if (customClass != null) label.getStyleClass().add(customClass);
         return item;
     }
+
+    private void applicaCerchio() {
+        // Il cerchio deve essere sempre centrato sulla ImageView da 40x40
+        double centerX = fotoProfilo.getFitWidth() / 2;
+        double centerY = fotoProfilo.getFitHeight() / 2;
+        double radius = Math.min(centerX, centerY);
+
+        fotoProfilo.setClip(new Circle(centerX, centerY, radius));
+    }
+
 }

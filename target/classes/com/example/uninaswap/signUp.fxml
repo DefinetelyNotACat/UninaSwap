@@ -12,10 +12,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.control.PasswordField?>
 
-<ScrollPane stylesheets="@sign.css"
-            xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.uninaswap.boundary.SignBoundary"
-            fitToWidth="true" vbarPolicy="ALWAYS">
+<ScrollPane stylesheets="@form.css" xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.SignBoundary" fitToWidth="true" vbarPolicy="ALWAYS">
     <content>
         <VBox alignment="TOP_CENTER" styleClass="myPadding">
             <VBox alignment="CENTER" spacing="10">

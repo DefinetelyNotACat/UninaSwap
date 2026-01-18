@@ -1,20 +1,23 @@
 package com.example.uninaswap.entity;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
+
+
 public class AnnuncioScambio extends Annuncio{
-    private ArrayList<OffertaScambio> OfferteScambio = new ArrayList<OffertaScambio>();
     private String listaOggetti;
 
+    //Costruttori
+    //
     public AnnuncioScambio() {
         super();
     }
 
-    public AnnuncioScambio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto,
-                           String listaOggetti) {
+    public AnnuncioScambio(Sede sede, String descrizione, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, String listaOggetti) {
         super(sede, descrizione, orarioInizio, orarioFine, oggetto);
         this.listaOggetti = listaOggetti;
     }
+
+    //Getter e Setter
     public String getListaOggetti() {
         return listaOggetti;
     }
@@ -22,15 +25,17 @@ public class AnnuncioScambio extends Annuncio{
         this.listaOggetti = listaOggetti;
     }
 
+    //override di getTipoAnnuncio per specificare che è un AnnuncioScambio
     @Override
     public String getTipoAnnuncio(){
         return "Scambio";
     }
 
+    //override per evitare che venga passata una specializzazione sbagliata di offerta
     @Override
     public void ottieniOfferta(Offerta offerta) throws Exception {
         if(offerta instanceof OffertaScambio) {
-            super.offerte.add((OffertaScambio) offerta);
+            super.offerte.add(offerta);
         }
         else{
             throw new Exception("Offerta di tipo sbagliato");

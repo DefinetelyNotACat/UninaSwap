@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.ReportOfferteBoundary" prefHeight="600.0" prefWidth="800.0" style="-fx-background-color: white;">
+
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <padding><Insets top="20" bottom="10"/></padding>
+            <Label text="Report Statistico Offerte Inviate" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        </VBox>
+    </top>
+
+    <center>
+        <StackPane fx:id="chartContainer" />
+    </center>
+
+    <bottom>
+        <VBox spacing="10" style="-fx-background-color: #f8f9fa; -fx-padding: 20; -fx-border-color: #dee2e6; -fx-border-width: 1 0 0 0;">
+            <Label text="Dettagli Economici (Solo Offerte di Vendita Accettate)" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+            <HBox spacing="30" alignment="CENTER">
+                <Label fx:id="lblMedia" text="Media: - €" style="-fx-text-fill: #2980b9; -fx-font-size: 16px;"/>
+                <Label fx:id="lblMin" text="Minimo: - €" style="-fx-text-fill: #e67e22; -fx-font-size: 16px;"/>
+                <Label fx:id="lblMax" text="Massimo: - €" style="-fx-text-fill: #27ae60; -fx-font-size: 16px;"/>
+            </HBox>
+            <Button text="Chiudi" onAction="#chiudiFinestra" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand;" alignment="CENTER"/>
+        </VBox>
+    </bottom>
+</BorderPane>

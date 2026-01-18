@@ -1,79 +1,80 @@
-.profile-picture{
-    -fx-cursor: hand;
-}
-.profilo-context-menu {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 5px;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);
-    -fx-padding: 5px 0 5px 0;
-    -fx-cursor: hand;
-}
-
-.profilo-context-menu .menu-item {
-    -fx-background-color: transparent;
-    -fx-padding: 8px 15px 8px 15px;
-}
-
-.profilo-context-menu .menu-item .label {
-    -fx-text-fill: #333333;
-    -fx-font-family: "Arial";
-    -fx-font-size: 14px;
+.navbar-container .button,
+.navbar-container .profile-picture,
+.navbar-container #logo,
+.navbar-container .combo-box,
+.navbar-container .combo-box .arrow-button,
+.navbar-container .list-cell,
+.navbar-container .menu-item,
+.navbar-container .label {
     -fx-cursor: hand;
 }
 
-.profilo-context-menu .menu-item:focused {
-    -fx-background-color: #f0f0f0;
-    -fx-cursor: hand;
+.navbar-container {
+    -fx-background-color: white;
+    -fx-padding: 10 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
 }
 
-.menu-item-logout .label {
-    -fx-text-fill: #dc3545;
+.navbar-container .combo-box {
+    -fx-background-color: #ffffff !important;
+    -fx-border-color: #dee2e6 !important;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.navbar-container .combo-box > .list-cell {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #333333 !important;
+    -fx-font-weight: normal !important;
+}
+
+.navbar-container .combo-box .context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 4);
+}
+
+.navbar-container .combo-box .list-cell:hover {
+    -fx-background-color: #0798ff !important;
+    -fx-text-fill: white !important;
+}
+
+.navbar-container .combo-box .context-menu .list-cell:filled:selected {
+    -fx-background-color: #ffda07 !important;
+    -fx-text-fill: #212529 !important;
+    -fx-font-weight: bold !important;
+}
+
+.navbar-container .text-field {
+    -fx-background-color: white !important;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #dee2e6 !important;
+}
+
+.navbar-container .text-field:focused {
+    -fx-border-color: #0d59fd !important;
+    -fx-border-width: 1.5;
+}
+
+.button-search {
+    -fx-background-color: #212529;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
     -fx-font-weight: bold;
 }
 
-.menu-item-logout:focused {
-    -fx-background-color: #ffeef0;
+.button-primary {
+    -fx-background-color: linear-gradient(to bottom right, #0d6efd, #0056b3);
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.3), 10, 0, 0, 4);
 }
 
-/* Questo stile si applica alla ChoiceBox principale quando è chiusa */
-.choice-box {
-    -fx-cursor: hand;
-}
-
-/* Questo stile si applica al testo visualizzato dentro la box */
-.choice-box .label {
-    -fx-cursor: hand;
-}
-
-/* Questo stile è FONDAMENTALE per le voci del menu a tendina quando si apre */
-.choice-box .context-menu {
-    -fx-cursor: hand;
-}
-
-.choice-box .menu-item {
-    -fx-cursor: hand;
-}
-
-/* Opzionale: cambia colore quando passi sopra una voce */
-.choice-box .menu-item:focused {
-    -fx-background-color: #0665e3;
-}
-
-/* La manina quando passi sopra la scatola chiusa */
-.choice-box {
-    -fx-cursor: hand;
-}
-
-/* La manina sulle scritte interne */
-.choice-box .label {
-    -fx-cursor: hand;
-}
-
-/* La manina sulle voci del menu quando si apre */
-.context-menu .menu-item {
-    -fx-cursor: hand;
-}
-
-.button{
-    -fx-cursor: hand;
+.button-primary:hover {
+    -fx-translate-y: -1;
+    -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.4), 12, 0, 0, 6);
 }

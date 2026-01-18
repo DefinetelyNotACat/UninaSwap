@@ -2,13 +2,16 @@ package com.example.uninaswap.entity;
 
 import java.time.LocalTime;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 public class AnnuncioVendita extends Annuncio{
+
+    //Attributi
+    //
     private BigDecimal prezzoMedio;
     private BigDecimal prezzoMinimo;
-    private ArrayList<OffertaVendita> OfferteVendita = new ArrayList<OffertaVendita>();
 
+    //Costruttori
+    //
     public AnnuncioVendita() {
         super();
     }
@@ -18,10 +21,10 @@ public class AnnuncioVendita extends Annuncio{
         this.prezzoMedio = prezzoMedio;
     }
 
+    //Getter e Setter
     public BigDecimal getPrezzoMedio() {
         return prezzoMedio;
     }
-
     public void setPrezzoMedio(BigDecimal prezzoMedio) {
         this.prezzoMedio = prezzoMedio;
     }
@@ -29,23 +32,25 @@ public class AnnuncioVendita extends Annuncio{
     public BigDecimal getPrezzoMinimo() {
         return prezzoMinimo;
     }
-
     public void setPrezzoMinimo(BigDecimal prezzoMinimo) {
         this.prezzoMinimo = prezzoMinimo;
     }
 
+    //override di getTipoAnnuncio per specificare che è un AnnuncioVendita
     @Override
     public String getTipoAnnuncio(){
         return "Vendita";
     }
 
+    //override per evitare che venga passata una specializzazione sbagliata di offerta
     @Override
     public void ottieniOfferta(Offerta offerta) throws Exception{
         if(offerta instanceof OffertaVendita) {
-            super.offerte.add((OffertaVendita) offerta);
+            super.offerte.add(offerta);
         }
         else{
             throw new Exception("Offerta di tipo sbagliato");
         }
     }
+
 }

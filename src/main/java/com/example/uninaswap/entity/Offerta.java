@@ -13,16 +13,18 @@ public abstract class Offerta {
         ACCETTATA
     }
 
+    protected int id;
+    protected Utente utente;
     protected String messaggio;
     protected STATO_OFFERTA stato;
     protected LocalTime orarioInizio;
     protected LocalTime orarioFine;
     protected Oggetto oggetto;
     protected Annuncio annuncio;
-    protected int id;
-    protected Utente utente;
+
 
     // Costruttore
+    //
     public Offerta(Annuncio annuncio, String messaggio, STATO_OFFERTA stato, LocalTime orarioInizio, LocalTime orarioFine, Oggetto oggetto, Utente utente) throws Exception {
         this.annuncio = annuncio;
         this.messaggio = messaggio;
@@ -39,12 +41,34 @@ public abstract class Offerta {
         }
     }
 
-    // --- Getter e Setter ---
+    //Adder remover clearer
+    //
+    public void addOfferta(Annuncio annuncio) throws Exception {
+        this.annuncio = annuncio;
+        if (annuncio != null) {
+            annuncio.ottieniOfferta(this);
+        }
+    }
+
+    //Getter e Setter
+    //
+    public void setId(int id) {
+        this.id = id;
+    }
+    public int getId() {
+        return id;
+    }
+
+    public Utente getUtente() {
+        return utente;
+    }
+    public void setUtente(Utente utente) {
+        this.utente = utente;
+    }
 
     public String getMessaggio() {
         return messaggio;
     }
-
     public void setMessaggio(String messaggio) {
         this.messaggio = messaggio;
     }
@@ -52,7 +76,6 @@ public abstract class Offerta {
     public STATO_OFFERTA getStato() {
         return stato;
     }
-
     public void setStato(STATO_OFFERTA stato) {
         this.stato = stato;
     }
@@ -60,7 +83,6 @@ public abstract class Offerta {
     public LocalTime getOrarioInizio() {
         return orarioInizio;
     }
-
     public void setOrarioInizio(LocalTime orarioInizio) {
         this.orarioInizio = orarioInizio;
     }
@@ -68,7 +90,6 @@ public abstract class Offerta {
     public LocalTime getOrarioFine() {
         return orarioFine;
     }
-
     public void setOrarioFine(LocalTime orarioFine) {
         this.orarioFine = orarioFine;
     }
@@ -76,7 +97,6 @@ public abstract class Offerta {
     public Oggetto getOggetto() {
         return oggetto;
     }
-
     public void setOggetto(Oggetto oggetto) {
         this.oggetto = oggetto;
     }
@@ -92,31 +112,11 @@ public abstract class Offerta {
         this.orarioFine = orarioFine;
     }
 
-    public void immettiOfferta(Annuncio annuncio) throws Exception {
-        this.annuncio = annuncio;
-        if (annuncio != null) {
-            annuncio.ottieniOfferta(this);
-        }
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public Utente getUtente() {
-        return utente;
-    }
-    public void setUtente(Utente utente) {
-        this.utente = utente;
-    }
     public Annuncio getAnnuncio() {
         return annuncio;
     }
     public void setAnnuncio(Annuncio annuncio) {
         this.annuncio = annuncio;
     }
+
 }

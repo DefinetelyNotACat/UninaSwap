@@ -1,48 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Text?>
 
-<ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.AggiungiAnnuncio"
-            stylesheets="@inventario.css, @sign.css">
+<ScrollPane fitToWidth="true" vbarPolicy="AS_NEEDED" xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.AggiungiAnnuncio"
+            stylesheets="@inventario.css, @form.css">
     <content>
         <VBox alignment="TOP_CENTER" spacing="20.0" styleClass="myPadding">
 
             <VBox alignment="CENTER" fillWidth="false">
                 <fx:include fx:id="notifica" source="banners.fxml"/>
-                <padding>
-                    <Insets bottom="10.0" />
-                </padding>
+                <padding><Insets bottom="10.0" /></padding>
             </VBox>
 
             <VBox alignment="CENTER" spacing="10">
                 <children>
                     <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@images/uninaLogo.png" />
-                        </image>
-                        <clip>
-                            <Circle centerX="50.0" centerY="50.0" radius="50.0" />
-                        </clip>
+                        <image><Image url="@images/uninaLogo.png" /></image>
+                        <clip><Circle centerX="50.0" centerY="50.0" radius="50.0" /></clip>
                     </ImageView>
                     <Text styleClass="bold,title" text="Crea Annuncio" textAlignment="CENTER" />
                     <Text styleClass="description" text="Seleziona gli oggetti e definisci i dettagli" />
                 </children>
-                <padding>
-                    <Insets bottom="20.0" top="10.0" />
-                </padding>
+                <padding><Insets bottom="20.0" top="10.0" /></padding>
             </VBox>
 
             <VBox alignment="CENTER" maxWidth="500.0" spacing="25.0">
@@ -52,7 +37,7 @@
                         <children>
                             <Text styleClass="label" text="Testo dell'Annuncio"/>
                             <TextArea fx:id="descrizioneAnnuncioArea" promptText="Descrivi il tuo annuncio..." wrapText="true" prefRowCount="3" styleClass="form-field" />
-                            <Text fx:id="erroreDescrizione" managed="false" styleClass="error-text" text="Il testo contiene caratteri non validi o è vuoto" visible="false" />
+                            <Text fx:id="erroreDescrizione" managed="false" styleClass="error-text" text="Caratteri non validi (usare solo lettere, numeri, ? ! ' € e spazi)" visible="false" />
                         </children>
                     </VBox>
 
@@ -84,9 +69,7 @@
                             <ScrollPane fitToWidth="true" minHeight="100.0" maxHeight="150.0" styleClass="scroll-pane-transparent">
                                 <content>
                                     <VBox fx:id="contenitoreOggetti" spacing="10" styleClass="image-container">
-                                        <padding>
-                                            <Insets top="10" right="10" bottom="10" left="10"/>
-                                        </padding>
+                                        <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
                                         <Text text="Nessun oggetto disponibile" styleClass="placeholder-text" />
                                     </VBox>
                                 </content>
@@ -101,9 +84,7 @@
                             <HBox alignment="CENTER" spacing="20.0">
                                 <children>
                                     <RadioButton fx:id="radioVendita" text="Vendita" onAction="#onTipologiaChange">
-                                        <toggleGroup>
-                                            <ToggleGroup fx:id="tipoAnnuncioGroup"/>
-                                        </toggleGroup>
+                                        <toggleGroup><ToggleGroup fx:id="tipoAnnuncioGroup"/></toggleGroup>
                                     </RadioButton>
                                     <RadioButton fx:id="radioScambio" text="Scambio" toggleGroup="$tipoAnnuncioGroup" onAction="#onTipologiaChange"/>
                                     <RadioButton fx:id="radioRegalo" text="Regalo" toggleGroup="$tipoAnnuncioGroup" onAction="#onTipologiaChange"/>
@@ -130,7 +111,7 @@
                         <children>
                             <Text styleClass="label" text="Cosa cerchi in cambio?" />
                             <TextArea fx:id="desideriScambioArea" promptText="Es. Cerco libri di Fisica..." wrapText="true" prefRowCount="3" styleClass="form-field" />
-                            <Text fx:id="erroreScambio" managed="false" styleClass="error-text" text="Testo non valido (solo lettere, numeri e spazi)" visible="false" />
+                            <Text fx:id="erroreScambio" managed="false" styleClass="error-text" text="Il testo contiene caratteri non validi" visible="false" />
                         </children>
                     </VBox>
 
@@ -139,7 +120,7 @@
                             <Text styleClass="description" text="L'oggetto sarà pubblicato come GRATUITO." textAlignment="CENTER"/>
                             <Text styleClass="label" text="Informazioni Ritiro (Opzionale)" />
                             <TextField fx:id="infoRitiroField" promptText="Es. Mensa ore 14" styleClass="form-field" />
-                            <Text fx:id="erroreRitiro" managed="false" styleClass="error-text" text="Il campo ritiro contiene caratteri non validi" visible="false" />
+                            <Text fx:id="erroreRitiro" managed="false" styleClass="error-text" text="Caratteri non consentiti nel campo ritiro" visible="false" />
                         </children>
                     </VBox>
 
@@ -151,9 +132,7 @@
                     <Button fx:id="annullaButton" onAction="#onAnnullaClick" text="Annulla" styleClass="button, button-secondary" />
                     <Button fx:id="pubblicaButton" onAction="#onPubblicaClick" text="Pubblica Annuncio" styleClass="button" />
                 </children>
-                <padding>
-                    <Insets top="20.0" bottom="30.0"/>
-                </padding>
+                <padding><Insets top="20.0" bottom="30.0"/></padding>
             </HBox>
 
         </VBox>

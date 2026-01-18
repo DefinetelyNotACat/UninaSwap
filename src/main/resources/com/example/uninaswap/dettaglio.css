@@ -1,0 +1,102 @@
+.detail-root {
+    -fx-background-color: #f8f9fa;
+}
+
+.detail-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 40;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 20, 0, 0, 10);
+}
+
+.image-wrapper {
+    -fx-background-color: white;
+    -fx-border-color: #f1f1f1;
+    -fx-border-width: 1;
+    -fx-border-radius: 15;
+    -fx-background-radius: 15;
+    -fx-padding: 10;
+}
+
+.detail-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-fill: #2d3436;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.detail-location {
+    -fx-font-size: 15px;
+    -fx-fill: #636e72;
+}
+
+.info-section {
+    -fx-background-color: #f8f9fa;
+    -fx-padding: 20;
+    -fx-background-radius: 12;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+}
+
+.info-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-fill: #adb5bd;
+    -fx-text-transform: uppercase;
+}
+
+.info-value {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-fill: #0d6efd;
+}
+
+.btn-back, .button-primary {
+    -fx-cursor: hand;
+    -fx-padding: 12 25;
+    -fx-min-width: 180px;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.btn-back {
+    -fx-background-color: transparent;
+    -fx-text-fill: #636e72;
+    -fx-border-color: #b2bec3;
+    -fx-border-radius: 10;
+}
+
+.btn-back:hover {
+    -fx-background-color: #f1f1f1;
+    -fx-border-color: #2d3436;
+}
+
+.button-primary {
+    -fx-background-color: linear-gradient(to bottom right, #0d6efd, #0056b3);
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.3), 10, 0, 0, 4);
+}
+
+.button-primary:hover {
+    -fx-translate-y: -2;
+    -fx-effect: dropshadow(three-pass-box, rgba(13, 110, 253, 0.4), 12, 0, 0, 6);
+}
+
+.button-primary:pressed {
+    -fx-translate-y: 1;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+#txtEmailVenditore {
+    -fx-fill: #7f8c8d;
+    -fx-font-size: 13px;
+    -fx-font-style: italic;
+}
+
+#txtPrezzoMinimo {
+    -fx-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
