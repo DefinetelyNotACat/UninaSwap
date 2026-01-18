@@ -23,8 +23,6 @@ public class Utente {
 
     private ArrayList<Offerta> offerte = new ArrayList<Offerta>();
     private ArrayList<Oggetto> oggetti = new ArrayList<Oggetto>();
-    private ArrayList<Recensione> recensioniInviata = new ArrayList<>();
-    private ArrayList<Recensione> recensioniRicevuta = new ArrayList<>();
 
     //Costruttori
     //
