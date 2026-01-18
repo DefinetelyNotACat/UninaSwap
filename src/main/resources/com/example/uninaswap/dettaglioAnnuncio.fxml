@@ -1,73 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.shape.Circle?>
 
-<BorderPane xmlns="" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.DettaglioAnnuncioBoundary" stylesheets="@homepage.css, @banners.css, @dettaglio.css, @navbar.css" styleClass="detail-root">
-
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.uninaswap.boundary.DettaglioAnnuncioBoundary" stylesheets="@homepage.css, @banners.css, @dettaglio.css" styleClass="detail-root">
     <top>
         <HBox alignment="CENTER" styleClass="navbar-container">
-            <fx:include source="navbar.fxml" fx:id="navBarComponent"/>
+            <fx:include source="navbar.fxml" />
         </HBox>
     </top>
-
     <center>
         <StackPane>
-            <padding><Insets top="40" bottom="40" left="20" right="20"/></padding>
+            <padding><Insets top="30" bottom="30" left="20" right="20"/></padding>
+            <HBox alignment="CENTER" spacing="40" maxWidth="1100" styleClass="detail-card">
 
-            <HBox alignment="CENTER" spacing="50" maxWidth="1000" styleClass="detail-card">
+                <VBox spacing="15" alignment="TOP_CENTER">
+                    <VBox alignment="CENTER" styleClass="image-wrapper" minHeight="400" minWidth="400">
+                        <ImageView fx:id="immagineAnnuncio" fitWidth="400" fitHeight="400" preserveRatio="true" smooth="true"/>
+                    </VBox>
 
-                <VBox alignment="CENTER" styleClass="image-wrapper">
-                    <ImageView fx:id="immagineAnnuncio" fitWidth="400" fitHeight="400" preserveRatio="true" smooth="true"/>
+                    <ScrollPane fx:id="scrollMiniature" fitToHeight="true" minHeight="80" prefHeight="80" styleClass="mini-scroll" vbarPolicy="NEVER">
+                        <content>
+                            <HBox fx:id="containerMiniature" spacing="10" alignment="CENTER_LEFT">
+                                <padding><Insets left="5" right="5"/></padding>
+                            </HBox>
+                        </content>
+                    </ScrollPane>
                 </VBox>
 
-                <VBox spacing="20" alignment="CENTER_LEFT" prefWidth="450">
+                <VBox spacing="20" alignment="CENTER_LEFT" prefWidth="480">
                     <HBox spacing="12" alignment="CENTER_LEFT">
-                        <Label fx:id="badgeTipo" text="TIPO" styleClass="badge-base"/>
-                        <Text fx:id="txtSede" text="📍 Sede" styleClass="detail-location"/>
+                        <Label fx:id="badgeTipo" styleClass="badge-base"/>
+                        <Text fx:id="txtSede" styleClass="detail-location"/>
                     </HBox>
 
-                    <Text fx:id="txtTitoloDescrizione" text="Titolo Annuncio" styleClass="detail-title" wrappingWidth="430"/>
+                    <Text fx:id="txtTitoloDescrizione" styleClass="detail-title" wrappingWidth="450"/>
 
                     <VBox spacing="15" styleClass="info-section">
                         <VBox spacing="5">
-                            <Text text="PROPOSTA" styleClass="info-label"/>
-                            <Text fx:id="txtDettagliSpecifici" text="..." styleClass="info-value"/>
-                            <Text fx:id="txtPrezzoMinimo" text="" styleClass="label-alert"/>
+                            <Text text="VALORE / CERCO" styleClass="info-label"/>
+                            <Text fx:id="txtDettagliSpecifici" styleClass="info-value"/>
+                            <Text fx:id="txtPrezzoMinimo" styleClass="label-alert"/>
                         </VBox>
-
                         <VBox spacing="5">
-                            <Text text="CONDIZIONE OGGETTO" styleClass="info-label"/>
-                            <Text fx:id="txtCondizioni" text="N/A" styleClass="label-dark-bold"/>
+                            <Text text="CONDIZIONI" styleClass="info-label"/>
+                            <Text fx:id="txtCondizioni" styleClass="label-dark-bold"/>
                         </VBox>
-
-                        <VBox spacing="8">
+                        <VBox spacing="10">
                             <Text text="VENDITORE" styleClass="info-label"/>
                             <HBox spacing="15" alignment="CENTER_LEFT">
-                                <StackPane>
-                                    <ImageView fx:id="immagineProfiloVenditore" fitWidth="50" fitHeight="50" preserveRatio="true" smooth="true"/>
-                                    <clip>
-                                        <Circle centerX="25" centerY="25" radius="25" />
-                                    </clip>
-                                </StackPane>
-
+                                <ImageView fx:id="immagineProfiloVenditore" fitWidth="50" fitHeight="50" smooth="true"/>
                                 <VBox spacing="2">
-                                    <Text fx:id="txtVenditore" text="..." styleClass="label-dark-bold"/>
-                                    <Text fx:id="txtEmailVenditore" text="..." styleClass="label-italic-small"/>
+                                    <Text fx:id="txtVenditore" styleClass="label-dark-bold"/>
+                                    <Text fx:id="txtEmailVenditore" styleClass="label-italic-small"/>
                                 </VBox>
                             </HBox>
                         </VBox>
                     </VBox>
 
-                    <Region VBox.vgrow="ALWAYS"/>
-
-                    <HBox spacing="15" alignment="CENTER_RIGHT">
-                        <Button text="Indietro" onAction="#tornaIndietro" styleClass="btn-back"/>
+                    <HBox spacing="15" alignment="BOTTOM_RIGHT" VBox.vgrow="ALWAYS">
+                        <Button text="Torna Indietro" onAction="#tornaIndietro" styleClass="btn-back"/>
                         <Button fx:id="btnFaiOfferta" text="Fai un'Offerta" onAction="#apriSchermataOfferta" styleClass="button-primary"/>
                     </HBox>
                 </VBox>
