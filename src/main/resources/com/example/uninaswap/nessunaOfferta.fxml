@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
 
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 <VBox alignment="CENTER"
       spacing="15.0"
       xmlns="http://javafx.com/javafx/17"
