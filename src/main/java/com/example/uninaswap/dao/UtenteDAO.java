@@ -72,11 +72,7 @@ public class UtenteDAO implements GestoreUtenteDAO {
 
         try (Connection connessione = PostgreSQLConnection.getConnection();
              PreparedStatement query = connessione.prepareStatement(sql)) {
-
-            // Parametro 1: Il testo da cercare con i caratteri jolly
             query.setString(1, "%" + parteUsername.trim() + "%");
-
-            // Parametro 2: Il tuo ID, per escluderti dai risultati
             query.setInt(2, idDaEscludere);
 
             try (ResultSet rs = query.executeQuery()) {

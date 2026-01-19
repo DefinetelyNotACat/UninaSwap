@@ -235,7 +235,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
         annuncio.setDescrizione(rs.getString("descrizione"));
         annuncio.setUtenteId(rs.getInt("utente_id"));
 
-        // FIX FONDAMENTALE: Conversione da String (DB) a Enum (Java)
         String statoDalDB = rs.getString("stato");
         if (statoDalDB != null) {
             try {

@@ -60,16 +60,14 @@ public class OffertaDAO implements GestoreOffertaDAO {
         Connection conn = null;
         try {
             conn = PostgreSQLConnection.getConnection();
-            conn.setAutoCommit(false); // Transazione necessaria per OffertaScambio
+            conn.setAutoCommit(false);
 
             int idGenerato = -1;
 
             try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                // Parametri comuni
                 ps.setInt(1, offerta.getUtente().getId()); // Assumiamo che l'oggetto Utente abbia l'ID settato
                 ps.setInt(2, offerta.getAnnuncio().getId());
 
-                // Determinazione Tipo
                 if (offerta instanceof OffertaVendita) ps.setString(3, "VENDITA");
                 else if (offerta instanceof OffertaScambio) ps.setString(3, "SCAMBIO");
                 else ps.setString(3, "REGALO");
@@ -100,11 +98,9 @@ public class OffertaDAO implements GestoreOffertaDAO {
                 }
             }
 
-            // GESTIONE SPECIFICA SCAMBIO: Aggiornamento Oggetti offerti
             if (offerta instanceof OffertaScambio) {
                 OffertaScambio os = (OffertaScambio) offerta;
                 if (os.getOggetti() != null && !os.getOggetti().isEmpty()) {
-                    // Aggiorniamo la tabella OGGETTO settando l'offerta_id e lo stato a OCCUPATO
                     String sqlUpdateOggetti = "UPDATE OGGETTO SET offerta_id = ?, disponibilita = 'OCCUPATO'::disponibilita_oggetto WHERE id = ?";
                     try (PreparedStatement psObj = conn.prepareStatement(sqlUpdateOggetti)) {
                         for (Oggetto obj : os.getOggetti()) {
@@ -141,21 +137,19 @@ public class OffertaDAO implements GestoreOffertaDAO {
     public boolean modificaStatoOfferta(int idOfferta, Offerta.STATO_OFFERTA nuovoStato) {
         String sqlUpdateStato = "UPDATE OFFERTA SET stato = ?::stato_offerta WHERE id = ?";
 
-        // SQL per recuperare info vitali sull'offerta (tipo e annuncio collegato)
         String sqlInfo = "SELECT tipo_offerta, annuncio_id FROM OFFERTA WHERE id = ?";
 
-        // SQL per aggiornare l'oggetto dell'annuncio (Chi riceve l'offerta)
+        // aggiorno l'oggetto dell'annuncio (Chi riceve l'offerta)
         String sqlUpdateOggettoAnnuncio = "UPDATE OGGETTO SET disponibilita = ?::disponibilita_oggetto WHERE annuncio_id = ?";
 
-        // SQL per aggiornare gli oggetti proposti nello scambio (Chi fa l'offerta)
+        // aggiorno gli oggetti proposti nello scambio (Chi fa l'offerta)
         String sqlUpdateOggettiScambio = "UPDATE OGGETTO SET disponibilita = 'SCAMBIATO'::disponibilita_oggetto WHERE offerta_id = ?";
 
         Connection conn = null;
         try {
             conn = PostgreSQLConnection.getConnection();
-            conn.setAutoCommit(false); // TRANSAZIONE FONDAMENTALE
+            conn.setAutoCommit(false);
 
-            // 1. Recupero informazioni sull'offerta
             String tipoOfferta = "";
             int idAnnuncio = -1;
 
@@ -171,31 +165,31 @@ public class OffertaDAO implements GestoreOffertaDAO {
                 }
             }
 
-            // 2. Aggiorno lo stato dell'offerta
+            // Aggiorno lo stato dell'offerta
             try (PreparedStatement ps = conn.prepareStatement(sqlUpdateStato)) {
                 ps.setString(1, nuovoStato.toString());
                 ps.setInt(2, idOfferta);
                 ps.executeUpdate();
             }
 
-            // 3. SE L'OFFERTA È ACCETTATA -> Aggiorno gli oggetti
+            // Aggiorno gli oggetti in caso di offerta accettata
             if (nuovoStato == Offerta.STATO_OFFERTA.ACCETTATA) {
 
-                String nuovoStatoOggetto = "VENDUTO"; // Default per vendita
+                String nuovoStatoOggetto = "VENDUTO";
                 if ("SCAMBIO".equalsIgnoreCase(tipoOfferta)) {
                     nuovoStatoOggetto = "SCAMBIATO";
                 } else if ("REGALO".equalsIgnoreCase(tipoOfferta)) {
                     nuovoStatoOggetto = "REGALATO";
                 }
 
-                // A. Aggiorno l'oggetto contenuto nell'annuncio (Il mio oggetto)
+                // Aggiorno l'oggetto contenuto nell'annuncio (Il mio oggetto)
                 try (PreparedStatement psObjAnnuncio = conn.prepareStatement(sqlUpdateOggettoAnnuncio)) {
                     psObjAnnuncio.setString(1, nuovoStatoOggetto);
                     psObjAnnuncio.setInt(2, idAnnuncio);
                     psObjAnnuncio.executeUpdate();
                 }
 
-                // B. Se è uno SCAMBIO, aggiorno anche gli oggetti che l'altro utente mi ha dato
+                // Se è uno SCAMBIO, aggiorno anche gli oggetti che l'altro utente mi ha dato
                 if ("SCAMBIO".equalsIgnoreCase(tipoOfferta)) {
                     try (PreparedStatement psObjScambio = conn.prepareStatement(sqlUpdateOggettiScambio)) {
                         psObjScambio.setInt(1, idOfferta);
@@ -203,11 +197,9 @@ public class OffertaDAO implements GestoreOffertaDAO {
                     }
                 }
 
-                // C. Opzionale: Se accetto un'offerta, dovrei rifiutare tutte le altre offerte In Attesa per lo stesso annuncio?
-                // Per ora lo lasciamo semplice, ma in futuro potresti voler aggiungere questa logica.
+
             }
 
-            // 4. SE L'OFFERTA È RIFIUTATA E TIPO SCAMBIO -> Libero gli oggetti dell'offerente
             if (nuovoStato == Offerta.STATO_OFFERTA.RIFIUTATA && "SCAMBIO".equalsIgnoreCase(tipoOfferta)) {
                 String sqlLibera = "UPDATE OGGETTO SET disponibilita = 'DISPONIBILE'::disponibilita_oggetto, offerta_id = NULL WHERE offerta_id = ?";
                 try (PreparedStatement psLibera = conn.prepareStatement(sqlLibera)) {
@@ -241,11 +233,9 @@ public class OffertaDAO implements GestoreOffertaDAO {
         int utenteId = rs.getInt("utente_id");
         int annuncioId = rs.getInt("annuncio_id");
 
-        // Recuperiamo le entità correlate (o Proxy)
         Utente utente = utenteDAO.ottieniUtente(utenteId);
-        Annuncio annuncio = annuncioDAO.OttieniAnnuncio(annuncioId); // Attenzione: questo potrebbe essere pesante se fatto in loop
+        Annuncio annuncio = annuncioDAO.OttieniAnnuncio(annuncioId);
 
-        // Parametri base
         String messaggio = rs.getString("messaggio");
         Offerta.STATO_OFFERTA stato = Offerta.STATO_OFFERTA.valueOf(rs.getString("stato"));
         Time tStart = rs.getTime("orario_inizio");
@@ -255,12 +245,10 @@ public class OffertaDAO implements GestoreOffertaDAO {
 
         if ("VENDITA".equalsIgnoreCase(tipo)) {
             java.math.BigDecimal prezzo = java.math.BigDecimal.valueOf(rs.getDouble("prezzo_offerta"));
-            // Nota: AnnuncioVendita cast necessario nel costruttore se stretto, qui passo null per brevità o casto annuncio
             offerta = new OffertaVendita(annuncio, messaggio, stato,
                     tStart.toLocalTime(), tEnd.toLocalTime(), null, utente, prezzo, (AnnuncioVendita) annuncio);
 
         } else if ("SCAMBIO".equalsIgnoreCase(tipo)) {
-            // Per lo scambio, dobbiamo recuperare gli oggetti offerti
             OffertaScambio os = new OffertaScambio((AnnuncioScambio) annuncio, messaggio, stato,
                     tStart.toLocalTime(), tEnd.toLocalTime(), null, utente);
 
@@ -268,7 +256,6 @@ public class OffertaDAO implements GestoreOffertaDAO {
             offerta = os;
 
         } else {
-            // Regalo
             offerta = new OffertaRegalo(annuncio, messaggio, stato,
                     tStart.toLocalTime(), tEnd.toLocalTime(), null, utente, (AnnuncioRegalo) annuncio);
         }
@@ -292,23 +279,22 @@ public class OffertaDAO implements GestoreOffertaDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while(rs.next()){
                     int idObj = rs.getInt("id");
-                    Oggetto o = mappaOggetti.get(idObj);
+                    Oggetto oggetto = mappaOggetti.get(idObj);
 
-                    if (o == null) {
-                        o = new Oggetto();
-                        o.setId(idObj);
-                        o.setNome(rs.getString("nome"));
+                    if (oggetto == null) {
+                        oggetto = new Oggetto();
+                        oggetto.setId(idObj);
+                        oggetto.setNome(rs.getString("nome"));
                         String condStr = rs.getString("condizione");
                         if (condStr != null) {
-                            o.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr.replace(" ", "_").toUpperCase()));
+                            oggetto.setCondizione(Oggetto.CONDIZIONE.valueOf(condStr.replace(" ", "_").toUpperCase()));
                         }
-                        mappaOggetti.put(idObj, o);
+                        mappaOggetti.put(idObj, oggetto);
                     }
 
-                    // Aggiungiamo l'immagine se non c'è già
                     String path = rs.getString("img_path");
-                    if (path != null && !o.getImmagini().contains(path)) {
-                        o.getImmagini().add(path);
+                    if (path != null && !oggetto.getImmagini().contains(path)) {
+                        oggetto.getImmagini().add(path);
                     }
 
                     // RECUPERO CATEGORIE
@@ -316,8 +302,8 @@ public class OffertaDAO implements GestoreOffertaDAO {
                     if (nomeCat != null) {
                         final String catCorrente = nomeCat;
                         // Evitiamo duplicati nella lista categorie dell'oggetto
-                        if (o.getCategorie().stream().noneMatch(c -> c.getNome().equals(catCorrente))) {
-                            o.getCategorie().add(new Categoria(nomeCat));
+                        if (oggetto.getCategorie().stream().noneMatch(c -> c.getNome().equals(catCorrente))) {
+                            oggetto.getCategorie().add(new Categoria(nomeCat));
                         }
                     }
                 }

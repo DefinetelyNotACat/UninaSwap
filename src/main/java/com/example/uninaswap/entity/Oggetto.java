@@ -9,8 +9,7 @@ import java.util.ArrayList;
 
 public class Oggetto {
 
-    //ENUM
-    //
+
     public enum DISPONIBILITA {
         DISPONIBILE("Disponibile"), OCCUPATO("Occupato"), VENDUTO("Venduto"), REGALATO("Regalato"), SCAMBIATO("Scambiato");
         private final String etichetta;
@@ -61,12 +60,10 @@ public class Oggetto {
         if(this.proprietario != null) this.proprietario.addOggetto(this);
     }
 
-    //Metodi di logica
-    //
+
     public String copiaImmagineInLocale(String pathSorgenteAssoluto) throws IOException {
         if (pathSorgenteAssoluto == null || pathSorgenteAssoluto.isEmpty()) return null;
 
-        // 1. PUNTA SOLO A "oggetti", senza aggiungere String.valueOf(this.id)
         Path directoryOggetti = Paths.get("dati_utenti", "oggetti");
 
         if (!Files.exists(directoryOggetti)) {
@@ -83,13 +80,11 @@ public class Oggetto {
 
         Files.copy(sorgente, destinazioneFinale, StandardCopyOption.REPLACE_EXISTING);
 
-        // 2. RITORNA IL PATH PULITO: solo "oggetti/nomefile.jpg"
         return "oggetti/" + nomeFileFinale;
     }
 
 
-    //Setter e Getter
-    //
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -113,8 +108,7 @@ public class Oggetto {
     public ArrayList<String> getImmagini() { return immagini; }
     public void setImmagini(ArrayList<String> immagini) { this.immagini = immagini; }
 
-    //toString
-    //
+
     @Override public String toString() {
         return "Oggetto [id=" + id + ", nome=" + nome + ", condizione=" + condizione + "]";
     }

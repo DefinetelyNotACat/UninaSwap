@@ -16,7 +16,7 @@ public abstract class Annuncio {
     //
     protected int id;
     protected int utenteId;
-    protected Utente utente; // Il venditore (Popolato tramite JOIN nel DAO)
+    protected Utente utente;
     protected Sede sede;
     protected String descrizione;
     protected LocalTime orarioInizio;
@@ -104,10 +104,8 @@ public abstract class Annuncio {
         }
     }
 
-    // Metodo astratto implementato dalle sottoclassi (Vendita, Scambio, Regalo)
     public abstract String getTipoAnnuncio();
 
-    //toString
     @Override
     public String toString() {
         return "Annuncio{" + "id=" + id + ", descrizione='" + descrizione + '\'' +  ", venditore=" + (utente != null ? utente.getUsername() : "N/A") +  ", sede=" + (sede != null ? sede.getNomeSede() : "N/A") +  ", stato=" + stato +  ", num_oggetti=" + oggetti.size() + '}';

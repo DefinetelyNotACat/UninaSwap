@@ -90,8 +90,7 @@ public class Utente {
         return this.oggetti.add(oggetto);
     }
 
-    //Setter e Getter
-    //
+
     public int getId() {
         return id;
     }
@@ -149,8 +148,7 @@ public class Utente {
         return oggetti;
     }
 
-    //toString
-    //
+
     @Override
     public String toString() {
         return "Username : " + this.username + " Email : " + this.email + " Matricola : " + this.matricola + " Password : " + this.password;

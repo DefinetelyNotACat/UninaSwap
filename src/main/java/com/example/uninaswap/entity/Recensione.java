@@ -26,7 +26,6 @@ public class Recensione {
         this.commento = commento;
     }
 
-    // Getter e Setter
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -44,8 +43,7 @@ public class Recensione {
         return recensore;
     }
 
-    //toString
-    //
+
     @Override
     public String toString() {
         return "Recensione di: " + recensore + " dedicata a " + recensito + "\nCommento: " + commento + "\nVoto: " + voto;

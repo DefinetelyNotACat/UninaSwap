@@ -33,8 +33,6 @@ public class Immagine {
         this.path = path;
     }
 
-    //toString
-    //
     @Override
     public String toString() {
         return "Id: " + this.id + " Data Caricamento: " + this.dataCaricamento + " Path: " + this.path + " Id Oggetto: " + this.idOggetto;

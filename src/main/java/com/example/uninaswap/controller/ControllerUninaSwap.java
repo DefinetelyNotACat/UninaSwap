@@ -86,7 +86,6 @@ public class ControllerUninaSwap {
         if (this.utente != null) {
             mioId = this.utente.getId();
         }
-        // Passiamo la query e il MIO id al DAO
         return utenteDAO.cercaUtentiByUsername(query, mioId);
     }
     public void accediUtente(String email, String password) throws Exception {

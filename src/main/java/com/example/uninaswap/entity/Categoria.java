@@ -31,8 +31,7 @@ public class Categoria {
         return nome != null ? nome.equals(categoria.nome) : categoria.nome == null;
     }
 
-    //toString
-    //
+
     @Override
     public String toString() {
         return "Nome: " + nome;

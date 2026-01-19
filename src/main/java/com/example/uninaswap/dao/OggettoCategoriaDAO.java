@@ -17,7 +17,7 @@ public class OggettoCategoriaDAO implements GestoreOggettoCategoriaDAO {
             for (Categoria cat : categorie) {
                 stmt.setInt(1, idOggetto);
                 stmt.setString(2, cat.getNome());
-                stmt.addBatch(); // Aggiunge al batch
+                stmt.addBatch();
             }
             stmt.executeBatch();
         }

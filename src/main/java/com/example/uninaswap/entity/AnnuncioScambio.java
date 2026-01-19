@@ -17,7 +17,6 @@ public class AnnuncioScambio extends Annuncio{
         this.listaOggetti = listaOggetti;
     }
 
-    //Getter e Setter
     public String getListaOggetti() {
         return listaOggetti;
     }

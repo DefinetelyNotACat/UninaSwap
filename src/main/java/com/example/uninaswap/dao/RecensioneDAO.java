@@ -8,7 +8,6 @@ import com.example.uninaswap.interfaces.GestoreRecensioneDAO;
 
 public class RecensioneDAO implements GestoreRecensioneDAO {
 
-    // Query base con JOIN per trasformare gli ID in email
     private static final String SELECT_BASE =
             "SELECT r.*, u1.email AS email_recensore, u2.email AS email_recensito " +
                     "FROM recensione r " +

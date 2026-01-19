@@ -101,7 +101,6 @@ public class NavBarComponent {
                 else homePageBoundary.caricaCatalogoAnnunci(txt, false);
             } catch (Exception exception) { exception.printStackTrace(); }
         } else {
-            // Se siamo altrove (Inventario, Offerte...), salviamo i dati e cambiamo scena verso la Home
             HomePageBoundary.prenotaRicerca(txt, isAnn);
             gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
         }
@@ -180,7 +179,6 @@ public class NavBarComponent {
             Image immagineDaCaricare = null;
             boolean isDefault = true;
 
-            //Controllo se l'utente ha una foto valida
             if (utente != null && utente.getPathImmagineProfilo() != null &&
                     !utente.getPathImmagineProfilo().equals("default") &&
                     !utente.getPathImmagineProfilo().isEmpty()) {

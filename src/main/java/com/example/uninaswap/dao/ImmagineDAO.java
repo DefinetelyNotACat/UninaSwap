@@ -1,7 +1,5 @@
 package com.example.uninaswap.dao;
 
-import com.example.uninaswap.entity.Immagine;
-import com.example.uninaswap.interfaces.GestoreCondizioneDAO;
 import com.example.uninaswap.interfaces.GestoreImmagineDAO;
 
 import java.sql.*;
@@ -44,7 +42,6 @@ public class ImmagineDAO implements GestoreImmagineDAO {
     }
 
     public void rimuoviImmaginiPerOggetto(Connection conn, int idOggetto) throws SQLException {
-        // ATTENZIONE: Controlla il nome della tabella e della colonna
         String sql = "DELETE FROM IMMAGINE WHERE oggetto_id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

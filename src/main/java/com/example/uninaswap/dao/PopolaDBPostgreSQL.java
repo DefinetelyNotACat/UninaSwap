@@ -141,7 +141,6 @@ public class PopolaDBPostgreSQL {
             System.out.println("Tabella OFFERTA CREATA");
 
             // MODIFICA AGGIUNTA QUI
-            // Modifichiamo OGGETTO dopo che OFFERTA è stata creata per evitare errori di dipendenza
             String alterOggetto = "ALTER TABLE OGGETTO " +
                     "ADD COLUMN offerta_id INTEGER, " +
                     "ADD CONSTRAINT fk_offerta_oggetto " +
@@ -178,7 +177,6 @@ public class PopolaDBPostgreSQL {
 
             System.out.println("Inizio Pulizia Database");
 
-            // Con CASCADE risolviamo le dipendenze
             statement.executeUpdate("DROP TABLE IF EXISTS RECENSIONE CASCADE;");
             statement.executeUpdate("DROP TABLE IF EXISTS OFFERTA CASCADE;");
             statement.executeUpdate("DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;");

@@ -23,7 +23,6 @@ public class OggettoDAO implements GestoreOggettoDAO {
 
             int idOggettoGenerato = -1;
 
-            // 1. Inserimento dati base Oggetto
             try (PreparedStatement stmt = conn.prepareStatement(sqlOggetto, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setInt(1, utente.getId());
                 stmt.setString(2, oggetto.getNome());
@@ -42,7 +41,6 @@ public class OggettoDAO implements GestoreOggettoDAO {
 
             if (idOggettoGenerato == -1) throw new SQLException("Errore: ID oggetto non generato.");
 
-            // 2. Gestione Fisica File e Database Immagini
             if (oggetto.getImmagini() != null && !oggetto.getImmagini().isEmpty()) {
                 ArrayList<String> percorsiDefinitivi = new ArrayList<>();
                 for (String pathTemporaneo : oggetto.getImmagini()) {
@@ -56,7 +54,6 @@ public class OggettoDAO implements GestoreOggettoDAO {
                 }
             }
 
-            // 3. Associazione Categorie
             if (oggetto.getCategorie() != null && !oggetto.getCategorie().isEmpty()) {
                 oggettoCategoriaDAO.associaCategorie(conn, idOggettoGenerato, oggetto.getCategorie());
             }
@@ -85,7 +82,6 @@ public class OggettoDAO implements GestoreOggettoDAO {
             conn = PostgreSQLConnection.getConnection();
             conn.setAutoCommit(false);
 
-            // A. Update dati base
             try (PreparedStatement stmt = conn.prepareStatement(sqlUpdate)) {
                 stmt.setString(1, oggetto.getNome());
                 stmt.setString(2, toDbEnum(oggetto.getCondizione().name()));
@@ -94,13 +90,11 @@ public class OggettoDAO implements GestoreOggettoDAO {
                 stmt.executeUpdate();
             }
 
-            // B. Update Categorie (Pulisci e reinserisci)
             oggettoCategoriaDAO.eliminaCategoriePerOggetto(conn, oggetto.getId());
             if (oggetto.getCategorie() != null && !oggetto.getCategorie().isEmpty()) {
                 oggettoCategoriaDAO.associaCategorie(conn, oggetto.getId(), oggetto.getCategorie());
             }
 
-            // C. Update Immagini
             immagineDAO.rimuoviImmaginiPerOggetto(conn, oggetto.getId());
             if (oggetto.getImmagini() != null && !oggetto.getImmagini().isEmpty()) {
                 ArrayList<String> percorsiFinali = new ArrayList<>();

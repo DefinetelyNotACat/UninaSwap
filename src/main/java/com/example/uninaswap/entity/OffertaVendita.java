@@ -17,8 +17,6 @@ public class OffertaVendita extends Offerta{
 
     }
 
-    //Getter e Setter
-    //
     public BigDecimal getPrezzoOffertaVendita() {
         return prezzoOffertaVendita;
     }

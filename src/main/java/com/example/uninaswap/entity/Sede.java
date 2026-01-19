@@ -30,8 +30,7 @@ public class Sede {
         }
     }
 
-    //Setter e Getter
-    //
+
     public int getId() {
         return id;
     }
@@ -50,8 +49,7 @@ public class Sede {
         return indirizzo;
     }
 
-    //toString
-    //
+
     @Override
     public String toString(){
         return "Nome Sede: " + this.nomeSede + " Indirizzo: " + this.indirizzo;
