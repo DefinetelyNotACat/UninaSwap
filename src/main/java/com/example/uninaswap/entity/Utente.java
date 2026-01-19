@@ -141,7 +141,7 @@ public class Utente {
         return offerte;
     }
     public void setOggetti(ArrayList<Oggetto> oggetti) {
-        oggetti = oggetti;
+        this.oggetti = oggetti;
     }
 
     public ArrayList<Oggetto> getOggetti() {
