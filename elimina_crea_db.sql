@@ -1,0 +1,139 @@
+DROP TABLE IF EXISTS RECENSIONE CASCADE;
+DROP TABLE IF EXISTS OFFERTA CASCADE;
+DROP TABLE IF EXISTS OGGETTO_CATEGORIA CASCADE;
+DROP TABLE IF EXISTS IMMAGINE CASCADE;
+DROP TABLE IF EXISTS OGGETTO CASCADE;
+DROP TABLE IF EXISTS ANNUNCIO CASCADE;
+DROP TABLE IF EXISTS CATEGORIA CASCADE;
+DROP TABLE IF EXISTS SEDE CASCADE;
+DROP TABLE IF EXISTS UTENTE CASCADE;
+
+DROP TYPE IF EXISTS stato_annuncio CASCADE;
+DROP TYPE IF EXISTS condizione_oggetto CASCADE;
+DROP TYPE IF EXISTS disponibilita_oggetto CASCADE;
+DROP TYPE IF EXISTS stato_offerta CASCADE;
+
+-- 1. CREAZIONE TIPI ENUM
+CREATE TYPE stato_annuncio AS ENUM ('DISPONIBILE', 'NON_DISPONIBILE');
+CREATE TYPE condizione_oggetto AS ENUM ('NUOVO', 'COME NUOVO', 'OTTIME CONDIZIONI', 'BUONE CONDIZIONI', 'DISCRETE CONDIZIONI', 'CATTIVE CONDIZIONI');
+CREATE TYPE disponibilita_oggetto AS ENUM ('DISPONIBILE', 'OCCUPATO', 'VENDUTO', 'REGALATO', 'SCAMBIATO');
+CREATE TYPE stato_offerta AS ENUM ('IN_ATTESA', 'ACCETTATA', 'RIFIUTATA');
+
+-- 2. TABELLA UTENTE
+CREATE TABLE UTENTE (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+    matricola VARCHAR(20) UNIQUE NOT NULL, 
+    email VARCHAR(100) UNIQUE NOT NULL, 
+    username VARCHAR(50) NOT NULL, 
+    password VARCHAR(255) NOT NULL, 
+    immagine_profilo TEXT 
+);
+
+-- 3. TABELLA SEDE E INSERIMENTI
+CREATE TABLE SEDE (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+    nome_sede VARCHAR(100), 
+    indirizzo VARCHAR(255)
+);
+
+INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Monte Sant''Angelo', 'Via Cinthia, 21');
+INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Piazzale Tecchio', 'Piazzale Tecchio, 80');
+INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Via Claudio', 'Via Claudio, 21');
+INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Corso Umberto', 'Corso Umberto I, 40');
+INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('San Giovanni', 'Corso Nicolangelo Protopisani, 70');
+INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Policlinico', 'Via Sergio Pansini, 5');
+INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Architettura - Palazzo Gravina', 'Via Monteoliveto, 3');
+INSERT INTO SEDE (nome_sede, indirizzo) VALUES ('Veterinaria', 'Via Federico Delpino, 1');
+
+-- 4. TABELLA CATEGORIA E INSERIMENTI
+CREATE TABLE CATEGORIA (
+    nome VARCHAR(50) PRIMARY KEY
+);
+
+INSERT INTO CATEGORIA (nome) VALUES ('Informatica');
+INSERT INTO CATEGORIA (nome) VALUES ('Abbigliamento');
+INSERT INTO CATEGORIA (nome) VALUES ('Libri di testo');
+INSERT INTO CATEGORIA (nome) VALUES ('Elettronica');
+INSERT INTO CATEGORIA (nome) VALUES ('Cancelleria');
+INSERT INTO CATEGORIA (nome) VALUES ('Accessori');
+
+-- 5. TABELLA ANNUNCIO
+CREATE TABLE ANNUNCIO (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+    utente_id INTEGER NOT NULL, 
+    sede_id INTEGER NOT NULL, 
+    tipo_annuncio VARCHAR(20) NOT NULL, 
+    stato stato_annuncio DEFAULT 'DISPONIBILE', 
+    descrizione TEXT, 
+    orario_inizio TIME, 
+    orario_fine TIME, 
+    prezzo DOUBLE PRECISION, 
+    prezzo_minimo DOUBLE PRECISION, 
+    nomi_items_scambio TEXT, 
+    data_creazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    CONSTRAINT fk_utente_annuncio FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE, 
+    CONSTRAINT fk_sede_annuncio FOREIGN KEY (sede_id) REFERENCES SEDE(id) ON DELETE SET NULL
+);
+
+-- 6. TABELLA OGGETTO
+CREATE TABLE OGGETTO (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+    annuncio_id INTEGER, 
+    utente_id INTEGER NOT NULL, 
+    nome VARCHAR(100) NOT NULL, 
+    condizione condizione_oggetto, 
+    disponibilita disponibilita_oggetto DEFAULT 'DISPONIBILE', 
+    CONSTRAINT fk_annuncio_oggetto FOREIGN KEY (annuncio_id) REFERENCES ANNUNCIO(id) ON DELETE SET NULL, 
+    CONSTRAINT fk_utente_oggetto FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE
+);
+
+-- 7. TABELLA IMMAGINE
+CREATE TABLE IMMAGINE (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+    oggetto_id INTEGER NOT NULL, 
+    path TEXT NOT NULL, 
+    data_caricamento TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    CONSTRAINT fk_oggetto_immagine FOREIGN KEY (oggetto_id) REFERENCES OGGETTO(id) ON DELETE CASCADE
+);
+
+-- 8. TABELLA DI COLLEGAMENTO OGGETTO_CATEGORIA (N-M)
+CREATE TABLE OGGETTO_CATEGORIA (
+    oggetto_id INTEGER NOT NULL, 
+    categoria_nome VARCHAR(50) NOT NULL, 
+    PRIMARY KEY (oggetto_id, categoria_nome), 
+    CONSTRAINT fk_objcat_oggetto FOREIGN KEY (oggetto_id) REFERENCES OGGETTO(id) ON DELETE CASCADE, 
+    CONSTRAINT fk_objcat_categoria FOREIGN KEY (categoria_nome) REFERENCES CATEGORIA(nome) ON DELETE CASCADE
+);
+
+-- 9. TABELLA OFFERTA
+CREATE TABLE OFFERTA (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+    utente_id INTEGER NOT NULL, 
+    annuncio_id INTEGER NOT NULL, 
+    tipo_offerta VARCHAR(20), 
+    messaggio TEXT, 
+    stato stato_offerta DEFAULT 'IN_ATTESA', 
+    orario_inizio TIME, 
+    orario_fine TIME, 
+    prezzo_offerta DOUBLE PRECISION, 
+    data_creazione TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    CONSTRAINT fk_utente_offerta FOREIGN KEY (utente_id) REFERENCES UTENTE(id) ON DELETE CASCADE, 
+    CONSTRAINT fk_annuncio_offerta FOREIGN KEY (annuncio_id) REFERENCES ANNUNCIO(id) ON DELETE CASCADE
+);
+
+-- 10. AGGIORNAMENTO TABELLA OGGETTO (Relazione circolare con Offerta)
+ALTER TABLE OGGETTO 
+ADD COLUMN offerta_id INTEGER, 
+ADD CONSTRAINT fk_offerta_oggetto 
+FOREIGN KEY (offerta_id) REFERENCES OFFERTA(id) ON DELETE SET NULL;
+
+-- 11. TABELLA RECENSIONE
+CREATE TABLE RECENSIONE (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
+    recensore_id INTEGER NOT NULL, 
+    recensito_id INTEGER NOT NULL, 
+    voto INTEGER CHECK (voto >= 1 AND voto <= 5), 
+    commento TEXT, 
+    CONSTRAINT fk_recensore FOREIGN KEY (recensore_id) REFERENCES UTENTE(id) ON DELETE CASCADE, 
+    CONSTRAINT fk_recensito FOREIGN KEY (recensito_id) REFERENCES UTENTE(id) ON DELETE CASCADE
+);
