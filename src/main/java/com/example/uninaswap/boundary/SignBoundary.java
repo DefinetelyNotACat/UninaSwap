@@ -8,11 +8,14 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 import static com.example.uninaswap.Costanti.*;
@@ -92,6 +95,7 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
         String email = emailField.getText().trim().toLowerCase();
         String password = passwordField.getText();
         controllerUninaSwap.accediUtente(email, password);
+
     }
 
     public void onRegistraClick(ActionEvent actionEvent) {
@@ -169,6 +173,7 @@ public class SignBoundary implements Initializable, GestoreMessaggio {
             confermaButton.disableProperty().bind(emailNonValida.or(passwordNonValida).or(matricolaNonValida).
                             or(usernameNonValido).or(passwordNonCombaciano)
             );
+
         }
     }
 

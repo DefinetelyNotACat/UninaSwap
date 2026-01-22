@@ -67,7 +67,6 @@ public class UtenteDAO implements GestoreUtenteDAO {
     public ArrayList<Utente> cercaUtentiByUsername(String parteUsername, int idDaEscludere) {
         ArrayList<Utente> risultati = new ArrayList<>();
 
-        // Aggiungiamo "AND id != ?" alla query
         String sql = "SELECT * FROM utente WHERE LOWER(username) LIKE LOWER(?) AND id != ?";
 
         try (Connection connessione = PostgreSQLConnection.getConnection();

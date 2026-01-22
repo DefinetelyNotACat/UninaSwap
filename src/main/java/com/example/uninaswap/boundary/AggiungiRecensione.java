@@ -77,7 +77,6 @@ public class AggiungiRecensione {
 
         votoSelezionato.set(voto);
         aggiornaStelle(voto);
-
         if (erroreVoto != null) {
             erroreVoto.setVisible(false);
             erroreVoto.setManaged(false);
@@ -100,14 +99,12 @@ public class AggiungiRecensione {
     public void onInviaClick(ActionEvent actionEvent) {
         try {
             int voto = votoSelezionato.get();
-
             boolean successo = controller.pubblicaRecensione(
                     utenteDaRecensire,
                     utenteRecensore,
                     voto,
                     commentoArea.getText()
             );
-
             if (successo) {
                 new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent,
                         "Recensione salvata con successo!", Messaggio.TIPI.SUCCESS);
@@ -121,7 +118,6 @@ public class AggiungiRecensione {
     void onAnnullaClick(ActionEvent actionEvent) {
         new GestoreScene().CambiaScena(Costanti.pathHomePage, Costanti.homepage, actionEvent);
     }
-
     private void gestisciErroreVisivo(Control controller, Text messaggio, boolean check) {
         controller.getStyleClass().removeAll("error", "right");
         controller.getStyleClass().add(check ? "right" : "error");

@@ -16,7 +16,6 @@
 
             <VBox alignment="CENTER" fillWidth="false">
                 <fx:include source="banners.fxml" fx:id="notifica"/>
-
                 <padding>
                     <Insets bottom="10.0"/>
                 </padding>

@@ -34,7 +34,7 @@ public class NavBarComponent {
     @FXML private ComboBox<Oggetto.CONDIZIONE> filtroCondizione;
     @FXML private ComboBox<Categoria> filtroCategoria;
 
-    private ContextMenu menuProfilo;
+    @FXML private ContextMenu menuProfilo;
     private final ControllerUninaSwap controllerUninaSwap = ControllerUninaSwap.getInstance();
     private final GestoreScene gestoreScene = new GestoreScene();
 
@@ -65,6 +65,7 @@ public class NavBarComponent {
             HomePageBoundary.prenotaRicerca(null, true);
             gestoreScene.CambiaScena(Costanti.pathHomePage, "Home", (Stage) logo.getScene().getWindow());
         });
+
 
         filtroBarraDiRicerca.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
             boolean isArticoli = "Articoli".equals(n);
@@ -201,7 +202,6 @@ public class NavBarComponent {
                 fotoProfilo.setImage(immagineDaCaricare);
                 centraImmagine(fotoProfilo, immagineDaCaricare);
             }
-
             //Applico il cerchio e il logo
             applicaCerchio();
             logo.setImage(new Image(getClass().getResourceAsStream("/com/example/uninaswap/images/uninaLogo.png")));
@@ -231,7 +231,8 @@ public class NavBarComponent {
 
     private MenuItem creaVoceMenu(String testo, String customClass) {
         Label label = new Label(testo); label.setCursor(Cursor.HAND);
-        MenuItem item = new MenuItem(); item.setGraphic(label);
+        MenuItem item = new MenuItem();
+        item.setGraphic(label);
         if (customClass != null) label.getStyleClass().add(customClass);
         return item;
     }

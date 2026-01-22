@@ -13,7 +13,6 @@ public class AnnuncioDAO implements GestoreAnnuncioDAO {
     private ArrayList<Annuncio> caricaAnnunciConJoin(String condizioneSql, Object... params) {
         LinkedHashMap<Integer, Annuncio> mappaAnnunci = new LinkedHashMap<>();
 
-        // Query aggiornata con JOIN su UTENTE (Mantenuta come da tua richiesta)
         String sql = "SELECT a.*, s.nome_sede, " +
                 "u.username as u_username, u.matricola as u_matricola, u.email as u_email, u.immagine_profilo as u_img, " +
                 "o.id as o_id, o.nome as o_nome, o.condizione as o_condizione, i.path as i_path " +

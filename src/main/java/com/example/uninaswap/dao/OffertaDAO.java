@@ -54,9 +54,7 @@ public class OffertaDAO implements GestoreOffertaDAO {
     }
 
     public boolean salvaOfferta(Offerta offerta) {
-        String sql = "INSERT INTO OFFERTA (utente_id, annuncio_id, tipo_offerta, messaggio, stato, orario_inizio, orario_fine, prezzo_offerta) " +
-                "VALUES (?, ?, ?, ?, ?::stato_offerta, ?, ?, ?)";
-
+        String sql = "INSERT INTO OFFERTA (utente_id, annuncio_id, tipo_offerta, messaggio, stato, orario_inizio, orario_fine, prezzo_offerta) ";
         Connection conn = null;
         try {
             conn = PostgreSQLConnection.getConnection();

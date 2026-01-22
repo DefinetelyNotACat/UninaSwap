@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
 
 public class ReportOfferteBoundary {
-
     @FXML private StackPane chartContainer;
     @FXML private Label lblMedia;
     @FXML private Label lblMin;
