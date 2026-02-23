@@ -1,6 +1,6 @@
 # UninaSwap
 
-UninaSwap e' il progetto che abbiamo sviluppato per il corso di Programmazione ad Oggetti.
+UninaSwap e' il progetto che abbiamo sviluppato per il corso di Programmazione ad Oggetti e Basi di dati.
 Lo scopo dell'app e' quella di fornire la possibilita' agli studenti della Federico II di scambiarsi, vendersi o regalarsi oggetti tra di loro in modo piu' facile
 
 ## Cosa fa l'app
